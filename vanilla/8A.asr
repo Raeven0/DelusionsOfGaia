@@ -1,0 +1,2867 @@
+arch 65816
+hirom
+fillbyte $FF
+padbyte $FF
+
+
+org $8A8000
+db $22,$08,$20
+ECWaterWorm:
+
+
+
+org $8A826C
+db $00,$00,$00
+ECSkeleton:
+
+
+
+org $8A8476
+db $00,$00,$00
+ECRedSkeleton:
+
+
+
+org $8A85F7
+db $1F,$00,$00
+EBat_Boss:
+
+
+org $8A8669
+db $1F,$00,$00
+EBat_Lackey1:
+
+
+org $8A869A
+db $1F,$00,$00
+EBat_Lackey2:
+
+
+org $8A86CB
+db $1F,$00,$00
+EBat_Lackey3:
+
+
+org $8A86FF
+db $1F,$00,$00
+EBat_Lackey4:
+
+
+org $8A8755
+db $1F,$00,$00
+EBat_Simple:
+
+
+
+
+org $8A87C3
+db $38,$02,$23
+ECSpear:
+.Far:
+cop #$C1
+cop #$21 : db $03 : dw .Common    ; $87D9
+rtl
+db $38,$02,$23
+.Near:
+cop #$C1
+cop #$21 : db $01 : dw .Common    ; $87D9
+rtl
+.Common:
+
+
+
+
+org $8A8835
+db $36,$00,$10
+ECPullableStatue:
+
+org $8A8858
+db $C1,$03,$11,$C7,$0D,$04,$C2,$00,$64,$87,$88,$A3,$AC,$87,$80,$A3,$AC,$A4,$87,$84,$AC,$D6,$CD,$A3,$87,$80,$A0,$84,$CB,$80,$A3,$AC,$A4,$87,$84,$AC,$D6,$C9,$D6,$8E,$A4,$87,$84,$CB,$A3,$84,$80,$A3,$88,$83,$84,$AC,$82,$80,$A6,$84,$2A,$2A,$2A,$C3,$00,$C0
+
+;org $8A8896
+
+org $8A8931
+db $0F,$01,$01
+ECSpikesPuzzleButton:
+
+
+org $8A8971
+db $0F,$01,$03
+ECRustyButton:
+
+
+org $8A89BF
+db $C2,$0E,$C2,$00,$48,$A4,$AC,$D6,$FA,$86,$8E,$AC,$88,$8D,$4F,$CB,$D6,$30,$D6,$9F,$A2,$A5,$A3,$A4,$A9,$2A,$2A,$2A,$C3,$00,$C0
+
+;org $8A89DE
+db $3C,$10,$00
+ECSpikesPuzzleBall1:
+
+
+org $8A8A0F
+db $3C,$10,$00
+ECSpikesPuzzleBall2:
+
+
+org $8A8A46
+db $3C,$10,$00
+ECSpikesPuzzleBall3:
+
+
+org $8A8A7D
+db $3C,$10,$00
+ECSpikesPuzzleBall4:
+
+
+
+org $8A8AAE
+db $3C,$10,$00
+ECCrawlingSpikeBall:
+
+
+org $8a8b1b
+db $00 : dw $0000
+EMPMudGolem:
+
+
+org $8a8c70
+db $09 : dw $0000
+EMPSpinner:
+
+
+org $8A8DB7
+db $11,$00,$00
+EMPSlug:
+
+
+org $8a97ee
+db $1d : dw $2301
+EMPSlime:
+
+
+org $8a98bc
+db $1b : dw $0000
+EMPFlyingHead:
+
+
+
+org $8a99d7
+db $01 : dw $0301
+EBabelCastoth:
+
+
+
+org $8A9B03 ; Castoth
+db $01,$01,$03
+ECastoth:
+{
+LDA #$0000 : JSL LR_SecOnDefeatedBossA    ; $80B05E
+BCC +
+  STZ $0AEC    ; If Castoth's defeated, set number of enemies
+  STZ $0AEE    ;  on map to 0, then kill event
+  COP #$E0     ;  and return.
++:
+LDA #$8011 : TSB $12
+COP #$BC : db $08,$F8  ; Move by +$08, -$08 (to tile center).
+COP #$B6 : db $20      ; Sprite priority bits to fake BG+OAM layering.
+LDA #$008A : AND #$00FF : STA $0AF6  ; i.e. BankOf(ECastoth_DeathWarpWithDpParams)
+LDA.W #ECastoth_DeathWarpWithDpParams : STA $0AF4
+JSL LR_FreezePlayer    ; $8AA37B
+LDA #$EFF0 : TSB $065A
+COP #$DA : db $1D    ; Wait $1E frames.
+COP #$08 : db $0E,$0E; Play door-close sounds on both channels.
+COP #$32 : db $1E    ; Prepare map rearrangement for closed doors.
+COP #$33    ; Perform map rearrangement, closing doors.
+COP #$DA : db $27    ; Wait $28 frames.
+COP #$04 : db $0F    ; Immediate-play song $0F, "Guardians".
+COP #$DA : db $3B    ; Wait $3C frames.
+LDA #$EFF0 : TRB $065A
+JSL LR_UnfreezePlayer    ; $8AA391
+; org $8a9b5b ; Create event $80cf8e ScreenShake, Last in execution order, offset by $00/$00, with $10=#$2000.
+COP #$A5 : dl ESimpleScreenShake : db $00,$00 : dw $2000    ; $80cf8e
+; org $8a9b64 ; Create event $8aa169 Hand, After this one, as Child/Sibling, with x=$0050, y=$00e0, $10=#$0301.
+COP #$A3 : dl ECastothWestHand : dw $0050,$00e0 : dw $0301
+TYA : STA $7F0000,x    ; Store new-event ID here (causes a bug).
+COP #$DA : db $3B      ; Wait $3C frames.
+; org 8a9b77 ; Create event $8aa177 Hand, After this one, as Child/Sibling, with x=$00a0, y=$00e0, $10=#$0301.
+COP #$A3 : dl ECastothEastHand : dw $00a0,$00e0 : dw $0301
+TYA : STA $7F0002,x    ; Store new-event ID here (causes a bug).
+COP #$DA : db $3B    ; Wait $3C frames.
+COP #$80 : db $00    ; Set sprite.
+COP #$89    ; Render sprite.
+; org $8a9b8f
+LDA #$0100 : TSB $12
+LDA #$0090 : STA $7F001A,x  ; Move straight up
+LDA $14 : STA $7F0018,x     ;  into combat position.
+COP #$22 : db $01,$01   ; Do motion, sprite $01, speed $01/fr.
+; Continues when event has finished moving.
+; org $8a9ba5 ; Create event $8a9eeb (Firesnake controller), Last in order, offset by $00/$00, with $10=#$2200.
+COP #$A5 : dl ECastothFiresnakeManager : db $00,$00 : dw $2200
+TYA : STA $7F0010,x
+COP #$57 : dl ECastoth_OnDeath    ; $8a9c1e
+STZ $26      ; Timer.
+STZ $00F0    ; Mark hands alive.
+STZ $00F2
+BRA ECastoth_Idle
+; org $8a9bc2 ; Triggered if $00F0 has changed to 3 (i.e. hands are dead).
+ECastoth_OnHandsDead:
+LDA #$0200 : TRB $10  ; Become vulnerable.
+COP #$80 : db $29    ; Reset animation and set to $29.
+COP #$89    ; Animate until finished.
+cop #$A5 : dl ECastothEyesPalette : db $00,$00 : dw $2000
+COP #$DB : dw $0095
+cop #$A2 : dl ECastoth_HeadLightning : dw $0302
+COP #$DB : dw $0095
+COP #$C8 : dw ECastoth_StartHeadlaser    ; Save this PC and jump to $9D25.
+LDA #$0003 : STA $00F2
+LDA #$0200 : TSB $10   ; Become invulnerable.
+STZ $00F0    ; Mark hands alive and continue.
+; org $8a9bf6 ; Create event $8a9d64 (Ln+Hb), After this one, as Child/Sibling, at creator's position, with $10=#$0302.
+ECastoth_Idle:
+COP #$DB : dw $010d
+COP #$A2 : dl ECastoth_HeadLightning : dw $0302
+COP #$DB : dw $010d
+LDA $00F0 : CMP #$0003 : BEQ ECastoth_OnHandsDead
+BRA ECastoth_Idle
+
+ECastoth_DeathWarpWithDpParams:
+db $1e : dw $0068,$0100 : db $00,$00,$24
+
+; $8A9C17
+ECastothEyesPalette:
+cop #$37 : db $11
+cop #$39
+cop #$E0
+
+; $8A9C1E
+ECastoth_OnDeath:
+LDA $09AE : BIT #$0200 : BEQ +
+  COP #$C1 : RTL   ; Check "player-dying" flag and quit if set.
++:
+LDA #$0020 : TSB $09AE   ; Set "player lives at 0HP" flag.
+LDY $26 : beq +          ; ID of HeadLaser, if it's alive.
+  STZ $26
+  LDA.W #ECastothHeadLaser_Die : STA $0000,y    ;  Set its pointer
+  LDA #$0000 : STA $0008,y    ;  and zero its wait timer.
++:
+LDA $7F0010,x    ; Load ID of spawned FiresnakeManager,
+PHX              ;  push my-ID,
+  TCD            ;  set .D and .X to spawned-event
+  TAX            ;  in order to imitate it,
+  COP #$A7       ;  and die (as spawned-event).
+PLA        ; Unlike #$E0, COP #$A7 continues execution.
+TCD        ; Restore Castoth's D
+TAX        ;  and X registers.
+LDA $7F0000,x : TAY          ;  Tries to set ptr of spawned events,
+LDA.w #ECastothHand_OnDeath : STA $0000,y    ;  but their IDs were overwritten by
+LDA #$0000 : STA $0008,y     ;  moving Castoth's head when the
+LDA $7F0002,x : TAY          ;  fight started.
+LDA.w #ECastothHand_OnDeath : STA $0000,y    ;  |
+LDA #$0000 : STA $0008,y     ; End nonfunctional routine.
+cop #$A5 : dl LR_SetPlayerImmune : db $00,$00 : dw $2000
+cop #$A5 : dl ECastothExplosionFactory : db $00,$00 : dw $2000
+COP #$DA : db $3B    ; Wait $3C frames.
+COP #$88 : dl $8ee000
+COP #$C7 : dl EBasicMonsterDeath    ; $80db8a
+; Exit Castoth's death code, which continues at $80db8a.
+
+; org $8a9c8e
+ECastothExplosionFactory:
+COP #$88 : dl $8ee000
+COP #$CA : db $12    ; Loop $12 (18) times.
+{
+cop #$A5 : dl ECastothExplosion07 : db $00,$c8 : dw $0302
+COP #$DA : db $01    ; Wait 2 frames.
+cop #$A5 : dl ECastothExplosion01 : db $00,$c8 : dw $0302
+COP #$DA : db $02    ; Wait 3 frames.
+}
+COP #$CB    ; End loop.
+COP #$E0    ; Die.
+
+; org $8a9cb2
+ECastothHand_OnDeath:
+cop #$A5 : dl ECastothHandExplosionFactory : db $00,$00 : dw $2000
+COP #$DA : db $1D
+COP #$E0
+
+; org $8a9cc0
+ECastothHandExplosionFactory:
+COP #$B6 : db $30
+COP #$88 : dl $8ee000
+COP #$CA : db $0A
+cop #$A5 : dl ECastothExplosion07 : db $00,$00 : dw $0302
+COP #$DA : db $01
+cop #$A5 : dl ECastothExplosion01 : db $00,$00 : dw $0302
+COP #$DA : db $02
+COP #$CB
+COP #$E0
+
+; org $8a9ce7
+ECastothExplosion07:
+JSR SR_RandomizePosInThreeTiles
+COP #$07 : db $06    ; Play sound $06 on channel 2.
+COP #$80 : db $07
+COP #$89
+COP #$E0
+
+; org $8a9cf4
+ECastothExplosion01:
+JSR SR_RandomizePosInThreeTiles
+COP #$80 : db $01
+COP #$89
+COP #$E0
+
+; org $8a9cfe
+; Using some very expensive RNG calls, offset the spawned object by a random amount between -$30 and +$30 in both the x and y directions.
+SR_RandomizePosInThreeTiles:
+COP #$23 : COP #$23
+COP #$24 : db $60
+LDA $0420 : SEC : SBC #$0030 : CLC : ADC $14 : STA $14
+COP #$23 : COP #$23
+COP #$24 : db $60
+LDA $0420 : SEC : SBC #$0030 : CLC : ADC $16 : STA $16
+RTS
+
+; $8a9d25 ; Prepare for HeadLaser by rattling around.
+ECastoth_StartHeadlaser:
+LDA #$0200 : TSB $10   ; Become invulnerable.
+COP #$CA : db $05    ; Loop for $05 frames:
+{
+ COP #$07 : db $1F    ;  Play sound $1F on channel 2.
+ COP #$80 : db $28    ;  Animate sprite $28.
+ COP #$89
+}
+COP #$CB    ; End loop.
+cop #$9E : dl ECastothHeadLaser : dw $0000,$ffe0 : dw $2202
+STY $26        ; Store new-actor ID for later use.
+COP #$80 : db $01
+COP #$89
+COP #$DB : dw $012b
+LDA #$0200 : TRB $10   ; Make vulnerable.
+LDY $26        ; Recall HeadLaser ID,
+STZ $26        ;  clear temp variable,
+LDA.W #ECastothHeadLaser_Die : STA $0000,y    ;  set its ptr to .Die,
+LDA #$0000 : STA $0008,y    ;  and zero its wait timer.
+COP #$C5    ; Restore saved PC {$8a9be8} and return there.
+
+; org $8a9d64
+; Actor created by Castoth's head on a loop. Lightning bolt graphic that appears between his horns every so often.
+ECastothHeadLightning:
+COP #$80 : db $25    ; Reset and set animation to $25.
+COP #$89    ; Animate until finished.
+COP #$80 : db $26    ; Reset and set animation to $26.
+COP #$89    ; Animate until finished.
+cop #$A5 : dl ECastothHeadball : db $00,$a0 : dw $2000
+LDA $0644 : CMP #$002A : BCC +     ; Create another Headball if in Babel.
+  COP #$DA : db $0E
+  cop #$A5 : dl ECastothHeadball : db $00,$a0 : dw $2000
++:
+COP #$84 : db $26,$08
+COP #$8A
+COP #$E0    ; Die.
+
+; org $8a9d93
+; HeadLaser! Creates the glow and the laser part.
+ECastothHeadLaser:
+COP #$B6 : db $30
+cop #$A2 : dl ECastothHeadLaserBeam : dw $0202
+cop #$A2 : dl ECastothHeadLaserGlow : dw $0202
+COP #$C1    ; Set pointer here.
+LDY $24        ; Creator.
+LDA $0010,y : BIT #$0040 : BNE ECastothHeadLaser_Die  ; If creator's dying, also die.
+  RTL
+ECastothHeadLaser_Die:
+COP #$E0
+
+; org $8a9db3
+; One of HeadLaser's child events. The glow on his head.
+ECastothHeadLaserGlow:
+COP #$80 : db $19    ; Sprite animation $19.
+COP #$89    ; Do animation until finished.
+BRA ECastothHeadLaserGlow
+
+; org $8a9dba
+ECastothHeadLaserBeam:
+PHX
+LDX #$0000
+LDA $09A2 : CLC : ADC #$0008 : STA $0000  ; Center of player sprite.
+SEC : SBC #$0080 : BMI .PlayerOnLeft   ; Is playerX > $0080?
+.PlayerOnRight:
+CMP.l Lut_HeadLaserPositionsAndSprites,x : BCC +   ; Check if player is $0A/$15/$32/$59/$5F/more from middle of screen.
+INX : INX : INX : INX
+CPX #$0014 : BCC .PlayerOnRight
++:
+LDA.l 2+Lut_HeadLaserPositionsAndSprites,x    ; Load sprite index $1D/$1E/$1F/$20/$21/$22.
+PLX
+PHA
+  LDA $0E : ORA #$4000 : STA $0E   ; Reflect horizontal.
+PLA
+BRA .Continue
+.PlayerOnLeft:
+BPL +    ; If player is on the left side of the screen,
+  EOR #$FFFF : INC A    ;  get the absolute distance from the center,
++:
+-:
+CMP.l Lut_HeadLaserPositionsAndSprites,x : BCC +    ;  but otherwise perform the same loop as above.
+INX : INX : INX : INX
+CPX #$0014 : BCC -
++:
+LDA.l 2+Lut_HeadLaserPositionsAndSprites,x
+PLX
+.Continue:
+STA $28        ; Whether Player is Left or Right, they meet here.
+STZ $2A        ; $28 is sprite index, $2A is animation frame.
+LDA #$2000 : TSB $10   ; Don't render immediately.
+COP #$DA : db $0F    ; Wait $10 frames.
+LDA #$2000 : TRB $10   ; Render now.
+; org $8a9e18 ; Creates $8a9e36 here, with $10=#$2200. (Laser sprite.)
+cop #$A5 : dl ECastothHeadLaserExplosion : db $00,$00 : dw $2200
+COP #$07 : db $20    ; Play sound $20 on channel 2.
+LDA #$0004 : STA $24        ; Loop 4 times.
+-:
+COP #$C1    ; Set pointer here.
+COP #$89    ; Animate until finished.
+DEC $24 : BPL -    ; Repeat 4 times.
+; org $8a9e31 ; Restores event pointer to $8a9dba (the top), and returns for this frame. The way out.
+COP #$C4 : dl ECastothHeadLaserBeam
+
+; org $8a9e36
+ECastothHeadLaserExplosion:
+COP #$DA : db $03
+LDA #$2000 : TRB $10   ; Render.
+PHX
+LDA $0E : BIT #$4000 : BNE .PlayerOnLeft    ; Check H-reflection.
+.PlayerOnRight:
+LDA $28 : SEC : SBC #$001D : ASL : ASL : TAX   ; Retrosynthesize target X from sprite index and lookup table.
+LDA.l Lut_HeadLaserTargetsOnRight,x : STA $14  
+LDA.l 2+Lut_HeadLaserTargetsOnRight,x    ;  Likewise pull $D6,$D6,$D6,$C6,$B0,$98 for the y.
+BRA .Continue
+.PlayerOnLeft:
+LDA $28 : SEC : SBC #$001D : ASL : ASL : TAX  ;  Same retrosynthesis, different tables.
+LDA.l Lut_HeadLaserTargetsOnLeft,x : STA $14
+LDA.l 2+Lut_HeadLaserTargetsOnLeft,x    ;  For Y, pull $D6/$D6/$D6/$C6/$B8/$98.
+.Continue:
+STA $16        ; Store y.
+PLX
+COP #$07 : db $06    ; Play sound.
+COP #$88 : dl $8ee000    ; "Stuff" sprite-set.
+COP #$80 : db $16    ; Sprite.
+COP #$89    ; Animate until finished.
+COP #$23 : AND #$0007 : SEC : SBC #$0003 : STA $14   ; X plus-or-minus 3 or so.
+LDA $0411 : AND #$0007 : SEC : SBC $16 : STA $16     ; Y plus-or-minus 3 or so.
+COP #$07 : db $06    ; Play sound.
+COP #$88 : dl $8ee000
+COP #$80 : db $16    ; Sprite.
+COP #$89    ; Animate until finished.
+COP #$E0    ; Die.
+
+; {$8a9ea3}
+; Data tables used by the HeadLaser shooter.
+; HeadLaser isn't targeted; it has a few branches based on Will's location, and some randomness added on to that.
+Lut_HeadLaserTargetsOnRight:
+dw $0080,$00D6,$0070,$00D6,$0056,$00D6,$0038,$00C6,$001A,$00B0,$001A,$0098
+Lut_HeadLaserTargetsOnLeft:
+dw $0080,$00D6,$0093,$00D6,$00AA,$00D6,$00CA,$00C6,$00E7,$00B8,$00E5,$0098
+Lut_HeadLaserPositionsAndSprites:
+dw $000A,$001D,$0015,$001E,$0032,$001F,$0059,$0020,$005F,$0021,$005D,$0022
+
+; org $8a9eeb
+ECastothFiresnakeManager:
+COP #$B6 : db $30
+.Main:
+COP #$C6 : dw .Main; Set saved jump address here.
+LDA #$2000 : TSB $10
+COP #$CA : db $1E    ; Loop start.
+COP #$45 : db $05,$02,$0C,$05 : dw .PlayerAtTop
+COP #$45 : db $05,$0A,$0B,$0C : dw .PlayerAtBottom
+COP #$DA : db $04
+COP #$CB    ; Loop end. Player was away from center for 2 seconds.
+.PickRandomDir:    ; org $8a9f0f
+LDA #$2000 : TRB $10        ; Include in physics and rendering engine.
+COP #$23 : AND #$0003 : STA $0000    ; Pick a random branch target.
+cop #$D9 : dw $0000, ..Options
+..Options:
+  dw .DoNorthwestToNortheast, .DoNortheastToNorthwest
+  dw .DoNorthwestToSouthwest, .DoNortheastToSoutheast
+.PlayerAtTop:    ; org $8a9f2a
+LDA #$2000 : TRB $10
+LDA $0036 : LSR A : BCC .DoNorthwestToNortheast   ; Coin flip on frame timer.
+BRA .DoNortheastToNorthwest
+.DoNorthwestToNortheast:    ; org $8a9f37
+LDA #$0008 : STA $14
+LDA #$003A : STA $16
+COP #$84 : db $27,$06; Sprite and speed.
+COP #$8A    ; Animate until finished.
+COP #$CA : db $10    ; Loop start.
+cop #$9C : dl ECastothSnakeFlame : dw $0200
+COP #$81 : db $27,$07; Move script.
+COP #$89    ; Animate until finished.
+COP #$CB    ; Loop end.
+COP #$C5    ; Return to top of controller.
+.DoNortheastToNorthwest:    ; org $8a9f5b
+LDA #$00F0 : STA $14
+LDA #$003A : STA $16
+COP #$84 : db $27,$06
+COP #$8A
+COP #$CA : db $10
+cop #$9C : dl ECastothSnakeFlame : dw $0200
+COP #$81 : db $27,$08
+COP #$89
+COP #$CB
+COP #$C5
+.DoNorthwestToSouthwest:    ; org $8a9f7f
+LDA #$0020 : STA $14
+BRA +
+.DoNortheastToSoutheast:    ; org $8a9f86
+LDA #$00E0 : STA $14
++
+LDA #$001C : STA $16
+COP #$84 : db $27,$06
+COP #$8A
+COP #$CA : db $10
+cop #$9C : dl ECastothSnakeFlame : dw $0200
+COP #$82 : db $27,$07
+COP #$89
+COP #$CB
+COP #$C5
+; org $8a9faa
+.PlayerAtBottom:
+LDA #$2000 : TRB $10
+LDA #$0008 : STA $14
+LDA #$00B6 : STA $16
+COP #$84 : db $27,$06
+COP #$8A
+COP #$CA : db $10
+cop #$9C : dl ECastothSnakeFlame : dw $0200
+COP #$81 : db $27,$07
+COP #$89
+COP #$CB
+COP #$C5
+
+; org $8a9fd3 ; Flame event created by Firesnakes during their motion.
+ECastothSnakeFlame:
+COP #$84 : db $27,$03
+COP #$8A
+COP #$E0
+
+; org $8a9fdb
+ECastothHeadball:
+COP #$B6 : db $30
+LDA #$0014 : STA $20
+LDA #$0001 : STA $22
+COP #$84 : db $19,$04
+COP #$8A
+COP #$07 : db $1F
+COP #$A2 : dl ECastothHeadballCore : dw $0302
+COP #$84 : db $1A,$02
+COP #$8A
+COP #$C2
+LDA $20
+CMP #$0010 : BCS +$0A
+  LDA $22 : EOR #$FFFF : INC A : STA $22
+  BRA ++
++:
+CMP #$0028 : BCC ++
+  LDA $22 : EOR #$FFFF : INC A : STA $22
+++:
+LDA $20 : CLC : ADC $22 : STA $20
+LDY $24
+LDA $0010,y : BIT #$0040 : BNE .Die
+  RTL
+.Die:
+LDA #$2000 : TRB $10
+LDY $06
+LDA $0014,y : STA $14
+LDA $0016,y : STA $16
+COP #$88 : dl $8ee000
+COP #$80 : db $01
+COP #$89
+COP #$E0
+
+; org $8aa04d
+ECastothHeadballCore:
+LDA $24 : STA $7F0010,x
+COP #$A2 : dl ECastothHeadballFlame : dw $0202
+LDA #$0000 : STA $0026,y
+COP #$A2 : dl ECastothHeadballFlame : dw $0202
+LDA #$0055 : STA $0026,y
+COP #$A2 : dl ECastothHeadballFlame : dw $0202
+LDA #$00AA : STA $0026,y
+COP #$84 : db $24,$04
+COP #$8A
+COP #$23 : AND #$0003 : STA $0000 ; Random branch target.
+cop #$D9 : dw $0000, .DirOptions
+.DirOptions:
+  .Dir00, .Dir01, .Dir02, .Dir03
+.Dir00:
+LDA #$4000 : TSB $12
+.Dir01:
+COP #$AC : db $05,$03
+BRA +$0B
+.Dir02:
+LDA #$4000 : TSB $12
+.Dir03:
+COP #$AC : db $03,$05
+BRA +$00
+.DirCommon:    ; org $8aa0ac
+COP #$8D : db $24
+LDA #$0186 : STA $26
+..RefreshSprite:
+COP #$B1
+COP #$8B
+LDA $2A : BEQ ..RefreshSprite
+LDA $08 : STA $24
+  STZ $08
+; Check for hitting walls, and invert movement if so.
+..KeepGoing:
+COP #$C2
+LDA $14 : BMI +
+  CMP #$0020 : BCS ++
++:
+LDA $12 : EOR #$4000 : STA $12
+BRA +++
+++:
+  CMP #$00E0 : BCC +++
+LDA $12 : EOR #$4000 : STA $12
++++:  ; Now check Y.
+LDA $16 : BMI +$05
+  CMP #$0020 : BCS ++
++:
+LDA $12 : EOR #$2000 : STA $12
+BRA +++
+++:
+  CMP #$00C0 : BCC +++
+LDA $12 : EOR #$2000 : STA $12
++++:
+DEC $26 : BMI +
+  DEC $24 : BPL ..KeepGoing
+  BRA ..RefreshSprite
++:
+LDA $24 : DEC A : BMI +
+  STA $08
+  COP #$C2
++:
+..LinearFlyAway:
+COP #$B1
+COP #$C1
+COP #$89
+LDA $10 : BIT #$4000 : BEQ ..LinearFlyAway   ; Until off-screen.
+LDA $7F0010,x : TAY          ; Creator, ECastothHeadball.
+LDA.W #ECastothHeadball_Die : STA $0000,y
+COP #$C1
+RTL
+
+; {$8aa12e}
+ECastothHeadballFlame:
+LDA $26 : STA $7F0010,x
+COP #$8D : db $23
+.RefreshSprite:
+COP #$8B
+LDA $2A : BEQ .RefreshSprite
+LDA $08 : STA $26
+STZ $08
+.KeepGoing:
+LDA $7F001C,x : TAY
+LDA $0020,y : STA $7F0012,x
+LDA $7F0010,x : CLC : ADC #$0002 : STA $7F0010,x
+LDY $24 : JSL LR_OrbitAtY    ; $80F3C9
+COP #$C2
+DEC $26 : BPL .KeepGoing
+BRA .RefreshSprite
+
+; org $8aa169
+ECastothWestHand:
+COP #$BC : db $08,$00
+LDA #$8023 : TSB $12
+COP #$B6 : db $20
+BRA ECastothHand
+; org $8aa177
+ECastothEastHand:
+COP #$BC : db $08,$00
+COP #$B8
+LDA #$8023 : TSB $12
+COP #$B6 : db $20
+; org $8aa185
+ECastothHand:
+LDA #$AD80 : STA $7F0020,x   ; HP etc. data pointer.
+LDA $81AD80 : AND #$00FF
+ STA $7F0026,x        ; Current HP.
+ STA $7F0010,x        ; General-use memory.
+COP #$82 : db $03,$02
+COP #$89
+COP #$80 : db $04
+COP #$89
+COP #$B6 : db $30
+COP #$80 : db $05
+COP #$89
+COP #$08 : db $15,$15    ; 2 sounds.
+cop #$A5 : dl $80cfef : db $00,$00 : dw $2000  ; Probably another ScreenShake.
+COP #$B5
+COP #$80 : db $06
+COP #$89
+LDA #$0101 : TRB $10
+LDA $14 : STA $7F100C,x    ; Store initial position; return
+LDA $16 : STA $7F100E,x    ;  here later as needed.
+; org $8aa1d3
+COP #$57 : dl ECastothHand_OnDeath
+ECastothHand_Main:
+LDA #$0200 : TSB $10
+cop #$2A : dw $0030
+  dw ECastothHand_Sleep, ECastothHand_TryWake, ECastothHand_Sleep
+; org $8aa1e7 ; Jump here to sleep hand if player is left/right of hand.
+ECastothHand_Sleep:
+COP #$80 : db $06
+COP #$89
+BRA ECastothHand_Sleep
+; org $8aa1ee ; Player was in front of hand in loop segment 1.
+ECastothHand_TryWake:
+COP #$84 : db $06,$03
+COP #$8A
+cop #$2A : dw $0020
+  dw ECastothHand_Sleep, ECastothHand_DoWake, ECastothHand_Sleep
+; org $8aa1fe ; Player was in front of hand in loop segment 2.
+ECastothHand_DoWake:
+LDA #$0200 : TRB $10
+COP #$80 : db $07
+COP #$89
+COP #$B6 : db $20
+COP #$80 : db $08
+COP #$89
+COP #$B6 : db $30
+COP #$80 : db $09
+COP #$89
+COP #$80 : db $0A
+COP #$89
+COP #$80 : db $0B
+COP #$89
+; Set saved jump address after the next COP #$2A, then branch on whether player is left, at, or right of the hand. Control will return here after the hand has done its thing.
+COP #$C6 : dw ECastothHand_DoSink
+cop #$2A : dw $0020
+  dw ECastothHand_HuntPlayerWest, ECastothHand_HuntPlayerSouth, ECastothHand_HuntPlayerEast
+; org $8aa230
+ECastothHand_DoSink:
+COP #$80 : db $0A
+COP #$89
+COP #$80 : db $08
+COP #$89
+COP #$80 : db $07
+COP #$89
+BRA ECastothHand_Main
+; org $8aa241
+ECastothHand_OnDeath:
+COP #$5C : dw $FFBD    ; Binary AND this with $7F:2A, unknown.
+COP #$CA : db $08        ; Loop start.
+ COP #$B7 : db $02
+ COP #$C2
+ COP #$B7 : db $00
+COP #$CB    ; Loop end.
+; Load animation frame, then branch on value.
+LDA $28
+  CMP #$000A : BCS +
+  CMP #$0009 : BEQ +++
+  BRA ++++
++:
+LDA $7F100C,x : CMP $14 : BNE +
+LDA $7F100E,x : CMP $16 : BEQ ++
++:
+; AnimFrame > #$0A but I'm not at $7F:100C/E. Prepare variables for linear movement to $7F:100C/E, and execute movement there.
+LDA $7F100C,x : STA $7F0018,x
+LDA $7F100E,x : STA $7F001A,x
+COP #$22 : db $FF,$01
+++:
+COP #$80 : db $09    ; If AnimFrame>#$0A && $7F100C/E==$14/16.
+COP #$89
++++:
+COP #$B6 : db $30    ; Goto here if AnimFrame == #$09.
+COP #$80 : db $08
+COP #$89
+++++:
+COP #$B6 : db $20    ; Goto here if AnimFrame < #$0A and != #$09.
+COP #$80 : db $07
+COP #$89
+COP #$80 : db $1B
+COP #$89
+COP #$82 : db $1C,$01    ; Movement. Down?
+COP #$89
+LDA #$2000 : TSB $10
+LDA #$0040 : TRB $10
+LDA $7F0010,x : STA $7F0026,x
+SEC : ROL $00F0   ; Dead hand counter.
+COP #$C2
+LDA $00F2 : BNE +
+  RTL
++:
+LSR $00F2
+LDA #$2000 : TRB $10
+COP #$82 : db $1C,$02
+COP #$89
+COP #$B6 : db $30
+COP #$80 : db $06
+COP #$89
+JMP ECastothHand_Main    ; Back to top of master loop.
+; org $8aa2db ; Player stayed to the left of the hand too long.
+ECastothHand_HuntPlayerWest:
+COP #$82 : db $0C,$04
+COP #$89
+COP #$81 : db $0D,$12
+COP #$89
+COP #$83 : db $0E,$02,$01
+COP #$89
+COP #$83 : db $0F,$02,$03
+COP #$89
+COP #$83 : db $10,$02,$05
+COP #$89
+BRA ECastothHand_HuntPlayerCommon
+; org $8aa2fe ; Player stayed in front of the hand too long.
+ECastothHand_HuntPlayerSouth:
+COP #$82 : db $0C,$04
+COP #$89
+COP #$80 : db $0D
+COP #$89
+COP #$82 : db $0E,$01
+COP #$89
+COP #$82 : db $0F,$03
+COP #$89
+COP #$82 : db $10,$05
+COP #$89
+BRA ECastothHand_HuntPlayerCommon
+; org $8aa31d ; Player stayed to the right of the hand too long.
+ECastothHand_HuntPlayerEast:
+COP #$82 : db $0C,$04
+COP #$89
+COP #$81 : db $0D,$11
+COP #$89
+COP #$83 : db $0E,$01,$01
+COP #$89
+COP #$83 : db $0F,$01,$03
+COP #$89
+COP #$83 : db $10,$01,$05
+COP #$89
+; Wherever player was standing, the paths meet here.
+ECastothHand_HuntPlayerCommon:
+COP #$07 : db $15
+cop #$A5 : dl $80cfef : db $00,$00 : dw $2000  ; Probably another ScreenShake.
+COP #$80 : db $11
+COP #$89
+LDA $7F100C,x : STA $7F0018,x
+LDA $7F100E,x : STA $7F001A,x
+COP #$22 : db $11,$01    ; Return to initial position.
+cop #$A5 : dl $80cfef : db $00,$00 : dw $2000  ; Probably another ScreenShake.
+COP #$C5    ; Return to top of master loop.
+}
+
+LR_SetPlayerImmune:    ; org $8aa36e
+LDY $09AA
+LDA $0010,y : ORA #$0200 : STA $0010,y
+RTL
+
+LR_FreezePlayer:    ; org $8aa37b
+LDY $09AA
+LDA #$0080 : STA $0002,y
+LDA #$C432 : STA $0000,y
+LDA #$0000 : STA $0008,y
+RTL
+
+LR_UnfreezePlayer:    ; org $8aa391
+LDY $09AA
+LDA #$0080 : STA $0002,y
+LDA #$C45A : STA $0000,y
+LDA #$0000 : STA $0008,y
+RTL
+; org $8aa3a7
+
+
+org $8aa3fd
+LR_SetupSingleHitTempMonster:   ; e.g. mine slave chains
+lda #$0030 : tsb $12
+lda $7F002A,x : ora #$0080 : sta $7F002A,x
+lda #$ABF0 : sta $7F0020,x
+lda #$0001 : sta $7F0026,x
+rtl
+; org $8aa41c
+LR_PlaceSelfBetween04And06:
+phx
+ldy $04
+ldx $06
+lda $0014,y : clc : adc $0014,x : clc : bpl +
+  sec
++:
+ror : sta $14
+lda $0016,y : clc : adc $0016,x : clc : bpl +
+  sec
++:
+ror : sta $16
+plx
+rtl
+
+; org $8aa43f
+EBossMonsterManualDeath:
+lda $0AEC : cmp #$0001 : bne B_8AA460
+lda #$6000 : trb $12
+cop #$AC : db $00, $00
+lda #$0000
+  sta $7F002C,x
+  sta $7F002E,x
+cop #$C7 : dl EBasicMonsterDeath   ; $80DB8A
+#B_8AA460:    ; org $8aa460
+cop #$C8 : dw B_8AA474
+cop #$9C : dl EMonsterDeathAbove : dw $0020   ; $80DA78
+lda $7F0010,x : sta $0026,y
+cop #$E0
+#B_8AA474:    ; org $8aa474
+cop #$07 : db $03
+sed
+lda $0AEE : sec : sbc #$0001 : sta $0AEE
+cld
+lda $0AEC : dec : sta $0AEC
+  sta $7F0010,x
+cop #$AC : db $00, $00
+lda #$0000
+  sta $7F002C,x
+  sta $7F002E,x
+cop #$A5 : dl EExplosionSprite : dw $0000, $0302   ; $80DF15
+cop #$D8
+lda #$2000 : tsb $10
+lda $7F002A,x : bit #$0008 : beq B_8AA4B8
+cop #$0C
+#B_8AA4B8:    ; org $8aa4b8
+lda $7F0024,x : beq B_8AA4E0
+jsl LR_SecOnFlag10A : bcs B_8AA4E0   ; $80B4F6
+lda $7F0024,x : jsl LR_SetFlag10A   ; $80B4E0
+cop #$A5 : dl C_80DDF2 : dw $0000, $0342
+phx
+  lda $7F0024,x : tyx
+  sta $7F0024,x
+plx
+#B_8AA4E0:    ; org $8aa4e0
+cop #$C5
+warnpc $8aa4e2
+
+org $8aa6b6
+db $0c : dw $1000
+EMineSlave:
+lda #$1000 : tsb $12
+lda $0E : sta $24
+phx
+  tax
+  lda.l EMineSlave_TalkedFlags,x    ; lda $8AA72F,x
+plx
+and #$00FF : jsl LR_SecOnFlagA : bcc +   ; jsl $80b4b7
+  jmp EMineSlave_Die
++:
+lda #$2000 : sta $0E
+lda #$0200 : tsb $12
+cop #$9C : dl EMineSlaveChain : dw $0100
+cop #$0B
+cop #$C0 : dw EMineSlave_OnInteractChained    ; $A733
+cop #$C1
+ldy $06
+lda $0010,y : bit #$0040 : bne +
+  rtl
++:
+cop #$C0 : dw EMineSlave_OnInteractFree    ; $A738
+cop #$C1
+rtl
+warnpc $8aa700
+
+org $8aa72d
+EMineSlave_Die:
+cop #$E0
+EMineSlave_TalkedFlags:
+db $a0,$a1,$a2,$a3
+EMineSlave_OnInteractChained:
+cop #$BF : dw $a791
+rtl
+EMineSlave_OnInteractFree:   ; org $8aa738
+lda #$a700 : sta $00
+lda $24 : sta $0000
+cop #$D9 : dw $0000, .TypeChoices
+.TypeChoices:
+  dw B_8AA78C, B_8AA787
+  dw B_8AA751, B_8AA771
+B_8AA751:
+cop #$BF : dw $A7B4
+cop #$D4 : db $0C : dw B_8AA767
+lda #$0080 : tsb $09EC
+cop #$19 : db $17 : dl $8AA7EF    ; Music and text.
+rtl
+B_8AA767:    ; org $8aa767
+lda #$A6F9 : sta $00
+cop #$BF : dw $A9C5
+rtl
+B_8AA771:    ; org $8aa771
+cop #$BF : dw $A811
+cop #$D4 : db $0F : dw B_8AA767
+lda #$0080 : tsb $09EC
+cop #$19 : db $17 : dl $8AA85C    ; Music and text.
+rtl
+B_8AA787:    ; org $8aa787
+cop #$BF : dw $A874
+rtl
+B_8AA78C:    ; org $8aa78c
+cop #$BF : dw $A97D
+rtl
+
+;org $8AA791
+db $D3,$4B,$80,$81,$8E,$A2,$84,$A2,$2F,$CB,$48,$AC,$81,$84,$86,$AC,$A9,$8E,$A5,$4F,$CB,$42,$A5,$A4,$AC,$D6,$D6,$82,$87,$80,$88,$8D,$4F,$4F,$C0
+;org $8AA7B4
+db $D3,$4B,$80,$81,$8E,$A2,$84,$A2,$2F,$CB,$64,$87,$80,$8D,$8A,$AC,$A9,$8E,$A5,$4F,$AC,$48,$AC,$A7,$8E,$8D,$0E,$A4,$CB,$D7,$6A,$D6,$F7,$A9,$8E,$A5,$0E,$A6,$84,$AC,$83,$8E,$8D,$84,$4F,$CF,$64,$80,$8A,$84,$AC,$D6,$D6,$8A,$84,$A9,$2A,$CF,$CA
+
+;org $8AA7EF
+
+org $8AA811   ; Slave with elevator key dialogue.
+db $D3,$64,$87,$84,$A2,$84,$AC,$80,$A2,$84,$AC,$D6,$C1,$A7,$87,$8E,$AC,$80,$A2,$84,$CB,$D7,$69,$A4,$8E,$AC,$A7,$8E,$A2,$8A,$AC,$83,$84,$84,$A0,$AC,$88,$8D,$CB,$A4,$87,$84,$AC,$D6,$0E,$4C,$88,$8D,$84,$2A,$CF,$D6,$3B,$A5,$A3,$84,$AC,$D6,$D6,$8A,$84,$A9,$CB,$A4,$8E,$AC,$D6,$D1,$A4,$87,$84,$8C,$2A,$CF,$CA
+
+;org $8AA85C
+
+org $8AA874
+db $D3,$64,$87,$80,$8D,$8A,$AC,$A9,$8E,$A5,$AC,$85,$8E,$A2,$AC,$A3,$80,$A6,$88,$8D,$86,$AC,$8C,$84,$2A,$CB,$40,$A3,$AC,$80,$AC,$A2,$84,$A7,$80,$A2,$83,$2B,$AC,$D6,$1F,$A4,$84,$8B,$8B,$CB,$A9,$8E,$A5,$AC,$A3,$8E,$8C,$84,$A4,$87,$88,$8D,$86,$2A,$CF,$64,$87,$88,$A3,$AC,$8C,$88,$8D,$84,$AC,$87,$80,$A3,$AC,$80,$AC,$A3,$84,$82,$A2,$84,$A4,$CB,$A2,$8E,$8E,$8C,$2A,$AC,$48,$A4,$A3,$AC,$84,$8D,$A4,$A2,$80,$8D,$82,$84,$CB,$81,$8B,$84,$8D,$83,$A3,$AC,$D6,$A1,$A4,$87,$84,$AC,$A7,$80,$8B,$8B,$2A,$CF,$41,$A5,$A4,$AC,$A9,$8E,$A5,$AC,$82,$80,$8D,$AC,$D6,$90,$88,$A4,$AC,$81,$A9,$CB,$A7,$80,$A4,$82,$87,$88,$8D,$86,$AC,$85,$8E,$A2,$AC,$A7,$88,$8D,$83,$CB,$81,$8B,$8E,$A7,$88,$8D,$86,$AC,$D6,$DC,$82,$A2,$80,$82,$8A,$A3,$CB,$88,$8D,$AC,$A4,$87,$84,$AC,$A7,$80,$8B,$8B,$2A,$CF,$4E,$85,$AC,$82,$8E,$A5,$A2,$A3,$84,$2B,$AC,$88,$A4,$AC,$D6,$F3,$81,$8B,$8E,$A7,$AC,$CB,$85,$88,$8D,$84,$AC,$87,$80,$88,$A2,$AC,$D6,$A5,$A9,$8E,$A5,$A2,$A3,$AC,$CB,$80,$A2,$8E,$A5,$8D,$83,$2A,$AC,$64,$87,$84,$8D,$AC,$A9,$8E,$A5,$0E,$8B,$8B,$AC,$CB,$A5,$8D,$83,$84,$A2,$A3,$A4,$80,$8D,$83,$2A,$AC,$C0
+;org $8AA97D
+db $D3,$64,$87,$84,$A2,$84,$AC,$80,$A2,$84,$AC,$84,$88,$86,$87,$A4,$CB,$8B,$80,$81,$8E,$A2,$84,$A2,$A3,$AC,$88,$8D,$82,$8B,$A5,$83,$88,$8D,$86,$AC,$8C,$84,$CB,$D7,$69,$A4,$8E,$AC,$A7,$8E,$A2,$8A,$AC,$88,$8D,$AC,$A4,$87,$84,$CB,$8C,$88,$8D,$84,$2A,$AC,$CF,$D6,$3B,$D6,$D1,$A5,$A3,$2A,$AC,$C0
+;org $8AA9C5
+db $D3,$CE,$41,$A5,$A4,$AC,$D6,$FE,$88,$8D,$A6,$84,$8D,$A4,$8E,$A2,$A9,$CB,$88,$A3,$AC,$85,$A5,$8B,$8B,$4F,$C0
+
+;org $8AA9E0
+EMineSlaveChain:
+jsl LR_SetupSingleHitTempMonster
+cop #$80 : db $33 : cop #$89
+cop #$C1
+rtl
+warnpc $8aa9ec
+
+
+org $8Aaaca
+db $00 : dw $0000
+EMineLizard:
+
+
+org $8aaff5
+db $1a : dw $2200
+EMineWorm:
+
+
+org $8ab0b3
+db $16 : dw $0300
+EMineEyeFrozen:
+
+
+org $8ab103
+db $16 : dw $0000
+EMineEyeStalker:
+
+
+org $8ab4b0
+db $00 : dw $0000
+ENazcaRobotBlue:
+
+
+org $8ab8b0
+db $00 : dw $0000
+ENazcaRobotRed:
+
+
+org $8ac520
+db $25 : dw $0000
+ENazcaTopWormA:
+
+
+org $8ac533
+db $23 : dw $0000
+ENazcaTopWormB:
+
+
+org $8ac816
+db $25 : dw $0000
+ENazcaBackWorm:
+
+
+org $8accf1
+db $3b : dw $0200
+ENazcaFireball:
+
+
+
+org $8ACF0E
+db $D3,$C2,$00,$69,$8E,$A5,$AC,$D6,$98,$83,$84,$85,$84,$80,$A4,$84,$83,$AC,$A4,$87,$84,$2B,$AC,$CB,$D6,$9C,$83,$84,$8C,$8E,$8D,$4F,$AC,$CB,$4B,$8E,$8E,$8A,$4F,$AC,$40,$AC,$4C,$A9,$A3,$A4,$88,$82,$AC,$63,$A4,$80,$A4,$A5,$84,$4F,$4F,$C3,$00,$C0
+;org $8ACF4A
+db $D3,$C2,$00,$40,$AC,$D6,$C7,$8D,$8E,$88,$A3,$84,$AC,$85,$88,$8B,$8B,$A3,$AC,$CB,$A4,$87,$84,$AC,$80,$88,$A2,$AC,$D6,$6D,$D7,$C7,$CB,$D7,$11,$8E,$A5,$A4,$AC,$8E,$85,$AC,$8D,$8E,$A7,$87,$84,$A2,$84,$2B,$CB,$A9,$8E,$A5,$AC,$D6,$9B,$D6,$37,$A6,$8E,$88,$82,$84,$4F,$CF,$C2,$06,$D6,$36,$CB,$67,$88,$8B,$8B,$4F,$AC,$D6,$69,$85,$80,$8B,$8B,$88,$8D,$86,$AC,$CB,$A4,$8E,$AC,$A4,$87,$84,$AC,$86,$A2,$8E,$A5,$8D,$83,$4F,$4F,$4F,$4F,$AC,$CF,$46,$A2,$80,$81,$AC,$A4,$87,$84,$AC,$80,$88,$A2,$A0,$8B,$80,$8D,$84,$2B,$AC,$80,$8D,$83,$CB,$A7,$84,$0E,$8B,$8B,$AC,$85,$8B,$A9,$AC,$8E,$A5,$A4,$AC,$8E,$85,$AC,$87,$84,$A2,$84,$4F,$C3,$00,$C0
+
+;org $8ACFE5
+db $0a : dw $0301
+EViperFallingPlatform:
+cop #$11  ; Solid mask to $00, all touched.
+cop #$C1
+cop #$2B : dw $0020 : dw .PlayerNorth,.PlayerHere,.PlayerSouth
+.PlayerHere:
+.PlayerSouth:
+rtl
+.PlayerNorth:
+cop #$0B  ; Solid mask $Fx here.
+cop #$80 : db $0b : cop #$89
+cop #$E0
+
+;org $8ad000
+EViperRocksAndCameraManager:
+cop #$9A : dl C_80E98B : dw $2800
+lda #$0201 : sta $0014,y
+lda #$0000 : sta $0016,y
+lda $24 : sta $7F0010,x
+cop #$DA : db $02
+cop #$63 : db $00, $09, $00
+cop #$C2
+cop #$64
+lda $7F002E,x
+  ldy $04
+  sta $0016,y
+cmp #$000C : bcs +
+  rtl
++:
+cop #$9C : dl ECameraWaver : dw $2B00
+cop #$CA : db $04
+cop #$23
+cop #$9C : dl EViperBackRock : dw $0B01
+lda $0410 : and #$0033 : sta $08
+cop #$CB
+cop #$9C : dl EViperFrontRock : dw $0B02
+cop #$23 : and #$0070 : sta $08
+rtl
+EViperFrontRock:    ; org $8ad060
+jsr SR_ViperRockSetPosAndSpeed : inc : inc : asl : sta $7F001A,x
+cop #$B6 : db $30
+.KeepFlying:    ; org $8ad06d
+cop #$B1
+cop #$80 : db $06 : cop #$89
+lda $16 : bpl .KeepFlying
+cop #$E0
+EViperBackRock:    ; org $8ad07a
+jsr SR_ViperRockSetPosAndSpeed : asl : sta $7F001A,x
+cop #$B6 : db $20
+lda $0036
+lsr : bcs .Sprite08
+.Sprite07:    ; org $8ad08b
+cop #$B1
+cop #$80 : db $07 : cop #$89
+lda $16 : bpl .Sprite07
+cop #$E0
+.Sprite08:    ; org $8ad098
+cop #$B1
+cop #$80 : db $08 : cop #$89
+lda $16 : bpl .Sprite08
+cop #$E0
+SR_ViperRockSetPosAndSpeed:    ; org $8ad0a5
+lda #$0000 : sta $7F0018,x
+lda $068E : clc : adc #$00FF : sta $16
+lda $068A : clc : adc #$0080 : sta $14
+cop #$23 : sec : sbc #$0080 : clc : adc $14 : sta $14
+lda $0410 : and #$0003 : bne +
+  lda #$0003
++:
+rts
+
+;org $8ad0d5
+db $00 : dw $0000
+EBabelViper:
+lda #$0011 : tsb $12
+lda #$0100 : sta $06DC
+cop #$A5 : dl EViperBabelDeathListener : dw $0000, $2000
+lda $0AD4 : cmp #$0002 : bne .MakePlayerShadow
+  jmp EViper_FromBabel
+.MakePlayerShadow:
+ldy $09AA
+lda #$0088 : sta $0002,y
+lda #$F5F9 : sta $0000,y
+lda #$0000 : sta $0008,y
+lda #$0800 : tsb $09AE
+cop #$C1
+lda $09AE : bit #$0800 : beq .Start
+  rtl
+.Start:
+cop #$57 : dl EViper_OnDeath    ; $8AD945
+jmp EViper_FromBabel
+
+EViperBabelDeathListener:    ; org $8ad125
+cop #$C1
+lda $0AEC : beq +
+  rtl
++:
+ldy $09AA
+lda #$0088 : sta $0002,y
+lda #$F3B1 : sta $0000,y
+lda #$0000 : sta $0008,y
+lda #$0800 : tsb $09AE
+cop #$C1
+lda $09AE : bit #$0800 : beq +
+  rtl
++:
+cop #$CD : dw $0176
+lda #$0003 : sta $0648
+lda #$0403 : sta $064A
+cop #$26 : db $E0, $F8, $03, $A0, $02, $03, $20, $38
+cop #$E0
+
+
+;org $8ad16f
+db $00 : dw $0000
+EViper:
+lda #$0001 : jsl LR_SecOnDefeatedBossA : bcc +
+  stz $0AEC
+  stz $0AEE
+  cop #$E0
++:    ; org $8ad183
+lda #$0011 : tsb $12
+cop #$57 : dl EViper_OnDeath    ; $8ad945
+lda #$008A : and #$00FF : sta $0AF6    ; i.e. BankOf(EViperRespawnData)
+lda.w #EViperRespawnData : sta $0AF4    ; #$d93d
+lda #$EFF0 : tsb $065A
+cop #$DA : db $01
+cop #$04 : db $0F
+cop #$DA : db $27
+lda #$EFF0 : trb $065A
+cop #$C1
+lda $09A4
+cmp #$00A0 : bcc +
+  rtl
++:    ; org $8ad1bc
+lda #$0130 : sta $06DC
+cop #$CA : db $30
+  lda $06DC : dec : sta $06DC    ; Camera bounds.
+cop #$CB
+cop #$9A : dl EViperRocksAndCameraManager : dw $2800
+EViper_FromBabel:
+cop #$9B : dl EViperWindManager    ; $8ad27e
+lda #$FFD0 : sta $0018,y
+lda #$0030 : sta $001C,y
+lda #$0000 : sta $001A,y
+lda #$0080 : sta $001E,y
+lda #$0001 : sta $0028,y
+lda #$0000 : sta $002C,y
+lda #$0006 : sta $002E,y
+EViper_Main:    ; org $8ad204
+lda #$0010 : sta $24
+cop #$C8 : dw EViper_ConsiderSwoop
+stz $24
+cop #$C8 : dw EViper_FlyToRandomNearPlayer
+cop #$C8 : dw EViper_DoFeatherBomb
+stz $24
+cop #$C8 : dw EViper_FlyToRandomNearPlayer
+stz $24
+cop #$C8 : dw EViper_ConsiderSwoop
+lda #$FFA0 : sta $24
+cop #$C8 : dw EViper_ConsiderSwoop
+lda #$FFD0 : sta $24
+cop #$C8 : dw EViper_FlyToRandomNearPlayer
+cop #$63 : db $00, $09, $00
+cop #$8D : db $00
+EViper_ComeBackIfOffscreen:    ; org $8ad23d
+cop #$64
+cop #$C2
+lda $16 : bmi EViper_ComeBackIfOffscreen
+cmp #$0030 : bcc EViper_ComeBackIfOffscreen
+cop #$82 : db $00, $03
+cop #$89
+cop #$86 : db $01, $02, $13
+cop #$8A
+cop #$C6 : dw EViper_ReturnFromIce
+cop #$2A : dw $0020
+  dw EViper_DoIceLeft, EViper_DoIceDown, EViper_DoIceRight
+EViper_ReturnFromIce:    ; org $8ad265
+stz $24
+cop #$C8 : dw EViper_ConsiderSwoop
+stz $24
+cop #$C8 : dw EViper_FlyToRandomNearPlayer
+cop #$C8 : dw EViper_DoFeatherSalvo
+cop #$84 : db $00, $02
+cop #$8A
+jmp EViper_Main
+
+EViperWindManager:    ; org $8ad27e
+ldy $24
+lda $0028,y : cmp $28 : bne .NoWind
+lda $0014,y
+  sec : sbc #$0008 : clc : adc $18 : cmp $09A2 : bcs .NoWind
+  sec : sbc $18 : clc : adc $1C : cmp $09A2 : bcc .NoWind
+lda $0016,y
+  sec : sbc #$0010 : clc : adc $1A : cmp $09A4 : bcs .NoWind
+  sec : sbc $1A : clc : adc $1E : cmp $09A4 : bcc .NoWind
+ldy #$1000
+lda $0010,y : bit #$0080 : beq .DoWind
+  rtl
+.DoWind:    ; org $8ad2c7
+lda $2C : clc : adc $0408 : sta $0408    ; XWind.
+lda $2E : clc : adc $040A : sta $040A    ; YWind.
+.NoWind:    ; org $8ad2d9
+rtl
+
+EViper_FlyToRandomNearPlayer:    ; org $8ad2da
+cop #$23 : and #$003F : sec : sbc #$001F
+  clc : adc $09A2 : sta $7F0018,x
+lda $0410 : and #$001F : sec : sbc #$000F : clc : adc #$0050
+  clc : adc $24 : sta $7F001A,x
+cop #$22 : db $00, $04
+cop #$C5
+
+EViper_ConsiderSwoop:    ; org $8ad306
+lda $16 : clc : adc $24 : sta $7F100E,x
+lda #$0000 : sta $7F0010,x
+cop #$2A : dw $0000, .ToLeft, .ToLeft, .ToRight
+.ToLeft:
+lda #$4000 : tsb $12
+.ToRight:
+lda #$2000 : tsb $12
+ldy $09AA
+lda $0014,y : sec : sbc $14 : bpl +
+  eor #$FFFF : inc a
++:
+lsr : lsr : lsr : lsr : lsr : and #$0003 : inc : sta $26
+cop #$84 : db $01, $02
+cop #$8A
+cop #$63 : db $03, $09, $00
+cop #$8D : db $00
+.ContinueSwoop:    ; org $8ad352
+cop #$C2
+lda $26 : sta $7F002C,x
+cop #$64
+lda $7F0010,x : dec : bpl ..NoSpriteRefresh
+cop #$C1
+cop #$8B
+lda $08
+stz $08
+..NoSpriteRefresh:
+sta $7F0010,x
+lda $16 : bmi .EndSwoop
+cmp $7F100E,x : bcs .ContinueSwoop
+.EndSwoop:
+lda #$6000 : trb $12
+cop #$C5
+
+EViper_DoFeatherBomb:    ; org $8ad380
+cop #$84 : db $01, $03
+cop #$8A
+cop #$AB : db $13
+cop #$DA : db $27
+cop #$AB : db $00
+cop #$9C : dl EViperFeatherBomb : dw $0200
+cop #$C5
+
+EViperFeatherBomb:    ; org $8ad398
+cop #$07 : db $1E
+lda $09A2 : sta $7F0018,x
+lda $09A4 : sta $7F001A,x
+cop #$22 : db $05, $02
+cop #$CA : db $0A
+cop #$B7 : db $08
+cop #$C2
+cop #$B7 : db $00
+cop #$CB
+cop #$07 : db $1D
+cop #$9C : dl EBombFeatherA : dw $0200
+cop #$9C : dl EBombFeatherB : dw $0200
+cop #$9C : dl EBombFeatherC : dw $0200
+cop #$9C : dl EBombFeatherD : dw $0200
+cop #$C2
+cop #$E0
+EBombFeatherC:    ; org $8ad3dd
+cop #$BB
+cop #$B9
+lda #$6002 : tsb $12
+EBombFeatherA:    ; org $8ad3e6
+cop #$5B : dw $0010
+ldy $24
+lda $002A,y : dec : and #$0003 : sta $0000
+cop #$D9 : dw $0000, .Here    ; $D3FC
+#.Here:
+  dw .Pattern1, .Pattern2, .Pattern3, .Pattern4
+.Pattern1:    ; org $8ad404
+cop #$87 : db $1D, $20, $02, $00
+cop #$8A
+lda $10 : bit #$4000 : beq .Pattern1
+cop #$E0
+.Pattern2:    ; org $8ad415
+cop #$87 : db $1E, $20, $17, $14
+cop #$8A
+lda $10 : bit #$4000 : beq .Pattern2
+cop #$E0
+.Pattern3:    ; org $8ad426
+cop #$87 : db $1F, $20, $12, $12
+cop #$8A
+lda $10 : bit #$4000 : beq .Pattern3
+cop #$E0
+.Pattern4:    ; org $8ad437
+cop #$87 : db $20, $20, $14, $17
+cop #$8A
+lda $10 : bit #$4000 : beq .Pattern4
+cop #$E0
+EBombFeatherD:    ; org $8ad448
+cop #$BB
+cop #$B9
+lda #$6002 : tsb $12
+EBombFeatherB:    ; org $8ad451
+cop #$5B : dw $0010
+ldy $24
+lda $002A,y : dec : and #$0003 : sta $0000
+cop #$D9 : dw $0000, .Here    ; $D467
+#.Here:
+  dw .Pattern1, .Pattern2, .Pattern3, .Pattern4
+.Pattern1:    ; org $8ad46f
+cop #$87 : db $19, $20, $00, $01
+cop #$8A
+lda $10 : bit #$4000 : beq .Pattern1
+cop #$E0
+.Pattern2:    ; org $8ad480
+cop #$87 : db $1A, $20, $14, $16
+cop #$8A
+lda $10 : bit #$4000 : beq .Pattern2
+cop #$E0
+.Pattern3:    ; org $8ad491
+cop #$87 : db $1B, $20, $12, $11
+cop #$8A
+lda $10 : bit #$4000 : beq .Pattern3
+cop #$E0
+.Pattern4:    ; org $8ad4a2
+cop #$87 : db $1C, $20, $17, $13
+cop #$8A
+lda $10 : bit #$4000 : beq .Pattern4
+cop #$E0
+
+EViper_DoFeatherSalvo:    ; org $8ad4b3
+ldy $09AA
+lda $0014,y : sec : sbc $14 : sta $7F0010,x
+cop #$84 : db $01, $03
+cop #$8A
+lda #$0000
+.SpawnNextFeather:    ; org $8ad4c9
+sta $24
+cop #$9C : dl ESalvoFeather : dw $2200 : txa : tyx : tay
+lda $24 : sta $7F0010,x : txa : tyx : tay
+lda $24 : inc a
+cmp #$0006 : bcc .SpawnNextFeather
+lda $7F0010,x : sta $24
+cop #$C5
+
+ESalvoFeather:    ; org $8ad4ee
+cop #$07 : db $1E
+cop #$5B : dw $0010
+lda $7F0010,x : cmp #$0006 : bcc +
+  lda #$0005
++:
+sta $0000
+cop #$D9 : dw $0000, .Here    ; $D50A
+#.Here:
+  dw .Pattern1, .Pattern2
+  dw .Pattern3, .Pattern4
+  dw .Pattern5, .Pattern6
+.Pattern1:
+cop #$BC : db $10, $E0
+lda #$0020
+bra .Common
+.Pattern2:
+cop #$BC : db $F0, $E0
+lda #$0040
+bra .Common
+.Pattern3:
+cop #$BC : db $20, $E0
+lda #$0030
+bra .Common
+.Pattern4:
+cop #$BC : db $E0, $E0
+lda #$0030
+bra .Common
+.Pattern5:
+cop #$BC : db $30, $E0
+lda #$0040
+bra .Common
+.Pattern6:
+cop #$BC : db $D0, $E0
+lda #$0020
+.Common:    ; org $8ad54a
+sta $7F100E,x
+cop #$C2
+lda #$2000 : trb $10
+ldy $24
+lda $0024,y : bpl B_8AD565
+cop #$BA
+lda #$4000 : tsb $12
+bra J_8AD56C
+B_8AD565:    ; org $8ad565
+cop #$BB
+lda #$0002 : tsb $12
+J_8AD56C:    ; org $8ad56c
+lda $7F100E,x : tay
+lda #$0005
+sep #$20
+jsl LR_DivideY16ByA8    ; $8281E8
+rep #$20
+and #$00FF : sta $7F0010,x
+  sta $7F0012,x
+cop #$8D : db $19
+lda #$0000 : sta $7F100C,x
+  sta $7F1010,x
+  sta $7F1012,x
+cop #$C1
+lda $7F100E,x : beq B_8AD5D2
+  dec : sta $7F100E,x
+lda $7F100C,x : inc : sta $7F100C,x
+lda $7F0012,x : dec : sta $7F0012,x : bne B_8AD5D2
+lda $7F0010,x : sta $7F0012,x
+lda $28 : inc : cmp #$001E : bcs B_8AD5D2
+sta $28
+stz $2A
+jsl LR_AnimateSprite    ; $83CA55
+B_8AD5D2:    ; org $8ad5d2
+lda $7F100C,x : clc : adc $7F1010,x : sta $7F1010,x
+  lsr : lsr : lsr : lsr : sta $7F002C,x
+  asl : asl : asl : asl
+  sec : sbc $7F1010,x : eor #$FFFF : inc : sta $7F1010,x
+lda $7F100E,x : clc : adc $7F1012,x : sta $7F1012,x
+  lsr : lsr : lsr : lsr : sta $7F002E,x
+  asl : asl : asl : asl
+  sec : sbc $7F1012,x : eor #$FFFF : inc : sta $7F1012,x
+lda $0036 : lsr : bcc .EvenFrameFlicker
+.OddFrameFlicker:
+cop #$B7 : db $08
+bra .PostFlicker
+.EvenFrameFlicker:
+cop #$B7 : db $00
+.PostFlicker:
+lda $14 : bmi .OffCameraDie
+sec : sbc $06DA : clc : adc #$0010 : bpl .OffCameraDie
+rtl
+.OffCameraDie:
+cop #$E0
+
+EViper_DoIceDown:    ; org $8ad63d
+cop #$80 : db $02 : cop #$89
+cop #$A4 : dl EIceMouthDownSprite : dw $E100, $0202
+cop #$80 : db $02 : cop #$89
+cop #$A4 : dl EIceBeamDown : dw $0000, $0202
+cop #$58 : dw EViper_DownIceOnHit
+bra EViper_CommonIce
+EViper_DoIceLeft:    ; org $8ad65f
+cop #$80 : db $04 : cop #$89
+cop #$80 : db $03 : cop #$89
+cop #$A4 : dl EIceMouthLeftSprite : dw $DDFD, $0202
+cop #$80 : db $03 : cop #$89
+cop #$A4 : dl EIceBeamLeft : dw $FEF4, $0202
+cop #$58 : dw EViper_LeftIceOnHit
+bra EViper_CommonIce
+EViper_DoIceRight:    ; org $8ad686
+cop #$80 : db $84 : cop #$89
+cop #$80 : db $83 : cop #$89
+cop #$A4 : dl EIceMouthRightSprite : dw $DD03, $0202
+cop #$80 : db $83 : cop #$89
+cop #$A4 : dl EIceBeamRight : dw $FE0C, $0202
+cop #$58 : dw EViper_RightIceOnHit
+EViper_CommonIce:    ; org $8ad6ab
+lda #$0003 : sta $7F0016,x
+cop #$C1
+cop #$8A
+cop #$58 : dw $0000
+cop #$C5
+
+EViper_LeftIceOnHit:    ; org $8ad6bc
+cop #$2A : dw $0020, EViper_IceOnHitCommon, .ToDown, .ToRight
+.ToDown:
+cop #$80 : db $09 : cop #$89
+bra EViper_IceOnHitToDown
+.ToRight:
+cop #$80 : db $09 : cop #$89
+cop #$80 : db $84 : cop #$89
+bra EViper_IceOnHitToRight
+EViper_RightIceOnHit:    ; org $8ad6d9
+cop #$2A : dw $0020, .ToLeft, .ToDown, EViper_IceOnHitCommon
+.ToDown:
+cop #$80 : db $89 : cop #$89
+bra EViper_IceOnHitToDown
+.ToLeft:
+cop #$80 : db $89 : cop #$89
+cop #$80 : db $04 : cop #$89
+bra EViper_IceOnHitToLeft
+EViper_DownIceOnHit:    ; org $8ad6f6
+cop #$2A : dw $0020, .ToLeft, EViper_IceOnHitCommon, .ToRight
+.ToLeft:
+cop #$80 : db $04 : cop #$89
+bra EViper_IceOnHitToLeft
+.ToRight:
+cop #$80 : db $84 : cop #$89
+bra EViper_IceOnHitToRight
+EViper_IceOnHitToDown:    ; org $8ad70e
+cop #$8D : db $02
+cop #$A4 : dl EIceMouthDownSprite_SkipAnim : dw $E100, $0202
+cop #$A4 : dl EIceBeamDown : dw $0000, $0202
+bra EViper_IceOnHitCommon
+EViper_IceOnHitToRight:    ; org $8ad725
+cop #$8D : db $83
+cop #$A4 : dl EIceMouthRightSprite_SkipAnim : dw $DD03, $0202
+cop #$A4 : dl EIceBeamRight : dw $FE0C, $0202
+bra EViper_IceOnHitCommon
+EViper_IceOnHitToLeft:    ; org $8ad73c
+cop #$8D : db $03
+cop #$A4 : dl EIceMouthLeftSprite_SkipAnim : dw $DD03, $0202
+cop #$A4 : dl EIceBeamLeft : dw $FEF4, $0202
+EViper_IceOnHitCommon:    ; org $8ad751
+cop #$C1
+cop #$89
+lda #$6000 : trb $12
+lda $14 : sta $7F0018,x
+lda $06C2 : sec : sbc #$0040 : sta $7F001A,x
+cop #$22 : db $00, $04
+cop #$C5
+
+EIceMouthDownSprite_SkipAnim:    ; org $8ad771
+lda $24 : sta $7F0010,x
+bra ++
+EIceMouthDownSprite:    ; org $8ad779
+lda $24 : sta $7F0010,x
+cop #$8D : db $24
+cop #$CA : db $30
+  jsr SR_ClcIfViperInIcePose : bcc +
+  jmp EIce_Die
++:
+cop #$CB
+lda #$2000 : tsb $10
+cop #$DA : db $17
+lda #$2000 : trb $10
+++:    ; org $8ad79c
+cop #$8D : db $25
+stz $24
+.Continue:    ; org $8ad7a1
+cop #$C1
+jsr SR_ClcIfViperInIcePose : bcs EIce_Die
+dec $24 : bmi .Refresh
+rtl
+.Refresh:    ; org $8ad7ad
+cop #$C1
+cop #$8B
+lda $08 : inc a : sta $24
+stz $08
+bra .Continue
+
+EIceMouthRightSprite_SkipAnim:    ; org $8ad7ba
+lda #$0002 : tsb $12
+cop #$BB
+lda $24 : sta $7F0010,x
+bra ++
+EIceMouthRightSprite:    ; org $8ad7c9
+lda #$0002 : tsb $12
+cop #$BB
+bra EIceMouthLeftSprite
+EIceMouthLeftSprite_SkipAnim:    ; org $8ad7d2
+lda $24 : sta $7F0010,x
+bra ++
+EIceMouthLeftSprite:    ; org $8ad7da
+lda $24 : sta $7F0010,x
+cop #$8D : db $26
+cop #$CA : db $30
+jsr SR_ClcIfViperInIcePose : bcs EIce_Die
+cop #$CB
+lda #$2000 : tsb $10
+cop #$DA : db $17
+lda #$2000 : trb $10
+++:    ; org $8ad7fa
+cop #$8D : db $27
+stz $24
+.Continue:    ; org $8ad7ff
+cop #$C1
+jsr SR_ClcIfViperInIcePose : bcs EIce_Die
+dec $24 : bmi .Refresh
+rtl
+.Refresh:    ; org $8ad80b
+cop #$C1
+cop #$8B
+lda $08 : inc a : sta $24
+stz $08
+bra .Continue
+EIce_Die:    ; org $8ad818
+cop #$E0
+
+EIceBeam_Animate:    ; org $8ad81a
+cop #$C1
+cop #$8B
+lda $08 : sta $24
+stz $08
+cop #$C2
+jsr SR_ClcIfViperInIcePose : bcs EIce_Die
+dec $24 : bmi .Done
+rtl
+.Done:    ; org $8ad830
+cop #$C5
+
+SR_ClcIfViperInIcePose:    ; org $8ad832
+lda $7F0010,x : tay
+lda $0028,y
+cmp #$0002 : beq +
+cmp #$0003 : bne ++
++:
+clc
+rts
+++:
+sec
+rts
+
+EIceBeamDown:    ; org $8ad848
+cop #$80 : db $0C : cop #$89
+lda $24 : sta $7F0010,x
+lda #$0000 : sta $7F0012,x
+cop #$07 : db $21
+cop #$8D : db $0D
+.AnimAndTryDebris:    ; org $8ad860
+cop #$CA : db $04
+cop #$C8 : dw EIceBeam_Animate
+cop #$CB
+lda $7F0012,x : inc a : sta $7F0012,x
+lsr a : bcc .AnimAndTryDebris
+cop #$A5 : dl EIceBeamDebris : dw $3000, $0200
+bra .AnimAndTryDebris
+
+EIceBeamLeft:    ; org $8ad880
+cop #$80 : db $0E : cop #$89
+lda #$0000 : sta $7F0012,x
+lda $24 : sta $7F0010,x
+cop #$07 : db $21
+cop #$8D : db $0F
+.AnimAndTryDebris:    ; org $8ad898
+cop #$CA : db $04
+cop #$C8 : dw EIceBeam_Animate
+cop #$CB
+lda $7F0012,x : inc a : sta $7F0012,x
+lsr a : bcc .AnimAndTryDebris
+cop #$A5 : dl EIceBeamDebris : dw $20C0, $0200
+bra .AnimAndTryDebris
+
+EIceBeamRight:    ; org $8ad8b8
+lda #$0002 : tsb $12
+cop #$BB
+cop #$80 : db $0E : cop #$89
+lda #$0000 : sta $7F0012,x
+lda $24 : sta $7F0010,x
+cop #$07 : db $21
+cop #$8D : db $0F
+.AnimAndTryDebris:    ; org $8ad8d7
+cop #$CA : db $04
+cop #$C8 : dw EIceBeam_Animate
+cop #$CB
+lda $7F0012,x : inc a : sta $7F0012,x
+lsr a : bcc .AnimAndTryDebris
+cop #$A5 : dl EIceBeamDebris : dw $2040, $0200
+bra .AnimAndTryDebris
+
+EIceBeamDebris:    ; org $8ad8f7
+cop #$5B : dw $0010
+lda #$0000 : sta $7F001A,x
+cop #$23 : and #$0007 : cmp #$0007 : bne +
+  lda #$0003
++:    ; org $8ad90f
+sta $7F0018,x
+lsr a
+lda #$0000 : adc #$0021 : sta $28
+stz $2A
+cop #$C1
+cop #$8B
+cop #$B1
+cop #$C2
+cop #$63 : db $03, $04, $01
+cop #$C1
+cop #$64
+cmp #$0000 : bmi .HitFloor
+rtl
+.HitFloor:    ; org $8ad935
+cop #$84 : db $23, $04
+cop #$8A
+cop #$E0
+
+;org $8ad93d
+EViperRespawnData:
+db $4C : dw $00f8,$0030 : db $00,$00,$22
+
+;org $8ad945
+EViper_OnDeath:
+lda $09AE : bit #$0200 : beq +
+  cop #$C1
+  rtl
++:
+lda #$0020 : tsb $09AE
+cop #$A5 : dl LR_SetPlayerImmune : dw $0000, $2000
+cop #$A5 : dl EViperExplosionFactory : dw $0000, $2300
+cop #$DA : db $27
+cop #$C7 : dl EBasicMonsterDeath    ; $80DB8A
+
+EViperExplosionFactory:    ; org $8ad970
+cop #$88 : dl $8EE000
+cop #$CA : db $0A
+cop #$A5 : dl EViperExplosion01 : dw $E000, $0302
+cop #$DA : db $01
+cop #$A5 : dl EViperExplosion02 : dw $E000, $0302
+cop #$DA : db $02
+cop #$CB
+cop #$E0
+EViperExplosion01:    ; org $8ad994
+jsr SR_ViperExplosionSetPosition
+cop #$07 : db $06
+cop #$80 : db $07 : cop #$89
+cop #$E0
+EViperExplosion02:    ; org $8ad9a1
+jsr SR_ViperExplosionSetPosition
+cop #$80 : db $01 : cop #$89
+cop #$E0
+SR_ViperExplosionSetPosition:    ; org $8ad9ab
+cop #$23
+cop #$23
+cop #$24 : db $50
+lda $0420 : sec : sbc #$0028 : clc : adc $14 : sta $14
+cop #$23
+cop #$23
+cop #$24 : db $60
+lda $0420 : sec : sbc #$0030 : clc : adc $16 : sta $16
+rts
+; org $8ad9d2
+
+
+org $8ae26e
+db $0d,$00,$20
+EMuWizard:
+org $8ae271
+cop #$13 : dw .SleepForever    ; Not on open ground.
+lda #$0011 : tsb $12
+lda $14 : sta $7F100C,x
+lda $16 : sta $7F100E,x
+.AwaitPlayerApproach:    ; org $8ae286
+cop #$C2
+cop #$21 : db $0A : dw .TryAttack
+rtl
+.SleepForever:
+lda #$2000 : tsb $10
+cop #$C1
+rtl
+.TryAttack:
+cop #$DA : db $3B
+cop #$23
+pha
+and #$00F0 : sec : sbc #$0080 : clc : adc $09A2
+  and #$FFF0 : clc : adc #$0008 : sta $14
+pla
+asl : asl : asl : asl
+and #$00F0 : sec : sbc #$0070 : clc : adc $09A4
+  and #$FFF0 : clc : adc #$0010 : sta $16
+lda $7F100C,x : sec : sbc $14 : bpl +
+  eor #$FFFF : inc a
++:
+cmp #$0100 : bcs .AwaitPlayerApproach
+lda $7F100E,x : sec : sbc $16 : bpl +
+  eor #$FFFF : inc a
++:
+cmp #$0100 : bcs .AwaitPlayerApproach
+cop #$13 : dw .InWallOrTooCloseCancel
+cop #$21 : db $01 : dw .InWallOrTooCloseCancel
+cop #$C8 : dw .DoAttack
+lda #$2100 : tsb $10
+bra .TryAttack
+.InWallOrTooCloseCancel:
+rtl
+.DoAttack:
+cop #$C2
+lda #$2000 : trb $10
+cop #$2C : dw .PlayerCloserY, .PlayerCloserX
+.PlayerCloserY:
+cop #$2A : dw $0000, ..PlayerOnLeft, ..PlayerOnLeft, ..PlayerOnRight
+..PlayerOnLeft:
+cop #$58 : dw ...Vanish
+cop #$80 : db $15
+cop #$89
+cop #$80 : db $0F
+cop #$89
+cop #$80 : db $12
+cop #$89
+cop #$A5 : dl EMuWizardOrb : dw $F0F0, $0202
+lda #$000C : sta $0026,y
+cop #$B0 : db $06, $00
+...Vanish:
+cop #$80 : db $18
+cop #$89
+cop #$C5
+..PlayerOnRight:
+cop #$58 : dw ...Vanish
+cop #$80 : db $95
+cop #$89
+cop #$80 : db $8F
+cop #$89
+cop #$80 : db $92
+cop #$89
+cop #$A5 : dl EMuWizardOrb : dw $F010, $0202
+lda #$0004 : sta $0026,y
+cop #$B0 : db $05, $00
+...Vanish:
+cop #$80 : db $98
+cop #$89
+cop #$C5
+.PlayerCloserX:
+cop #$2B : dw $0000, ..PlayerNorth, ..PlayerNorth, ..PlayerSouth
+..PlayerNorth:
+cop #$58 : dw ...Vanish
+cop #$80 : db $14
+cop #$89
+cop #$80 : db $0E
+cop #$89
+cop #$80 : db $11
+cop #$89
+cop #$A5 : dl EMuWizardOrb : dw $F000, $0200
+lda #$0000 : sta $0026,y
+cop #$B0 : db $00, $06
+...Vanish:
+cop #$80 : db $17
+cop #$89
+cop #$C5
+..PlayerSouth:
+cop #$58 : dw ...Vanish
+cop #$80 : db $13
+cop #$89
+cop #$80 : db $0D
+cop #$89
+cop #$80 : db $10
+cop #$89
+cop #$A5 : dl EMuWizardOrb : dw $F000, $0202
+lda #$0008 : sta $0026,y
+cop #$B0 : db $00, $05
+...Vanish:
+cop #$80 : db $16
+cop #$89
+cop #$C5
+EMuWizardOrb:
+cop #$07 : db $20
+cop #$5B : dw $0010
+lda #$0080 : tsb $12
+cop #$80 : db $21
+cop #$89
+cop #$A2 : dl EChaser : dw $2000
+lda #$8021 : sta $7F000A,x
+lda #$0003 : sta $7F0014,x
+lda $09AA : sta $0024,y
+phx
+tyx
+lda $26 : sta $7F000E,x
+plx
+lda #$0002 : tsb $10
+cop #$80 : db $21
+cop #$89
+phx
+ldx $06
+lda $7F002C,x : sta $0000
+lda $7F002E,x
+plx
+sta $7F100E,x
+lda $0000 : sta $7F100C,x
+cop #$A9
+.RefreshSprite:
+cop #$C1
+cop #$8B
+lda $08 : sta $24
+stz $08
+cop #$C1
+lda $7F100C,x : sta $7F002C,x
+lda $7F100E,x : sta $7F002E,x
+dec $24 : bmi .DieOrRefresh
+  rtl
+.DieOrRefresh:
+lda $10 : bit #$4000 : beq .RefreshSprite
+cop #$E0
+
+;org $8ae45c
+db $19,$00,$03
+EMuSlime:
+
+
+
+
+org $8aea51
+db $00,$00,$00
+EAVSkeleton:
+
+
+
+org $8af150
+db $00 : dw $0000
+EBabelVampireJack:
+
+
+
+org $8af19c
+db $16 : dw $0000
+EBabelVampireSyl:
+
+
+
+org $8af1f7
+db $00,$00,$01
+EVJack:
+cop #$9C : dl EVColorMathManager : dw $2800    ; $8af53d
+cop #$9C : dl EVCombinedAttackTimer : dw $2000    ; $8af6e6
+lda #$FFFF : sta $00FE
+cop #$28 : db $80, $01, $60, $00 : dw B_8AFA48
+cop #$28 : db $80, $01, $E0, $01 : dw B_8AFA48
+lda #$0002 : jsl LR_SecOnDefeatedBossA : bcc +    ; $80B05E
+  stz $0AEC
+  stz $0AEE
+  cop #$E0
++:
+lda #$008A : and #$00FF : sta $0AF6  ; i.e. BankOf(EVRespawnData)
+  lda #EVRespawnData : sta $0AF4     ; #$FA51
+cop #$57 : dl EVJack_OnDeath
+lda #$8011 : tsb $12
+cop #$D0 : db $87, $01 : dw .SeenIntro    ; $f27e
+cop #$C1
+cop #$45 : db $01, $13, $0F, $15 : dw B_8AF259
+  rtl
+B_8AF259:
+cop #$D2 : db $86, $01
+lda $14 : sta $7F0018,x
+lda #$0100 : sta $7F001A,x
+cop #$52 : db $01, $02, $FF
+cop #$53
+cop #$D0 : db $87, $01 : dw .SeenIntro    ; $f27e
+cop #$CC : db $87
+cop #$BF : dw EVText_Intro    ; $FB45
+.SeenIntro:    ; $f27e
+lda $0644 : cmp #$0067 : bne .SkipMuDoorSetup
+lda #$EFF0 : tsb $065A
+cop #$07 : db $0E
+cop #$DA : db $0E
+cop #$32 : db $92
+cop #$33
+cop #$32 : db $91
+cop #$33
+cop #$04 : db $0F
+cop #$DA : db $27
+.SkipMuDoorSetup:
+lda #$EFF0 : trb $065A
+cop #$DA : db $77
+cop #$CC : db $02
+cop #$A2 : dl J_8AF876 : dw $2200
+stz $09F0
+stz $09F2
+bra J_8AF2CA
+J_8AF2BD:
+jsr S_8AFA17
+cop #$52 : db $01, $02, $FF
+cop #$53
+cop #$DA : db $1D
+J_8AF2CA:
+lda $00F2 : beq B_8AF313
+J_8AF2CF:
+jsr B_8AF961
+cop #$58 : dw EVJack_OnHit
+cop #$52 : db $01, $02, $FF
+cop #$53
+cop #$DA : db $13
+cop #$80 : db $02
+cop #$89
+cop #$07 : db $06
+cop #$A5 : dl C_8AF8AC : dw $0000, $2200
+cop #$A5 : dl C_8AF8C7 : dw $0000, $2200
+cop #$A5 : dl C_8AF8E2 : dw $0000, $2200
+cop #$A5 : dl C_8AF8FD : dw $0000, $2200
+cop #$80 : db $0D
+cop #$89 : bra J_8AF2CA
+B_8AF313:
+lda $09F2 : beq B_8AF31B
+jmp J_8AF394
+B_8AF31B:
+cop #$58 : dw $0000
+lda #$0001 : sta $09F0
+cop #$C2
+lda $09F2 : beq B_8AF32F
+jmp J_8AF394
+B_8AF32F:
+lda $09F0 : beq B_8AF341
+cop #$C1
+lda $09F2 : bne J_8AF394
+lda $09F0 : beq B_8AF341
+rtl
+B_8AF341:
+lda $09A4 : sta $7F001A,x
+lda #$00B8 : sta $7F0018,x
+cop #$52 : db $01, $04, $FF
+cop #$53
+lda $09F2 : bne J_8AF394
+lda #$0001 : sta $09F0
+cop #$C2
+lda $09F2 : bne J_8AF394
+lda $09F0 : beq B_8AF36E
+rtl
+B_8AF36E:
+lda #$0200 : tsb $10
+cop #$80 : db $04
+cop #$89
+cop #$3B : db $43 : dl $80B519
+cop #$DA : db $17
+cop #$A5 : dl C_8AF619 : dw $0000, $0202
+cop #$80 : db $11
+cop #$89
+lda #$0200 : trb $10
+J_8AF394:
+lda #$0001 : sta $00F2
+jmp J_8AF2CF
+EVJack_OnHit:
+cop #$84 : db $01, $02
+cop #$8A
+cop #$A2 : dl EVShield_J1 : dw $0200
+cop #$A2 : dl EVShield_J2 : dw $0200
+cop #$A2 : dl EVShield_J3 : dw $0200
+cop #$A2 : dl EVShield_J4 : dw $0200
+cop #$84 : db $01, $02
+cop #$8A
+jmp J_8AF2BD
+
+;org $8af3c8
+db $17,$00,$01
+EVSyl:
+cop #$28 : db $80, $01, $60, $00 : dw B_8AFA48
+cop #$28 : db $80, $01, $E0, $01 : dw B_8AFA48
+lda #$0002 : jsl LR_SecOnDefeatedBossA : bcc +    ; $80B05E
+  cop #$E0
++:
+cop #$57 : dl EVSyl_OnDeath    ; $8afaa0
+lda #$8011 : tsb $12
+cop #$D0 : db $87, $01 : dw .SeenIntro    ; $f41d
+cop #$C1
+cop #$45 : db $01, $13, $0F, $15 : dw B_8AF401
+rtl
+
+B_8AF401:    ; org $8af401
+cop #$D2 : db $86, $01
+lda $14 : sta $7F0018,x
+lda #$0100 : sta $7F001A,x
+cop #$52 : db $17, $02, $FF
+cop #$53
+cop #$D2 : db $02, $01
+
+.SeenIntro:    ; org $8af41d
+cop #$A2 : dl C_8AF7B6 : dw $2200
+bra J_8AF433
+
+J_8AF426:    ; org $8af426
+jsr S_8AFA17
+cop #$52 : db $17, $02, $FF
+cop #$53
+cop #$DA : db $3B
+
+J_8AF433:    ; org $8af433
+lda $00F2 : beq B_8AF455
+cop #$58 : dw EVSyl_OnHit
+stz $00F0
+jsr S_8AF9A8
+cop #$52 : db $17, $02, $FF
+cop #$53
+cop #$58 : dw $0000 : inc $00F0
+cop #$DA : db $07 : bra J_8AF433
+
+B_8AF455:    ; org $8af455
+lda $09F2 : bne B_8AF4BE
+cop #$58 : dw $0000 : inc $00F0
+cop #$C1
+lda $09F2 : bne B_8AF4BE
+lda $09F0 : bne B_8AF46E
+rtl
+
+B_8AF46E:    ; org $8af46e
+stz $09F0
+cop #$C2
+lda $09A4 : sta $7F001A,x
+lda #$0048 : sta $7F0018,x
+cop #$52 : db $17, $04, $FF
+cop #$53
+cop #$C1
+lda $09F2 : bne B_8AF4BE
+lda $09F0 : bne B_8AF495
+rtl
+
+B_8AF495:    ; org $8af495
+stz $09F0
+lda #$0200 : tsb $10
+cop #$80 : db $1A
+cop #$89
+cop #$DA : db $17
+cop #$A5 : dl C_8AF551 : dw $0000, $0202
+cop #$DA : db $1F
+cop #$80 : db $2A
+cop #$89
+lda #$0200 : trb $10
+jmp J_8AF426
+
+B_8AF4BE:    ; org $8af4be
+lda #$0001 : sta $00F2
+jmp J_8AF426
+
+;org $8af4c7
+cop #$84 : db $18,$02
+cop #$8A
+cop #$A5 : dl C_8af8a5 : dw $0000, $2200
+jmp J_8AF426
+
+;org $8af4d9
+cop #$84 : db $18,$02
+cop #$8A
+cop #$A5 : dl C_8AF8C0 : dw $0000, $2200
+jmp J_8AF426
+
+;org $8af4eb
+cop #$84 : db $18,$02
+cop #$8A
+cop #$A5 : dl C_8AF8DB : dw $0000, $2200
+jmp J_8AF426
+
+;org $8af4fd
+cop #$84 : db $18,$02
+cop #$8A
+cop #$A5 : dl C_8AF8F6 : dw $0000, $2200
+jmp J_8AF426
+
+;org $8af50f
+EVSyl_OnHit:
+inc $00F0
+cop #$84 : db $17, $02
+cop #$8A
+cop #$A2 : dl EVShield_S1 : dw $0200
+cop #$A2 : dl EVShield_S2 : dw $0200
+cop #$A2 : dl EVShield_S3 : dw $0200
+cop #$A2 : dl EVShield_S4 : dw $0200
+cop #$84 : db $17, $02
+cop #$8A
+jmp J_8AF426
+
+;org $8af53d
+EVColorMathManager:
+sep #$20
+lda #$30 : sta $2125
+lda #$22 : sta $2130
+lda #$03 : sta $2131
+rep #$20
+rtl
+
+;org $8af551
+C_8AF551:
+lda $0644 : cmp #$0067 : bne .UseBabelStats
+.UseMuStats:
+  lda #$ACB4 : sta $7F0020,x : bra +
+.UseBabelStats:    ; org $8af562
+  lda #$AD94 : sta $7F0020,x
++:
+cop #$07 : db $1E
+lda #$0080 : sta $7F0018,x
+lda $16 : clc : adc #$0020 : sta $7F001A,x
+cop #$52 : db $0A, $04, $FF
+cop #$53
+cop #$08 : db $23, $23
+cop #$9C : dl C_8AF633 : dw $2000
+cop #$3B : db $67 : dl TIndexedPaletteBundleOnce    ; $80B519
+cop #$84 : db $0B, $04
+cop #$8A
+jsr S_8AF6D7
+cop #$07 : db $20
+cop #$8D : db $2E
+lda #$0000 : sta $7F100C,x
+cop #$2B : dw $0000, B_8AF5B5, B_8AF5B5, B_8AF5BA
+
+B_8AF5B5:    ; org $8af5b5
+lda #$FFFD : bra J_8AF5BD
+
+B_8AF5BA:    ; org $8af5ba
+lda #$0003
+
+J_8AF5BD:    ; org $8af5bd
+sta $7F100E,x
+cop #$2A : dw $0028, B_8AF5CB, J_8AF5D7, B_8AF5D0
+
+B_8AF5CB:    ; org $8af5cb
+lda #$FFFE : bra J_8AF5D3
+
+B_8AF5D0:    ; org $8af5d0
+lda #$0002
+
+J_8AF5D3:    ; org $8af5d3
+sta $7F100C,x
+
+J_8AF5D7:    ; org $8af5d7
+jsr S_8AF6D7
+cop #$A2 : dl C_8AF640 : dw $0300
+jsr S_8AF6AA
+lda $10 : bit #$4000 : bne B_8AF5F0
+cop #$C4 : dl J_8AF5D7
+
+B_8AF5F0:    ; org $8af5f0
+lda $16 : bmi B_8AF5FE
+cmp #$0240 : bcs B_8AF608
+cop #$C4 : dl J_8AF5D7
+
+B_8AF5FE:    ; org $8af5fe
+cmp #$FFC0 : bcc B_8AF608
+cop #$C4 : dl J_8AF5D7
+
+B_8AF608:    ; org $8af608
+lda #$FFFF : sta $00FE : sta $00F6 : sta $00FA
+cop #$DA : db $01
+cop #$E0
+
+;org $8af619
+C_8AF619:
+lda #$0080 : sta $7F0018,x
+lda $16 : clc : adc #$0020 : sta $7F001A,x
+cop #$52 : db $0A, $04, $FF
+cop #$53
+cop #$E0
+
+;org $8af633
+C_8AF633:
+cop #$CA : db $20
+  inc $00FE
+  jsr S_8AF6D7
+cop #$CB
+cop #$E0
+
+C_8AF640:    ; org $8af640
+ldy $24
+lda $0026,y : and #$0007 : sta $0000
+cop #$D9 : dw $0000, $F651
+dw B_8AF661, B_8AF666
+dw B_8AF66B, B_8AF670
+dw B_8AF675, B_8AF67A
+dw B_8AF67F, B_8AF684
+
+B_8AF661:    ; org $8af661
+cop #$8D : db $11 : bra B_8AF687
+
+B_8AF666:    ; org $8af666
+cop #$8D : db $95 : bra B_8AF687
+
+B_8AF66B:    ; org $8af66b
+cop #$8D : db $12 : bra B_8AF687
+
+B_8AF670:    ; org $8af670
+cop #$8D : db $13 : bra B_8AF687
+
+B_8AF675:    ; org $8af675
+cop #$8D : db $94 : bra B_8AF687
+
+B_8AF67A:    ; org $8af67a
+cop #$8D : db $93 : bra B_8AF687
+
+B_8AF67F:    ; org $8af67f
+cop #$8D : db $15 : bra B_8AF687
+
+B_8AF684:    ; org $8af684
+cop #$8D : db $14
+
+B_8AF687:    ; org $8af687
+cop #$C1
+cop #$8B
+lda $2A : beq B_8AF6A8
+lda $08 : stz $08 : sta $26
+cop #$C2
+ldy $24
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+dec $26 : bmi B_8AF687
+rtl
+
+B_8AF6A8:    ; org $8af6a8
+cop #$E0
+
+S_8AF6AA:    ; org $8af6aa
+inc $26
+lda $16 : clc : adc $7F100E,x : sta $16
+lda $14 : clc : adc $7F100C,x : sta $14
+  bit #$FF00 : beq B_8AF6D6
+  sec : sbc $7F100C,x : sta $14
+lda $7F100C,x : eor #$FFFF : inc a : sta $7F100C,x
+
+B_8AF6D6:    ; org $8af6d6
+rts
+
+S_8AF6D7:    ; org $8af6d7
+lda $14 : sta $00F6
+lda $16 : sec : sbc $068E : sta $00FA
+rts
+
+;org $8af6e6
+EVCombinedAttackTimer:
+cop #$23 : and #$00FF : clc : adc #$02D0 : sta $00F2
+cop #$C2
+dec $00F2 : beq +
+  rtl
++:
+cop #$C1
+lda $00F2 : bne +
+  rtl
++:
+lda $09F2 : bne +
+  bra EVCombinedAttackTimer
++:
+cop #$C1
+lda #$0001 : sta $00F2
+rtl
+
+
+EVShield:
+.J1:
+cop #$6C : dw $0000
+bra .JCommon
+.J2:
+cop #$6C : dw $4000
+bra .JCommon
+.J3:
+cop #$6C : dw $8000
+bra .JCommon
+.J4:
+cop #$6C : dw $C000
+.JCommon:
+cop #$8D : db $2B
+bra .Act
+
+.S1:    ;org $8af72d
+cop #$6C : dw $0000
+bra .SCommon
+.S2:    ; org $8af733
+cop #$6C : dw $4000
+bra .SCommon
+.S3:    ; org $8af739
+cop #$6C : dw $8000
+bra .SCommon
+.S4:    ; org $8af73f
+cop #$6C : dw $C000
+.SCommon:    ; org $8af743
+cop #$8D : db $2C
+
+.Act:     ;org $8af746
+.RefreshSprite:
+cop #$C1
+cop #$8B
+lda $2A : beq .RefreshSprite
+  lda $08
+  stz $08 : sta $26
+cop #$C2
+lda $24 : sta $0000
+cop #$6D : db $03, $02
+lda $7F0012,x : cmp #$0080 : bcs B_8AF76D
+dec $26 : bmi .RefreshSprite
+rtl
+B_8AF76D:
+cop #$CA : db $1E
+B_8AF770:
+cop #$C1
+cop #$8B
+lda $2A : beq B_8AF770
+lda $08
+stz $08 : sta $26
+cop #$C2
+lda $24 : sta $0000
+cop #$6D : db $00, $04
+dec $26 : bmi B_8AF78E
+rtl
+B_8AF78E:
+cop #$CB
+B_8AF790:
+cop #$C1
+cop #$8B
+lda $2A : beq B_8AF790
+lda $08
+stz $08 : sta $26
+cop #$C2
+lda $24 : sta $0000
+cop #$6D : db $FC, $04
+lda $7F0012,x : bmi EVShield_Die
+dec $26 : bmi B_8AF790
+rtl
+EVShield_Die:
+cop #$E0
+
+;org $8af7b6
+lda $00F0 : beq B_8AF7BC
+rtl
+
+B_8AF7BC:    ; org $8af7bc
+lda $10 : bit #$00C0 : beq B_8AF7C4
+rtl
+
+B_8AF7C4:    ; org $8af7c4
+ldy $24 : sep #$20
+lda $02
+cmp $0002,y : beq B_8AF7D2
+jmp J_8AF873
+
+B_8AF7D2:    ; org $8af7d2
+rep #$20
+ldy $24
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+cop #$2C : dw B_8AF7E6, B_8AF81D
+
+B_8AF7E6:    ; org $8af7e6
+lda $16
+cmp $8AFA40 : beq B_8AF801
+cmp $8AFA42 : beq B_8AF801
+cmp $8AFA44 : beq B_8AF801
+cmp $8AFA46 : beq B_8AF801
+rtl
+
+B_8AF801:    ; org $8af801
+cop #$2A : dw $000F, B_8AF80B, B_8AF875, B_8AF814
+
+B_8AF80B:    ; org $8af80b
+cop #$44 : db $FB, $FF, $FF, $01 : dw B_8AF854
+rtl
+
+B_8AF814:    ; org $8af814
+cop #$44 : db $01, $FF, $05, $01 : dw B_8AF859
+rtl
+
+B_8AF81D:    ; org $8af81d
+lda $14
+cmp $8AFA38 : beq B_8AF838
+cmp $8AFA3A : beq B_8AF838
+cmp $8AFA3C : beq B_8AF838
+cmp $8AFA3E : beq B_8AF838
+rtl
+
+B_8AF838:    ; org $8af838
+cop #$2B : dw $000F, B_8AF842, B_8AF875, B_8AF84B
+
+B_8AF842:    ; org $8af842
+cop #$44 : db $FF, $FA, $01, $FF : dw B_8AF85E
+rtl
+
+B_8AF84B:    ; org $8af84b
+cop #$44 : db $FF, $01, $01, $06 : dw B_8AF863
+rtl
+
+B_8AF854:    ; org $8af854
+lda #$F4C7 : bra J_8AF866
+
+B_8AF859:    ; org $8af859
+lda #$F4D9 : bra J_8AF866
+
+B_8AF85E:    ; org $8af85e
+lda #$F4EB : bra J_8AF866
+
+B_8AF863:    ; org $8af863
+lda #$F4FD
+
+J_8AF866:    ; org $8af866
+ldy $24 : sta $0000,y
+cop #$07 : db $06 : inc $00F0
+rtl
+
+;org $8af872
+plx
+
+;org $8af873
+J_8AF873:
+rep #$20
+
+B_8AF875:    ; org $8af875
+rtl
+
+;org $8af876
+J_8AF876:
+cop #$DA : db $04
+ldy $24
+lda $0014,y : cmp $14 : bne B_8AF889
+lda $0016,y : cmp $16 : beq J_8AF876
+B_8AF889:
+cop #$9C : dl C_8AF89E : dw $0300
+ldy $24
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+bra J_8AF876
+C_8AF89E:
+cop #$80 : db $0E
+cop #$89
+cop #$E0
+
+;org $8af8a5
+; Unclear where this is referenced.
+lda #$0001 : sta $26
+bra J_8AF8B6
+
+;org $8af8ac
+C_8AF8AC:
+stz $26
+cop #$BC : db $F0, $00
+cop #$C8 : dw B_8AF937
+J_8AF8B6:
+cop #$BC : db $F0, $00
+cop #$C8 : dw B_8AF911
+bra J_8AF8B6
+
+;org $8af8c0
+; Unclear where this is referenced.
+lda #$0001 : sta $26
+bra J_8AF8D1
+
+;org $8af8c7
+C_8AF8C7:
+stz $26
+cop #$BC : db $10, $00
+cop #$C8 : dw B_8AF937
+J_8AF8D1:
+cop #$BC : db $10, $00
+cop #$C8 : dw B_8AF911
+bra J_8AF8D1
+
+;org $8af8db
+; Unclear where this is referenced.
+lda #$0001 : sta $26
+bra J_8AF8EC
+
+;org $8af8e2
+C_8AF8E2:
+stz $26
+cop #$BC : db $00, $F0
+cop #$C8 : dw B_8AF937
+J_8AF8EC:
+cop #$BC : db $00, $F0
+cop #$C8 : dw B_8AF911
+bra J_8AF8EC
+
+;org $8af8f6
+; Unclear where this is referenced.
+lda #$0001 : sta $26
+bra J_8AF907
+
+;org $8af8fd
+C_8AF8FD:
+stz $26
+cop #$BC : db $00, $10
+cop #$C8 : dw B_8AF937
+J_8AF907:
+cop #$BC : db $00, $10
+cop #$C8 : dw B_8AF911
+bra J_8AF907
+B_8AF911:
+cop #$13 : dw B_8AF95F
+lda $26 : beq B_8AF928
+cop #$9C : dl C_8AF95A : dw $0200
+cop #$07 : db $14
+cop #$DA : db $03
+cop #$C5
+B_8AF928:
+cop #$9C : dl C_8AF94F : dw $0200
+cop #$07 : db $14
+cop #$DA : db $01
+cop #$C5
+B_8AF937:
+cop #$13 : dw B_8AF95F
+cop #$9C : dl C_8AF947 : dw $0200
+cop #$DA : db $1D
+cop #$C5
+C_8AF947:
+cop #$84 : db $07, $06
+cop #$8A
+cop #$E0
+C_8AF94F:
+cop #$5B : dw $0010
+cop #$80 : db $23
+cop #$89
+cop #$E0
+C_8AF95A:
+cop #$80 : db $06
+cop #$89
+B_8AF95F:
+cop #$E0
+B_8AF961:
+lda $7F0018,x : sta $0018
+lda $7F001A,x : sta $001C
+cop #$23 : and #$0003 : sta $7F100C,x
+  asl
+phx : tax
+  lda $8AFA38,x
+plx : sta $7F0018,x
+cop #$23 : and #$0003 : sta $7F100E,x
+  asl
+phx : tax
+  lda $8AFA40,x
+plx : sta $7F001A,x
+  cmp $001C : bne B_8AF9A7
+lda $0018 : cmp $7F0018,x : beq B_8AF961
+B_8AF9A7:
+rts
+
+;org $8af9a8
+S_8AF9A8:
+cop #$23
+lsr a : bcc B_8AF9E8
+cop #$23
+lsr a
+lda $7F100C,x : and #$0003 : bcc B_8AF9C1
+cmp #$0003 : beq J_8AF9C4 : inc a : bra J_8AF9C4
+
+B_8AF9C1:    ; org $8af9c1
+beq B_8AF9E8
+dec a
+
+J_8AF9C4:    ; org $8af9c4
+sta $7F100C,x : asl
+phx : tax
+lda $8AFA38,x
+plx : sta $7F0018,x
+
+J_8AF9D4:    ; org $8af9d4
+lda $7F100E,x : and #$0003 : asl
+phx : tax
+lda $8AFA40,x
+plx : sta $7F001A,x
+rts
+
+B_8AF9E8:    ; org $8af9e8
+lda $0410
+lsr a
+lsr a
+lda $7F100E,x : and #$0003 : bcc B_8AF9FE
+  cmp #$0003 : beq J_8AFA01
+inc a
+bra J_8AFA01
+
+B_8AF9FE:    ; org $8af9fe
+beq J_8AFA01
+dec a
+
+J_8AFA01:    ; org $8afa01
+sta $7F100E,x
+lda $7F100C,x : asl
+  phx
+  tax
+    lda $8AFA38,x
+  plx
+    sta $7F0018,x
+bra J_8AF9D4
+
+;org $8afa17
+S_8AFA17:
+lda $7F100C,x : asl
+phx : tax
+lda $8AFA38,x
+plx : sta $7F0018,x
+lda $7F100E,x : asl
+phx : tax
+lda $8AFA40,x
+plx : sta $7F001A,x
+rts
+
+;org $8afa38
+dw $0018,$0058,$00a8,$00e8,$0058,$00d8,$0158,$01d8
+
+;org $8afa48
+B_8AFA48:
+lda #$0008 : tsb $09AE
+cop #$C1
+rtl
+
+;org $8afa51
+EVRespawnData:
+db $66,$f8,$00,$30,$00,$00,$00,$22    ; Respawn data.
+
+;org $8afa59
+EVJack_OnDeath:
+cop #$C1
+lda $09F2 : bne .SylDead
+.SylAlive:
+  inc : sta $09F2
+lda $0644 : cmp #$0067 : bne .AfterText
+cop #$BF : dw EVText_JackDeath    ; $FCA0
+bra .AfterText
+.SylDead:
+lda #$0020 : tsb $09AE
+cop #$A5 : dl LR_SetPlayerImmune : dw $0000, $2000
+.AfterText:
+lda $09AE : bit #$0200 : bne B_8AFA97
+cop #$A5 : dl C_8AFAE7 : dw $F000, $2300
+cop #$DA : db $1D
+cop #$E0
+B_8AFA97:
+lda #$0020 : trb $09AE
+cop #$C1
+rtl
+
+;org $8afaa0
+EVSyl_OnDeath:
+cop #$C1
+lda $09F2 : bne .JackDead
+.JackAlive:
+  inc : sta $09F2
+lda $0644 : cmp #$0067 : bne .AfterText
+cop #$BF : dw EVText_SylDeath    ; $FCE4
+bra .AfterText
+.JackDead:    ; org $8afab9
+lda #$0020 : tsb $09AE
+cop #$A5 : dl LR_SetPlayerImmune : dw $0000, $2000    ; $8aa36e
+.AfterText:    ; org $8afac8
+lda $09AE : bit #$0200 : bne B_8AFADE
+cop #$A5 : dl C_8AFAE7 : dw $F000, $2300
+cop #$DA : db $1D
+cop #$E0
+B_8AFADE:    ; org $8afade
+lda #$0020 : trb $09AE
+cop #$C1
+rtl
+
+;org $8afae7
+C_8AFAE7:
+cop #$88 : dl $8EE000
+cop #$CA : db $03
+cop #$A5 : dl C_8AFB0E : dw $0000, $0302
+cop #$DA : db $01
+cop #$A5 : dl C_8AFB1B : dw $0000, $0302
+cop #$DA : db $05
+cop #$CB
+cop #$C7 : dl J_80DB8A
+C_8AFB0E:
+jsr S_8AFB28
+cop #$07 : db $06
+cop #$80 : db $07
+cop #$89
+cop #$E0
+C_8AFB1B:
+jsr S_8AFB28
+cop #$07 : db $06
+cop #$80 : db $01
+cop #$89
+cop #$E0
+S_8AFB28:
+cop #$23 : and #$003F : sec : sbc #$001F : clc : adc $16 : sta $16
+cop #$23 : and #$001F : sec : sbc #$000F : clc : adc $14 : sta $14
+rts
+
+
+;org $8AFB45
+EVText_Intro:
+db $D3,$C2,$02,$66,$80,$8C,$A0,$88,$A2,$84,$2F,$AC,$CB,$D6,$67,$D6,$8F,$A4,$87,$84,$AC,$AC,$CB,$4C,$A9,$A3,$A4,$88,$82,$AC,$63,$A4,$80,$A4,$A5,$84,$4F,$AC,$CF,$48,$AC,$D6,$D8,$D6,$D7,$86,$A5,$A9,$AC,$A7,$87,$8E,$AC,$CB,$D6,$80,$A4,$8E,$AC,$A4,$87,$84,$AC,$D7,$93,$A7,$80,$A3,$AC,$CB,$A3,$A4,$A2,$80,$8D,$86,$84,$2A,$2A,$2A,$2A,$67,$84,$AC,$D6,$F2,$CB,$D7,$94,$A4,$8E,$AC,$8B,$84,$A4,$AC,$87,$88,$8C,$AC,$86,$8E,$2A,$AC,$CF,$C2,$01,$66,$80,$8C,$A0,$88,$A2,$84,$A3,$A3,$2F,$AC,$CB,$D6,$62,$80,$A2,$84,$AC,$A9,$8E,$A5,$AC,$A3,$80,$A9,$88,$8D,$86,$0D,$AC,$CB,$69,$8E,$A5,$AC,$D6,$F2,$83,$A2,$8E,$8E,$8B,$88,$8D,$86,$AC,$CB,$D6,$F6,$87,$84,$AC,$A7,$80,$A3,$AC,$87,$84,$A2,$84,$4F,$AC,$CF,$D6,$69,$D7,$44,$D6,$A5,$D6,$D7,$CB,$D6,$F6,$A9,$8E,$A5,$8D,$86,$AC,$8E,$8D,$84,$A3,$AC,$82,$8E,$8C,$84,$4F,$AC,$CB,$40,$8B,$8B,$AC,$A9,$8E,$A5,$AC,$D7,$5D,$D6,$DA,$D6,$6B,$CB,$88,$A3,$AC,$85,$8E,$8E,$83,$4F,$AC,$CF,$C2,$02,$66,$80,$8C,$A0,$88,$A2,$84,$2F,$AC,$CB,$63,$8E,$AC,$83,$8E,$AC,$A9,$8E,$A5,$4F,$4F,$AC,$CF,$67,$80,$88,$A4,$2A,$AC,$64,$87,$88,$A3,$AC,$88,$A3,$AC,$8D,$8E,$A4,$AC,$A4,$87,$84,$CB,$D6,$DF,$8E,$A2,$AC,$D7,$90,$85,$8E,$A2,$CB,$80,$8D,$AC,$80,$A2,$86,$A5,$8C,$84,$8D,$A4,$2A,$CF,$45,$88,$A2,$A3,$A4,$2B,$AC,$8B,$84,$A4,$0E,$A3,$AC,$86,$84,$A4,$AC,$D6,$D7,$CB,$4C,$A9,$A3,$A4,$88,$82,$AC,$63,$A4,$80,$A4,$A5,$84,$4F,$AC,$AC,$CB,$46,$84,$A4,$AC,$A2,$84,$80,$83,$A9,$4F,$4F,$4F,$C3,$00,$C0
+;org $8AFCA0
+EVText_JackDeath:
+db $C1,$03,$11,$C7,$0D,$04,$C2,$01,$66,$80,$8C,$A0,$88,$A2,$84,$A3,$A3,$2F,$AC,$CB,$48,$0E,$8C,$AC,$86,$8B,$80,$83,$AC,$87,$84,$0E,$A3,$AC,$86,$8E,$8D,$84,$2A,$AC,$CB,$D6,$1D,$D6,$FE,$D7,$B9,$8D,$84,$A8,$A4,$4F,$4F,$AC,$CB,$46,$84,$A4,$AC,$A2,$84,$80,$83,$A9,$4F,$C3,$00,$C0
+;org $8AFCE4
+EVText_SylDeath:
+db $C1,$03,$11,$C7,$0D,$04,$C2,$02,$66,$80,$8C,$A0,$88,$A2,$84,$2F,$AC,$69,$8E,$A5,$4F,$AC,$CB,$69,$8E,$A5,$AC,$83,$88,$83,$AC,$D6,$D7,$A4,$8E,$AC,$8C,$A9,$AC,$A7,$88,$85,$84,$4F,$AC,$CB,$D6,$1F,$D6,$BB,$85,$8E,$A2,$86,$88,$A6,$84,$AC,$A9,$8E,$A5,$4F,$4F,$C3,$00,$C0
+
+
+;org $8AFD26
+; Unknown SR that changes our behavior based on distance to player.
+ldy $09AA
+lda $16 : sec : sbc $0016,y : bpl +
+  sec : ror a
+  bra ++
++:
+lsr a
+++:
+clc : adc $16 : sta $7F001A,x
+cop #$23 : and #$001F
+pha
+lda $14 : cmp $09A2 : bpl +
+pla : eor #$FFFF : inc a : bra ++
++:
+pla
+++:
+clc : adc $14 : sta $7F0018,x
+rts
+
+
+org $8AFD87
+Bank8AFree:
+pad $8B0000
+

@@ -1,0 +1,2779 @@
+arch 65816
+hirom
+fillbyte $FF
+padbyte $FF
+
+
+
+
+org $8b8000
+db $00,$00,$01
+EFanger_Babel:
+{
+lda #$8019 : tsb $12
+lda $06DC : clc : adc #$0020 : sta $06DC
+ldy $09AA
+lda $000E,y : ora #$3000 : sta $000E,y
+cop #$57 : dl EFanger_OnDeath
+cop #$A5 : dl EFBabelReturnListener : db $00,$00 : dw $2000
+lda $0ad4 : cmp #$0002 : bne +
+  jmp EFanger_FromBabelHandler
++:
+ldy $09AA
+lda #$0088 : sta $0002,y
+lda #$F5F9 : sta $0000,y
+lda #$0000 : sta $0008,y
+lda #$0800 : tsb $09AE
+cop #$C1
+lda $09AE : bit #$0800 : beq +
+  rtl
++:
+}
+jmp EFanger_FromBabelHandler
+
+
+;org $8b8060
+EFStatueAwardListener:
+{
+cop #$C1
+lda $09AE : bit #$0020 : bne +    ; $01
+rtl
++:
+bit #$0200 : beq +    ; $03
+cop #$C1
+rtl
++:
+cop #$D3 : dw $016A : db $01
+lda #$FFF0 : tsb $065A
+cop #$DA : db $3B
+cop #$BF : dw $80B5
+lda #$0003 : sta $0AAC
+lda #$008A : sta $0B12
+lda #$0016 : sta $0B08
+  sta $0B0A
+lda #$002C : sta $0B0C
+  sta $0B0E
+lda #$3300 : sta $0B10
+cop #$26 : db $FD, $00, $00, $00, $00, $00, $00, $11
+cop #$E0
+}
+
+;org $8B80B5
+db $D3,$C2,$00,$D6,$67,$83,$84,$85,$84,$80,$A4,$84,$83,$AC,$A4,$87,$84,$AC,$CB,$63,$80,$8D,$83,$AC,$45,$80,$8D,$86,$84,$A2,$4F,$AC,$AC,$CB,$4B,$8E,$8E,$8A,$4F,$AC,$40,$AC,$4C,$A9,$A3,$A4,$88,$82,$AC,$63,$A4,$80,$A4,$A5,$84,$4F,$C3,$00,$C0
+
+;org $8B80F0
+EFBabelReturnListener:
+{
+cop #$C1
+lda $0AEC : beq +    ; Continue if 0 enemies on map.
+  rtl
++:
+ldy $09AA
+lda #$0088 : sta $0002,y
+lda #$F3B1 : sta $0000,y
+lda #$0000 : sta $0008,y
+lda #$0800 : tsb $09AE
+cop #$C1
+lda $09AE : bit #$0800 : beq +
+  rtl
++:
+cop #$CD : dw $0178    ; Set map switch.
+lda #$0003 : sta $0648
+lda #$0403 : sta $064A
+cop #$26 : db $E0 : dw $02F8,$00A0 : db $03,$00,$18
+cop #$E0
+}
+
+
+;org $8b813a
+EFPlayerLayerManager:
+{
+ldy $09AA
+lda $0016,y : cmp #$01C7
+bcs +    ; $0D
+lda $000E,y : and #$CFFF : ora #$2000 : sta $000E,y
+rtl
++:
+lda $000E,y : ora #$3000 : sta $000E,y
+rtl
+}
+
+;org $8b815c
+db $00,$00,$01
+EFanger:
+cop #$A5 : dl EFPlayerLayerManager : dw $0000, $2000    ; $8B813A
+lda #$0003
+jsl LR_SecOnDefeatedBossA    ; $80B05E
+bcc +    ; $08
+  stz $0AEC
+  stz $0AEE
+  cop #$E0
++:
+lda #$8019 : tsb $12
+cop #$A5 : dl EFStatueAwardListener : dw $0000, $2000    ; $8B8060
+cop #$57 : dl EFanger_OnDeath    ; $8B8582
+cop #$0F : db $0F, $2A
+cop #$0F : db $10, $2A
+cop #$0F : db $0F, $2B
+cop #$0F : db $10, $2B
+cop #$C1
+cop #$45 : db $0D, $19, $12, $1B : dw .PlayerFalling    ; $81A7
+rtl
+.PlayerFalling:
+ldy $09AA
+lda $000E,y : ora #$3000 : sta $000E,y
+cop #$C1
+cop #$45 : db $0F, $2C, $11, $2E : dw .PlayerHere    ; $81BE
+rtl
+.PlayerHere:
+cop #$10 : db $0F, $2A
+cop #$10 : db $10, $2A
+cop #$10 : db $0F, $2B
+cop #$10 : db $10, $2B
+lda #$EFF0 : tsb $065A
+cop #$DA : db $1F
+cop #$04 : db $0F
+cop #$DA : db $3B
+lda #$EFF0 : trb $065A
+.FromBabelHandler:
+cop #$A1 : dl EFangerPiecesVisibilityManager : dw $2000    ; $8B8A09
+cop #$9C : dl EFTailPiece : dw $2200    ; $8B861C
+lda #$0009    ; numPieces
+; org $8b81f4
+.SpawnBodyPiece:
+pha
+cop #$9C : dl EFBodyPiece : dw $2200    ; $8B86EE
+pla : dec : bpl .SpawnBodyPiece    ; $F4    ; (-$0C)
+; org $8b8200
+EFanger_ChooseAttack:
+cop #$DA : db $4F
+lda #$0080 : trb $10
+lda $09A6 : lsr : lsr : lsr : bcs .PreferHorz    ; $16
+.PreferVert:
+cop #$23 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, ..AttackList   ;$821E  ; $823C $823C $825D $82FC
+..AttackList:
+  dw EFanger_AttackTypeVert, EFanger_AttackTypeVert
+  dw EFanger_AttackTypeHorz, EFanger_AttackTypeEgg
+.PreferHorz:    ;org $8b8226
+cop #$23 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, ..AttackList   ;$8234  ; $825D $825D $823C $82FC
+..AttackList:
+  dw EFanger_AttackTypeHorz, EFanger_AttackTypeHorz
+  dw EFanger_AttackTypeVert, EFanger_AttackTypeEgg
+
+;org $8b823c
+EFanger_AttackTypeVert:
+jsr SR_FangerSetSpawnPtForVert    ; $8BCB
+jsr SR_FangerSpawnSoundAndVortex    ; $8BBE
+cop #$DA : db $3B
+lda #$02C8 : sta $16
+cop #$C8 : dw EFanger_AttackVertFlyUp    ; $8313 Flight upward.
+jsr SR_FangerSetSpawnPtForVert    ; $8BCB
+lda #$0048 : sta $16
+cop #$C8 : dw EFanger_AttackVertFlyDown    ; $8348    ; Return downward.
+jmp EFanger_ChooseAttack    ; $8200
+
+;org $8b825d
+EFanger_AttackTypeHorz:
+lda $09A2 : cmp #$0180 : bcc EFanger_AttackTypeHorzRight    ; $4E
+EFanger_AttackTypeHorzLeft:
+cop #$23 : and #$007F : sec : sbc #$003F : clc : adc #$0278
+  sta $14
+  sta $24
+jsr SR_FangerSpawnSoundAndVortex    ; $8BBE
+lda #$0000 : sta $7F100C,x
+cop #$DA : db $13
+.KeepGoing:    ; org $8b8283
+lda #$02E0 : sta $16
+lda #$0003 : sta $26
+jsr SR_SetPieceHorzMoveDelays    ; $8B86
+jsr SR_SetHorzLeftOrbitVars    ; $8B32
+cop #$C8 : dw EFangerPiece_MoveHorzLeft    ; $837D
+lda $7F0018,x : sec : sbc #$0080
+  sta $14
+  sta $24
+  bpl +    ; $03
+    jmp EFanger_ChooseAttack    ; $8200
++:
+cmp #$00E8 : bcs .KeepGoing    ; (-$2A)
+cop #$DA : db $31
+jmp EFanger_ChooseAttack    ; $8200
+
+;org $8b82b3
+EFanger_AttackTypeHorzRight:
+cop #$23 : and #$007F : sec : sbc #$003F : clc : adc #$0088
+  sta $14
+  sta $24
+jsr SR_FangerSpawnSoundAndVortex    ; $8BBE
+lda #$0000 : sta $7F100C,x
+cop #$DA : db $13
+.KeepGoing:    ; org $8b82d1
+lda #$02E0 : sta $16
+lda #$0004 : sta $26
+jsr SR_SetPieceHorzMoveDelays    ; $8B86
+jsr SR_SetHorzRightOrbitVars    ; $8B5C
+cop #$C8 : dw EFangerPiece_MoveHorzRight    ; $8422
+lda $7F0018,x : clc : adc #$0080
+  sta $14
+  sta $24
+  cmp #$0218 : bcc .KeepGoing    ; $DB    ; (-$25)
+cop #$DA : db $31
+jmp EFanger_ChooseAttack    ; $8200
+
+;org $8b82fc
+EFanger_AttackTypeEgg:
+lda $0DBC : cmp #$003C : bcc +    ; $03
+  jmp EFanger_ChooseAttack    ; $8200
++:
+lda #$0005 : sta $26
+cop #$C8 : dw EFanger_DoAttackEgg    ; $84C7
+jmp EFanger_ChooseAttack    ; $8200
+
+;org $8b8313
+EFanger_AttackVertFlyUp:
+lda #$0001 : sta $26
+jsr SR_SetFangerVertFlySineParams    ; $8AE1
+cop #$8D : db $00
+cop #$AB : db $08
+cop #$C1
+jsr SR_ScaledSine8B    ; $9CE8
+clc : adc $7F100C,x : sta $14
+lda $7F0010,x : clc : adc #$0006 : and #$00FF : sta $7F0010,x
+lda $16 : cmp #$0050 : bcc +
+  rtl
++:
+stz $2E
+cop #$C5
+
+;org $8b8348
+EFanger_AttackVertFlyDown:
+lda #$0002 : sta $26
+jsr SR_SetFangerVertFlySineParams    ; $8AE1
+cop #$8D : db $04
+cop #$AB : db $0B
+cop #$C1
+jsr SR_ScaledSine8B    ; $9CE8
+clc : adc $7F100C,x : sta $14
+lda $7F0010,x : clc : adc #$0008 : and #$00FF : sta $7F0010,x
+lda $16 : cmp #$03A0 : bcs +
+  rtl
++:
+stz $2E
+cop #$C5
+
+;org $8b837d
+EFangerPiece_MoveHorzLeft:
+lda $7F000A,x : sta $28
+cop #$8D : db $FF
+stz $08
+stz $2E
+stz $2C
+.Again:
+cop #$C2
+lda $7F0018,x : sta $14
+lda $7F001A,x : sta $16
+jsl LR_EllipseOrbit    ; $80F432
+lda $7F0010,x : clc : adc #$0010
+  and #$00FF : lsr : lsr : lsr : lsr : lsr
+  cmp $7F0000,x : beq .TurnFinishedDoReset
+  sta $7F0000,x
+phx
+tax
+stz $28
+sep #$20
+lda #$40 : trb $0F
+lda.l T_EFHorzLeftBodySpriteIndexes,x
+plx
+clc : adc $7F000A,x : sta $28
+bpl .SpriteNoVMirror
+.SpriteDoVMirror:
+and #$7F : sta $28
+lda #$40 : tsb $0F : bra +
+.SpriteNoVMirror:
+sta $28
++:
+rep #$20
+cop #$8D : db $FF
+.TurnFinishedDoReset:
+sep #$20
+lda $7F0010,x : clc : adc #$02
+  sta $7F0010,x
+  sta $7F0011,x
+  sec : sbc $7F0002,x : bit #$80 : beq ++
+lda $7F0002,x : clc : adc #$80 : sta $7F0002,x
+lda $7F000E,x : dec : bmi +++
+  sta $7F000E,x
+++:
+rep #$20
+jmp .Again    ; $838C
++++:
+rep #$20
+cop #$C5
+T_EFHorzLeftBodySpriteIndexes:
+db $82,$81,$00,$01,$02,$03,$04,$83
+
+
+;org $8b8422
+EFangerPiece_MoveHorzRight:
+lda $7F000A,x : sta $28
+cop #$8D : db $FF
+stz $08
+stz $2E
+stz $2C
+.Again:
+cop #$C2
+lda $7F0018,x : sta $14
+lda $7F001A,x : sta $16
+jsl LR_EllipseOrbit    ; $80F432
+lda $7F0010,x : clc : adc #$0010
+  and #$00FF : lsr : lsr : lsr : lsr : lsr
+  cmp $7F0000,x : beq .TurnFinishedDoReset
+  sta $7F0000,x
+phx
+tax
+stz $28
+sep #$20
+lda #$40 : trb $0F
+lda.l T_EFHorzRightBodySpriteIndexes,x
+plx
+clc : adc $7F000A,x : sta $28
+bpl .SpriteNoVMirror    ; $0A
+.SpriteDoVMirror:
+  and #$7F : sta $28
+  lda #$40 : tsb $0F : bra +
+.SpriteNoVMirror:
+sta $28
++:
+rep #$20
+cop #$8D : db $FF
+.TurnFinishedDoReset:
+sep #$20
+lda $7F0010,x : clc : adc #$FE
+  sta $7F0010,x
+  sta $7F0011,x
+  clc : adc $7F0002,x : bit #$80 : beq ++
+lda $7F0002,x : sec : sbc #$80 : sta $7F0002,x
+lda $7F000E,x : dec : bmi +++
+  sta $7F000E,x
+++:
+rep #$20
+jmp .Again    ; $8431
++++:
+rep #$20
+cop #$C5
+T_EFHorzRightBodySpriteIndexes:
+db $02,$03,$04,$83,$82,$81,$00,$01
+
+
+;org $8b84c7
+EFanger_DoAttackEgg:
+cop #$23 : sec : sbc #$007F : clc : adc $09A2 : bpl .CheckPosOkay
+.TooFarLeft:
+clc : adc #$007F
+.CheckPosOkay:
+cmp #$0030 : bcc .TooFarLeft
+cmp #$02D0 : bcc .PositionIsOkay
+  sec : sbc #$007F
+.PositionIsOkay:    ; org $8b84e5
+sta $14
+jsr SR_FangerSpawnSoundAndVortex    ; $8BBE
+cop #$DA : db $3B
+lda #$02CF : sta $16
+cop #$80 : db $0F
+cop #$89
+pea .ReturnFromEgg-1
+cop #$23 : and #$0007 : sta $0000
+cop #$D9 : dw $0000, .WormOptionList ;$8508 ; $8518 $851D $8522 $8527 $852C $8518 $8518 $8518
+.WormOptionList:
+  dw .LeftWormRightWorm, .LeftWormRightRunner
+  dw .LeftRunnerRightWorm, .LeftWormRightDud
+  dw .LeftDudRightWorm, .LeftWormRightWorm
+  dw .LeftWormRightWorm, .LeftWormRightWorm
+.LeftWormRightWorm:    ;org $8b8518
+jsr .SR_MakeLeftEggWorm    ; $856E
+bra .SR_MakeRightEggWorm    ; $5B
+.LeftWormRightRunner:    ;org $8b851d
+jsr .SR_MakeLeftEggWorm    ; $856E
+bra .SR_MakeRightEggRunner    ; $24
+.LeftRunnerRightWorm:    ;org $8b8522
+jsr .SR_MakeRightEggWorm    ; $8578
+bra .SR_MakeLeftEggRunner    ; $29
+.LeftWormRightDud:    ;org $8b8527
+jsr .SR_MakeLeftEggWorm    ; $856E
+bra .SR_MakeRightEggDud    ; $38
+.LeftDudRightWorm:    ;org $8b852c
+jsr .SR_MakeRightEggWorm    ; $8578
+bra .SR_MakeLeftEggDud    ; $29
+.ReturnFromEgg:    ;org $8b8531
+cop #$84 : db $19, $20
+cop #$8A
+cop #$80 : db $1A
+cop #$89
+cop #$AB : db $13
+cop #$DA : db $09
+stz $2E
+cop #$C5
+.SR_MakeRightEggRunner:
+cop #$A5 : dl EFangerEgg_RunnerRight : dw $F800, $0301    ; $8B87E4
+rts
+.SR_MakeLeftEggRunner:
+cop #$A5 : dl EFangerEgg_RunnerLeft : dw $F800, $0301    ; $8B87DA
+rts
+.SR_MakeLeftEggDud:
+cop #$A5 : dl EFangerEgg_DudLeft : dw $F800, $0301    ; $8B8891
+rts
+.SR_MakeRightEggDud:
+cop #$A5 : dl EFangerEgg_DudRight : dw $F800, $0301    ; $8B8896
+rts
+.SR_MakeLeftEggWorm:
+cop #$A5 : dl EFangerEgg_WormLeft : dw $F800, $0111    ; $8B88CD
+rts
+.SR_MakeRightEggWorm:
+cop #$A5 : dl EFangerEgg_WormRight : dw $F800, $0111    ; $8B88DB
+rts
+
+;org $8b8582
+EFanger_OnDeath:
+lda $09AE : bit #$0200 : beq +    ; $03
+  cop #$C1
+  rtl
++:
+lda #$0020 : tsb $09AE
+cop #$A5 : dl LR_SetPlayerImmune : dw $0000, $2000    ; $8AA36E
+lda #$000A : sta $0000
+lda #$0014 : sta $0002
+ldy $06
+.KillNextPiece:    ; org $8b85aa
+lda $0010,y : bit #$2000 : beq ..WithExplosion    ; $08
+lda.w #EFangerPiece_DieImmediate : sta $0000,y : bra ..CheckNextPiece    ; $13
+..WithExplosion:    ;org $8b85ba
+lda.w #EFangerPiece_DieWithExplosion : sta $0000,y
+lda $0002 : sta $0008,y
+  clc : adc #$0008 : sta $0002   ; 8-frame delay between pieces.
+..CheckNextPiece:    ; org $8b85cd
+lda $0006,y : tay
+dec $0000 : bpl .KillNextPiece    ; $D4    ; (-$2C)
+phx
+ldx $0056    ; Also kill everything that's dying or has flag $7F:2A & #$0080.
+.MaybeKillNextActor:    ; org $8b85da
+lda $7F002A,x : bit #$0080 : beq ..CheckNextActor    ; $18
+lda $0010,x : bit #$0040 : bne ..CheckNextActor    ; $10
+bit #$2000 : beq ++    ; $05
+lda.w #EFangerPiece_DieImmediate : bra +    ; $8618 ; $03
+++:    ;org $8b85f5
+lda.w #EFangerPiece_DieWithExplosion   ; $860C
++:    ; org $8b85f8
+sta $0000,x
+..CheckNextActor:    ; org $8b85fb
+lda $0006,x : beq .DoneDie    ; $03
+tax : bra .MaybeKillNextActor    ; $D7    ; (-$29)
+.DoneDie:    ;org $8b8603
+plx
+cop #$DA : db $10
+cop #$C7 : dl EBossMonsterManualDeath    ; $8AA43F
+EFangerPiece_DieWithExplosion:
+cop #$07 : db $06
+cop #$A5 : dl $80DF15 : db $00,$10 : dw $0302
+EFangerPiece_DieImmediate:
+cop #$E0
+
+
+
+EFTailPiece_Reset:
+cop #$C1
+EFTailPiece:   ; org $8b861c
+ldy $24
+lda $0026,y : bne .Ready
+  rtl
+.Ready:
+ldy $24
+lda $0014,y : sta $14
+lda $0026,y : dec : sta $0000
+lda #$0000 : sta $0026,y
+cop #$D9 : dw $0000, .ActionList    ;$863E    ; $8648 $8672 $869C $86C3 $861A
+.ActionList:
+  dw .FlyUp, .FlyDown
+  dw .HorzLeft, .HorzRight
+  dw .Reset
+;
+.FlyUp:    ;org $8b8648
+cop #$8D : db $0A
+lda $14
+  sta $7F0000,x
+  sta $7F0002,x
+  sta $7F000E,x
+..KeepGoing:
+jsr SR_Follow04Below    ; $8AF6
+ldy $24
+lda $0016,y : clc : adc #$00C0 : sta $16
+cop #$C2
+ldy $24
+lda $0026,y : bne .Ready
+bra ..KeepGoing
+;
+.FlyDown:   ;org $8b8672
+cop #$8D : db $0E
+lda $14
+  sta $7F0000,x
+  sta $7F0002,x
+  sta $7F000E,x
+..KeepGoing:
+jsr SR_Follow04Above    ; $8B05
+ldy $24
+lda $0016,y : sec : sbc #$00B0 : sta $16
+cop #$C2
+ldy $24
+lda $0026,y : bne .Ready
+bra ..KeepGoing
+;
+.HorzLeft:   ;org $8b869c
+lda #$000A : sta $7F000A,x
+ldy $24
+lda $0024,y : sta $14
+lda #$02E0 : sta $16
+jsr SR_SetHorzLeftOrbitVars    ; $8B32
+cop #$C8 : dw EFangerPiece_MoveHorzLeft    ; $837D
+..DoneAwaitNextAction:
+cop #$C1
+ldy $24
+lda $0026,y : beq +
+  jmp .Ready
++:
+rtl
+;
+.HorzRight:   ;org $8b86c3
+lda #$000A : sta $7F000A,x
+ldy $24
+lda $0024,y : sta $14
+lda #$02E0 : sta $16
+jsr SR_SetHorzRightOrbitVars    ; $8B5C
+cop #$C8 : dw EFangerPiece_MoveHorzRight    ; $8422
+bra .HorzLeft_DoneAwaitNextAction
+
+;org $8b86df
+EFBodyPiece_WhileEgg:
+cop #$C1
+ldy $24
+lda $0026,y : cmp #$0005 : bne +
+  rtl
++:
+cop #$C1
+; org $8b86ee
+EFBodyPiece:
+ldy $24
+lda $0026,y : bne EFBodyPiece_ChooseAttack
+  rtl
+EFBodyPiece_ChooseAttack:    ;org $8b86f6
+ldy $24
+lda $0024,y : sta $14
+lda $0026,y : dec a : sta $0000
+cop #$D9 : dw $0000, .Options   ; $870A ; $8714 $8744 $8774 $879B $86DF
+.Options:
+  dw EFBodyPiece_FlyUp, EFBodyPiece_FlyDown
+  dw EFBodyPiece_HorzLeft, EFBodyPiece_HorzRight
+  dw EFBodyPiece_WhileEgg
+
+;org $8b8714
+EFBodyPiece_FlyUp:
+cop #$8D : db $05
+lda $14 : sta $7F0000,x
+sta $7F0002,x
+sta $7F000E,x
+; org $8b8725
+.RefreshSprite:
+cop #$8B
+lda $2A : beq .RefreshSprite    ; $FA    ; (-$06)
+lda $08
+stz $08
+inc a : sta $26
+.KeepGoing:    ; org $8b8732
+jsr SR_Follow04Below    ; $8AF6
+cop #$C2
+ldy $24
+lda $0026,y : bne EFBodyPiece_ChooseAttack    ; $B8    ; (-$48)
+dec $26 : bmi .RefreshSprite    ; $E3    ; (-$1D)
+bra .KeepGoing    ; $EE    ; (-$12)
+
+;org $8b8744
+EFBodyPiece_FlyDown:
+cop #$8D : db $09
+lda $14 : sta $7F0000,x
+sta $7F0002,x
+sta $7F000E,x
+; org $8b8755
+.RefreshSprite:
+cop #$8B
+lda $2A : beq .RefreshSprite    ; $FA    ; (-$06)
+lda $08
+stz $08
+inc a : sta $26
+.KeepGoing:    ; org $8b8762
+jsr SR_Follow04Above    ; $8B05
+cop #$C2
+ldy $24
+lda $0026,y : bne EFBodyPiece_ChooseAttack    ; $88    ; (-$78)
+dec $26 : bmi .RefreshSprite    ; $E3    ; (-$1D)
+bra .KeepGoing    ; $EE    ; (-$12)
+
+;org $8b8774
+EFBodyPiece_HorzLeft:
+lda #$0005 : sta $7F000A,x
+ldy $24
+lda $0024,y : sta $14
+lda #$02E0 : sta $16
+jsr SR_SetHorzLeftOrbitVars    ; $8B32
+cop #$C8 : dw EFangerPiece_MoveHorzLeft    ; $837D
+EFBodyPiece_EndHorz:    ; org $8b878e
+cop #$C1
+ldy $24
+lda $0026,y : beq +
+  jmp EFBodyPiece_ChooseAttack    ; $86F6
++:
+rtl
+
+EFBodyPiece_HorzRight:    ;org $8b879b
+lda #$0005 : sta $7F000A,x
+ldy $24
+lda $0024,y : sta $14
+lda #$02E0 : sta $16
+jsr SR_SetHorzRightOrbitVars    ; $8B5C
+cop #$C8 : dw EFangerPiece_MoveHorzRight    ; $8422
+bra EFBodyPiece_EndHorz    ; $D7    ; (-$29)
+
+
+;org $8b87b7
+EFSandVortex:
+{
+cop #$B6 : db $30
+lda #$02D0 : sta $16
+cop #$80 : db $1B
+cop #$89
+cop #$CA : db $3C
+  ldy $24
+  lda $0014,y : sta $14
+  lda $0016,y : cmp #$02C8 : bcc +
+cop #$CB
++:
+cop #$E0
+}
+
+EFangerEgg_RunnerLeft:   ;org $8b87da
+lda #$4000 : tsb $12
+cop #$AA : db $11
+bra +    ; $05
+EFangerEgg_RunnerRight:   ;org $8b87e4
+{
+cop #$AA : db $11
+cop #$BB
++:    ; org $8b87e9
+lda #$0002 : tsb $12
+cop #$8D : db $10
+cop #$C8 : dw EFangerEgg_FlyAndLand    ; $89D7
+lda #$0101 : trb $10
+cop #$80 : db $1C
+cop #$89
+cop #$07 : db $26
+cop #$8D : db $1D
+stz $26
+EFangerRunner:
+.RefreshMovement:    ; org $8b8807
+cop #$AC : db $03, $01
+.RefreshSprite:    ; org $8b880b
+cop #$8B
+lda $2A : beq .RefreshMovement    ; $F6    ; (-$0A)
+lda $08
+stz $08
+sta $24
+.CheckWallsAndMove:    ; org $8b8817
+..CheckEast:
+lda $14 : cmp #$02C8 : bcc ..CheckWest    ; $1B
+lda #$4000 : tsb $12
+lda $26
+inc $26
+cmp #$0002 : bcs .Die    ; $4D
+clc : adc #$001E : sta $28
+cop #$8D : db $FF
+cop #$BA
+bra ..CheckSouth    ; $20
+..CheckWest:    ;org $8b8839
+lda $14 : cmp #$0038 : bcs ..CheckSouth    ; $19
+lda #$4000 : trb $12
+lda $26
+inc $26
+cmp #$0002 : bcs .Die    ; $2B
+clc : adc #$001E : sta $28
+cop #$8D : db $FF
+cop #$BB
+..CheckSouth:    ; org $8b8859
+lda $16 : cmp #$02F0 : bcc ..CheckNorth    ; $05
+  lda #$2000 : tsb $12
+..CheckNorth:    ; org $8b8865
+lda $16 : cmp #$02B0 : bcs ..OkayMove    ; $05
+  lda #$2000 : trb $12
+..OkayMove:    ; org $8b8871
+cop #$C2
+dec $24 : bpl .CheckWallsAndMove    ; $A0    ; (-$60)
+bra .RefreshSprite    ; $92    ; (-$6E)
+.Die:    ;org $8b8879
+cop #$AC : db $13, $45
+cop #$DA : db $0A
+stz $2C
+stz $2E
+cop #$80 : db $20
+cop #$89
+cop #$84 : db $24, $04
+cop #$8A
+cop #$E0
+}
+
+
+EFangerEgg_DudLeft:   ;org $8b8891
+lda #$4000 : tsb $12
+EFangerEgg_DudRight:   ;org $8b8896
+{
+cop #$AA : db $13
+cop #$8D : db $21
+cop #$C8 : dw EFangerEgg_FlyAndLand    ; $89D7
+lda #$0100 : trb $10
+cop #$DA : db $13
+cop #$84 : db $22, $06
+cop #$8A
+cop #$07 : db $14
+cop #$A5 : dl EFangerEggDudSprite : dw $FD00, $0302    ; $8B88C1
+cop #$80 : db $23
+cop #$89
+cop #$E0
+EFangerEggDudSprite:    ;org $8b88c1
+cop #$88 : dl $8EE000
+cop #$80 : db $07
+cop #$89
+cop #$E0
+}
+
+EFangerEgg_WormLeft:   ;org $8b88cd
+lda #$4000 : tsb $12 : bra EFangerEgg_WormRight
+;org $8b88d4
+lda #$4000 : tsb $12 : bra +$05
+EFangerEgg_WormRight:  ;org $8b88db
+{
+cop #$AA : db $13
+bra +
+cop #$AA : db $11
++:    ;org $8b88e3
+cop #$07 : db $13
+cop #$8D : db $10
+cop #$C8 : dw EFangerEgg_FlyAndLand    ; $89D7
+cop #$07 : db $1D
+lda #$ACCC : sta $7F0020,x
+lda $81ACCC : and #$00FF : sta $7F0026,x
+cop #$07 : db $28
+lda #$0010 : trb $10
+cop #$80 : db $11
+cop #$89
+lda #$00B0 : tsb $12
+; org $8b8914
+EFangerWorm_Main:
+lda #$2000 : tsb $10
+cop #$23 : and #$007F : clc : adc #$0064 : sta $08
+cop #$C2
+.GetNewSpawnPos:    ; org $8b8926
+cop #$23
+pha
+  sec : sbc #$007F : clc : adc $09A2 : and #$FFF0 : clc : adc #$0008 : sta $14
+pla
+  and #$0070 : sec : sbc #$0030 : clc : adc #$02D0 : sta $16
+cop #$C2
+cop #$13 : dw .GetNewSpawnPos    ; $8926
+lda #$2000 : trb $10
+cop #$80 : db $12
+cop #$89
+cop #$84 : db $14, $02
+cop #$8A
+cop #$21 : db $02 : dw .DoBurrow    ; $8972 ; Burrow if hit player on emerging.
+cop #$A5 : dl EFangerWormBullet : dw $F000, $0200    ; $8B8979
+cop #$84 : db $14, $02
+cop #$8A
+.DoBurrow:    ; org $8b8972
+cop #$80 : db $13
+cop #$89
+bra EFangerWorm_Main    ; $9B    ; (-$65)
+
+;org $8b8979
+EFangerWormBullet:
+cop #$5B : dw $0010
+cop #$07 : db $1E
+lda #$0002 : sta $7F0014,x
+cop #$A2 : dl EChaserAlt : dw $2000    ; $80E4FC
+cpy #$1FC0 : beq .DieImmediate    ; $3D
+lda $09AA : sta $0024,y
+cop #$8D : db $17
+.RefreshSprite:    ; org $8b899c
+cop #$8B
+lda $2A : beq .RefreshSprite    ; $FA    ; (-$06)
+lda $08
+stz $08
+inc : sta $26
+; org $8b89a9
+.KeepGoing:
+lda $14 : cmp #$0030 : bcc .DieWithSparkle    ; $22
+  cmp #$02D0 : bcs .DieWithSparkle    ; $1D
+lda $16 : cmp #$0294 : bcc .DieWithSparkle    ; $16
+  cmp #$02F8 : bcs .DieWithSparkle    ; $11
+cop #$C2
+lda $10 : bit #$4000 : bne .RefreshSprite    ; $D2    ; (-$2E)
+  dec $26 : bpl .KeepGoing    ; $DB    ; (-$25)
+bra .RefreshSprite    ; $CC    ; (-$34)
+.DieImmediate:    ;org $8b89d0
+cop #$E0
+.DieWithSparkle:    ;org $8b89d2
+cop #$C7 : dl EObjectDeathWithSparkle    ; $80C418
+}
+
+;org $8b89d7
+EFangerEgg_FlyAndLand:
+{
+cop #$5B : dw $0080
+cop #$B6 : db $30
+cop #$63 : db $02, $08, $00
+cop #$C1
+lda $14 : cmp #$02D0 : bcc +
+  lda #$4000 : tsb $12
++:
+lda $14 : cmp #$0030 : bcs +
+  lda #$4000 : trb $12
++:
+cop #$64 : cmp #$0000 : bmi .HasHitGroundDoReturn
+  rtl
+.HasHitGroundDoReturn:
+stz $2C
+cop #$C5
+}
+
+;org $8b8a09
+EFangerPiecesVisibilityManager:
+{
+lda #$0180 : tsb $12
+cop #$A1 : dl EFangerSandEmergeSprite : dw $2300    ; $8B8AD5
+sty $20
+cop #$C1
+ldy $24
+lda $0010,y : bit #$0040 : beq +
+  jmp .FangerIsDead    ; $8AC7
++:
+lda #$000B : sta $0000    ; Number of Pieces.
+ldy $06
+sty $0002    ; Next Piece in $0002 and in Y.
+stz $0004    ; isFangerHurt
+lda $0010,y : bit #$0080 : beq .NextPiece
+  inc $0004    ; isFangerHurt = 1
+.NextPiece:
+lda #$02D0 : cmp $0016,y : bcs ..MaybeOnScreen    ; $0B
+..NotOnScreen:
+lda $0010,y : ora #$2000 : sta $0010,y
+bra +    ; $09
+..MaybeOnScreen:    ;org $8b8a52
+lda $0010,y : and #$DFFF : sta $0010,y
++:
+cpy $0002 : beq ..TryNextPiece   ; Don't check for hurt palette if this Piece is the Head.
+..MaybeApplyHurtPalette:
+lda $000E,y : and #$F1FF : sta $000E,y    ; Reset palette.
+lda $0004 : beq ..TryNextPiece    ; $0F
+lda $0036 : lsr : bcc ..TryNextPiece    ; $09
+lda $000E,y : ora #$0800 : sta $000E,y    ; Set to "hurt" palette.
+..TryNextPiece:    ; org $8b8a7d
+dec $0000 : bmi .ConsiderEmergeSprite    ; $06
+lda $0006,y : tay : bra .NextPiece    ; (-$49)
+.ConsiderEmergeSprite:    ;org $8b8a88
+lda #$000B : sta $0000    ; Number of Pieces.
+ldy $06
+..CheckIsNextPieceEmerging:    ; org $8b8a90
+lda #$02C8 : sec : sbc $0016,y : bpl +
+  eor #$FFFF : inc a
++:
+cmp #$000A : bcs ..PieceNotEmerging    ; $1A
+phx
+ldx $20
+lda $0010,x : and #$DFFF : sta $0010,x
+lda $0014,y : sta $0014,x
+lda #$02D8 : sta $0016,x
+plx
+rtl
+..PieceNotEmerging:    ;org $8b8abc
+dec $0000 : bmi .NoEmergeSprite    ; $08
+lda $0006,y : tay : bra ..CheckIsNextPieceEmerging    ; $C9    ; (-$37)
+.FangerIsDead:    ;org $8b8ac7
+cop #$C1
+.NoEmergeSprite:    ; org $8b8ac9
+ldy $20
+lda $0010,y : ora #$2000 : sta $0010,y
+rtl
+
+EFangerSandEmergeSprite:    ;org $8b8ad5
+lda #$2000 : trb $10
+.Refresh:
+cop #$80 : db $16
+cop #$89
+bra .Refresh
+}
+
+;org $8b8ae1
+SR_SetFangerVertFlySineParams:
+lda #$0000 : sta $7F0010,x
+lda #$0020 : sta $7F0012,x
+lda $14 : sta $7F100C,x
+rts
+
+;org $8b8af6
+SR_Follow04Below:
+ldy $04
+jsr SR_AdvanceSavedXPosList    ; $8B14
+lda $0016,y : clc : adc #$0010 : sta $16
+rts
+
+;org $8b8b05
+SR_Follow04Above:
+ldy $04
+jsr SR_AdvanceSavedXPosList    ; $8B14
+lda $0016,y : sec : sbc #$0010 : sta $16
+rts
+
+;org $8b8b14
+SR_AdvanceSavedXPosList:
+lda $7F0000,x : sta $14
+lda $7F0002,x : sta $7F0000,x
+lda $7F000E,x : sta $7F0002,x
+lda $0014,y : sta $7F000E,x
+rts
+
+;org $8b8b32
+SR_SetHorzLeftOrbitVars:
+lda #$0000 : sta $7F000E,x
+lda $14 : sec : sbc #$0050 : sta $7F0018,x
+lda $16 : sta $7F001A,x
+lda #$4040 : sta $7F0010,x
+sta $7F0002,x
+lda #$FFA0 : sta $7F0012,x
+rts
+
+;org $8b8b5c
+SR_SetHorzRightOrbitVars:
+lda #$0000 : sta $7F000E,x
+lda $14 : clc : adc #$0050 : sta $7F0018,x
+lda $16 : sta $7F001A,x
+lda #$C0C0 : sta $7F0010,x
+  sta $7F0002,x
+lda #$FFA0 : sta $7F0012,x
+rts
+
+;org $8b8b86
+SR_SetPieceHorzMoveDelays:
+lda $7F100C,x : beq +
+  rts
++:
+inc : sta $7F100C,x
+lda #$0000 : sta $7F000A,x
+lda #$000A : sta $0000    ; numPieces, +1 for the tail.
+lda #$0004 : sta $0002    ; Base delay for first piece.
+ldy $06
+.NextPiece:    ; org $8b8ba7
+lda $0002 : sta $0008,y
+clc : adc #$0003 : sta $0002   ; Each piece is 3 frames behind the previous one.
+lda $0006,y : tay
+dec $0000 : bpl .NextPiece    ; $EA    ; (-$16)
+rts
+
+;org $8b8bbe
+SR_FangerSpawnSoundAndVortex:
+cop #$07 : db $27
+cop #$A5 : dl EFSandVortex : dw $0000, $0301    ; $8B87B7
+rts
+
+;org $8b8bcb
+SR_FangerSetSpawnPtForVert:
+lda $09A2 : cmp #$00F8 : bcs .PlayerNotFarLeft
+.PlayerIsFarLeft:
+lda #$0088 : bra .DoRandomize
+.PlayerNotFarLeft:    ;org $8b8bd8
+cmp #$01F8 : bcs .PlayerIsFarRight
+.PlayerInMiddle:
+lda #$0188 : bra .DoRandomize
+.PlayerIsFarRight:    ;org $8b8be2
+lda #$0288
+.DoRandomize:    ; org $8b8be5
+sta $14
+cop #$23 : and #$003F : sec : sbc #$001F : clc : adc $14
+  sta $14
+  sta $24
+rts
+warnpc $8b8bf8
+
+
+org $8B9CE8
+SR_ScaledSine8B:    ; Returns $7F:12 * sin($7F:10).
+lda $7F0010,x : tay
+sep #$20
+clc
+lda $C455,y
+bpl +
+  eor #$FF : inc a
+  sec
++:
+xba
+lda $7F0012,x
+jsl LR_MultiplyBytesOfA    ; $8281D1
+rep #$20
+xba
+and #$00FF
+bcc +
+  eor #$FFFF : inc a
++:
+rts
+
+;org $8b9d0f
+
+org $8b9e96
+#B_8B9E96:
+cop #$27 : db $09
+J_8B9E99:    ; org $8b9e99
+lda $10 : bit #$4000 : bne B_8B9E96
+cop #$2A : dw $0000, B_8B9EAA, B_8B9EAA, B_8B9F74
+B_8B9EAA:    ; org $8b9eaa
+cop #$80 : db $04
+cop #$89
+cop #$44 : db $F8, $FF, $00, $01 : dw B_8B9EC5
+J_8B9EB7:    ; org $8b9eb7
+cop #$80 : db $04
+cop #$89
+cop #$86 : db $04, $02, $01
+cop #$8A
+bra J_8B9ED4
+B_8B9EC5:    ; org $8b9ec5
+cop #$C8 : dw B_8B9F0C
+cop #$84 : db $04, $02
+cop #$8A
+bra J_8B9EB7
+B_8B9ED1:    ; org $8b9ed1
+cop #$27 : db $0A
+J_8B9ED4:    ; org $8b9ed4
+lda $10 : bit #$4000 : bne B_8B9ED1
+cop #$2A : dw $0000, B_8B9EE5, B_8B9EE5, B_8B9FAF
+B_8B9EE5:    ; org $8b9ee5
+cop #$80 : db $04
+cop #$89
+cop #$44 : db $F8, $FF, $00, $01 : dw B_8B9F00
+J_8B9EF2:    ; org $8b9ef2
+cop #$80 : db $04
+cop #$89
+cop #$86 : db $04, $02, $02
+cop #$8A
+bra J_8B9E99
+B_8B9F00:    ; org $8b9f00
+cop #$C8 : dw B_8B9F0C
+cop #$84 : db $04, $02
+cop #$8A
+bra J_8B9EF2
+B_8B9F0C:    ; org $8b9f0c
+cop #$84 : db $1C, $06
+cop #$8A
+cop #$9E : dl C_8B9F2F : dw $FFFA, $FFF8, $0202
+cop #$9E : dl C_8B9F2F : dw $FFFA, $FFF6, $0202
+cop #$80 : db $04
+cop #$89
+cop #$C5
+C_8B9F2F:    ; org $8b9f2f
+cop #$07 : db $1D
+cop #$B7 : db $02
+cop #$5B : dw $0010
+cop #$81 : db $20, $04
+cop #$89
+lda #$0002 : trb $10
+B_8B9F44:    ; org $8b9f44
+cop #$81 : db $20, $04
+cop #$89
+lda $10 : bit #$4000 : beq B_8B9F44
+cop #$E0
+warnpc $8b9f53
+
+org $8b9f60
+#B_8B9F60:
+cop #$27 : db $09
+J_8B9F63:    ; org $8b9f63
+lda $10 : bit #$4000 : bne B_8B9F60
+cop #$2A : dw $0000, B_8B9EAA, B_8B9F74, B_8B9F74
+B_8B9F74:    ; org $8b9f74
+cop #$80 : db $84
+cop #$89
+cop #$44 : db $00, $FF, $08, $01 : dw B_8B9F8F
+J_8B9F81:    ; org $8b9f81
+cop #$80 : db $84
+cop #$89
+cop #$86 : db $84, $02, $01
+cop #$8A
+bra J_8B9F9E
+B_8B9F8F:    ; org $8b9f8f
+cop #$C8 : dw B_8B9FD6
+cop #$84 : db $84, $02
+cop #$8A
+bra J_8B9F81
+B_8B9F9B:    ; org $8b9f9b
+cop #$27 : db $0A
+J_8B9F9E:    ; org $8b9f9e
+lda $10 : bit #$4000 : bne B_8B9F9B
+cop #$2A : dw $0000, B_8B9EE5, B_8B9FAF, B_8B9FAF
+B_8B9FAF:    ; org $8b9faf
+cop #$80 : db $84
+cop #$89
+cop #$44 : db $00, $FF, $08, $01 : dw B_8B9FCA
+J_8B9FBC:    ; org $8b9fbc
+cop #$80 : db $84
+cop #$89
+cop #$86 : db $84, $02, $02
+cop #$8A
+bra J_8B9F63
+B_8B9FCA:    ; org $8b9fca
+cop #$C8 : dw B_8B9FD6
+cop #$84 : db $84, $02
+cop #$8A
+bra J_8B9FBC
+B_8B9FD6:    ; org $8b9fd6
+cop #$84 : db $9C, $06
+cop #$8A
+cop #$9E : dl C_8B9FF9 : dw $0006, $FFF8, $0202
+cop #$9E : dl C_8B9FF9 : dw $0006, $FFF6, $0202
+cop #$80 : db $84
+cop #$89
+cop #$C5
+C_8B9FF9:    ; org $8b9ff9
+cop #$07 : db $1D
+cop #$B7 : db $02
+cop #$5B : dw $0010
+cop #$81 : db $20, $03
+cop #$89
+lda #$0002 : trb $10
+B_8BA00E:    ; org $8ba00e
+cop #$81 : db $20, $03
+cop #$89
+lda $10 : bit #$4000 : beq B_8BA00E
+cop #$E0
+warnpc $8ba01d
+
+
+org $8ba61a
+db $00 : dw $0000
+EBabelMummyQueen:
+
+
+org $8ba6b6
+db $00 : dw $0000
+EMummyQueen:
+
+
+org $8baf4f
+db $00 : dw $0000
+EAWZipFly:
+
+
+org $8bb1d7
+db $0a : dw $0000
+EAWBush:
+
+
+org $8bb275
+db $1f : dw $0000
+EAWCyclops:
+lda #$0020 : tsb $12
+lda $AD10 : and #$00FF : sta $7F0010,x
+bra EAWCyclops_Idle
+
+EAWCyclops_RestartIdle:    ; org $8bb289
+lda #$00FF : sta $7F0026,x
+cop #$C2
+cop #$23 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, $B2A0
+  dw EAWCyclops_PlayerWest, EAWCyclops_PlayerEast
+  dw EAWCyclops_PlayerSouth, EAWCyclops_PlayerNorth
+
+; org $8bb2a8
+EAWCyclops_Idle:
+lda #$00FF : sta $7F0026,x
+cop #$C6 : dw EAWCyclops_Idle    ; Save ptr.
+cop #$C2
+cop #$27 : db $11    ; Delay if off-screen.
+cop #$2C : dw EAWCyclops_PlayerCloseY, EAWCyclops_PlayerCloseX
+EAWCyclops_PlayerCloseY:
+cop #$2A : dw $0000, EAWCyclops_PlayerWest, EAWCyclops_PlayerWest, EAWCyclops_PlayerEast
+EAWCyclops_PlayerWest:
+cop #$CA : db $02
+cop #$17 : dw EAWCyclops_RestartIdle
+cop #$21 : db $03 : dw B_8BB2EB
+cop #$81 : db $24, $02
+cop #$89
+cop #$17 : dw EAWCyclops_RestartIdle
+cop #$21 : db $03 : dw B_8BB2F7
+cop #$81 : db $2A, $02
+cop #$89
+cop #$CB
+B_8BB2EB:    ; org $8bb2eb
+cop #$17 : dw EAWCyclops_RestartIdle
+cop #$81 : db $24, $02
+cop #$89
+bra J_8BB301
+B_8BB2F7:    ; org $8bb2f7
+cop #$17 : dw EAWCyclops_RestartIdle
+cop #$81 : db $2A, $02
+cop #$89
+J_8BB301:    ; org $8bb301
+cop #$80 : db $21
+cop #$89
+cop #$35
+cmp #$0001 : beq B_8BB310
+jmp J_8BB400
+B_8BB310:    ; org $8bb310
+cop #$DA : db $0F
+cop #$C5
+EAWCyclops_PlayerEast:    ; org $8bb315
+cop #$CA : db $02
+cop #$21 : db $03 : dw B_8BB338
+cop #$18 : dw EAWCyclops_RestartIdle
+cop #$81 : db $A4, $01
+cop #$89
+cop #$21 : db $03 : dw B_8BB344
+cop #$18 : dw EAWCyclops_RestartIdle
+cop #$81 : db $AA, $01
+cop #$89
+cop #$CB
+B_8BB338:    ; org $8bb338
+cop #$18 : dw EAWCyclops_RestartIdle
+cop #$81 : db $A4, $01
+cop #$89
+bra J_8BB34E
+B_8BB344:    ; org $8bb344
+cop #$18 : dw EAWCyclops_RestartIdle
+cop #$81 : db $AA, $01
+cop #$89
+J_8BB34E:    ; org $8bb34e
+cop #$80 : db $A1
+cop #$89
+cop #$35
+cmp #$0003 : beq B_8BB35D
+jmp J_8BB400
+B_8BB35D:    ; org $8bb35d
+cop #$DA : db $0F
+cop #$C5
+EAWCyclops_PlayerCloseX:    ; org $8bb362
+cop #$2B : dw $0000, EAWCyclops_PlayerNorth, EAWCyclops_PlayerNorth, EAWCyclops_PlayerSouth
+EAWCyclops_PlayerNorth:    ; org $8bb36c
+cop #$CA : db $02
+cop #$21 : db $03 : dw B_8BB38F
+cop #$15 : dw EAWCyclops_RestartIdle
+cop #$82 : db $23, $02
+cop #$89
+cop #$21 : db $03 : dw B_8BB39B
+cop #$15 : dw EAWCyclops_RestartIdle
+cop #$82 : db $29, $02
+cop #$89
+cop #$CB
+B_8BB38F:    ; org $8bb38f
+cop #$15 : dw EAWCyclops_RestartIdle
+cop #$82 : db $23, $02
+cop #$89
+bra J_8BB3A5
+B_8BB39B:    ; org $8bb39b
+cop #$15 : dw EAWCyclops_RestartIdle
+cop #$82 : db $29, $02
+cop #$89
+J_8BB3A5:    ; org $8bb3a5
+cop #$80 : db $20
+cop #$89
+cop #$35
+cmp #$0002 : bne J_8BB400
+cop #$DA : db $0F
+cop #$C5
+EAWCyclops_PlayerSouth:    ; org $8bb3b6
+cop #$CA : db $02
+cop #$21 : db $03 : dw B_8BB3D9
+cop #$16 : dw EAWCyclops_RestartIdle
+cop #$82 : db $22, $01
+cop #$89
+cop #$21 : db $03 : dw B_8BB3E5
+cop #$16 : dw EAWCyclops_RestartIdle
+cop #$82 : db $28, $01
+cop #$89
+cop #$CB
+B_8BB3D9:    ; org $8bb3d9
+cop #$16 : dw EAWCyclops_RestartIdle
+cop #$82 : db $22, $01
+cop #$89
+bra J_8BB3EF
+B_8BB3E5:    ; org $8bb3e5
+cop #$16 : dw EAWCyclops_RestartIdle
+cop #$82 : db $28, $01
+cop #$89
+J_8BB3EF:    ; org $8bb3ef
+cop #$80 : db $1F
+cop #$89
+cop #$35
+cmp #$0000 : bne J_8BB400
+cop #$DA : db $0F
+cop #$C5
+J_8BB400:    ; org $8bb400
+and #$0003 : sta $26
+cop #$21 : db $05 : dw B_8BB40C
+cop #$C5
+B_8BB40C:    ; org $8bb40c
+lda $26 : sta $0000
+cop #$D9 : dw $0000, $B417
+  dw B_8BB41F, B_8BB4E9
+  dw B_8BB47A, B_8BB558
+B_8BB41F:    ; org $8bb41f
+cop #$80 : db $26
+cop #$89
+cop #$A4 : dl C_8BB74F : dw $D000, $2002
+cop #$A4 : dl C_8BB6BD : dw $D200, $2202
+cop #$A4 : dl C_8BB6BD : dw $DA00, $2202
+cop #$A4 : dl C_8BB6BD : dw $E000, $2202
+cop #$A4 : dl C_8BB68E : dw $E600, $2202
+lda #$FFFF : sta $26
+cop #$C2
+cop #$80 : db $10
+cop #$89
+lda $26 : bpl B_8BB462
+rtl
+B_8BB462:    ; org $8bb462
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+lda $26 : beq B_8BB473
+jmp J_8BB5C4
+B_8BB473:    ; org $8bb473
+cop #$80 : db $20
+cop #$89
+cop #$C5
+B_8BB47A:    ; org $8bb47a
+cop #$80 : db $25
+cop #$89
+cop #$A1 : dl C_8BB73D : dw $2002
+lda #$FFD0
+jsr S_8BB686
+cop #$A1 : dl C_8BB6BD : dw $2202
+lda #$FFD2
+jsr S_8BB686
+cop #$A1 : dl C_8BB6BD : dw $2202
+lda #$FFDA
+jsr S_8BB686
+cop #$A1 : dl C_8BB6BD : dw $2202
+lda #$FFE0
+jsr S_8BB686
+cop #$A1 : dl C_8BB68E : dw $2202
+lda #$FFE6
+jsr S_8BB686
+lda #$FFFF : sta $26
+cop #$C2
+cop #$80 : db $0F
+cop #$89
+lda $26 : bpl B_8BB4D1
+rtl
+B_8BB4D1:    ; org $8bb4d1
+cop #$A8
+cop #$A8
+cop #$A8
+cop #$A8
+cop #$A8
+lda $26 : beq B_8BB4E2
+jmp J_8BB5C4
+B_8BB4E2:    ; org $8bb4e2
+cop #$80 : db $1F
+cop #$89
+cop #$C5
+B_8BB4E9:    ; org $8bb4e9
+cop #$80 : db $A7
+cop #$89
+cop #$A1 : dl C_8BB6CC : dw $2002
+lda #$FFD8
+jsr S_8BB686
+cop #$A1 : dl C_8BB6BD : dw $2202
+lda #$FFD2
+jsr S_8BB686
+cop #$A1 : dl C_8BB6BD : dw $2202
+lda #$FFDA
+jsr S_8BB686
+cop #$A1 : dl C_8BB6BD : dw $2202
+lda #$FFE0
+jsr S_8BB686
+cop #$A1 : dl C_8BB68E : dw $2202
+lda #$FFE6
+jsr S_8BB686
+lda #$FFFF : sta $26
+cop #$C2
+cop #$80 : db $91
+cop #$89
+lda $26 : bpl B_8BB540
+rtl
+B_8BB540:    ; org $8bb540
+cop #$A8
+cop #$A8
+cop #$A8
+cop #$A8
+cop #$A8
+lda $26 : beq B_8BB551
+jmp J_8BB5C4
+B_8BB551:    ; org $8bb551
+cop #$80 : db $A1
+cop #$89
+cop #$C5
+B_8BB558:    ; org $8bb558
+cop #$80 : db $27
+cop #$89
+cop #$A1 : dl C_8BB6DC : dw $2002
+lda #$FFD8
+jsr S_8BB686
+cop #$A1 : dl C_8BB6BD : dw $2202
+lda #$FFD2
+jsr S_8BB686
+cop #$A1 : dl C_8BB6BD : dw $2202
+lda #$FFDA
+jsr S_8BB686
+cop #$A1 : dl C_8BB6BD : dw $2202
+lda #$FFE0
+jsr S_8BB686
+cop #$A1 : dl C_8BB68E : dw $2202
+lda #$FFE6
+jsr S_8BB686
+lda #$FFFF : sta $26
+cop #$C2
+cop #$80 : db $11
+cop #$89
+lda $26 : bpl B_8BB5AF
+rtl
+B_8BB5AF:    ; org $8bb5af
+cop #$A8
+cop #$A8
+cop #$A8
+cop #$A8
+cop #$A8
+lda $26 : bne J_8BB5C4
+cop #$80 : db $21
+cop #$89
+cop #$C5
+J_8BB5C4:    ; org $8bb5c4
+lda #$AD0C : sta $7F0020,x
+lda $AD0C : and #$00FF : sta $7F0026,x
+lda #$0020 : trb $12
+cop #$80 : db $2B
+cop #$89
+B_8BB5DF:    ; org $8bb5df
+cop #$C6 : dw B_8BB5DF
+cop #$C2
+cop #$21 : db $07 : dw B_8BB600
+cop #$23 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, $B5F8
+  dw B_8BB610, B_8BB62B
+  dw B_8BB650, B_8BB66B
+B_8BB600:    ; org $8bb600
+cop #$2C : dw B_8BB606, B_8BB646
+B_8BB606:    ; org $8bb606
+cop #$2A : dw $0000, B_8BB610, B_8BB610, B_8BB62B
+B_8BB610:    ; org $8bb610
+cop #$CA : db $03
+cop #$17 : dw B_8BB5DF
+cop #$81 : db $14, $04
+cop #$89
+cop #$17 : dw B_8BB5DF
+cop #$81 : db $17, $04
+cop #$89
+cop #$CB
+cop #$C5
+B_8BB62B:    ; org $8bb62b
+cop #$CA : db $03
+cop #$18 : dw B_8BB5DF
+cop #$81 : db $94, $03
+cop #$89
+cop #$18 : dw B_8BB5DF
+cop #$81 : db $97, $03
+cop #$89
+cop #$CB
+cop #$C5
+B_8BB646:    ; org $8bb646
+cop #$2B : dw $0000, B_8BB650, B_8BB650, B_8BB66B
+B_8BB650:    ; org $8bb650
+cop #$CA : db $07
+cop #$15 : dw B_8BB5DF
+cop #$82 : db $13, $04
+cop #$89
+cop #$15 : dw B_8BB5DF
+cop #$82 : db $16, $04
+cop #$89
+cop #$CB
+cop #$C5
+B_8BB66B:    ; org $8bb66b
+cop #$CA : db $07
+cop #$16 : dw B_8BB5DF
+cop #$82 : db $12, $03
+cop #$89
+cop #$16 : dw B_8BB5DF
+cop #$82 : db $15, $03
+cop #$89
+cop #$CB
+cop #$C5
+S_8BB686:    ; org $8bb686
+clc : adc $0016,y : sta $0016,y
+rts
+C_8BB68E:    ; org $8bb68e
+ldy $24
+lda $14 : sec : sbc $0014,y : sta $7F100C,x
+lda $16 : sec : sbc $0016,y : sta $7F100E,x
+cop #$C1
+ldy $24
+lda $0014,y : clc : adc $7F100C,x : sta $14
+lda $0016,y : clc : adc $7F100E,x : sta $16
+rtl
+C_8BB6BD:    ; org $8bb6bd
+lda #$2000 : trb $10
+cop #$8D : db $1E
+cop #$C1
+jsl LR_PlaceSelfBetween04And06    ; jsl $8aa41c
+rtl
+C_8BB6CC:    ; org $8bb6cc
+cop #$8D : db $9D
+lda #$0002 : tsb $12
+lda $14 : clc : adc #$0040 : bra J_8BB6E5
+C_8BB6DC:    ; org $8bb6dc
+cop #$8D : db $1D
+lda $14 : clc : adc #$FFC0
+J_8BB6E5:    ; org $8bb6e5
+sta $7F0018,x
+lda $24 : sta $26
+phx : tax
+lda $7F0010,x
+plx : sta $7F0026,x
+lda #$AD10 : sta $7F0020,x
+lda #$FFD8 : sta $7F100E,x
+lda #$0000 : sta $7F100C,x
+lda $16 : clc : adc #$0018 : sta $16
+lda #$2000 : trb $10
+cop #$2B : dw $0020, B_8BB72D, B_8BB724, B_8BB72D
+B_8BB724:    ; org $8bb724
+lda $09A4 : clc : adc #$0008 : bra J_8BB72F
+B_8BB72D:    ; org $8bb72d
+lda $16
+J_8BB72F:    ; org $8bb72f
+sta $7F001A,x
+lda $16 : clc : adc #$FFE8 : sta $16 : bra J_8BB79E
+C_8BB73D:    ; org $8bb73d
+cop #$8D : db $19
+lda #$FFD8 : sta $7F100E,x
+lda $16 : clc : adc #$0050 : bra J_8BB75F
+C_8BB74F:    ; org $8bb74f
+cop #$8D : db $1B
+lda #$FFD0 : sta $7F100E,x
+lda $16 : clc : adc #$FFD0
+J_8BB75F:    ; org $8bb75f
+sta $7F001A,x
+lda $24 : sta $26
+phx : tax
+lda $7F0010,x
+plx : sta $7F0026,x
+lda #$AD10 : sta $7F0020,x
+lda #$0000 : sta $7F100C,x
+lda #$2000 : trb $10
+cop #$2A : dw $0020, B_8BB798, B_8BB78F, B_8BB798
+B_8BB78F:    ; org $8bb78f
+lda $09A2 : clc : adc #$0008 : bra J_8BB79A
+B_8BB798:    ; org $8bb798
+lda $14
+J_8BB79A:    ; org $8bb79a
+sta $7F0018,x
+J_8BB79E:    ; org $8bb79e
+cop #$57 : dl P_8BB800
+cop #$22 : db $FF, $02
+dec $28
+ldy $26
+B_8BB7AB:    ; org $8bb7ab
+lda $0014,y : clc : adc $7F100C,x : sta $7F0018,x
+lda $0016,y : clc : adc $7F100E,x : sta $7F001A,x
+cop #$22 : db $FF, $02
+ldy $26
+lda $0014,y : clc : adc $7F100C,x : sec : sbc $14 : bpl B_8BB7DA : eor #$FFFF : inc a
+B_8BB7DA:    ; org $8bb7da
+cmp #$0002 : bcs B_8BB7AB
+lda $0016,y : clc : adc $7F100E,x : sec : sbc $16 : bpl B_8BB7F0 : eor #$FFFF : inc a
+B_8BB7F0:    ; org $8bb7f0
+cmp #$0002 : bcs B_8BB7AB
+ldy $26
+lda #$0000 : sta $0026,y
+cop #$C1
+rtl
+P_8BB800:    ; org $8bb800
+ldy $26
+lda #$0001 : sta $0026,y
+cop #$07 : db $06
+cop #$A5 : dl C_80DF15 : dw $0000, $0302
+cop #$C1
+rtl
+warnpc $8bb817
+
+
+
+org $8bbd8d
+db $16 : dw $1000
+EAWFlyingSkull:
+
+
+org $8bbfd0
+db $16 : dw $1000
+EAWWallSkull:
+
+
+
+org $8bc5a3
+db $0f : dw $0000
+EPyramidOrb1:
+
+
+
+
+; org $8bc896
+GotPalSnesAbortGame:
+rep #$20
+cop #$50 : dl $DE1D35 : db $00, $00, $08
+lda #$0000 : sta $7F0A00
+cop #$BD : dl Text_WarningGameIncompatible+1    ; $81D9D8, the +1 seems to be a bug
+sep #$20
+lda #$04 : sta $212C
+rep #$20
+cop #$C1
+rtl
+;org $8bc8b8
+rep #$20    ; Inaccessible.
+
+;org $8bc8ba
+db $00,$00,$18
+ELogoScreenHandler:
+lda #$4000 : tsb $09EC
+lda #$0000 : sta $7F0A00
+sep #$20
+lda #$01 : sta $420D
+lda #$10 : sta $212C
+rep #$20
+lda #$FFF0 : tsb $065A
+sep #$20
+lda $213F : bit #$10 : beq .GotNtscSnes
+jmp GotPalSnesAbortGame
+.GotNtscSnes:    ; org $8bc8ea
+rep #$20
+cop #$BC : db $08, $00
+cop #$D0 : db $10, $01 : dw B_8BC90F
+cop #$BC : db $00, $F0
+cop #$84 : db $01, $02
+cop #$8A
+cop #$CC : db $10
+cop #$26 : db $FB, $00, $00, $00, $00, $00, $00, $11
+cop #$E0
+
+#B_8BC90F:    ; org $8bc90f
+cop #$84 : db $00, $02
+cop #$8A
+cop #$CE : db $10
+cop #$26 : db $FC, $00, $00, $00, $00, $00, $00, $11
+cop #$E0
+
+;org $8bc924
+db $00,$00,$30
+ETitleScreenManager:
+lda #$4001 : tsb $09EC
+cop #$50 : dl $C17FBE : db $00, $00, $20
+cop #$50 : dl $DE1D35 : db $00, $00, $08
+lda #$0000 : sta $7F0A00
+cop #$A0 : dl ETitleScreenEarth : dw $0080, $0050, $1800
+sep #$20
+  lda #$10 : sta $212C
+rep #$20
+lda #$0804 : sta $064A
+cop #$DA : db $B3
+cop #$BD : dl $81DA5E
+cop #$DA : db $77
+cop #$BD : dl $81DA47
+cop #$DB : dw $09D3
+cop #$CC : db $F4
+lda #$0804 : sta $064A
+cop #$26 : db $8C, $00, $00, $00, $00, $00, $00, $11
+cop #$C1
+rtl
+
+ETitleScreenEarth:    ; org $8bc988
+cop #$B6 : db $10
+cop #$84 : db $00, $F0
+cop #$8A
+cop #$85 : db $00, $40, $02
+cop #$8A
+cop #$DA : db $3B
+sep #$20
+  lda #$16 : sta $212C
+rep #$20
+cop #$C1
+rtl
+
+;org $8bc9a7
+cop #$37 : db $2d
+cop #$39
+cop #$E0
+
+org $8bc9ae
+db $00,$00,$38
+lda #$FFF0 : tsb $065A
+cop #$DB : dw $021B
+bra J_8BC9C6     ; $09
+;org $8bc9bd
+db $00,$00,$38
+lda #$FFF0 : tsb $065A
+J_8BC9C6:
+cop #$C1
+cop #$40 : dw $1001, B_8BC9CF    ; $C9CF
+rtl
+
+#B_8BC9CF:    ; org $8bc9cf
+stz $0DB6
+lda #$0000 : sta $064A
+lda #$0001 : sta $0648
+cop #$26 : db $FA, $00, $01, $70, $03, $00, $00, $44
+cop #$C2
+phd
+phx
+lda #$0000 : tcd
+jsl LR_WaitForNmi    ; $828043
+plx
+pld
+cop #$C1
+sep #$20
+  lda #$00 : sta $2100
+rep #$20
+rtl
+;org $8bca02
+
+
+org $8bcf52
+#C_8BCF52:
+phb
+phx
+sep #$20
+ldy $24
+lda $0002,y : pha : plb
+ldx #$0000
+ldy $26
+#J_8BCF62:
+lda $0000,y : cmp #$CA : beq B_8BCF6D
+  inx
+  iny
+  bra J_8BCF62
+#B_8BCF6D:
+rep #$20
+txa
+  and #$FFFE
+  sec : sbc #$0020
+  eor #$FFFF : inc a
+  and #$FFFE : asl : asl
+plx
+  sta $14
+lda #$0038 : sta $16
+lda #$2300 : sta $0E : bra J_8BCFB3
+warnpc $8bcf8f
+
+
+org $8bcfb3
+#J_8BCFB3:
+ldy $26
+stz $00DA
+lda $14 : sta $18
+  sta $26
+lda $16 : sta $1A
+sep #$20
+  sta $27
+rep #$20
+phx
+ldx #$0000
+sep #$20
+#J_8BCFCE:
+lda $0000,y
+iny
+  cmp #$C0 : bcs J_8BD00B
+  cmp #$57 : beq B_8BCFFD
+rep #$20
+and #$00FF : asl : ora $0E : sta $7F0602,x
+lda $26 : sta $7F0600,x
+  clc : adc #$0008 : sta $26
+inc $00DA
+inx : inx : inx : inx
+sep #$20
+bra J_8BCFCE
+#B_8BCFFD:
+rep #$20
+lda $26 : clc : adc #$0008 : sta $26
+sep #$20
+bra J_8BCFCE
+#J_8BD00B:
+  cmp #$CA : beq B_8BD025
+  cmp #$CB : beq B_8BD016
+nop
+bra J_8BD00B
+#B_8BD016:
+lda $18 : sta $26
+lda $1A : clc : adc #$10 : sta $27
+  sta $1A
+bra J_8BCFCE
+#B_8BD025:
+plx
+rep #$20
+plb
+asl $00DA : asl $00DA
+cop #$E0
+
+
+
+org $8BD558
+db $C1,$03,$04,$C7,$0D,$03,$D2,$00,$C2,$13,$D2,$00,$D5,$06,$D6,$25,$CB,$D6,$64,$D6,$9D,$A4,$8E,$AC,$CB,$A4,$87,$84,$AC,$82,$8E,$8C,$84,$A4,$2A,$2A,$2A,$0D,$AC,$C9,$78,$CE,$64,$87,$80,$A4,$AC,$86,$8B,$8E,$A7,$88,$8D,$86,$CB,$86,$A2,$84,$84,$8D,$AC,$A0,$8B,$80,$8D,$84,$A4,$0D,$C9,$B4,$C8,$CA
+;org $8BD5A0
+db $C1,$03,$04,$C7,$0D,$03,$C2,$15,$D2,$00,$D5,$06,$67,$88,$8B,$8B,$0E,$A3,$AC,$85,$80,$A4,$87,$84,$A2,$2F,$AC,$CB,$64,$87,$84,$AC,$D7,$55,$D6,$C2,$CB,$87,$80,$A3,$AC,$83,$88,$A3,$80,$A0,$A0,$84,$80,$A2,$84,$83,$2A,$AC,$C9,$78,$CE,$64,$87,$84,$AC,$84,$A6,$88,$8B,$AC,$A3,$A4,$80,$A2,$AC,$87,$80,$A3,$AC,$85,$8B,$8E,$A7,$8D,$CB,$8E,$85,$85,$AC,$A4,$8E,$AC,$A4,$87,$84,$AC,$D6,$BD,$A3,$88,$83,$84,$CB,$8E,$85,$AC,$A4,$87,$84,$AC,$A5,$8D,$88,$A6,$84,$A2,$A3,$84,$2A,$2A,$2A,$C9,$B4,$CE,$C2,$15,$D2,$00,$D5,$06,$67,$88,$8B,$8B,$2A,$AC,$CB,$C9,$28,$43,$8E,$AC,$A9,$8E,$A5,$AC,$D6,$A4,$A7,$87,$80,$A4,$CB,$A0,$8B,$80,$8D,$84,$A4,$AC,$D6,$D7,$88,$A3,$2B,$AC,$86,$8B,$8E,$A7,$88,$8D,$86,$CB,$D6,$D9,$88,$8D,$AC,$A4,$87,$84,$AC,$83,$80,$A2,$8A,$8D,$84,$A3,$A3,$0D,$C9,$B4,$CE,$C2,$12,$D2,$00,$67,$88,$8B,$8B,$2F,$AC,$CB,$4E,$A5,$A2,$AC,$44,$80,$A2,$A4,$87,$2A,$2A,$2A,$0D,$C9,$78,$CE,$C2,$15,$D2,$00,$67,$88,$8B,$8B,$0E,$A3,$AC,$85,$80,$A4,$87,$84,$A2,$2F,$AC,$CB,$64,$87,$80,$A4,$0E,$A3,$AC,$D7,$99,$4E,$A5,$A2,$AC,$44,$80,$A2,$A4,$87,$2A,$CB,$C9,$78,$CE,$43,$8E,$84,$A3,$8D,$0E,$A4,$AC,$88,$A4,$AC,$D6,$A9,$D6,$A5,$80,$CB,$83,$84,$A3,$84,$A2,$A4,$AC,$8E,$80,$A3,$88,$A3,$0D,$C9,$B4,$CE,$C2,$13,$D2,$00,$D6,$25,$CB,$D6,$1D,$D6,$BB,$D7,$A0,$CB,$A3,$8E,$AC,$81,$84,$80,$A5,$A4,$88,$85,$A5,$8B,$2A,$C9,$B4,$CE,$41,$A5,$A4,$AC,$88,$A4,$AC,$D6,$AA,$8B,$8E,$8D,$84,$8B,$A9,$CB,$A3,$87,$88,$8D,$88,$8D,$86,$AC,$88,$8D,$AC,$A4,$87,$84,$AC,$83,$80,$A2,$8A,$2A,$2A,$2A,$C9,$B4,$C8,$CA
+;org $8BD70E
+db $C1,$03,$04,$C7,$0D,$02,$D2,$00,$D5,$06,$C2,$14,$D2,$00,$D6,$46,$66,$8E,$88,$82,$84,$2F,$AC,$69,$84,$A3,$2A,$CB,$64,$87,$84,$AC,$D6,$F5,$88,$A3,$AC,$80,$A7,$80,$8A,$84,$8D,$84,$83,$2A,$C9,$B4,$C8,$CA
+;org $8BD740
+db $C1,$03,$04,$C7,$0D,$03,$D2,$00,$D5,$06,$CE,$C2,$12,$D2,$00,$67,$88,$8B,$8B,$2F,$AC,$CB,$4C,$8E,$A4,$87,$84,$A2,$0D,$4F,$C9,$B4,$CE,$C2,$14,$D2,$00,$67,$88,$8B,$8B,$0E,$A3,$AC,$8C,$8E,$A4,$87,$84,$A2,$2F,$CB,$64,$87,$84,$AC,$44,$80,$A2,$A4,$87,$2A,$CB,$C9,$3C,$40,$AC,$D7,$85,$D6,$F0,$8C,$88,$8B,$8B,$88,$8E,$8D,$A3,$AC,$CB,$8E,$85,$AC,$82,$87,$88,$8B,$83,$A2,$84,$8D,$2A,$C9,$B4,$CE,$48,$0E,$8C,$AC,$D7,$A6,$A9,$8E,$A5,$AC,$D6,$DA,$CB,$D6,$6B,$A5,$A3,$AC,$A3,$8E,$8C,$84,$A4,$88,$8C,$84,$A3,$2B,$AC,$CB,$80,$8D,$83,$AC,$D6,$26,$8E,$85,$A4,$84,$8D,$AC,$CB,$A4,$87,$88,$8D,$8A,$A3,$AC,$D6,$6B,$87,$84,$A2,$AC,$A0,$80,$A2,$84,$8D,$A4,$A3,$2A,$C9,$B4,$CE,$64,$87,$84,$AC,$D6,$14,$88,$A3,$AC,$A4,$87,$84,$AC,$A3,$80,$8C,$84,$CB,$A7,$80,$A9,$2A,$AC,$63,$87,$84,$AC,$D7,$6D,$8B,$8E,$8D,$84,$8B,$A9,$AC,$88,$85,$CB,$87,$84,$A2,$AC,$D6,$7D,$85,$8E,$A2,$86,$84,$A4,$CB,$D6,$6B,$87,$84,$A2,$2A,$C9,$B4,$CE,$C2,$15,$D2,$00,$67,$88,$8B,$8B,$0E,$A3,$AC,$85,$80,$A4,$87,$84,$A2,$2F,$AC,$47,$8E,$A7,$AC,$88,$A3,$AC,$88,$A4,$2B,$CB,$A9,$8E,$A5,$AC,$A4,$A7,$8E,$0D,$AC,$CB,$C9,$3C,$D7,$1A,$80,$A4,$AC,$A4,$87,$84,$AC,$A7,$8E,$A2,$8B,$83,$CB,$A9,$8E,$A5,$AC,$D6,$AF,$88,$8D,$AC,$85,$A2,$8E,$8C,$CB,$A4,$87,$84,$AC,$8E,$A5,$A4,$A3,$88,$83,$84,$0D,$C9,$B4,$CE,$C2,$13,$D2,$00,$D6,$25,$CB,$D6,$1D,$80,$A3,$AC,$88,$85,$AC,$A7,$84,$0E,$83,$AC,$CB,$D6,$71,$A3,$A0,$88,$A2,$88,$A4,$A3,$2A,$2A,$2A,$C9,$B4,$CE,$C2,$12,$D2,$00,$67,$88,$8B,$8B,$2F,$AC,$48,$AC,$D6,$F1,$A4,$8E,$AC,$A3,$87,$8E,$A7,$AC,$CB,$80,$8B,$8B,$AC,$8E,$85,$AC,$8E,$A5,$A2,$AC,$86,$A2,$8E,$A5,$A0,$2A,$2A,$2A,$C9,$78,$CE,$4D,$8E,$2B,$AC,$48,$AC,$D6,$F1,$A4,$8E,$AC,$A3,$87,$8E,$A7,$CB,$D6,$89,$88,$8D,$AC,$A4,$87,$84,$AC,$A7,$8E,$A2,$8B,$83,$2A,$2A,$2A,$C9,$B4,$CE,$C2,$15,$D2,$00,$67,$88,$8B,$8B,$0E,$A3,$AC,$85,$80,$A4,$87,$84,$A2,$2F,$AC,$63,$8E,$8C,$84,$83,$80,$A9,$AC,$CB,$D6,$C1,$D6,$EF,$81,$A5,$88,$8B,$83,$AC,$A3,$87,$88,$A0,$A3,$AC,$CB,$A4,$8E,$AC,$A4,$A2,$80,$A6,$84,$8B,$AC,$A4,$87,$84,$AC,$A5,$8D,$88,$A6,$84,$A2,$A3,$84,$2A,$C9,$B4,$CE,$64,$87,$84,$8D,$AC,$D7,$AB,$D6,$EF,$A3,$84,$84,$CB,$D6,$D6,$86,$A2,$84,$84,$8D,$AC,$D6,$14,$A7,$88,$A4,$87,$CB,$D6,$E1,$8E,$A7,$8D,$AC,$84,$A9,$84,$A3,$2A,$C9,$B4,$CE,$63,$84,$84,$AC,$87,$8E,$A7,$AC,$8B,$8E,$8D,$84,$8B,$A9,$AC,$A4,$87,$84,$CB,$D6,$14,$8B,$8E,$8E,$8A,$A3,$2B,$AC,$D6,$A3,$8B,$88,$8A,$84,$CB,$A4,$87,$84,$AC,$A4,$A7,$8E,$AC,$8E,$85,$AC,$A9,$8E,$A5,$2A,$C9,$B4,$CE,$67,$88,$8B,$8B,$0E,$A3,$AC,$85,$80,$A4,$87,$84,$A2,$2F,$AC,$4B,$8E,$8E,$8A,$AC,$CB,$82,$80,$A2,$84,$85,$A5,$8B,$8B,$A9,$AC,$80,$A4,$AC,$D6,$FE,$CB,$8C,$80,$A0,$AC,$8E,$85,$AC,$A4,$87,$84,$AC,$A7,$8E,$A2,$8B,$83,$2A,$C9,$B4,$CE,$C2,$12,$D2,$00,$67,$88,$8B,$8B,$2F,$CB,$40,$87,$4F,$AC,$64,$87,$84,$AC,$8C,$80,$A0,$AC,$87,$80,$A3,$AC,$A3,$A4,$80,$A2,$A4,$84,$83,$CB,$A4,$8E,$AC,$82,$87,$80,$8D,$86,$84,$4F,$C9,$B4,$C8,$CA
+;org $8BD9FA
+db $C1,$03,$04,$C7,$0D,$03,$D2,$00,$D5,$06,$CE,$C2,$12,$D2,$00,$67,$88,$8B,$8B,$2F,$AC,$CB,$67,$87,$A9,$AC,$83,$8E,$AC,$A9,$8E,$A5,$AC,$A4,$A7,$8E,$AC,$CB,$D6,$A4,$A4,$87,$84,$AC,$85,$A5,$A4,$A5,$A2,$84,$0D,$C9,$B4,$CE,$C2,$15,$D2,$00,$67,$88,$8B,$8B,$0E,$A3,$AC,$85,$80,$A4,$87,$84,$A2,$2F,$AC,$CB,$D6,$61,$48,$AC,$D7,$7A,$8C,$A9,$AC,$81,$8E,$83,$A9,$2B,$AC,$48,$AC,$CB,$D6,$CB,$A3,$84,$84,$88,$8D,$86,$AC,$84,$A6,$84,$A2,$A9,$A4,$87,$88,$8D,$86,$2A,$C9,$B4,$CE,$64,$87,$84,$AC,$A0,$80,$A3,$A4,$2A,$AC,$64,$87,$84,$AC,$85,$A5,$A4,$A5,$A2,$84,$2A,$AC,$CB,$47,$A5,$8C,$80,$8D,$88,$A4,$A9,$0E,$A3,$AC,$A0,$A2,$8E,$86,$A2,$84,$A3,$A3,$2A,$C9,$B4,$CE,$D6,$30,$D6,$C1,$A7,$8E,$A5,$8B,$83,$CB,$82,$80,$8B,$8B,$AC,$D6,$D6,$8A,$88,$8D,$83,$AC,$8E,$85,$AC,$81,$8E,$83,$A9,$CB,$80,$AC,$A3,$A0,$88,$A2,$88,$A4,$2A,$C9,$B4,$CE,$C2,$14,$D2,$00,$67,$88,$8B,$8B,$0E,$A3,$AC,$8C,$8E,$A4,$87,$84,$A2,$2F,$CB,$4D,$8E,$A7,$AC,$A9,$8E,$A5,$AC,$80,$8D,$83,$AC,$D6,$26,$82,$80,$8D,$AC,$CB,$D6,$71,$8E,$A2,$83,$88,$8D,$80,$A2,$A9,$AC,$CB,$D6,$7D,$80,$86,$80,$88,$8D,$2A,$C9,$B4,$CE,$D6,$0D,$81,$84,$AC,$80,$85,$A2,$80,$88,$83,$2A,$C9,$B4,$CE,$C2,$13,$D2,$00,$D6,$25,$D6,$61,$A7,$84,$AC,$CB,$A2,$84,$A4,$A5,$A2,$8D,$AC,$A4,$8E,$AC,$44,$80,$A2,$A4,$87,$2B,$AC,$D6,$EF,$CB,$A7,$84,$AC,$81,$84,$AC,$A3,$84,$A0,$80,$A2,$80,$A4,$84,$83,$0D,$C9,$B4,$CE,$C2,$15,$D2,$00,$67,$88,$8B,$8B,$0E,$A3,$AC,$85,$80,$A4,$87,$84,$A2,$2F,$AC,$69,$84,$A3,$2A,$2A,$2A,$AC,$CB,$C9,$28,$64,$87,$84,$AC,$D6,$F5,$88,$A3,$AC,$82,$87,$80,$8D,$86,$88,$8D,$86,$2A,$AC,$CB,$47,$A5,$8C,$80,$8D,$88,$A4,$A9,$AC,$80,$8D,$83,$AC,$87,$88,$A3,$A4,$8E,$A2,$A9,$2B,$AC,$CB,$D6,$98,$D6,$CB,$83,$8E,$A7,$8D,$AC,$80,$AC,$CB,$8D,$84,$A7,$AC,$A0,$80,$A4,$87,$2A,$C9,$B4,$CE,$69,$8E,$A5,$AC,$A4,$A7,$8E,$AC,$D6,$D8,$CB,$D6,$B9,$8E,$85,$AC,$88,$A4,$AC,$D6,$F6,$A9,$8E,$A5,$AC,$CB,$8C,$84,$A4,$AC,$84,$80,$82,$87,$AC,$D6,$BD,$88,$8D,$AC,$CB,$D6,$47,$42,$80,$A0,$84,$2A,$AC,$C9,$B4,$CE,$41,$A5,$A4,$AC,$D6,$F6,$A4,$87,$84,$AC,$44,$80,$A2,$A4,$87,$CB,$8D,$84,$84,$83,$84,$83,$AC,$A4,$87,$84,$AC,$4B,$88,$86,$87,$A4,$AC,$80,$8D,$83,$CB,$D6,$0C,$4A,$8D,$88,$86,$87,$A4,$A3,$2B,$AC,$A9,$8E,$A5,$CB,$8C,$84,$A4,$AC,$80,$86,$80,$88,$8D,$AC,$A5,$8D,$84,$A8,$A0,$84,$82,$A4,$84,$83,$8B,$A9,$2A,$C9,$B4,$CE,$D6,$2B,$D6,$A9,$80,$A4,$AC,$A4,$87,$84,$AC,$A7,$8E,$A2,$8B,$83,$CB,$D6,$74,$A4,$87,$84,$AC,$D6,$C2,$8E,$85,$AC,$A4,$87,$84,$CB,$D6,$7B,$88,$A3,$AC,$84,$A8,$A4,$88,$8D,$86,$A5,$88,$A3,$87,$84,$83,$2A,$C9,$B4,$CE,$C2,$14,$D2,$00,$67,$88,$8B,$8B,$0E,$A3,$AC,$8C,$8E,$A4,$87,$84,$A2,$2F,$AC,$CB,$67,$84,$AC,$D7,$71,$A9,$8E,$A5,$AC,$A4,$A7,$8E,$AC,$CB,$D6,$98,$80,$AC,$81,$A2,$88,$86,$87,$A4,$AC,$85,$A5,$A4,$A5,$A2,$84,$2A,$2A,$2A,$C9,$B4,$C8,$CA
+;org $8BDC95
+db $C1,$03,$04,$C7,$0D,$03,$D2,$00,$D5,$06,$C2,$13,$D2,$00,$D6,$25,$67,$88,$8B,$8B,$2A,$2A,$2A,$AC,$CB,$C9,$28,$D6,$09,$87,$84,$A2,$84,$2A,$2A,$2A,$2A,$CB,$C9,$50,$D7,$37,$8C,$84,$AC,$D6,$FE,$85,$80,$82,$84,$2A,$2A,$2A,$C9,$B4,$CE,$48,$AC,$D6,$F1,$A4,$8E,$AC,$81,$A5,$A2,$8D,$AC,$A9,$8E,$A5,$CB,$D6,$A1,$8C,$A9,$AC,$8C,$84,$8C,$8E,$A2,$A9,$2A,$C9,$B4,$CE,$D6,$68,$D7,$60,$C9,$1E,$D6,$68,$8D,$8E,$A3,$84,$AC,$CB,$C9,$1E,$D6,$68,$8C,$8E,$A5,$A4,$87,$AC,$C9,$28,$D6,$68,$87,$80,$88,$A2,$AC,$CB,$C9,$1E,$D6,$68,$D6,$EE,$CB,$C9,$28,$64,$87,$84,$AC,$A7,$80,$A2,$8C,$A4,$87,$AC,$8E,$85,$CB,$D6,$FE,$87,$80,$8D,$83,$2A,$2A,$2A,$2A,$C9,$B4,$C8,$CA
+;org $8BDD34
+db $C1,$03,$04,$C7,$0D,$03,$D2,$00,$D5,$06,$C2,$12,$D2,$00,$67,$88,$8B,$8B,$2F,$AC,$D6,$0D,$A7,$8E,$A2,$A2,$A9,$2A,$AC,$CB,$C9,$3C,$48,$AC,$D6,$EF,$A3,$84,$80,$A2,$82,$87,$AC,$A9,$8E,$A5,$AC,$8E,$A5,$A4,$2A,$C9,$B4,$CE,$4D,$8E,$AC,$D6,$B8,$87,$8E,$A7,$AC,$8B,$8E,$8D,$86,$CB,$88,$A4,$AC,$A4,$80,$8A,$84,$A3,$2A,$CB,$C9,$3C,$47,$A5,$8D,$83,$A2,$84,$83,$A3,$AC,$8E,$85,$AC,$A9,$84,$80,$A2,$A3,$2A,$2A,$2A,$CB,$C9,$1E,$64,$87,$8E,$A5,$A3,$80,$8D,$83,$A3,$AC,$8E,$85,$AC,$A9,$84,$80,$A2,$A3,$2A,$2A,$2A,$CB,$C9,$1E,$48,$AC,$D6,$EF,$D6,$79,$A4,$8E,$AC,$A9,$8E,$A5,$2A,$C9,$B4,$CE,$63,$8E,$AC,$D6,$E7,$82,$80,$A2,$84,$2A,$2A,$2A,$CB,$C9,$5A,$42,$8B,$8E,$A3,$84,$AC,$D6,$FE,$84,$A9,$84,$A3,$2A,$2A,$2A,$C9,$78,$C8,$CA
+;org $8BDDE5
+db $C1,$03,$04,$C7,$0D,$03,$D2,$00,$D5,$06,$C2,$13,$D2,$00,$D6,$25,$CB,$67,$88,$8B,$8B,$2A,$2A,$2A,$2A,$C9,$78,$C8,$CA
+;org $8BDE02
+db $C1,$03,$04,$C7,$0D,$03,$D2,$00,$D5,$06,$C2,$12,$D2,$00,$67,$88,$8B,$8B,$2F,$AC,$CB,$D6,$2B,$86,$8E,$2A,$AC,$CB,$64,$8E,$AC,$44,$80,$A2,$A4,$87,$2A,$2A,$2A,$2A,$C9,$B4,$CE,$C2,$13,$D2,$00,$D6,$25,$CB,$4C,$8C,$8C,$8C,$2A,$2A,$2A,$2A,$C9,$B4,$C8,$CA
+
+;org $8BDE40
+
+org $8BDED4
+db $C1,$03,$13,$C7,$0D,$03,$D2,$00,$C2,$00,$D2,$00,$D5,$06,$67,$88,$8B,$8B,$2F,$AC,$CB,$D6,$49,$A4,$87,$84,$AC,$8B,$80,$8D,$83,$AC,$CB,$87,$80,$A3,$AC,$D7,$AF,$8E,$8D,$AC,$CB,$80,$AC,$D6,$C7,$A3,$87,$80,$A0,$84,$2A,$C9,$B4,$CE,$C2,$04,$D2,$00,$67,$88,$8B,$8B,$0E,$A3,$AC,$85,$80,$A4,$87,$84,$A2,$2F,$AC,$CB,$64,$87,$80,$A4,$0E,$A3,$AC,$A4,$87,$84,$AC,$8D,$84,$A7,$AC,$A7,$8E,$A2,$8B,$83,$2A,$C9,$B4,$CE,$C2,$01,$D2,$00,$D6,$25,$CB,$4D,$84,$A7,$AC,$A7,$8E,$A2,$8B,$83,$0D,$C9,$B4,$CE,$C2,$04,$D2,$00,$67,$88,$8B,$8B,$0E,$A3,$AC,$85,$80,$A4,$87,$84,$A2,$2F,$AC,$64,$87,$84,$AC,$A0,$80,$A4,$87,$AC,$CB,$8E,$85,$AC,$84,$A6,$8E,$8B,$A5,$A4,$88,$8E,$8D,$2B,$AC,$D6,$7F,$CB,$81,$A9,$AC,$A4,$87,$84,$AC,$82,$8E,$8C,$84,$A4,$2B,$AC,$87,$80,$A3,$AC,$CB,$82,$8E,$8D,$A4,$88,$8D,$A5,$84,$83,$AC,$D7,$BC,$8D,$8E,$A7,$2A,$C9,$B4,$CE,$64,$87,$84,$AC,$44,$80,$A2,$A4,$87,$2B,$AC,$A4,$8E,$8E,$2B,$CB,$87,$80,$A3,$AC,$80,$AC,$8B,$88,$85,$84,$2A,$CB,$C9,$3C,$48,$A4,$2B,$AC,$D7,$B7,$87,$80,$A3,$AC,$84,$A6,$8E,$8B,$A6,$84,$83,$AC,$80,$8D,$83,$CB,$D6,$7F,$88,$A4,$A3,$AC,$A3,$87,$80,$A0,$84,$2A,$C9,$B4,$CE,$4D,$8E,$A7,$AC,$D6,$D7,$A4,$87,$84,$AC,$D6,$7B,$87,$80,$A3,$CB,$8D,$8E,$AC,$88,$8D,$85,$8B,$A5,$84,$8D,$82,$84,$AC,$8E,$8D,$AC,$A4,$87,$84,$CB,$A7,$8E,$A2,$8B,$83,$2B,$AC,$D6,$9F,$D7,$96,$A4,$8E,$CB,$88,$A4,$A3,$AC,$D6,$C0
+
+;org $8BE01B
+
+org $8BE075
+db $D3,$D2,$00,$D5,$08,$64,$87,$84,$AC,$D7,$0B,$D6,$A9,$87,$80,$83,$CB,$82,$87,$80,$8D,$86,$84,$83,$2B,$AC,$81,$A5,$A4,$2B,$AC,$86,$8B,$8E,$A7,$88,$8D,$86,$CB,$88,$8D,$AC,$A4,$87,$84,$AC,$A3,$8A,$A9,$2B,$AC,$88,$A4,$AC,$A7,$80,$A3,$CB,$80,$A3,$AC,$D6,$76,$80,$A3,$AC,$84,$A6,$84,$A2,$2A,$C9,$B4,$CE,$41,$A5,$88,$8B,$83,$88,$8D,$86,$A3,$AC,$A2,$84,$A0,$8B,$80,$82,$84,$83,$AC,$A4,$87,$84,$AC,$CB,$85,$8E,$A2,$84,$A3,$A4,$A3,$2B,$AC,$A2,$88,$A6,$84,$A2,$A3,$AC,$81,$84,$82,$80,$8C,$84,$AC,$CB,$A2,$8E,$80,$83,$A3,$2B,$AC,$81,$A5,$A4,$AC,$A4,$87,$84,$AC,$A6,$88,$8B,$8B,$80,$86,$84,$A3,$AC,$CB,$87,$84,$8B,$83,$AC,$D7,$89,$A3,$8C,$88,$8B,$88,$8D,$86,$AC,$85,$80,$82,$84,$A3,$2A,$C9,$B4,$CE,$41,$A5,$A4,$AC,$A4,$87,$84,$AC,$D6,$14,$A7,$80,$A3,$CB,$A4,$87,$84,$AC,$D7,$89,$8E,$8D,$84,$CB,$D6,$D7,$D7,$80,$A3,$80,$83,$2A,$C9,$B4,$CE,$64,$8E,$8C,$8E,$A2,$A2,$8E,$A7,$AC,$8C,$8E,$A2,$8D,$88,$8D,$86,$AC,$CB,$D6,$26,$80,$8D,$83,$AC,$48,$AC,$D6,$EF,$A3,$A4,$80,$A2,$A4,$AC,$CB,$8E,$A5,$A2,$AC,$8D,$84,$A7,$AC,$8B,$88,$A6,$84,$A3,$2A,$C9,$B4,$CE,$64,$87,$84,$AC,$64,$8E,$A7,$84,$A2,$AC,$8E,$85,$AC,$41,$80,$81,$84,$8B,$CB,$D6,$D5,$A4,$80,$8B,$8B,$2B,$AC,$80,$A3,$AC,$88,$85,$AC,$88,$A4,$CB,$8A,$8D,$8E,$A7,$A3,$AC,$A4,$87,$84,$AC,$A7,$87,$8E,$8B,$84,$AC,$85,$A5,$A4,$A5,$A2,$84,$CB,$8E,$85,$AC,$A4,$87,$84,$AC,$44,$80,$A2,$A4,$87,$2A,$2A,$2A,$C9,$F0,$C8,$CA
+
+;org $8BE1C5
+
+
+org $8be237
+db $00,$00,$28
+EMainMenu:
+lda #$0000 : sta $7F0A00
+  sep #$20
+    sta $212C
+  rep #$20
+lda #$FFFF : sta $0D92
+  sta $0D96
+  sta $0D98
+lda #$4001 : tsb $09EC
+sep #$20
+  lda #$88 : sta $2124
+  lda #$22 : sta $2125
+rep #$20
+lda #$0000 : sta $7F0A00
+  sta $0B04
+lda #$0001 : sta $00EE
+sep #$20
+  lda #$01 : sta $212C
+  lda #$04 : sta $212D
+  lda #$82 : sta $2130
+  lda #$41 : sta $2131
+rep #$20
+lda #$0080 : sta $068A
+  sta $06BE
+lda #$0300 : sta $068E
+  sta $06C2
+lda #$3000 : tsb $065A
+lda #$2800 : tsb $09AE
+cop #$BD : dl $81EADC
+cop #$6B : dw $F3F4
+jsr S_8BED64
+lda #$0F00 : sta $065C
+  stz $18
+cop #$C1
+lda $0654 : bne B_8BE2CA
+  rtl
+B_8BE2CA:    ; org $8be2ca
+bra J_8BE2D0
+J_8BE2CC:
+cop #$6B : dw $F3F4
+J_8BE2D0:    ; org $8be2d0
+lda #$FFFF : sta $0D92
+lda #$0000 : sta $0D98
+J_8BE2DC:    ; org $8be2dc
+cop #$BD : dl $81EADC
+cop #$C1
+cop #$40 : dw $0800, ..PressedUp    ; $E2F6
+cop #$40 : dw $0400, ..PressedDown    ; $E30F
+cop #$40 : dw $0080, ..PressedA    ; $E32B
+rtl
+..PressedUp:    ; org $8be2f6
+cop #$06 : db $10
+lda $0D98 : dec : bpl +
+  lda #$0003    ; Wrap around 0-->3
++:
+sta $0D98
+lda $0656 : ora $0658 : sta $0658
+rtl
+..PressedDown:    ; org $8be30f
+cop #$06 : db $10
+lda $0D98 : inc : cmp #$0004 : bcc +
+  lda #$0000    ; Wrap around 3-->0
++:
+sta $0D98
+lda $0656 : ora $0658 : sta $0658
+rtl
+..PressedA:    ;org $8be32b
+cop #$06 : db $11
+lda $0656 : ora $0658 : sta $0658
+lda $0D98 : and #$0003 : sta $0000
+lda #$FFFF : sta $0D98
+cop #$D9 : dw $0000, ...Choices    ; $E34C
+...Choices:
+  dw EMenuNew, EMenuErase, EMenuCopy, EMenuOptions
+  ; $e354, $ea55, $e8a8, $e6ba
+
+EMenuNew:    ; org $8be354
+jsr S_8BEBF9
+cop #$6B : db $37, $F4
+cop #$C8 : dw B_8BEB8B
+cop #$BD : dl $81EADC
+lda $0D8C : and #$0003 : sta $0D92
+J_8BE36D:    ; org $8be36d
+cop #$C2
+lda #$000C : sta $7F101C,x
+cop #$C8 : dw B_8BE527
+cop #$E2 : dl J_8BE36D
+warnpc $8be37f
+
+
+org $8be3df    ; Select file
+
+
+org $8be462
+EMenuStartGame:
+cop #$C2
+cop #$40 : dw $0380, .ChangeOrConfirm
+cop #$40 : dw $0800, LR_MenuPressedUp
+cop #$40 : dw $0400, LR_MenuPressedDown
+cop #$40 : dw $8000, .ReturnToNew
+rtl
+.ReturnToNew:    ; org $8be47d
+cop #$06 : db $0D
+lda $0656 : ora $0658 : sta $0658
+lda #$FFFF : sta $0D98
+lda $0D94 : sta $0D92
+jmp EMenuNew
+.ChangeOrConfirm:    ; org $8be498
+lda #$0380 : tsb $0658
+lda $0D98 : beq .TryConfirmGameStart
+dec : bne .ChangeControlType
+.ChangeSoundType:
+cop #$06 : db $0D
+lda $0D90 : inc : and #$0001 : sta $0D90
+cop #$6B : db $f625
+cop #$BD : dl $81EADC
+lda #$0380 : tsb $0658
+jmp EMenuStartGame
+.ChangeControlType:    ; org $8be4c5
+dec : bne .TryConfirmGameStart
+cop #$06 : db $0D
+lda $0D8E : inc : and #$0001 : sta $0D8E
+cop #$6B : db $f630
+cop #$BD : dl $81EADC
+lda #$0380 : tsb $0658
+jmp EMenuStartGame
+.TryConfirmGameStart:    ; org $8be4e7
+cop #$40 : dw $0080, .DoGameStart
+rtl
+;org $8be4ee    ; Begin new game
+.DoGameStart:
+cop #$06 : db $11
+lda $0656 : ora $0658 : sta $0658
+lda #$FFFF : sta $0D98
+lda $0D90 : sta $0B24
+lda $0D8E : sta $0B26
+jsr SR_SetSettingsTextSoundMusic    ; $e673
+lda #$0008 : sta $0642
+cop #$26 : db $08, $50, $00, $A0, $00, $00, $00, $12
+lda #$2800 : trb $09AE
+cop #$E0
+
+;org $8be527
+B_8BE527:    ; org $8be527
+phx
+lda $0D92 : asl : tay
+lda $0D74,y : asl : tax
+lda $8BF706,x : sec : sbc #$F706 : tax
+sep #$20
+-:
+lda $8BF706,x : inx : cmp #$CA : bne -
+rep #$20
+lda $8BF706,x : tay
+lda $8BF708,x
+plx : sta $7F100E,x
+tya : sta $7F100C,x
+sec : sbc $06BE : bmi B_8BE56E
+sta $7F100C,x
+lda #$0001 : sta $7F0000,x
+bra J_8BE57D
+B_8BE56E:    ; org $8be56e
+eor #$FFFF : inc : sta $7F100C,x
+lda #$FFFF : sta $7F0000,x
+J_8BE57D:    ; org $8be57d
+lda $7F100E,x : sec : sbc $06C2 : bmi B_8BE596
+sta $7F100E,x
+beq B_8BE590
+lda #$0001
+B_8BE590:    ; org $8be590
+sta $7F0002,x
+bra J_8BE5A7
+B_8BE596:    ; org $8be596
+eor #$FFFF : inc : sta $7F100E,x
+beq B_8BE5A3
+lda #$FFFF
+B_8BE5A3:    ; org $8be5a3
+sta $7F0002,x
+J_8BE5A7:    ; org $8be5a7
+lda $7F100C,x : cmp $7F100E,x : bcc B_8BE612
+lda $7F100C,x : beq B_8BE610
+sta $7F1014,x
+lsr : sta $7F1010,x
+lda $7F100E,x : sta $7F1012,x
+cop #$C1
+lda $7F101C,x : sta $0000
+B_8BE5D1:    ; org $8be5d1
+lda $7F0000,x : clc : adc $06BE : sta $06BE
+lda $7F1010,x : sec : sbc $7F1012,x : sta $7F1010,x
+bpl B_8BE5FF
+clc : adc $7F100C,x : sta $7F1010,x
+lda $7F0002,x : clc : adc $06C2 : sta $06C2
+B_8BE5FF:    ; org $8be5ff
+lda $7F1014,x : dec : sta $7F1014,x
+beq B_8BE610
+dec $0000 : bne B_8BE5D1
+rtl
+B_8BE610:    ; org $8be610
+cop #$C5
+B_8BE612:    ; org $8be612
+lda $7F100E,x : beq B_8BE671
+sta $7F1014,x
+lsr : sta $7F1012,x
+lda $7F100C,x : sta $7F1010,x
+cop #$C1
+lda $7F101C,x : sta $0000
+B_8BE632:    ; org $8be632
+lda $7F0002,x : clc : adc $06C2 : sta $06C2
+lda $7F1012,x : sec : sbc $7F1010,x : sta $7F1012,x
+bpl B_8BE660
+clc : adc $7F100E,x : sta $7F1012,x
+lda $7F0000,x : clc : adc $06BE : sta $06BE
+B_8BE660:    ; org $8be660
+lda $7F1014,x : dec : sta $7F1014,x : beq B_8BE671
+dec $0000 : bne B_8BE632
+rtl
+B_8BE671:    ; org $8be671
+cop #$C5
+
+;org $8be673
+SR_SetSettingsTextSoundMusic:
+lda #$0000 : sta $0B04
+stz $00EE
+lda $0B24 : bne .SoundMono
+.SoundStereo:
+sep #$20
+  lda #$91 : sta $2140
+rep #$20
+bra .CheckControl
+.SoundMono:    ; org $8be68c
+sep #$20
+  lda #$90 : sta $2140
+rep #$20
+.CheckControl:    ; org $8be695
+lda $0B26 : bne .Style2
+.Style1:
+  lda #$8000 : sta $0DAC    ; Controller button masks.
+  lda #$4000 : sta $0DAA    ; Controller button masks.
+  lda #$0000 : sta $0DB0    ; Controller button masks.
+  lda #$0040 : sta $0DAE    ; Controller button masks.
+rts
+; org $8be6b3
+.Style2:
+lda #$0000 : sta $0DB0
+rts
+
+EMenuOptions:    ; org $8be6ba
+
+
+org $8be75b
+LR_MenuPressedUp:
+cop #$06 : db $10
+lda $0656 : ora $0658 : sta $0658
+lda $0D98
+dec a : bpl B_8BE770
+lda #$0002
+B_8BE770:    ; org $8be770
+sta $0D98
+rtl
+; org $8be774
+LR_MenuPressedDown:
+cop #$06 : db $10
+lda $0656 : ora $0658 : sta $0658
+lda $0D98 : inc a : cmp #$0003 : bcc B_8BE78C
+lda #$0000
+B_8BE78C:    ; org $8be78c
+sta $0D98
+rtl
+warnpc $8be790
+
+
+EMenuCopy:    ; org $8be8a8
+
+
+EMenuErase:    ; org $8bea55
+
+
+org $8beb8b    ; Fill in save file stats
+B_8BEB8B:
+lda $0D74 : beq B_8BEBAF
+lda $0D7A
+jsr SR_Bin2DecForMenu : sta $0D9A
+lda $0D80
+jsr SR_Bin2DecForMenu : sta $0D9E
+lda $0D86
+jsr SR_Bin2DecForMenu : sta $0D9C : cop #$6B : db $C3, $F4
+B_8BEBAF:    ; org $8bebaf
+lda $0D76 : beq B_8BEBD3
+lda $0D7C
+jsr SR_Bin2DecForMenu : sta $0D9A
+lda $0D82
+jsr SR_Bin2DecForMenu : sta $0D9E
+lda $0D88
+jsr SR_Bin2DecForMenu : sta $0D9C : cop #$6B : db $EA, $F4
+B_8BEBD3:    ; org $8bebd3
+lda $0D78 : beq B_8BEBF7
+lda $0D7E
+jsr SR_Bin2DecForMenu : sta $0D9A
+lda $0D84
+jsr SR_Bin2DecForMenu : sta $0D9E
+lda $0D8A
+jsr SR_Bin2DecForMenu : sta $0D9C : cop #$6B : db $11, $F5
+B_8BEBF7:    ; org $8bebf7
+cop #$C5
+
+;org $8bebf9    ; Clear BG3
+S_8BEBF9:
+php
+phx
+phd
+sep #$20
+jsl S_82F076
+plx
+pld
+plp
+rts
+warnpc $8bec06
+
+
+org $8BEE20
+db $02,$00,$10
+EDebugMan:
+cop #$0B
+cop #$C0 : dw .OnUse    ; $EE2C
+cop #$C1
+rtl
+   ; $8BEE2C
+lda #$0028 : sta $0ACA : sta $0ACE
+lda #$007F : sta $0ADE : sta $0ADC
+lda #$00FF : sta $0AA2
+cop #$BF : dw $F010
+
+cop #$BE : dw $0004, $EE4E, $EED0
+  dw $EE58, $EED5
+  dw $EEF3, $EEE4
+
+cop #$BF : dw $F05C
+
+cop #$BE : dw $0004, $EE62, $EED0
+  dw $EE6C, $EF02
+  dw $EF11, $EF20
+
+cop #$BF : dw $F095
+
+cop #$BE : dw $0004, $EE76, $EED0
+  dw $EE80, $EF2F
+  dw $EF3E, $EF4D
+
+cop #$BF : dw $F0C3
+
+cop #$BE : dw $0004, $EE8A, $EED0
+  dw $EE94, $EF5C
+  dw $EF6B, $EF7A
+
+cop #$BF : dw $F0EC
+
+cop #$BE : dw $0004, $EE9E, $EED0
+  dw $EEA8, $EF89
+  dw $EF98, $EFA7
+
+cop #$BF : dw $F10D
+
+cop #$BE : dw $0004, $EEB2, $EED0
+  dw $EEBC, $EFB6
+  dw $EFC5, $EFD4
+
+cop #$BF : dw $F135
+
+cop #$BE : dw $0004, $EEC6, $EED0
+  dw $EED0, $EFE3
+  dw $EFF2, $F001
+
+cop #$BF : dw $F15A
+
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $82
+  dw $0020,$0090 : db $07,$00,$18
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $0A
+  dw $01E3,$00A0 : db $03,$00,$45
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $E5
+  dw $00A8,$00A0 : db $00,$00,$11
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $15
+  dw $0339,$01B0 : db $00,$00,$35
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $1A
+  dw $0110,$00C3 : db $00,$00,$22
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $0F
+  dw $0078,$05D0 : db $00,$00,$61
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $91
+  dw $0370,$0430 : db $03,$00,$54
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $AC
+  dw $01C0,$01D0 : db $07,$00,$22
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $C3
+  dw $0010,$00E8 : db $07,$00,$23
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $1C
+  dw $006C,$0174 : db $07,$00,$22
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $32
+  dw $0138,$0360 : db $07,$00,$45
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $3E
+  dw $00B0,$03D0 : db $07,$00,$42
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $4C
+  dw $0100,$0136 : db $07,$00,$22
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $5A
+  dw $0088,$00A0 : db $07,$00,$64
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $5F
+  dw $0088,$0050 : db $07,$00,$44
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $69
+  dw $02A8,$00A0 : db $07,$00,$13
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $AC
+  dw $01C8,$01E0 : db $07,$00,$22
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $C3
+  dw $0020,$00F0 : db $07,$00,$23
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $CC
+  dw $002C,$00E0 : db $07,$00,$44
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $78
+  dw $027E,$03A0 : db $07,$00,$45
+rtl 
+
+cop #$BF : dw $F164
+
+cop #$26 : db $B0
+  dw $0200,$04D0 : db $07,$00,$54
+rtl 
+
+;org $8BF010
+db $D3,$47,$84,$8B,$8B,$8E,$4F,$AC,$48,$AC,$80,$8C,$AC,$43,$84,$81,$A5,$86,$6D,$8C,$80,$8D,$4F,$CB,$D6,$65,$A9,$8E,$A5,$AC,$86,$8E,$0D,$CF,$AC,$4E,$A4,$87,$84,$A2,$A3,$CB,$AC,$D6,$16,$67,$80,$8B,$8B,$CB,$AC,$4B,$40,$63,$64,$AC,$46,$40,$48,$40,$AC,$4B,$4E,$4E,$4A,$CB,$AC,$44,$43,$4E,$67,$40,$6D,$43,$4E,$CA
+;org $8BF05C
+db $CE,$AC,$4E,$A4,$87,$84,$A2,$A3,$CB,$AC,$48,$A4,$8E,$A2,$88,$84,$CB,$AC,$47,$4E,$4C,$44,$AC,$4E,$45,$AC,$4C,$4E,$4E,$4D,$AC,$64,$62,$48,$41,$44,$CB,$AC,$65,$8D,$83,$84,$A2,$86,$A2,$8E,$A5,$8D,$83,$AC,$82,$80,$A3,$A4,$8B,$84,$CA
+;org $8BF095
+db $CE,$AC,$4E,$A4,$87,$84,$A2,$A3,$CB,$AC,$D6,$08,$8E,$85,$AC,$44,$A5,$A2,$8E,$CB,$AC,$D7,$22,$66,$88,$8B,$8B,$80,$86,$84,$CB,$AC,$D7,$08,$66,$88,$8B,$8B,$80,$86,$84,$AC,$43,$80,$8E,$CA
+;org $8BF0C3
+db $CE,$AC,$4E,$A4,$87,$84,$A2,$A3,$CB,$AC,$48,$4D,$42,$40,$CB,$AC,$47,$40,$4D,$40,$4D,$4E,$4C,$48,$69,$40,$4A,$4E,$CB,$AC,$43,$40,$48,$69,$40,$4C,$4E,$4D,$43,$4E,$CA
+;org $8BF0EC
+db $CE,$AC,$4E,$A4,$87,$84,$A2,$A3,$CB,$AC,$63,$8A,$A9,$AC,$46,$80,$A2,$83,$84,$8D,$CB,$AC,$60,$80,$8B,$80,$82,$84,$CB,$AC,$4C,$A5,$CA
+;org $8BF10D
+db $CE,$AC,$4E,$A4,$87,$84,$A2,$A3,$CB,$AC,$40,$8D,$86,$84,$8B,$AC,$66,$88,$8B,$8B,$80,$86,$84,$CB,$AC,$D7,$22,$66,$88,$8B,$8B,$80,$86,$84,$CB,$AC,$43,$80,$8E,$CA
+;org $8BF135
+db $CE,$AC,$61,$A5,$88,$A4,$CB,$AC,$60,$A9,$A2,$80,$8C,$88,$83,$CB,$AC,$67,$80,$A4,$84,$A2,$8C,$88,$80,$CB,$AC,$40,$8D,$8A,$8E,$A2,$AC,$67,$80,$A4,$CA
+;org $8BF15A
+db $CE,$41,$A9,$84,$AC,$81,$A9,$84,$4F,$C0
+;org $8BF164
+db $CE,$4E,$8A,$4F,$CB,$63,$84,$84,$AC,$A9,$8E,$A5,$AC,$80,$86,$80,$88,$8D,$4F,$C0
+
+;org $8BF178
+; Unknown code.
+lda $00E0 : and $00E2 : sta $00E2
+lda $00E2 : trb $00E0
+lda $00E0 : bit #$0040 : beq +
+  ldy $09AA
+  lda $0010,y : eor #$0008 : sta $0010,y
+  lda #$0040 : tsb $00E2
++:
+rtl
+;org $8BF1A2
+stz $00DE
+rtl
+;org $8BF1A6
+inc $00DE
+rtl
+;org $8BF1AA
+
+org $8bf1db
+SR_Bin2DecForMenu:
+pha
+ldy $0000
+stz $0000
+cmp #$03E8 : bcs .OverOneThousandGiveUp   ; = 1000
+cmp #$01F4 : bcc .CollectHundreds   ; = 500
+.CollectFiveHundred:
+sec : sbc #$01F4
+pha
+  lda #$0005 : sta $0000
+pla
+.CollectHundreds:
+cmp #$0064 : bcc .CheckTens
+sec : sbc #$0064
+inc $0000
+bra .CollectHundreds
+.CheckTens:    ; org $8bf206
+pha
+  lda $0000 : xba : and #$FF00 : sta $0000
+pla
+sep #$20
+cmp #$32 : bcc .CollectTens
+.CollectFifty:
+sec : sbc #$32
+pha
+lda #$05 : sta $0000
+pla
+.CollectTens:    ; org $8bf222
+cmp #$0A : bcc .CollectOnes
+sec : sbc #$0A
+inc $0000 : bra .CollectTens
+.CollectOnes:    ; org $8bf22e
+pha
+lda $0000 : asl : asl : asl : asl : ora $01,s : sta $01,s
+pla
+rep #$20
+sta $01,s
+sty $0000
+pla
+clc
+rts
+.OverOneThousandGiveUp:    ; org $8bf245
+sty $0000
+pla
+sec
+rts
+warnpc $8bf24b
+
+
+org $8bf706
+Table_SaveFileLocationText:
+.Pointers:
+{
+dw .StartFromBeginning    ; $f906  Map $00
+dw .SouthCape             ; $f91c  Map $01
+dw .StartFromBeginning    ; $f906  Map $02
+dw .StartFromBeginning    ; $f906  Map $03
+dw .StartFromBeginning    ; $f906  Map $04
+dw .StartFromBeginning    ; $f906  Map $05
+dw .StartFromBeginning    ; $f906  Map $06
+dw .StartFromBeginning    ; $f906  Map $07
+dw .StartFromBeginning    ; $f906  Map $08
+dw .StartFromBeginning    ; $f906  Map $09
+dw .StartFromBeginning    ; $f906  Map $0A
+dw .EdwardPrison          ; $f927  Map $0B
+dw .StartFromBeginning    ; $f906  Map $0C
+dw .StartFromBeginning    ; $f906  Map $0D
+dw .StartFromBeginning    ; $f906  Map $0E
+dw .StartFromBeginning    ; $f906  Map $0F
+dw .StartFromBeginning    ; $f906  Map $10
+dw .StartFromBeginning    ; $f906  Map $11
+dw .UndergroundTunnel     ; $f934  Map $12
+dw .StartFromBeginning    ; $f906  Map $13
+dw .StartFromBeginning    ; $f906  Map $14
+dw .ItoryVillage          ; $f94b  Map $15
+dw .StartFromBeginning    ; $f906  Map $16
+dw .StartFromBeginning    ; $f906  Map $17
+dw .StartFromBeginning    ; $f906  Map $18
+dw .StartFromBeginning    ; $f906  Map $19
+dw .StartFromBeginning    ; $f906  Map $1A
+dw .StartFromBeginning    ; $f906  Map $1B
+dw .StartFromBeginning    ; $f906  Map $1C
+dw .StartFromBeginning    ; $f906  Map $1D
+dw .LaraiCliff            ; $f95e  Map $1E
+dw .StartFromBeginning    ; $f906  Map $1F
+dw .StartFromBeginning    ; $f906  Map $20
+dw .StartFromBeginning    ; $f906  Map $21
+dw .StartFromBeginning    ; $f906  Map $22
+dw .StartFromBeginning    ; $f906  Map $23
+dw .StartFromBeginning    ; $f906  Map $24
+dw .StartFromBeginning    ; $f906  Map $25
+dw .IncanRuins            ; $f96a  Map $26
+dw .StartFromBeginning    ; $f906  Map $27
+dw .IncanRuins            ; $f96a  Map $28
+dw .StartFromBeginning    ; $f906  Map $29
+dw .StartFromBeginning    ; $f906  Map $2A
+dw .StartFromBeginning    ; $f906  Map $2B
+dw .StartFromBeginning    ; $f906  Map $2C
+dw .StartFromBeginning    ; $f906  Map $2D
+dw .StartFromBeginning    ; $f906  Map $2E
+dw .StartFromBeginning    ; $f906  Map $2F
+dw .StartFromBeginning    ; $f906  Map $30
+dw .StartFromBeginning    ; $f906  Map $31
+dw .StartFromBeginning    ; $f906  Map $32
+dw .StartFromBeginning    ; $f906  Map $33
+dw .Freejia               ; $f97a  Map $34
+dw .StartFromBeginning    ; $f906  Map $35
+dw .StartFromBeginning    ; $f906  Map $36
+dw .StartFromBeginning    ; $f906  Map $37
+dw .StartFromBeginning    ; $f906  Map $38
+dw .StartFromBeginning    ; $f906  Map $39
+dw .StartFromBeginning    ; $f906  Map $3A
+dw .StartFromBeginning    ; $f906  Map $3B
+dw .StartFromBeginning    ; $f906  Map $3C
+dw .DiamondMine           ; $f986  Map $3D
+dw .StartFromBeginning    ; $f906  Map $3E
+dw .StartFromBeginning    ; $f906  Map $3F
+dw .DiamondMine           ; $f986  Map $40
+dw .StartFromBeginning    ; $f906  Map $41
+dw .DiamondMine           ; $f986  Map $42
+dw .StartFromBeginning    ; $f906  Map $43
+dw .StartFromBeginning    ; $f906  Map $44
+dw .StartFromBeginning    ; $f906  Map $45
+dw .StartFromBeginning    ; $f906  Map $46
+dw .StartFromBeginning    ; $f906  Map $47
+dw .StartFromBeginning    ; $f906  Map $48
+dw .StartFromBeginning    ; $f906  Map $49
+dw .StartFromBeginning    ; $f906  Map $4A
+dw .StartFromBeginning    ; $f906  Map $4B
+dw .SkyGarden             ; $f991  Map $4C
+dw .StartFromBeginning    ; $f906  Map $4D
+dw .StartFromBeginning    ; $f906  Map $4E
+dw .StartFromBeginning    ; $f906  Map $4F
+dw .StartFromBeginning    ; $f906  Map $50
+dw .SkyGarden             ; $f991  Map $51
+dw .StartFromBeginning    ; $f906  Map $52
+dw .StartFromBeginning    ; $f906  Map $53
+dw .SkyGarden             ; $f991  Map $54
+dw .StartFromBeginning    ; $f906  Map $55
+dw .SkyGarden             ; $f991  Map $56
+dw .StartFromBeginning    ; $f906  Map $57
+dw .StartFromBeginning    ; $f906  Map $58
+dw .StartFromBeginning    ; $f906  Map $59
+dw .SeasidePalace         ; $f9a0  Map $5A
+dw .StartFromBeginning    ; $f906  Map $5B
+dw .StartFromBeginning    ; $f906  Map $5C
+dw .StartFromBeginning    ; $f906  Map $5D
+dw .StartFromBeginning    ; $f906  Map $5E
+dw .StartFromBeginning    ; $f906  Map $5F
+dw .Mu                    ; $f9ad  Map $60
+dw .StartFromBeginning    ; $f906  Map $61
+dw .Mu                    ; $f9ad  Map $62
+dw .StartFromBeginning    ; $f906  Map $63
+dw .StartFromBeginning    ; $f906  Map $64
+dw .StartFromBeginning    ; $f906  Map $65
+dw .StartFromBeginning    ; $f906  Map $66
+dw .StartFromBeginning    ; $f906  Map $67
+dw .StartFromBeginning    ; $f906  Map $68
+dw .StartFromBeginning    ; $f906  Map $69
+dw .StartFromBeginning    ; $f906  Map $6A
+dw .StartFromBeginning    ; $f906  Map $6B
+dw .AngelVillage          ; $f9b4  Map $6C
+dw .StartFromBeginning    ; $f906  Map $6D
+dw .StartFromBeginning    ; $f906  Map $6E
+dw .StartFromBeginning    ; $f906  Map $6F
+dw .StartFromBeginning    ; $f906  Map $70
+dw .StartFromBeginning    ; $f906  Map $71
+dw .StartFromBeginning    ; $f906  Map $72
+dw .StartFromBeginning    ; $f906  Map $73
+dw .StartFromBeginning    ; $f906  Map $74
+dw .StartFromBeginning    ; $f906  Map $75
+dw .StartFromBeginning    ; $f906  Map $76
+dw .StartFromBeginning    ; $f906  Map $77
+dw .StartFromBeginning    ; $f906  Map $78
+dw .StartFromBeginning    ; $f906  Map $79
+dw .StartFromBeginning    ; $f906  Map $7A
+dw .StartFromBeginning    ; $f906  Map $7B
+dw .Watermia              ; $f9c6  Map $7C
+dw .StartFromBeginning    ; $f906  Map $7D
+dw .StartFromBeginning    ; $f906  Map $7E
+dw .StartFromBeginning    ; $f906  Map $7F
+dw .StartFromBeginning    ; $f906  Map $80
+dw .StartFromBeginning    ; $f906  Map $81
+dw .StartFromBeginning    ; $f906  Map $82
+dw .StartFromBeginning    ; $f906  Map $83
+dw .StartFromBeginning    ; $f906  Map $84
+dw .GreatWall             ; $f9d3  Map $85
+dw .GreatWall             ; $f9d3  Map $86
+dw .StartFromBeginning    ; $f906  Map $87
+dw .GreatWall             ; $f9d3  Map $88
+dw .StartFromBeginning    ; $f906  Map $89
+dw .StartFromBeginning    ; $f906  Map $8A
+dw .StartFromBeginning    ; $f906  Map $8B
+dw .StartFromBeginning    ; $f906  Map $8C
+dw .StartFromBeginning    ; $f906  Map $8D
+dw .StartFromBeginning    ; $f906  Map $8E
+dw .StartFromBeginning    ; $f906  Map $8F
+dw .StartFromBeginning    ; $f906  Map $90
+dw .StartFromBeginning    ; $f906  Map $91
+dw .StartFromBeginning    ; $f906  Map $92
+dw .StartFromBeginning    ; $f906  Map $93
+dw .StartFromBeginning    ; $f906  Map $94
+dw .StartFromBeginning    ; $f906  Map $95
+dw .StartFromBeginning    ; $f906  Map $96
+dw .StartFromBeginning    ; $f906  Map $97
+dw .StartFromBeginning    ; $f906  Map $98
+dw .CityOfEuro            ; $f9de  Map $99
+dw .StartFromBeginning    ; $f906  Map $9A
+dw .StartFromBeginning    ; $f906  Map $9B
+dw .StartFromBeginning    ; $f906  Map $9C
+dw .StartFromBeginning    ; $f906  Map $9D
+dw .StartFromBeginning    ; $f906  Map $9E
+dw .StartFromBeginning    ; $f906  Map $9F
+dw .StartFromBeginning    ; $f906  Map $A0
+dw .MtTemple              ; $f9ed  Map $A1
+dw .StartFromBeginning    ; $f906  Map $A2
+dw .MtTemple              ; $f9ed  Map $A3
+dw .StartFromBeginning    ; $f906  Map $A4
+dw .StartFromBeginning    ; $f906  Map $A5
+dw .StartFromBeginning    ; $f906  Map $A6
+dw .MtTemple              ; $f9ed  Map $A7
+dw .StartFromBeginning    ; $f906  Map $A8
+dw .StartFromBeginning    ; $f906  Map $A9
+dw .StartFromBeginning    ; $f906  Map $AA
+dw .StartFromBeginning    ; $f906  Map $AB
+dw .NativesVillage        ; $f9fc  Map $AC
+dw .StartFromBeginning    ; $f906  Map $AD
+dw .StartFromBeginning    ; $f906  Map $AE
+dw .StartFromBeginning    ; $f906  Map $AF
+dw .StartFromBeginning    ; $f906  Map $B0
+dw .StartFromBeginning    ; $f906  Map $B1
+dw .StartFromBeginning    ; $f906  Map $B2
+dw .StartFromBeginning    ; $f906  Map $B3
+dw .StartFromBeginning    ; $f906  Map $B4
+dw .StartFromBeginning    ; $f906  Map $B5
+dw .Garden                ; $fa12  Map $B6
+dw .StartFromBeginning    ; $f906  Map $B7
+dw .AnkorWat              ; $fa1d  Map $B8
+dw .StartFromBeginning    ; $f906  Map $B9
+dw .StartFromBeginning    ; $f906  Map $BA
+dw .AnkorWat              ; $fa1d  Map $BB
+dw .StartFromBeginning    ; $f906  Map $BC
+dw .StartFromBeginning    ; $f906  Map $BD
+dw .StartFromBeginning    ; $f906  Map $BE
+dw .StartFromBeginning    ; $f906  Map $BF
+dw .StartFromBeginning    ; $f906  Map $C0
+dw .StartFromBeginning    ; $f906  Map $C1
+dw .StartFromBeginning    ; $f906  Map $C2
+dw .DaoVillage            ; $fa2b  Map $C3
+dw .StartFromBeginning    ; $f906  Map $C4
+dw .StartFromBeginning    ; $f906  Map $C5
+dw .StartFromBeginning    ; $f906  Map $C6
+dw .StartFromBeginning    ; $f906  Map $C7
+dw .StartFromBeginning    ; $f906  Map $C8
+dw .StartFromBeginning    ; $f906  Map $C9
+dw .StartFromBeginning    ; $f906  Map $CA
+dw .StartFromBeginning    ; $f906  Map $CB
+dw .Pyramid               ; $fa3b  Map $CC
+dw .StartFromBeginning    ; $f906  Map $CD
+dw .StartFromBeginning    ; $f906  Map $CE
+dw .StartFromBeginning    ; $f906  Map $CF
+dw .StartFromBeginning    ; $f906  Map $D0
+dw .StartFromBeginning    ; $f906  Map $D1
+dw .StartFromBeginning    ; $f906  Map $D2
+dw .StartFromBeginning    ; $f906  Map $D3
+dw .StartFromBeginning    ; $f906  Map $D4
+dw .StartFromBeginning    ; $f906  Map $D5
+dw .StartFromBeginning    ; $f906  Map $D6
+dw .StartFromBeginning    ; $f906  Map $D7
+dw .StartFromBeginning    ; $f906  Map $D8
+dw .StartFromBeginning    ; $f906  Map $D9
+dw .StartFromBeginning    ; $f906  Map $DA
+dw .StartFromBeginning    ; $f906  Map $DB
+dw .StartFromBeginning    ; $f906  Map $DC
+dw .StartFromBeginning    ; $f906  Map $DD
+dw .StartFromBeginning    ; $f906  Map $DE
+dw .StartFromBeginning    ; $f906  Map $DF
+dw .BabelTower            ; $fa47  Map $E0
+dw .StartFromBeginning    ; $f906  Map $E1
+dw .StartFromBeginning    ; $f906  Map $E2
+dw .BabelTower            ; $fa47  Map $E3
+dw .StartFromBeginning    ; $f906  Map $E4
+dw .StartFromBeginning    ; $f906  Map $E5
+dw .StartFromBeginning    ; $f906  Map $E6
+dw .StartFromBeginning    ; $f906  Map $E7
+dw .StartFromBeginning    ; $f906  Map $E8
+dw .StartFromBeginning    ; $f906  Map $E9
+dw .StartFromBeginning    ; $f906  Map $EA
+dw .StartFromBeginning    ; $f906  Map $EB
+dw .StartFromBeginning    ; $f906  Map $EC
+dw .StartFromBeginning    ; $f906  Map $ED
+dw .StartFromBeginning    ; $f906  Map $EE
+dw .StartFromBeginning    ; $f906  Map $EF
+dw .StartFromBeginning    ; $f906  Map $F0
+dw .StartFromBeginning    ; $f906  Map $F1
+dw .StartFromBeginning    ; $f906  Map $F2
+dw .StartFromBeginning    ; $f906  Map $F3
+dw .StartFromBeginning    ; $f906  Map $F4
+dw .StartFromBeginning    ; $f906  Map $F5
+dw .StartFromBeginning    ; $f906  Map $F6
+dw .StartFromBeginning    ; $f906  Map $F7
+dw .StartFromBeginning    ; $f906  Map $F8
+dw .StartFromBeginning    ; $f906  Map $F9
+dw .StartFromBeginning    ; $f906  Map $FA
+dw .StartFromBeginning    ; $f906  Map $FB
+dw .StartFromBeginning    ; $f906  Map $FC
+dw .StartFromBeginning    ; $f906  Map $FD
+dw .StartFromBeginning    ; $f906  Map $FE
+dw .StartFromBeginning    ; $f906  Map $FF
+}
+;org $8bf906
+.StartFromBeginning:    ; $f906, invalid save point
+db $63,$a4,$80,$a2,$a4,$ac,$d6,$8e,$81,$84,$86,$88,$8d,$8d,$88,$8d,$86,$ca,$80,$00,$00,$03
+.SouthCape:    ; $$f91c
+db $d6,$47,$42,$80,$a0,$84,$ca,$80,$00,$20,$03
+.EdwardPrison:    ; $$f927
+db $d6,$11,$60,$a2,$88,$a3,$8e,$8d,$ca,$80,$00,$b0,$02
+.UndergroundTunnel:    ; $$f934
+db $65,$8d,$83,$84,$a2,$86,$a2,$8e,$a5,$8d,$83,$ac,$64,$a5,$8d,$8d,$84,$8b,$ca,$80,$00,$b0,$02
+.ItoryVillage:    ; $
+db $48,$a4,$8e,$a2,$a9,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ac,$ca,$4a,$00,$38,$02
+.LaraiCliff:    ; $
+db $d7,$19,$42,$8b,$88,$85,$85,$ca,$ba,$00,$0c,$02
+.IncanRuins:    ; $
+db $48,$8d,$82,$80,$8d,$ac,$a2,$a5,$88,$8d,$a3,$ca,$ba,$00,$0c,$02
+.Freejia:    ; $
+db $45,$a2,$84,$84,$89,$88,$80,$ca,$da,$01,$5c,$02
+.DiamondMine:    ; $
+db $d6,$0e,$4c,$88,$8d,$84,$ca,$c0,$02,$ec,$02
+.SkyGarden:    ; $
+db $63,$8a,$a9,$ac,$46,$80,$a2,$83,$84,$8d,$ca,$8a,$02,$1c,$02
+.SeasidePalace:    ; $
+db $d7,$32,$60,$80,$8b,$80,$82,$84,$ca,$f3,$02,$1a,$00
+.Mu:    ; $
+db $4c,$a5,$ca,$b0,$02,$00,$00
+.AngelVillage:    ; $
+db $40,$8d,$86,$84,$8b,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ca,$f3,$02,$00,$01
+.Watermia:    ; $
+db $67,$80,$a4,$84,$a2,$8c,$88,$80,$ca,$54,$02,$2a,$01
+.GreatWall:    ; $
+db $d6,$16,$67,$80,$8b,$8b,$ca,$28,$02,$b0,$00
+.CityOfEuro:    ; $
+db $d6,$08,$8e,$85,$ac,$44,$a5,$a2,$8e,$ac,$ca,$58,$01,$c0,$00
+.MtTemple:    ; $
+db $4c,$a4,$2a,$ac,$64,$84,$8c,$a0,$8b,$84,$ca,$8e,$01,$46,$00
+.NativesVillage:    ; $
+db $4d,$80,$a4,$88,$a6,$84,$a3,$0e,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ac,$ca,$a8,$00,$34,$01
+.Garden:    ; $
+db $46,$80,$a2,$83,$84,$8d,$ca,$b8,$00,$e0,$00
+.AnkorWat:    ; $
+db $40,$8d,$8a,$8e,$a2,$ac,$67,$80,$a4,$ca,$b8,$00,$e0,$00
+.DaoVillage:    ; $
+db $43,$80,$8e,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ca,$14,$00,$a2,$00
+.Pyramid:    ; $
+db $60,$a9,$a2,$80,$8c,$88,$83,$ca,$00,$00,$38,$00
+.BabelTower:    ; $
+db $41,$80,$81,$84,$8b,$ac,$64,$8e,$a7,$84,$a2,$ca,$84,$01,$90,$01
+
+
+;org $8bfa57
+db $00,$00,$28
+EDebugActorMaxStats:
+lda #$0040 : sta $0ade
+lda #$0040 : sta $0adc
+lda #$0040 : sta $0aca
+lda #$0040 : sta $0b22    ; (full heal)
+cop #$E0
+
+
+;org $8BFA74
+Bank8BFree:
+pad $8C0000

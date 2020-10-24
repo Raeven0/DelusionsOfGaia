@@ -1,0 +1,5878 @@
+arch 65816
+hirom
+fillbyte $FF
+padbyte $FF
+
+
+org $838000
+LR_CheckSpecialButtons:
+php
+rep #$20
+lda $0642 : and #$00FF : bne .ImmediateExit    ; New map to load.
+lda $09AE : bit #$0200 : bne .ImmediateExit    ; Player dying.
+jsl LR_SecIfAwaitingMusic : bcs .ImmediateExit    ; jsl $82A10A
+lda $0656 : bit #$1000 : bne .PressedStart
+lda $09AE : bit #$2800 : bne .ImmediateExit    ; Collisionless move pattern.
+lda $0656 : bit #$2000 : bne .PressedSelect
+  bit #$4000 : beq .ImmediateExit    ; Use/Cancel not pressed.
+jmp LR_HandleUseItem    ; $838410
+.ImmediateExit:    ; org $838039
+plp
+rtl
+; org $83803b
+.PressedSelect:
+lda #$2000 : tsb $0658
+jsl LR_WaitForNmi    ; $828043
+jsl LR_OpenInventoryScreen    ; $82ED02
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
+lda #$6000 : tsb $0658
+plp
+rtl
+; org $838055
+.PressedStart:
+lda #$1000 : tsb $0658
+ldx #$0000
+lda $09AE : bit #$0008 : bne B_83806D
+jsr J_8380BF
+sep #$20 : bra J_83808B
+; org $83806d
+B_83806D:
+cop #$BD : dl $81EAC6
+lda #$8000 : trb $09EC : sep #$20
+jsl S_828191
+jsl S_828043
+jsl S_8281A2
+lda #$09 : sta $2100
+; org $83808b
+J_83808B:
+ldx #$0000
+phx
+; org $83808f
+B_83808F:
+jsl S_828191
+jsl S_828043
+jsl S_8281A2
+jsr S_838259
+lda $0657 : bit #$10 : beq B_83808F
+plx
+lda #$10 : tsb $0659
+jsl S_82F06A
+lda #$0F : sta $2100
+lda #$01 : tsb $09EC
+jsl S_80811E
+plp
+rtl
+; org $8380bf
+J_8380BF:
+lda $7F0C07 : beq B_8380D7
+sep #$20
+jsl S_828191
+jsl S_828043
+jsl S_8281A2
+rep #$20
+bra J_8380BF
+; org $8380d7
+B_8380D7:
+lda #$1C00 : sta $7F0C03
+lda #$00C0
+; org $8380e1
+Q_8380E1:
+sta $7F0C05
+lda #$7700 : sta $7F0C07
+lda #$0200 : sta $7F0C09
+; org $8380f3
+J_8380F3:
+lda $7F0C07 : beq B_83810B
+sep #$20
+jsl S_828191
+jsl S_828043
+jsl S_8281A2
+rep #$20
+bra J_8380F3
+; org $83810b
+B_83810B:    ; Draws the radar, probably.
+jsl S_82F06A
+phb
+ldx #$1E00
+ldy #$0380
+lda #$057F
+mvn $C0,$7F
+plb
+lda $09A6 : and #$00FC : sec : sbc #$0020 : sta $0018
+clc : adc #$0044 : sta $001A
+lda $09A8 : and #$00FC : sec : sbc #$0020 : sta $001C
+clc : adc #$0044 : sta $001E
+jsr S_83827C
+lda $0002 : and #$00F0
+lsr a
+lsr a
+lsr a
+lsr a : beq B_83815B : ora #$34F0 : sta $7F07CC
+; org $83815b
+B_83815B:
+lda $0002 : and #$000F : ora #$34F0 : sta $7F07CE
+lda #$2EE6 : sta $7F07C8
+lda $0018 : asl : asl : asl : asl : sta $0018
+lda $001C : asl : asl : asl : asl : sta $001C
+lda $001A : asl : asl : asl : asl : sta $001A
+lda $001E : asl : asl : asl : asl : sta $001E
+jsr S_83830E
+lda $0AEE : and #$00F0
+lsr : lsr : lsr : lsr : beq B_8381AD
+  ora #$34F0 : sta $7F060C
+; org $8381ad
+B_8381AD: ; Manual draw of radar borders etc.
+lda $0AEE : and #$000F : ora #$34F0 : sta $7F060E
+lda #$2AE7 : sta $7F0608
+lda $0644
+jsl S_80B496 : bcs B_838248
+ldx $0644
+lda $81AADE,x : and #$00FF : beq B_838248
+lda #$2EE1 : sta $7F0406
+lda #$6EE1 : sta $7F040C
+lda #$AEE1 : sta $7F04C6
+lda #$EEE1 : sta $7F04CC
+lda #$2EE2 : sta $7F0408
+lda #$6EE2 : sta $7F040A
+lda #$AEE2 : sta $7F04C8
+lda #$EEE2 : sta $7F04CA
+lda #$2EE3 : sta $7F0446
+lda #$AEE3 : sta $7F0486
+lda #$6EE3 : sta $7F044C
+lda #$EEE3 : sta $7F048C
+lda #$32E8 : sta $7F0448
+  inc : sta $7F044A
+  inc : sta $7F0488
+  inc : sta $7F048A
+ldx #$0000
+cop #$BD : dl $81EAD1
+; org $838248
+B_838248:
+lda #$32E5 : sta $7F0626
+lda #$0001 : tsb $09EC
+ldx #$0000
+rts
+; org $838259
+S_838259:
+lda $0036
+lsr a : bcs B_838260
+rts
+; org $838260
+B_838260:
+rep #$20
+lda $03,s : inc a
+cmp #$001D : bcc B_83826D
+lda #$0000
+; org $83826d
+B_83826D:
+sta $03,s : asl : tax
+lda $8383D6,x : sta $7F0A24 : sep #$20
+rts
+; org $83827c
+S_83827C:    ; Calculates the treasure chest counter and positions
+SR_CollectRadarChests:
+phx : stz $0002
+ldx $0646
+lda $81ADA8,x : sec : sbc #$ADA8 : tax : sep #$20
+; org $83828e
+J_83828E:
+lda $81ADA8,x : bmi B_83830A
+lda $81ADAB,x
+rep #$20 : and #$007F
+jsl S_80B489 : sep #$20 : bcs B_838304
+lda $81ADA8,x
+cmp $0018 : bmi B_8382F9
+cmp $001A : bcs B_8382F9
+lda $81ADA9,x
+cmp $001C : bmi B_8382F9
+cmp $001E : bcs B_8382F9
+lda $81ADA8,x : sec : sbc $0018
+lsr a : and #$FE : sta $0000 : stz $0001
+lda $81ADA9,x : sec : sbc $001C
+rep #$20
+lsr a : and #$00FE : asl : asl : asl : asl : asl
+clc : adc $0000
+clc : adc #$0216
+phx : tax
+lda #$2EE6 : sta $7F0200,x
+plx : sep #$20
+; org $8382f9
+B_8382F9:
+sed
+lda $0002
+clc : adc #$01 : sta $0002
+cld
+; org $838304
+B_838304:
+inx : inx : inx : inx : bra J_83828E
+; org $83830a
+B_83830A:
+rep #$20
+plx
+rts
+; org $83830e
+S_83830E:
+lda $56 : beq B_83832E
+; org $838312
+B_838312:
+tax
+lda $7F002A,x : bit #$0100 : beq B_838321
+jsr S_83832F : bra J_838329
+; org $838321
+B_838321:
+bit #$0200 : beq J_838329
+jsr S_838379
+; org $838329
+J_838329:
+lda $0006,x : bne B_838312
+; org $83832e
+B_83832E:
+rts
+; org $83832f
+S_83832F:
+lda $0014,x
+cmp $0018 : bmi B_838377
+cmp $001A : bcs B_838377
+lda $0016,x
+cmp $001C : bmi B_838377
+cmp $001E : bcs B_838377
+phx
+lda $0014,x : sec : sbc $0018
+lsr a
+lsr a
+lsr a
+lsr a
+lsr a : and #$FFFE : sta $0000
+lda $0016,x : sec : sbc $001C : and #$FFC0
+clc : adc $0000
+clc : adc #$0216 : tax
+lda #$2AE7 : sta $7F0200,x
+plx
+; org $838377
+B_838377:
+sec
+rts
+; org $838379
+S_838379:
+lda $0014,x
+cmp $06D6 : bcc B_8383D5
+cmp $06DA : bcs B_8383D5
+cmp $0018 : bmi B_8383D5
+cmp $001A : bcs B_8383D5
+lda $0016,x
+cmp $06D8 : bcc B_8383D5
+cmp $06DC : bcs B_8383D5
+cmp $001C : bmi B_8383D5
+cmp $001E : bcs B_8383D5
+phx
+lda $0014,x : sec : sbc $0018
+lsr a
+lsr a
+lsr a
+lsr a
+lsr a : and #$FFFE : sta $0000
+lda $0016,x : sec : sbc $001C : and #$FFC0
+clc : adc $0000
+clc : adc #$0216 : tax
+lda #$280D : sta $7F0200,x
+plx
+; org $8383d5
+B_8383D5:
+rts
+warnpc $8383d6
+
+
+
+org $838410
+LR_HandleUseItem:
+{
+pea .Return-1    ; #$842E
+ldy $0AC4 : bpl +
+  jmp SR_UseItemNothing    ; $84BF
++:
+lda $0AB4,y : and #$00FF : and #$003F : asl : tax
+lda #$4000 : tsb $0658
+jmp (.Pointers,x)    ; $843F,x
+.Return:
+sep #$20
+jsl $80811E
+rep #$20
+lda #$4000 : tsb $0658
+plp
+rtl
+}
+.Pointers:    ; $843F
+{
+dw SR_UseItemNothing        ; $84BF
+dw SR_UseItemRedJewel    ; $84D5, Red Jewel
+dw SR_UseItemPrisonKey     ; $85C2, Edward's Dungeon Key
+dw $8691    ; Inca Statue A
+dw $87a7    ; Inca Statue B
+dw $881d    ; Inca Melody (unused)
+dw $888a    ; Herb
+dw SR_UseItemDiamondBlock    ; $8917, Diamond Block
+dw $899a    ; Wind Melody
+dw SR_UseItemLolasMelody    ; $8ba4, Lola's Melody
+dw $8d67    ; Meat
+dw $8e15    ; Mine Key A
+dw $8e96    ; Mine Key B
+dw $8f17    ; Memory Melody
+dw $8ff3    ; Crystal Ball
+dw $90ce    ; Mine Elevator Key
+dw $9144    ; $9144, Item $10 = Mu Palace Key
+dw $921a    ; Purification Stone
+dw $9299    ; Statue of Hope
+dw $932b    ; Rama Statue
+dw $93a1    ; Magic Powder
+dw SR_UseItemBlueJournal    ; $9427 Blue Journal (unused)
+dw SR_UseItemLancesLetter    ; $950c Lance's Letter
+dw $966a    ; Necklace
+dw $9691    ; Russian Glass Will
+dw $983d    ; Teapot
+dw $98b2    ; Mushroom Drops
+dw SR_UseItemGold    ; $995c Bag of Gold (unused)
+dw $997f    ; Black Glasses
+dw $99cd    ; Gorgon Flower
+dw $9aa0    ; Hieroglyph $1E
+dw $9aa0    ; Hieroglyph $1F
+dw $9aa0    ; Hieroglyph $20
+dw $9aa0    ; Hieroglyph $21
+dw $9aa0    ; Hieroglyph $22
+dw $9aa0    ; Hieroglyph $23
+dw $9caf    ; Aura
+dw $9d09    ; Lola's Letter
+dw $9e15    ; Father's Journal
+dw $9f30    ; Crystal Ring
+dw $9f5d    ; Apple
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+dw SR_UseItemUndefined    ; $9FB1 [undefined]
+}
+;org $8384BF
+SR_UseItemNothing:
+{
+cop #$BF : dw .UseText    ; $84C4
+rts
+.UseText:    ; $84C4
+; "You're not equipped."
+db $D3,$D6,$69,$8D,$8E,$A4,$AC,$84,$A1,$A5,$88,$A0,$A0,$84,$83,$2A,$C0
+}
+SR_UseItemRedJewel:    ; $84D5
+{
+cop #$BF : dw .UseText    ; $8517
+jsr SR_RemoveHeldItem    ; $9FB2
+sed
+  lda $0AB0 : clc : adc #$0001 : sta $0AB0
+cld
+phx
+phd
+  lda $09AA : tcd : tax
+  cop #$A5 : dl .JewelActor1 : dw $0000,$2000    ; $838566
+  tyx
+  lda #$0000 : sta $0012,x
+  lda #$3000 : sta $000E,x
+  ldy $09AA
+  lda $0014,y : sta $0014,x
+  lda $0016,y : sta $0016,x
+pld
+plx
+rts
+.UseText:    ; $8517
+; Format.
+db $D3,$47
+; "He raised the Red Jewel!\p"
+db $84,$AC,$D6,$C5,$A4,$87,$84,$AC,$62,$84,$83,$AC,$49,$84,$A7,$84,$8B,$4F,$CF
+; "Red Jewels\nfly to Jeweler Gem's in\na single ray of light!\0"
+db $62,$84,$83,$AC,$49,$84,$A7,$84,$8B,$A3,$CB,$85,$8B,$A9,$AC,$A4,$8E,$AC,$49,$84,$A7,$84,$8B,$84,$A2,$AC,$46,$84,$8C,$0E,$A3,$AC,$88,$8D,$CB,$80,$AC,$A3,$88,$8D,$86,$8B,$84,$AC,$A2,$80,$A9,$AC,$8E,$85,$AC,$8B,$88,$86,$87,$A4,$4F,$C0
+.JewelActor1:    ; $838566
+cop #$A2 : dl .JewelActor2 : dw $1002    ; $838576
+cop #$CA : db $FF
+  dec $16
+cop #$CB
+cop #$E0
+.JewelActor2:    ; $838576
+cop #$88 : dl $8EE000
+cop #$8D : db $02
+lda #$0001 : sta $7F0010,x
+  sta $7F0012,x
+cop #$06 : db $25
+--:
+cop #$8B
+lda $2A : beq --
+lda $08 : stz $08 : sta $26
+-:
+ldy $24 : jsl LR_OrbitAtY    ; $80F3C9
+cop #$C2
+lda $7F0010,x : clc : adc #$0002 : sta $7F0010,x
+lda $7F0012,x : cmp #$00FF : beq +
+  inc : sta $7F0012,x
+  dec $26 : bpl -
+    bra --
++:
+cop #$E0
+}
+
+SR_UseItemPrisonKey:    ; $85C2
+
+
+
+
+
+org $83861F
+db $D3 ; Format-default.
+; "As he turns the \nprison key, the steel \ndoor opens with a \ndull sound. \0"
+db $40,$A3,$AC,$87,$84,$AC,$A4,$A5,$A2,$8D,$A3,$AC,$A4,$87,$84,$AC,$CB,$D7,$91,$8A,$84,$A9,$2B,$AC,$A4,$87,$84,$AC,$A3,$A4,$84,$84,$8B,$AC,$CB,$D7,$58,$8E,$A0,$84,$8D,$A3,$AC,$D6,$F0,$80,$AC,$CB,$83,$A5,$8B,$8B,$AC,$A3,$8E,$A5,$8D,$83,$2A,$AC,$C0
+;org $83865D
+db $D3 ; Format-default.
+; "There's no keyhole for\nthe prison key.\0"
+db $64,$87,$84,$A2,$84,$0E,$A3,$AC,$8D,$8E,$AC,$8A,$84,$A9,$87,$8E,$8B,$84,$AC,$85,$8E,$A2,$CB,$A4,$87,$84,$AC,$D7,$91,$8A,$84,$A9,$2A,$C0
+;org $838680
+db $D3 ; Format-default.
+; "The door is open. \0"
+db $64,$87,$84,$AC,$D7,$58,$88,$A3,$AC,$8E,$A0,$84,$8D,$2A,$AC,$C0
+;org $838691
+
+
+org $8386BE
+db $D3,$47,$84,$AC,$A3,$84,$A4,$AC,$D6,$1E,$D6,$48,$CB,$40,$AC,$8E,$8D,$AC,$A4,$87,$84,$AC,$8C,$80,$8D,$A4,$84,$8B,$2A,$AC,$C0
+;org $8386DD
+
+
+org $838705
+cop #$BF : dw $8746
+rts
+;org $83870A
+db $D3,$47,$84,$AC,$D6,$D4,$A4,$8E,$AC,$83,$84,$83,$88,$82,$80,$A4,$84,$AC,$A4,$87,$84,$AC,$CB,$D6,$D2,$D6,$F4,$A4,$87,$84,$AC,$CB,$D7,$4B,$8E,$85,$AC,$A4,$87,$84,$AC,$A3,$A0,$88,$A2,$88,$A4,$A3,$AC,$CB,$D6,$78,$A2,$84,$80,$82,$87,$2A,$AC,$C0
+;org $838746
+db $D3,$48,$A3,$AC,$A4,$87,$84,$AC,$D6,$1E,$A3,$84,$82,$A2,$84,$A4,$CB,$87,$88,$83,$83,$84,$8D,$AC,$88,$8D,$AC,$A4,$87,$84,$AC,$A3,$A4,$80,$A4,$A5,$84,$0D,$C0
+;org $83876D
+cop #$BF : dw $8772
+rts
+;org $838772
+db $D3,$64,$87,$84,$AC,$D7,$A3,$8E,$85,$AC,$A4,$87,$84,$AC,$8C,$80,$8D,$A4,$84,$8B,$AC,$CB,$D6,$84,$8C,$80,$A4,$82,$87,$AC,$A4,$87,$84,$AC,$CB,$D7,$A3,$8E,$85,$AC,$A4,$87,$84,$AC,$A3,$A4,$80,$A4,$A5,$84,$2A,$AC,$C0
+;org $8387A7
+lda $0644 : cmp #$001E : bne +++    ; $5E
+lda $09A8 : cmp #$0015 : beq +
+  cmp #$0016 : bne ++    ; $44
++:
+lda $09A6 : cmp #$0026 : beq +
+  cmp #$0027 : bne ++    ; $37
+cop #$BF : dw $87D4
+cop #$CC : db $31
+rts
+;org $8387D4
+db $D3,$47,$84,$AC,$A3,$84,$A4,$AC,$D6,$1E,$D6,$48,$CB,$41,$AC,$8E,$8D,$AC,$A4,$87,$84,$AC,$8C,$80,$8D,$A4,$84,$8B,$2A,$AC,$C0
+
+;org $8387F3
+lda $09A8 : cmp #$0012 : beq ++    ; $05
+  cmp #$0013 : bne +++
+++:    ; $838000
+lda $09A6 : cmp #$0037 : beq ++    ; $0D
+  cmp #$0038 : bne $00
++++:    ; $83880D
+cop #$D0 : db $44,$00 : dw $8705
+cop #$BF : dw $870A
+rts
+++:
+cop #$BF : dw $8772
+rts
+;org $83881D
+
+org $838836
+db $D3,$67,$88,$8B,$8B,$AC,$D7,$A1,$A0,$8B,$80,$A9,$84,$83,$AC,$A4,$87,$84,$AC,$CB,$48,$8D,$82,$80,$8D,$AC,$8C,$84,$8B,$8E,$83,$A9,$2A,$AC,$CF,$CA
+;org $83885A
+; "The Mayor's expression changed!"
+db $64,$87,$84,$AC,$4C,$80,$A9,$8E,$A2,$0E,$A3,$AC,$84,$A8,$A0,$A2,$84,$A3,$A3,$88,$8E,$8D,$CB,$82,$87,$80,$8D,$86,$84,$83,$4F,$C0
+; "But nothing happened."
+db $41,$A5,$A4,$AC,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$84,$83,$2A,$C0
+
+;org $83888a
+SR_UseItemHerb:
+{
+cop #$BF : dw .TextConfirm    ; $88ad
+cop #$BE : db $02,$01 : dw .Choices    ; $8894
+.Choices:
+  dw .ChoseNo    ; $88a8
+  dw .ChoseYes, .ChoseNo    ; $889a, $88a8
+.ChoseYes:  ; org $83889a
+cop #$BF : dw .TextEating    ; $88e9
+lda #$0008 : sta $0b22
+jsr SR_RemoveHeldItem
+rts
+.ChoseNo:
+cop #$BF : dw .TextDecline    ; $88ca
+rts
+;org $8388AD
+.TextConfirm:
+db $D3,$64,$80,$8A,$84,$AC,$A4,$87,$84,$AC,$8C,$84,$83,$88,$82,$88,$8D,$84,$0D,$CB,$AC,$69,$84,$A3,$CB,$AC,$4D,$8E,$CA
+;org $8388CA
+.TextDecline:
+db $CE,$47,$84,$AC,$A3,$A4,$8E,$A0,$A0,$84,$83,$AC,$84,$80,$A4,$88,$8D,$86,$AC,$CB,$A4,$87,$84,$AC,$87,$84,$A2,$81,$2A,$AC,$C0
+;org $8388E9
+.TextEating:
+db $CE,$44,$80,$A4,$88,$8D,$86,$AC,$A4,$87,$84,$AC,$87,$84,$A2,$81,$2B,$AC,$87,$84,$AC,$CB,$A2,$84,$86,$80,$88,$8D,$84,$83,$AC,$87,$88,$A3,$AC,$A3,$A4,$A2,$84,$8D,$86,$A4,$87,$2A,$AC,$C0
+}
+
+;org $838917
+SR_UseItemDiamondBlock:
+lda $0644 : cmp #$0025 : bne ++    ; $1A
+lda $09A8 : cmp #$0019 : beq +    ; $05
+  cmp #$001A : bne ++    ; $0D
++:
+lda $09A6 : cmp #$000E : beq +++
+  cmp #$000F : bne $00
+++:
+cop #$BF : dw $893E
+rts
+
+;org $83893E
+db $D3,$48,$AC,$D6,$78,$D6,$90,$80,$AC,$A3,$A0,$80,$82,$84,$AC,$CB,$D6,$D7,$A4,$87,$84,$AC,$83,$88,$80,$8C,$8E,$8D,$83,$6D,$A3,$87,$80,$A0,$84,$83,$AC,$CB,$81,$8B,$8E,$82,$8A,$AC,$85,$88,$A4,$A3,$2A,$AC,$C0
+
+;org $838971
++++:
+cop #$BF : dw $897C
+cop #$D5 : db $07
+cop #$CC : db $2F
+rts
+;org $83897C
+db $D3,$47,$84,$AC,$85,$88,$A4,$AC,$A4,$87,$84,$AC,$81,$8B,$8E,$82,$8A,$CB,$D6,$A1,$A4,$87,$84,$AC,$A4,$88,$8B,$84,$4F,$C0
+;org $83899A
+
+
+
+
+
+
+org $838A2B
+db $D3,$47,$84,$AC,$D7,$A1,$A0,$8B,$80,$A9,$84,$83,$CB,$A4,$87,$84,$AC,$D7,$3D,$4C,$84,$8B,$8E,$83,$A9,$2A,$C0
+;org $838A46
+Text_WindMelodyGoldenTileRoom:
+db $D3,$CE,$D6,$61,$A4,$8E,$A5,$82,$87,$84,$83,$AC,$81,$A9,$AC,$A4,$87,$84,$AC,$84,$82,$87,$8E,$CB,$8E,$85,$AC,$A4,$87,$84,$AC,$45,$8B,$A5,$A4,$84,$2B,$AC,$A4,$87,$84,$AC,$46,$8E,$8B,$83,$CB,$41,$8B,$8E,$82,$8A,$AC,$81,$84,$86,$80,$8D,$AC,$A4,$8E,$AC,$86,$8B,$8E,$A7,$4F,$C0
+;org $838A8A
+db $D3,$47,$84,$AC,$D7,$A1,$A0,$8B,$80,$A9,$84,$83,$CB,$A4,$87,$84,$AC,$D7,$3D,$4C,$84,$8B,$8E,$83,$A9,$2A,$CF,$41,$A5,$A4,$AC,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$84,$83,$2A,$C0
+;org $838AB5
+db $D3,$CE,$D6,$61,$A4,$87,$84,$AC,$D6,$B4,$85,$8B,$8E,$A7,$84,$83,$CB,$D6,$6D,$87,$88,$A3,$AC,$81,$8E,$83,$A9,$2B,$AC,$A3,$A4,$A2,$80,$8D,$86,$84,$CB,$A7,$8E,$A2,$83,$A3,$AC,$85,$88,$8B,$8B,$84,$83,$AC,$87,$88,$A3,$AC,$87,$84,$80,$83,$2A,$CF,$42,$87,$80,$8D,$A4,$AC,$88,$8D,$AC,$A4,$87,$84,$AC,$A2,$8E,$8E,$8C,$AC,$A0,$80,$A6,$84,$83,$CB,$D6,$F0,$86,$8E,$8B,$83,$2B,$AC,$80,$8D,$83,$AC,$8C,$84,$83,$88,$A4,$80,$A4,$84,$CB,$80,$AC,$D7,$BF,$88,$8D,$AC,$A4,$87,$84,$AC,$A0,$8B,$80,$82,$84,$CB,$D6,$D7,$A3,$87,$88,$8D,$84,$A3,$AC,$81,$A2,$88,$86,$87,$A4,$8B,$A9,$2A,$CF,$45,$8E,$A2,$AC,$D6,$D7,$A0,$84,$A2,$A3,$8E,$8D,$AC,$A4,$87,$84,$AC,$A2,$8E,$80,$83,$CB,$A4,$8E,$AC,$A4,$87,$84,$AC,$D7,$8A,$8E,$85,$CB,$85,$A2,$84,$84,$83,$8E,$8C,$AC,$D6,$EF,$8E,$A0,$84,$8D,$2A,$2A,$2A,$C0
+;org $838B76
+db $D3,$CE,$47,$84,$AC,$D6,$84,$87,$80,$A6,$84,$CB,$A4,$87,$84,$AC,$45,$8B,$A5,$A4,$84,$2A,$2A,$2A,$C0
+;org $838B8F
+db $CE,$47,$84,$AC,$A3,$A4,$8E,$A0,$A0,$84,$83,$AC,$A0,$8B,$80,$A9,$88,$8D,$86,$2A,$C0
+
+;org $838BA4
+SR_UseItemLolasMelody:
+lda $0AD4 : beq +
+  jmp .NoFlute
++:
+jsl LR_SecIfAwaitingMusic : bcc +
+  rts
++:
+lda $0644 : cmp #$0015 : beq .InItory
+  cmp #$0011 : beq .InDungeon
+  cmp #$00CD : beq .InPyramid
+bra .NothingHappened
+.InDungeon:    ; org $838bc7
+cop #$D1 : dw $0113 : db $01 : dw .NothingHappened
+cop #$D0 : db $02, $01 : dw .NothingHappened
+bra .DoPlaySong
+.InItory:    ; org $838bd6
+cop #$D0 : db $40, $01 : dw .NothingHappened
+bra .DoPlaySong
+.InPyramid:    ; org $838bde
+cop #$D0 : db $BB, $01 : dw .NothingHappened
+cop #$D0 : db $0E, $00 : dw .NothingHappened
+cop #$CC : db $0D
+bra .DoPlaySong
+.DoPlaySong:    ; org $838bef
+lda #$0080 : tsb $09EC
+cop #$BF : dw Text_PlayLolasMelody    ; $8C76
+phx
+ldx #$0000
+cop #$A5 : dl ELolaSongPlayer : dw $0000, $2000    ; $839FCA
+cpy #$1FC0 : bne +
+  jmp ++
++:
+lda #$CFF0 : tsb $065A
+++:    ; org $838c14
+lda $0012,y : ora #$1000 : sta $0012,y
+lda #$0018 : sta $0026,y
+lda #$0001 : sta $0020,y
+plx
+rts
+.NothingHappened:    ; org $838c2b
+cop #$BF : dw Text_PlayLolasNothingHappened    ; $8CDB
+rts
+.NoFlute:    ; org $838c30
+cop #$BF : dw Text_DoesntHaveFlute    ; $8F82
+rts
+warnpc $838c35
+
+
+
+
+org $838C76
+Text_PlayLolasMelody:
+db $D3,$47,$84,$AC,$D7,$A1,$A0,$8B,$80,$A9,$84,$83,$AC,$A4,$87,$84,$CB,$D6,$B4,$87,$84,$AC,$87,$80,$83,$AC,$8B,$84,$80,$A2,$8D,$84,$83,$CB,$D6,$8E,$4B,$8E,$8B,$80,$2A,$C0
+;org $838CA0
+db $D3,$CE,$64,$87,$84,$AC,$8C,$84,$8B,$8E,$83,$A9,$2B,$AC,$82,$80,$A2,$A2,$88,$84,$83,$AC,$8E,$8D,$AC,$CB,$A4,$87,$84,$AC,$A7,$88,$8D,$83,$2B,$AC,$A3,$A0,$A2,$84,$80,$83,$AC,$CB,$D6,$BE,$A4,$87,$84,$AC,$8C,$84,$80,$83,$8E,$A7,$2A,$AC,$C0
+;org $838CDB
+Text_PlayLolasNothingHappened:
+db $D3,$47,$84,$AC,$D7,$A1,$A0,$8B,$80,$A9,$84,$83,$AC,$A4,$87,$84,$CB,$D6,$B4,$87,$84,$AC,$87,$80,$83,$AC,$8B,$84,$80,$A2,$8D,$84,$83,$CB,$D6,$8E,$4B,$8E,$8B,$80,$2A
+  ;org $838D05
+  db $CF,$D3,$CE,$41,$A5,$A4,$AC,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$84,$83,$2A,$C0
+;org $838D17
+db $D3,$CE,$47,$84,$AC,$D6,$99,$80,$AC,$A3,$8E,$85,$A4,$AC,$A6,$8E,$88,$82,$84,$CB,$D6,$8E,$A3,$8E,$8C,$84,$A7,$87,$84,$A2,$84,$2A,$2A,$2A,$CF,$C2,$02,$D6,$46,$66,$8E,$88,$82,$84,$2F,$CB,$46,$8E,$AC,$A4,$8E,$AC,$A4,$87,$84,$AC,$A3,$A7,$88,$A4,$82,$87,$AC,$8E,$8D,$CB,$A4,$87,$84,$AC,$D6,$C6,$A7,$80,$8B,$8B,$2A,$C3,$00,$C0
+;org $838D67
+
+org $838D85
+db $D3,$47,$84,$AC,$81,$88,$A4,$AC,$8E,$85,$85,$AC,$D6,$D0,$CB,$8E,$85,$AC,$A4,$87,$84,$AC,$A3,$8C,$8E,$8A,$84,$83,$AC,$8C,$84,$80,$A4,$2A,$AC,$CF,$48,$A4,$AC,$87,$80,$83,$AC,$80,$AC,$85,$8B,$80,$A6,$8E,$A2,$AC,$87,$84,$0E,$83,$CB,$D6,$BB,$A4,$80,$A3,$A4,$84,$83,$AC,$81,$84,$85,$8E,$A2,$84,$2A,$CB,$D6,$62,$D6,$7A,$88,$A4,$AC,$81,$84,$0D,$C0
+;org $838DDA
+db $D3,$67,$84,$AC,$81,$88,$A4,$AC,$8E,$85,$85,$CB,$D6,$D0,$8E,$85,$AC,$A4,$87,$84,$AC,$8C,$84,$80,$A4,$2A,$CF,$48,$A4,$AC,$A7,$80,$A3,$AC,$D7,$50,$D7,$B5,$80,$8D,$A9,$CB,$85,$8E,$8E,$83,$AC,$A7,$84,$0E,$83,$AC,$D7,$5D,$87,$80,$83,$2A,$C0
+;org $838E15
+
+org $838E39
+db $D3,$47,$84,$AC,$A4,$A2,$88,$84,$A3,$AC,$A5,$A3,$88,$8D,$86,$AC,$A4,$87,$84,$AC,$8A,$84,$A9,$AC,$CB,$A4,$8E,$AC,$A4,$87,$84,$AC,$8C,$88,$8D,$84,$2A,$AC,$CF,$CA
+;org $838E61
+
+org $838EBA
+db $D3,$47,$84,$AC,$A4,$A2,$88,$84,$A3,$AC,$A5,$A3,$88,$8D,$86,$AC,$A4,$87,$84,$AC,$8A,$84,$A9,$AC,$CB,$A4,$8E,$AC,$A4,$87,$84,$AC,$8C,$88,$8D,$84,$2A,$AC,$CF,$CA
+;org $838EE2
+
+org $838F82
+Text_DoesntHaveFlute:
+db $D3,$47,$84,$AC,$D6,$84,$87,$80,$A6,$84,$CB,$A4,$87,$84,$AC,$45,$8B,$A5,$A4,$84,$2A,$C0
+;org $838F98
+db $D3,$67,$88,$8B,$8B,$AC,$81,$84,$86,$80,$8D,$AC,$D6,$C4,$A4,$87,$84,$AC,$CB,$D6,$B4,$87,$84,$AC,$A2,$84,$8C,$84,$8C,$81,$84,$A2,$84,$83,$2A,$AC,$CF,$41,$A5,$A4,$AC,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$84,$83,$2A,$C0
+;org $838FCD
+db $D3,$CE,$67,$88,$8B,$8B,$AC,$81,$84,$86,$80,$8D,$AC,$D6,$C4,$A4,$87,$84,$AC,$CB,$D6,$B4,$87,$84,$AC,$A2,$84,$8C,$84,$8C,$81,$84,$A2,$84,$83,$2A,$AC,$C0
+;org $838FF3
+
+org $839057
+db $D3,$47,$84,$AC,$A2,$80,$88,$A3,$84,$A3,$AC,$A4,$87,$84,$AC,$CB,$D6,$07,$41,$80,$8B,$8B,$2B,$AC,$81,$A5,$A4,$AC,$CB,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$84,$83,$2A,$2A,$2A,$AC,$C0
+;org $839083
+db $D3,$64,$87,$84,$AC,$D6,$07,$41,$80,$8B,$8B,$AC,$88,$A3,$AC,$CB,$A3,$84,$A4,$AC,$88,$8D,$AC,$A4,$87,$84,$AC,$87,$8E,$8B,$84,$4F,$AC,$C0
+;org $8390A5
+db $D3,$64,$87,$84,$AC,$D6,$07,$41,$80,$8B,$8B,$AC,$88,$A3,$AC,$CB,$80,$8B,$A2,$84,$80,$83,$A9,$AC,$A3,$84,$A4,$AC,$88,$8D,$AC,$A4,$87,$84,$AC,$87,$8E,$8B,$84,$4F,$C0
+;org $8390CE
+
+
+org $8390F2
+db $D3,$47,$84,$AC,$A4,$A2,$88,$84,$A3,$AC,$A5,$A3,$88,$8D,$86,$AC,$CB,$A4,$87,$84,$AC,$D7,$5E,$8A,$84,$A9,$2A,$AC,$CF,$CA
+;org $839110
+
+org $839179
+db $D3,$47,$84,$AC,$A4,$A2,$88,$84,$A3,$AC,$A5,$A3,$88,$8D,$86,$AC,$A4,$87,$84,$AC,$8A,$84,$A9,$AC,$CB,$A4,$8E,$AC,$A4,$87,$84,$AC,$D7,$32,$60,$80,$8B,$80,$82,$84,$2A,$CF,$CA
+;org $8391A4
+
+org $8391D9
+db $CE,$C2,$02,$D6,$2C,$A3,$A0,$8E,$8A,$84,$AC,$85,$A2,$8E,$8C,$CB,$87,$88,$A3,$AC,$A0,$8E,$82,$8A,$84,$A4,$2A,$CF,$64,$87,$84,$AC,$A0,$87,$80,$8D,$A4,$8E,$8C,$AC,$8B,$80,$8D,$83,$AC,$8E,$85,$CB,$4C,$A5,$AC,$8B,$88,$84,$A3,$AC,$80,$87,$84,$80,$83,$2A,$C3,$00,$C0
+;org $83921A
+
+org $839244
+db $D3,$47,$84,$AC,$A2,$80,$88,$A3,$84,$A3,$AC,$A4,$87,$84,$AC,$CB,$D6,$40,$63,$A4,$8E,$8D,$84,$2A,$AC,$CF,$CA
+;org $83925F
+
+org $8392DE
+db $D3,$47,$84,$AC,$A2,$80,$88,$A3,$84,$A3,$AC,$A4,$87,$84,$AC,$CB,$D6,$48,$8E,$85,$AC,$47,$8E,$A0,$84,$2A,$AC,$CF,$CA
+;org $8392FB
+
+org $839370
+db $D3,$47,$84,$AC,$A2,$80,$88,$A3,$84,$A3,$AC,$A4,$87,$84,$AC,$CB,$62,$80,$8C,$80,$AC,$63,$A4,$80,$A4,$A5,$84,$2A,$AC,$CF,$CA
+;org $83938F
+
+org $8393C5
+db $D3,$47,$84,$AC,$A4,$A2,$88,$84,$A3,$AC,$A5,$A3,$88,$8D,$86,$AC,$A4,$87,$84,$AC,$CB,$4C,$80,$86,$88,$82,$AC,$60,$8E,$A7,$83,$84,$A2,$2A,$AC,$CF,$CA
+;org $8393EA
+
+
+org $839427
+SR_UseItemBlueJournal:
+{
+cop #$BF : dw $944d
+cop #$BE : db $03,$01 : dw .Options    ; $9431
+.Options:
+  dw .OptCancel, .Opt1, .Opt2, .Opt3    ; $9439,$943e,$9443,$9448
+.OptCancel:
+cop #$BF : dw $94b5
+rts
+.Opt1:
+cop #$BF : dw $94ce
+rts
+.Opt2:
+cop #$BF : dw $94e5
+rts
+.Opt3:
+cop #$BF : dw $94fd
+rts
+;org $83944d
+db $D3,$47,$84,$AC,$D7,$8B,$4B,$80,$8D,$82,$84,$0E,$A3,$AC,$85,$80,$A4,$87,$84,$A2,$0E,$A3,$CB,$89,$8E,$A5,$A2,$8D,$80,$8B,$2A,$AC,$CF,$62,$84,$80,$83,$AC,$A7,$87,$88,$82,$87,$AC,$84,$8D,$A4,$A2,$A9,$0D,$AC,$CB,$AC,$64,$8E,$A7,$84,$A2,$AC,$8E,$85,$AC,$41,$80,$81,$84,$8B,$AC,$CB,$AC,$4C,$A9,$A3,$A4,$88,$82,$AC,$63,$A4,$80,$A4,$A5,$84,$A3,$AC,$CB,$AC,$D6,$16,$67,$80,$8B,$8B,$AC,$8E,$85,$AC,$42,$87,$88,$8D,$80,$AC,$CA
+;org $8394B5
+db $D3,$47,$84,$AC,$82,$8B,$8E,$A3,$84,$A3,$AC,$A4,$87,$84,$AC,$89,$8E,$A5,$A2,$8D,$80,$8B,$2A,$AC,$C0
+;org $8394CE
+db $D3,$64,$87,$84,$AC,$64,$8E,$A7,$84,$A2,$AC,$8E,$85,$AC,$41,$80,$81,$84,$8B,$2A,$2A,$2A,$C0
+;org $8394E5
+db $D3,$64,$87,$84,$AC,$4C,$A9,$A3,$A4,$88,$82,$AC,$63,$A4,$80,$A4,$A5,$84,$A3,$2A,$2A,$2A,$AC,$C0
+;org $8394FD
+db $D3,$64,$87,$84,$AC,$D6,$16,$67,$80,$8B,$8B,$2A,$2A,$2A,$C0
+}
+
+;org $83950C
+SR_UseItemLancesLetter:
+{
+cop #$CC : db $8E
+cop #$BF : dw $9514
+rts
+;org $839514
+db $D3,$47,$84,$AC,$D7,$8B,$4B,$80,$8D,$82,$84,$0E,$A3,$AC,$8B,$84,$A4,$A4,$84,$A2,$2A,$AC,$CF,$C2,$04,$4B,$80,$8D,$82,$84,$2F,$AC,$CB,$48,$0E,$8C,$AC,$D6,$93,$A4,$8E,$AC,$A4,$87,$84,$AC,$CB,$D6,$16,$67,$80,$8B,$8B,$AC,$8E,$85,$AC,$42,$87,$88,$8D,$80,$2A,$AC,$CF,$48,$AC,$88,$8D,$A4,$84,$8D,$83,$84,$83,$AC,$A4,$8E,$AC,$8A,$84,$84,$A0,$AC,$88,$A4,$AC,$CB,$A3,$84,$82,$A2,$84,$A4,$2B,$AC,$81,$A5,$A4,$AC,$48,$AC,$A4,$8E,$8B,$83,$AC,$67,$88,$8B,$8B,$AC,$CB,$D6,$A3,$88,$8D,$AC,$82,$80,$A3,$84,$2A,$2A,$2A,$AC,$CF,$48,$0E,$8C,$AC,$A0,$A5,$A4,$A4,$88,$8D,$86,$AC,$D6,$D6,$8B,$84,$A4,$A4,$84,$A2,$CB,$88,$8D,$AC,$87,$88,$A3,$AC,$8B,$A5,$86,$86,$80,$86,$84,$2B,$AC,$81,$A5,$A4,$AC,$87,$84,$CB,$D7,$8F,$D6,$FA,$8D,$8E,$A4,$88,$82,$84,$2A,$CF,$64,$87,$84,$AC,$D7,$AE,$A3,$80,$A9,$CB,$D6,$DB,$D6,$D0,$8A,$88,$8D,$83,$AC,$8E,$85,$CB,$82,$A5,$A2,$84,$AC,$85,$8E,$A2,$AC,$8C,$A9,$AC,$85,$80,$A4,$87,$84,$A2,$CB,$80,$A4,$AC,$A4,$87,$84,$AC,$D6,$16,$67,$80,$8B,$8B,$2A,$CF,$D6,$1D,$80,$AC,$D6,$A6,$89,$8E,$A5,$A2,$8D,$84,$A9,$2B,$AC,$81,$A5,$A4,$CB,$48,$0E,$83,$AC,$86,$8E,$AC,$80,$8D,$A9,$A7,$87,$84,$A2,$84,$AC,$88,$85,$CB,$88,$A4,$AC,$D6,$F3,$87,$84,$8B,$A0,$AC,$87,$88,$8C,$2A,$CB,$D6,$0D,$A7,$8E,$A2,$A2,$A9,$AC,$D6,$6B,$8C,$84,$2A,$2A,$2A,$CF,$60,$2A,$63,$2A,$2F,$AC,$CB,$41,$A9,$AC,$A4,$87,$84,$AC,$A7,$80,$A9,$2B,$AC,$D6,$2C,$CB,$87,$80,$A3,$AC,$D6,$AE,$8C,$84,$2A,$C3,$00,$C0
+}
+
+;org $83966A
+cop #$BF : dw $966F
+rts
+;org $83966F
+db $D3,$4B,$80,$8D,$82,$84,$AC,$D6,$B3,$D6,$D6,$8D,$84,$82,$8A,$8B,$80,$82,$84,$AC,$CB,$85,$8E,$A2,$AC,$4B,$88,$8B,$8B,$A9,$2A,$2A,$2A,$C0
+
+;org $839691
+cop #$BF : dw $9696
+rts
+;org $839696
+db $D3,$47,$84,$AC,$D7,$8B,$A4,$87,$84,$AC,$A7,$88,$8B,$8B,$2A,$CF,$CB,$AC,$AC,$AC,$AC,$64,$8E,$AC,$A4,$87,$84,$AC,$4E,$A0,$A0,$8E,$8D,$84,$8D,$A4,$CF,$D6,$12,$88,$85,$AC,$48,$AC,$A0,$84,$A2,$88,$A3,$87,$2B,$AC,$83,$8E,$8D,$0E,$A4,$CB,$8C,$8E,$A5,$A2,$8D,$AC,$85,$8E,$A2,$AC,$8C,$84,$2A,$CF,$D6,$12,$88,$85,$AC,$D7,$2D,$46,$8B,$80,$A3,$A3,$CB,$D6,$84,$82,$8E,$A3,$A4,$AC,$8C,$84,$CB,$8C,$A9,$AC,$8B,$88,$85,$84,$2B,$AC,$D6,$9F,$8C,$A9,$AC,$85,$80,$A4,$84,$CB,$A4,$8E,$AC,$A0,$80,$A3,$A3,$AC,$80,$A7,$80,$A9,$AC,$A3,$8E,$8E,$8D,$2A,$CF,$63,$88,$A8,$AC,$8C,$8E,$8D,$A4,$87,$A3,$AC,$80,$86,$8E,$2B,$AC,$D6,$F6,$48,$CB,$D6,$8F,$8E,$A5,$A4,$AC,$48,$AC,$A7,$80,$A3,$AC,$83,$A9,$88,$8D,$86,$2B,$CB,$48,$AC,$83,$84,$82,$88,$83,$84,$83,$AC,$A4,$8E,$AC,$80,$8C,$80,$A3,$A3,$AC,$80,$A3,$CB,$8C,$A5,$82,$87,$AC,$8C,$8E,$8D,$84,$A9,$AC,$80,$A3,$AC,$A0,$8E,$A3,$A3,$88,$81,$8B,$84,$2A,$CF,$48,$AC,$D6,$FC,$A4,$8E,$AC,$D6,$AC,$88,$A4,$AC,$A4,$8E,$AC,$CB,$8C,$A9,$AC,$A7,$88,$85,$84,$2B,$AC,$80,$8D,$83,$AC,$A4,$87,$84,$AC,$82,$87,$88,$8B,$83,$AC,$CB,$D6,$1F,$D6,$BB,$A3,$84,$84,$2A,$AC,$CF,$48,$AC,$D6,$B3,$8C,$A9,$AC,$85,$8E,$A2,$A4,$A5,$8D,$84,$AC,$CB,$88,$8D,$AC,$A3,$A0,$88,$A4,$84,$AC,$8E,$85,$AC,$A4,$87,$84,$AC,$AC,$CB,$A5,$8D,$87,$80,$A0,$A0,$88,$8D,$84,$A3,$A3,$AC,$48,$AC,$D6,$98,$CB,$82,$80,$A5,$A3,$84,$83,$AC,$8E,$A4,$87,$84,$A2,$A3,$2A,$AC,$CF,$48,$85,$AC,$48,$AC,$8B,$8E,$A3,$84,$2B,$AC,$48,$AC,$D6,$F1,$A4,$8E,$CB,$D6,$AC,$A0,$80,$A2,$A4,$AC,$8E,$85,$AC,$8C,$A9,$CB,$84,$A3,$A4,$80,$A4,$84,$AC,$A4,$8E,$AC,$A9,$8E,$A5,$2A,$CF,$D6,$3B,$D6,$E7,$D7,$57,$8E,$85,$AC,$8C,$A9,$AC,$CB,$85,$8E,$A5,$A2,$AC,$85,$80,$A6,$8E,$A2,$88,$A4,$84,$AC,$CB,$4A,$A2,$A5,$8A,$AC,$87,$8E,$A2,$A3,$84,$A3,$2A,$AC,$C0
+
+;org $83983D
+
+
+
+org $839861
+db $D3,$47,$84,$AC,$A4,$A2,$88,$84,$A3,$AC,$A5,$A3,$88,$8D,$86,$AC,$CB,$A4,$87,$84,$AC,$64,$84,$80,$A0,$8E,$A4,$2A,$AC,$CF,$CA
+;org $839880
+
+org $8398FC
+db $D3,$47,$84,$AC,$A4,$A2,$88,$84,$A3,$AC,$A5,$A3,$88,$8D,$86,$AC,$A4,$87,$84,$AC,$D7,$C0
+;org $839912
+
+org $83995c
+SR_UseItemGold:
+{
+cop #$BF : dw .Text    ; $9961
+rts
+.Text:    ;org $839961 ; "It's the prize money from Russian Glass."
+db $D3,$D6,$1D,$A4,$87,$84,$AC,$A0,$A2,$88,$AA,$84,$AC,$8C,$8E,$8D,$84,$A9,$CB,$D6,$8E,$D7,$2D,$46,$8B,$80,$A3,$A3,$2A,$C0
+}
+;org $83997F
+
+org $839984
+db $D3,$D6,$5E,$80,$A2,$84,$AC,$86,$8B,$80,$A3,$A3,$84,$A3,$AC,$8C,$80,$83,$84,$CB,$8E,$85,$AC,$81,$8B,$80,$82,$8A,$AC,$82,$A2,$A9,$A3,$A4,$80,$8B,$2A,$AC,$64,$87,$84,$A9,$CB,$82,$80,$8D,$AC,$82,$A5,$A4,$AC,$8E,$A5,$A4,$AC,$80,$AC,$8B,$8E,$A4,$CB,$8E,$85,$AC,$8B,$88,$86,$87,$A4,$2A,$2A,$2A,$C0
+;org $8399CD
+
+org $839A35
+db $D3,$47,$84,$AC,$A3,$A4,$80,$A2,$84,$A3,$AC,$80,$A4,$AC,$A4,$87,$84,$AC,$D7,$13,$CB,$45,$8B,$8E,$A7,$84,$A2,$2B,$AC,$81,$A5,$A4,$AC,$CB,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$A3,$4F,$AC,$C0
+;org $839A63
+db $D3,$47,$84,$AC,$A0,$A5,$A4,$A3,$AC,$8E,$8D,$84,$AC,$A0,$84,$A4,$80,$8B,$AC,$8E,$85,$CB,$A4,$87,$84,$AC,$D7,$13,$45,$8B,$8E,$A7,$84,$A2,$AC,$88,$8D,$A4,$8E,$CB,$A4,$87,$84,$AC,$A3,$A4,$80,$A4,$A5,$84,$0E,$A3,$AC,$8C,$8E,$A5,$A4,$87,$2A,$AC,$C0
+;org $839AA0
+
+
+org $839BA5
+db $D3,$C2,$00,$64,$87,$84,$A2,$84,$AC,$80,$A2,$84,$AC,$A3,$88,$A8,$AC,$87,$8E,$8B,$8B,$8E,$A7,$A3,$AC,$CB,$D6,$F4,$80,$AC,$A4,$88,$8B,$84,$AC,$82,$80,$8D,$AC,$85,$88,$A4,$2A,$AC,$CF,$60,$A5,$A4,$AC,$88,$A4,$AC,$A7,$87,$84,$A2,$84,$0D,$CB,$AC,$21,$A3,$A4,$AC,$D6,$8E,$4B,$2A,$AC,$24,$A4,$87,$AC,$D6,$8E,$4B,$2A,$CB,$AC,$22,$8D,$83,$AC,$D6,$8E,$4B,$2A,$AC,$25,$A4,$87,$AC,$D6,$8E,$4B,$2A,$CB,$AC,$23,$A2,$83,$AC,$D6,$8E,$4B,$2A,$AC,$26,$A4,$87,$AC,$D6,$8E,$4B,$2A,$CA
+;org $839C19
+db $CE,$C2,$00,$47,$84,$AC,$84,$A8,$82,$87,$80,$8D,$86,$84,$A3,$AC,$A4,$87,$84,$AC,$CB,$D6,$9E,$A0,$8B,$80,$A4,$84,$4F,$C3,$00,$C0
+;org $839C39
+db $CE,$C2,$00,$47,$84,$AC,$A0,$A5,$A4,$A3,$AC,$A4,$87,$84,$AC,$D6,$9E,$CB,$A0,$8B,$80,$A4,$84,$AC,$88,$8D,$AC,$A4,$87,$84,$AC,$87,$8E,$8B,$84,$4F,$C3,$00,$C0
+;org $839C60
+db $D3,$C2,$00,$4D,$8E,$A7,$AC,$88,$A3,$AC,$8D,$8E,$A4,$AC,$A4,$87,$84,$AC,$D6,$DF,$A4,$8E,$CB,$85,$88,$A4,$AC,$A4,$87,$84,$AC,$A4,$88,$8B,$84,$2A,$2A,$2A,$C3,$00,$C0
+
+;org $839C89
+db $C8,$CA
+
+;org $839C8B
+db $D3,$64,$87,$84,$A2,$84,$0E,$A3,$AC,$8D,$8E,$AC,$D7,$90,$A4,$8E,$AC,$A0,$A5,$A4,$CB,$A4,$87,$84,$AC,$D6,$9E,$A0,$8B,$80,$A4,$84,$2A,$C3,$00,$C0
+;org $839CAF
+
+
+org $839CE1
+db $D3,$47,$84,$AC,$87,$8E,$8B,$83,$A3,$AC,$A5,$A0,$AC,$A4,$87,$84,$AC,$40,$A5,$A2,$80,$2B,$CB,$81,$A5,$A4,$AC,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$A3,$2A,$2A,$2A,$C0
+;org $839D09
+
+org $839D0E
+db $D3,$C2,$03,$D7,$14,$A9,$8E,$A5,$AC,$D6,$70,$4E,$4A,$0D,$AC,$CB,$D7,$23,$A4,$8E,$8B,$83,$AC,$A5,$A3,$AC,$D6,$D7,$87,$84,$AC,$A7,$80,$A3,$AC,$CB,$88,$8D,$AC,$43,$80,$8E,$2B,$AC,$A3,$8E,$AC,$48,$0E,$8C,$AC,$A3,$84,$8D,$83,$88,$8D,$86,$AC,$CB,$D6,$D6,$8B,$84,$A4,$A4,$84,$A2,$2A,$AC,$CF,$48,$AC,$D6,$99,$A4,$87,$84,$AC,$A2,$84,$80,$A3,$8E,$8D,$AC,$A7,$87,$A9,$2A,$CB,$D6,$1A,$80,$8D,$83,$AC,$48,$AC,$80,$A2,$84,$CB,$D6,$AB,$85,$8E,$A2,$A7,$80,$A2,$83,$AC,$A4,$8E,$CB,$A3,$84,$84,$88,$8D,$86,$AC,$A9,$8E,$A5,$2A,$CF,$D6,$61,$A7,$84,$AC,$D7,$80,$88,$8D,$AC,$D6,$FE,$CB,$D6,$92,$8B,$A5,$86,$86,$80,$86,$84,$2B,$AC,$A7,$84,$AC,$CB,$D6,$8F,$80,$AC,$89,$8E,$A5,$A2,$8D,$80,$8B,$AC,$D7,$C3,$CB,$D6,$6B,$A4,$87,$84,$AC,$60,$A9,$A2,$80,$8C,$88,$83,$2A,$AC,$CF,$48,$AC,$D6,$D8,$88,$A4,$AC,$D6,$F3,$87,$84,$8B,$A0,$CB,$A9,$8E,$A5,$2B,$AC,$A3,$8E,$AC,$48,$AC,$A3,$84,$8D,$A4,$AC,$88,$A4,$AC,$80,$8B,$8E,$8D,$86,$2A,$CB,$64,$80,$8A,$84,$AC,$82,$80,$A2,$84,$2A,$CB,$AC,$AC,$AC,$AC,$AC,$AC,$AC,$AC,$AC,$AC,$AC,$AC,$41,$88,$8B,$8B,$AC,$6B,$AC,$4B,$8E,$8B,$80,$C3,$00,$C0
+;org $839E15
+
+org $839E1A
+db $D3,$D6,$20,$83,$84,$82,$88,$A0,$87,$84,$A2,$84,$83,$AC,$A4,$87,$84,$CB,$87,$88,$84,$A2,$8E,$86,$8B,$A9,$A0,$87,$A3,$2A,$AC,$4D,$8E,$AC,$8E,$8D,$84,$CB,$87,$80,$A3,$AC,$D7,$5D,$83,$8E,$8D,$84,$CB,$88,$A4,$AC,$81,$84,$85,$8E,$A2,$84,$2A,$CF,$48,$A4,$AC,$A3,$80,$A9,$A3,$AC,$D6,$DB,$80,$AC,$8A,$84,$A9,$AC,$A4,$8E,$CB,$A3,$8E,$8B,$A6,$88,$8D,$86,$AC,$A4,$87,$84,$AC,$A2,$88,$83,$83,$8B,$84,$AC,$8E,$85,$CB,$D6,$9A,$87,$88,$A3,$A4,$8E,$A2,$A9,$AC,$88,$8D,$CB,$A4,$87,$84,$AC,$60,$A9,$A2,$80,$8C,$88,$83,$2A,$CF,$D8,$C0
+;org $839E9B
+
+
+org $839F35
+db $D3,$64,$87,$88,$A3,$AC,$88,$A3,$AC,$A4,$87,$84,$AC,$D6,$07,$62,$88,$8D,$86,$AC,$CB,$D6,$D7,$D6,$27,$D6,$11,$AC,$CB,$88,$A3,$AC,$D6,$AB,$85,$8E,$A2,$2A,$AC,$C0
+;org $839F5D
+
+org $839F6B
+db $D3,$D6,$61,$48,$AC,$81,$88,$A4,$84,$AC,$80,$AC,$81,$A2,$88,$86,$87,$A4,$AC,$A2,$84,$83,$AC,$CB,$80,$A0,$A0,$8B,$84,$2B,$AC,$48,$AC,$D6,$91,$81,$84,$A4,$A4,$84,$A2,$2A,$AC,$64,$87,$84,$AC,$CB,$80,$A0,$A0,$8B,$84,$AC,$A7,$80,$A3,$AC,$83,$84,$8B,$88,$82,$88,$8E,$A5,$A3,$2A,$AC,$C0
+
+;org $839FB1
+SR_UseItemUndefined:    ; $9FB1
+rts
+
+;org $839FB2
+SR_RemoveHeldItem:    ; $9FB2
+lda $0AC4 : tay
+sep #$20
+  lda #$00 : sta $0AB4,y
+rep #$20
+lda #$0000 : sta $0AC6
+  dec : sta $0AC4
+rts
+
+;org $839FCA
+ELolaSongPlayer:
+
+
+org $83a2f1
+db $00,$00,$20
+EWorldMapManager:
+lda #$0000 : sta $0ad4
+cop #$3B : db $0B : dl TIndexedPaletteBundleOnce    ; $80b519
+jsl LR_ClearMonsterKilledFlags    ; $80b4cc
+cop #$3B : db $0B : dl TIndexedPaletteBundleOnce    ; $80b519
+cop #$9C : dl EWorldMapCamera : dw $3800  ; $83a35e
+lda #$FFF0 : tsb $065a
+lda $0d58 : beq .Die    ; +$40
+cop #$C2
+phx
+tyx
+lda $7f000e,x : ora #$0804 : sta $7f000e,x
+plx
+lda $0d58 : sta $24
+  and #$001F : sta $0000
+cop #$C6 : dw .Finalize    ; $A341
+cop #$D9 : dw $0000,.ChoiceHandlerPointers    ; $b401
+.Finalize:    ; $83a341
+lda $0D5A : beq .Die
+sep #$20
+  lda $0642 : sta $0D6E
+rep #$20
+lda $0652 : sta $0D6C
+  stz $0652
+  stz $0642
+.Die:
+cop #$E0
+
+;org $83a35e
+EWorldMapCamera:
+lda $0D54 : sta $14
+  sec : sbc #$0080 : sta $06BE
+lda $0D56 : sta $16
+  sec : sbc #$0070 : sta $06C2
+cop #$63 : db $20, $05, $00    ; Stage "gravity" (acceleration, to zoom out).
+cop #$CA : db $2C
+  cop #$64
+  lda $7F002E,x : clc : adc $00B8 : sta $00B8
+  cop #$C2
+cop #$CB
+lda $0D58 : beq +
+  cop #$DA : db $0F
+  cop #$3C : dl $83A83E
+  cop #$C1
+  lda $0D5A : bne +
+  rtl
++:
+lda $0D6F : and #$00FF : sta $0000
+cop #$9A : dl C_8BCF52 : dw $2000
+jsr S_83A692
+tya
+ldy $04 : sta $0026,y
+cop #$63 : db $00, $07, $00
+cop #$CA : db $5D
+  cop #$64
+  lda $00B6 : clc : adc $7F002E,x : sta $00B6
+  inc $00B8
+cop #$CB
+lda #$0000 : sta $7F002E,x
+lda #$2000 : trb $10
+ldy #$0000
+#B_83A3E6:
+iny : iny
+cpy #$000C : bcs B_83A3F2
+lda $0D60,y : bne B_83A3E6
+#B_83A3F2:
+phx : tyx
+dex : dex
+lda $83A503,x : sta $18
+lda #$0083 : sta $1A
+plx
+lda $0D60 : sta $28
+lda [$18] : sta $24 : and #$00FF : clc : adc $06BE : sta $14
+lda $25 : and #$00FF : clc : adc $06C2 : sta $16
+inc $18 : inc $18
+ldy #$0000
+#B_83A426:
+iny : iny
+sty $26
+lda $0D60,y : beq B_83A450
+pha
+cop #$9C : dl C_83A469 : dw $1800
+pla : sta $0028,y
+lda [$18] : sta $0024,y
+lda $24 : sta $0026,y
+inc $18 : inc $18
+ldy $26
+cpy #$000A : bcc B_83A426
+#B_83A450:
+lda $24 : sta $7F0012,x
+cop #$CA : db $02
+  cop #$C1
+  cop #$89
+cop #$CB
+stz $00DA
+cop #$99 : dl EWorldMapMoveScriptHandler    ; $83a52f
+bra J_83A497
+#C_83A469:
+lda $26 : sta $7F0012,x
+lda $24 : sta $7F0010,x
+  and #$00FF : clc : adc $06BE : sta $7F0018,x
+lda $25
+  and #$00FF : clc : adc $06C2 : sta $7F001A,x
+cop #$22 : db $FF, $01
+lda $7F0010,x : sta $24
+#J_83A497:
+cop #$C1
+cop #$8B
+lda $08
+stz $08 : sta $26
+cop #$C1
+lda $24 : and #$00FF : clc : adc $06BE : sta $14
+lda $24
+  xba : and #$00FF
+  clc : adc $06C2 : sta $16
+lda $0D5A : beq B_83A4C6
+dec $26 : bmi B_83A4C4
+rtl
+#B_83A4C4:
+bra J_83A497
+#B_83A4C6:
+lda $7F0012,x : and #$00FF : clc : adc $06BE : sta $7F0018,x
+  cmp $14 : bne B_83A4EE
+lda $7F0013,x : and #$00FF : clc : adc $06C2 : sta $7F001A,x
+  cmp $16 : bne B_83A4EE
+cop #$E0
+#B_83A4EE:
+lda $7F0013,x : and #$00FF : clc : adc $06C2 : sta $7F001A,x
+cop #$22 : db $FF, $01
+cop #$E0
+
+;warnpc $83a503
+;org $83a503
+; Unknown data.
+{
+dw $a511
+dw $a521
+dw $a511
+dw $a511
+dw $a525
+dw $a511
+dw $a511
+dw $8080
+dw $9070
+dw $9090
+dw $a068
+dw $a098
+dw $9880
+dw $b060
+dw $b0a0
+dw $8078
+dw $8088
+dw $8080
+dw $9070
+dw $9090
+dw $a068
+dw $a098
+}
+
+;org $83a52f
+EWorldMapMoveScriptHandler:
+phx
+lda $0D5A : asl : tax
+lda.l WorldMap_MoveScriptPointers,x : sta $2C    ; $83AD77
+  lda #$0083 : sta $2E    ; Bank of MoveScriptPointers.
+plx
+.ParseNextScriptLine:    ; $83a541
+lda [$2C] : and #$00FF : cmp #$00FF : bne +
+  jmp .EndScript    ; $a5fe
++:
+inc $2C
+cmp #$00FE : bne +
+  jmp ..AsPointer
++:
+  asl : tay
+  lda.w Table_MovePatternPointers,y : sta $18    ; $b086 (bank $81)
+lda [$2C] : and #$00FF
+  inc $2C
+  asl : tay
+  lda.w Table_MovePatternPointers,y : sta $1A    ; $b086 (bank $81)
+lda [$2C] : and #$00FF
+  inc $2C
+  asl : tay
+  lda.w Table_MovePatternPointers,y : sta $1C    ; $b086 (bank $81)
+lda [$2C] : and #$00FF
+  inc $2C
+  sta $24
+cop #$C1
+..HandleXMovement:
+lda $18 : beq ..HandleYMovement
+lda ($18)
+  inc $18 : inc $18
+  clc : adc $00CA : sta $00CA
+   sec : sbc #$0080 : sta $06BE
+lda ($18) : sta $18
+..HandleYMovement:
+lda $1A : beq ..HandleRotation
+lda ($1A)
+  inc $1A : inc $1A
+  clc : adc $00CC : sta $00CC
+  sec : sbc #$0070 : sta $06C2
+lda ($1A) : sta $1A
+..HandleRotation:
+lda $1C : beq ..CheckIfDone
+lda ($1C)
+  inc $1C : inc $1C
+  clc : adc $00BC : sta $00BC
+lda ($1C) : sta $1C
+..CheckIfDone:
+dec $24 : bmi ..LineDone
+rtl
+..LineDone:
+jmp .ParseNextScriptLine    ; $a541
+#B_83A5DB:
+lda $0D6E : and #$00FF : sta $0642
+lda $0D6C : sta $0652
+jsr SR_ClearMapMoveMemory
+cop #$C1
+rtl
+..AsPointer:
+lda $2C : inc : inc : sta $0D5C
+lda [$2C] : sta $2C
+jmp .ParseNextScriptLine    ; $a541
+.EndScript:    ; $a5fe
+lda $0D5C : beq B_83A60B
+  stz $0D5C
+  sta $2C
+jmp .ParseNextScriptLine    ; $a541
+#B_83A60B:
+stz $0D5A
+stz $0D58
+lda $0D6E : and #$00FF : sta $0000
+cop #$9C : dl C_8BCF52 : dw $2000
+jsr S_83A692 : tya
+ldy $06 : sta $0026,y
+cop #$DA : db $3B
+cop #$C1
+lda $00B6 : sec : sbc #$0010 : bmi B_83A644
+  sta $00B6
+lda $0660 : bit #$1000 : bne B_83A5DB
+rtl
+#B_83A644:
+lda #$0000 : sta $00B6
+cop #$C2
+stz $00DA
+lda #$0800 : tsb $10
+cop #$63 : db $00, $06, $00
+lda #$0406 : sta $064A
+lda $0D6E : and #$00FF : sta $0642
+lda $0D6C : sta $0652
+jsr SR_ClearMapMoveMemory
+cop #$C1
+cop #$64
+lda $7F002E,x : clc : adc $00B8 : sta $00B8
+rtl
+
+SR_ClearMapMoveMemory:
+lda #$0000
+ldy #$0000
+-:
+  sta $0D52,y
+  iny : iny
+  cpy #$001C : bcc -
+rts
+
+#S_83A692:
+php
+phx
+ldx #$0000
+sep #$20
+phb
+lda #$83 : pha : plb
+-:
+lda $B1D4,x : beq B_83A6B6
+  cmp $0000 : beq B_83A6AD
+  inx : inx : inx
+  bra -
+#B_83A6AD:
+rep #$20
+ldy $B1D5,x
+plb
+plx
+plp
+rts
+#B_83A6B6:
+plb
+plx
+plp
+rts
+warnpc $83a6ba
+
+
+org $83a83e
+#C_83A83E:
+lda #$0000 : sta $7F2104,x
+jsr S_83A90B
+cop #$C1
+lda $0D58 : beq B_83A85B
+lda $0D5A : bne B_83A85B
+jsr S_83A8A6
+jsr S_83A886
+rtl
+#B_83A85B:
+cop #$CA : db $02
+  jsr S_83A8A6
+  jsr S_83A886
+cop #$CB
+cop #$CA : db $28
+  lda $7F2104,x : clc : adc #$0002 : sta $7F2104,x
+  jsr S_83A8A6
+  jsr S_83A886
+cop #$CB
+cop #$C1
+jsr S_83A8A6
+jsr S_83A886
+rtl
+
+#S_83A886:
+lda $0036 : lsr a : bcs .OddFrame
+cop #$02 : dl $7E8800 : db $05    ; Switch to BG1 mid-frame for text box.
+cop #$02 : dl $7E8A00 : db $32    ; Refresh coldata so text box is full black.
+rts
+.OddFrame:
+cop #$02 : dl $7E8900 : db $05    ; Switch to BG1 mid-frame for text box.
+cop #$02 : dl $7E8B00 : db $32    ; Refresh coldata so text box is full black.
+rts
+
+#S_83A8A6:
+phb
+sep #$20
+  lda #$7E : pha : plb
+rep #$20
+lda $0036 : lsr a : bcs .OddFrame
+  ldy #$0000 : bra .AllFrames
+.OddFrame:
+  ldy #$0100
+.AllFrames:
+lda $83A932 : sta $8800,y
+lda $83A939 : sta $8A00,y
+sep #$20
+lda $83A934 : clc : adc $7F2104,x : sta $8802,y
+lda $83A935 : sta $8803,y
+lda $83A93B : clc : adc $7F2104,x : sta $8A02,y
+lda $83A93C : sta $8A03,y
+rep #$20
+lda $83A936 : sta $8804,y
+lda $83A93D : sta $8A04,y
+lda #$0000 : sta $8806,y
+plb
+rts
+
+#S_83A90B:
+phb
+sep #$20
+  lda #$7E : pha : plb
+rep #$20
+ldy #$0000
+lda #$01FF
+#B_83A91A:
+  sta $8A00,y : sta $8B00,y
+  iny : iny
+  cpy #$0098 : bcc B_83A91A
+lda #$0000 : sta $8A00,y
+  sta $8B00,y
+plb
+rts
+;org $83a932
+db $7f,$07,$18,$07,$01,$09,$00
+db $7f,$00,$18,$00,$01,$ff,$00
+
+;org $83a940
+db $04,$08
+TWorldMapRenderer:
+sep #$20
+  lda #$80 : sta $211A
+rep #$20
+lda #$FFFF : sta $7F0B22
+lda #$FFFF : sta $7F0B24
+lda $0D54 : sta $00CA
+  sec : sbc #$0080 : ora #$8000 : sta $06C6
+lda $0D56 : sta $00CC
+  sec : sbc #$0070 : ora #$8000 : sta $06CA
+stz $00B6
+stz $00BC
+lda #$0400 : sta $00B8
+phx
+phd
+lda #$0000 : tcd
+sep #$20
+ldx #$0000
+lda #$E0 : sta $0E
+-:    ; org $83a994
+lda #$01
+  sta $7E7000,x
+  sta $7E7800,x
+  sta $7E8000,x
+  inx : inx : inx
+  dec $0E : bne -
+lda #$00
+  sta $7E7000,x
+  sta $7E7800,x
+  sta $7E8000,x
+rep #$20
+pld
+plx
+cop #$C1
+; The following section sets:
+;  $02 = zoom level (alpha)
+;  $04 = tilt level (lambda)
+;  $08 = scanline counter, #$E0 --> #$00
+;  .Y  = rotation angle (theta)
+;  $18 = cosine theta
+;  $1C = sine theta
+; Final rotation matrix is HDMA'd from:
+;  [ $7e7000 | $7e7800 ]
+;  [ $7e8000 | $7e7000 ]
+phx
+phd
+lda #$0000 : tcd
+lda $B8
+stz $00
+sta $02            ; $02 == zoom level (alpha).
+lda $B6 : sta $04  ; $04 == tilt level (lambda).
+lda #$00E0 : sta $0E
+lda $BC : and #$01FF : asl : tay
+ldx #$0000
+pea .PushRotMatrix-1    ; $AA11
+lda $C695,y : bmi .CosNeg
+.CosPos:
+  sta $18
+lda $C595,y : bmi ..SinNeg
+..SinPos:
+  sta $1C
+jmp TWorldMapRenderer_Quad1
+..SinNeg:
+  eor #$FFFF : inc a : sta $1C
+jmp TWorldMapRenderer_Quad4
+.CosNeg:
+  eor #$FFFF : inc a : sta $18
+lda $C595,y : bmi ..SinNeg
+..SinPos:
+  sta $1C
+jmp TWorldMapRenderer_Quad2
+..SinNeg:
+  eor #$FFFF : inc a : sta $1C
+jmp TWorldMapRenderer_Quad3
+.PushRotMatrix:    ; org $83aa12
+pld
+plx
+cop #$02 : dl $7E7000 : db $1B
+cop #$02 : dl $7E7800 : db $1C
+cop #$02 : dl $7E8000 : db $1D
+cop #$02 : dl $7E7000 : db $1E
+rtl
+
+; org $83aa2d
+TWorldMapRenderer_Quad1:
+jsr SR_CheckAndApplyExtremeZoom
+.CalcNextLine:
+ldy $02                ; $02 == zoom level (alpha).
+lda $18 : sta $4204    ; $18 == cos(theta).
+sty $4206
+nop : nop
+nop : nop
+nop : nop
+inx : inx
+lda $4214 : sta $7E6FFF,x
+lda $1C : sta $4204    ; $1C == sin(theta).
+sty $4206
+inx
+lda $04 : clc : adc $01 : sta $01
+lda $4214 : sta $7E77FE,x
+  eor #$FFFF : inc a : sta $7E7FFE,x
+  bcs .TiltAccumulatorOverflowedDoZoom
+dec $0E : bne .CalcNextLine
+rts
+.TiltAccumulatorOverflowedDoZoom:    ; org $83aa6f
+inc $03
+lsr $18
+lsr $1C
+lsr $02
+lsr $04
+dec $0E : bne .CalcNextLine
+rts
+
+; org $83aa7e
+TWorldMapRenderer_Quad4:
+jsr SR_CheckAndApplyExtremeZoom
+.CalcNextLine:
+ldy $02
+lda $18 : sta $4204 : sty $4206
+nop : nop
+nop : nop
+nop : nop
+inx : inx
+lda $4214 : sta $7E6FFF,x
+lda $1C : sta $4204
+sty $4206
+inx
+lda $04 : clc : adc $01 : sta $01
+lda $4214 : sta $7E7FFE,x
+  eor #$FFFF : inc a : sta $7E77FE,x
+  bcs .TiltAccumulatorOverflowedDoZoom
+dec $0E : bne .CalcNextLine
+rts
+.TiltAccumulatorOverflowedDoZoom:    ; org $83aac0
+inc $03
+lsr $18
+lsr $1C
+lsr $02
+lsr $04
+dec $0E : bne .CalcNextLine
+rts
+
+; org $83aacf
+TWorldMapRenderer_Quad2:
+jsr SR_CheckAndApplyExtremeZoom
+.CalcNextLine:
+ldy $02
+lda $18 : sta $4204 : sty $4206
+nop : nop
+nop : nop
+inx : inx
+lda #$0000 : sec : sbc $4214 : sta $7E6FFF,x
+lda $1C : sta $4204 : sty $4206 : inx
+lda $04 : clc : adc $01 : sta $01
+lda $4214 : sta $7E77FE,x
+  eor #$FFFF : inc a : sta $7E7FFE,x
+  bcs .TiltAccumulatorOverflowedDoZoom
+dec $0E : bne .CalcNextLine
+rts
+.TiltAccumulatorOverflowedDoZoom:    ; org $83ab13
+inc $03
+lsr $18
+lsr $1C
+lsr $02
+lsr $04
+dec $0E : bne .CalcNextLine
+rts
+
+; org $83ab22
+TWorldMapRenderer_Quad3:
+jsr SR_CheckAndApplyExtremeZoom
+.CalcNextLine:
+ldy $02
+lda $18 : sta $4204 : sty $4206
+nop : nop
+nop : nop
+inx : inx
+lda #$0000 : sec : sbc $4214 : sta $7E6FFF,x
+lda $1C : sta $4204
+sty $4206
+inx
+lda $04 : clc : adc $01 : sta $01
+lda $4214 : sta $7E7FFE,x
+  eor #$FFFF : inc a : sta $7E77FE,x
+  bcs .TiltAccumulatorOverflowedDoZoom
+dec $0E : bne .CalcNextLine
+rts
+.TiltAccumulatorOverflowedDoZoom:    ; org $83ab66
+inc $03
+lsr $18
+lsr $1C
+lsr $02
+lsr $04
+dec $0E : bne .CalcNextLine
+rts
+
+; org $83ab75
+SR_CheckAndApplyExtremeZoom:
+lda $02 : bit #$FF00 : bne +
+  rts
++:
+lsr : sta $02
+lsr $18
+lsr $1C
+lsr $04
+bra SR_CheckAndApplyExtremeZoom
+warnpc $83ab86
+
+
+
+
+
+
+
+
+
+org $83AD77
+WorldMap:
+.MoveScriptPointers:
+{
+dw $adc3    ; Index $01
+dw $add8    ; Index $02
+dw $adf1    ; Index $03
+dw $ae06    ; Index $04
+dw $ae23    ; Index $05
+dw $ae38    ; Index $06
+dw $ae5d    ; Index $07
+dw $ae76    ; Index $08
+dw $ae9b    ; Index $09
+dw $aea0    ; Index $0a
+dw $aebd    ; Index $0b
+dw $aeda    ; Index $0c
+dw $aeeb    ; Index $0d
+dw $af10    ; Index $0e
+dw $af2d    ; Index $0f
+dw $af42    ; Index $10
+dw $af5f    ; Index $11
+dw $af9c    ; Index $12
+dw $afbd    ; Index $13
+dw $afce    ; Index $14
+dw $afeb    ; Index $15
+dw $b00c    ; Index $16
+dw $b02d    ; Index $17
+dw $b046    ; Index $18
+dw $b063    ; Index $19
+dw $b080    ; Index $1a
+dw $b09d    ; Index $1b
+dw $b0ae    ; Index $1c
+dw $b0c7    ; Index $1d
+dw $b0e0    ; Index $1e
+dw $b0f5    ; Index $1f
+dw $b10e    ; Index $20
+dw $b12f    ; Index $21
+dw $b154    ; Index $22
+dw $b17d    ; Index $23
+dw $b19e    ; Index $24
+dw $b1bf    ; Index $25
+}
+.MoveScripts:
+{
+..Index01:    ; def. $adc3
+db $00,$02,$00,$30
+db $00,$00,$02,$40
+db $01,$02,$00,$30
+db $00,$00,$01,$40
+db $00,$02,$00,$10
+db $FF
+..Index02:    ; def. $add8
+db $00,$00,$01,$80
+db $02,$00,$00,$30
+db $00,$00,$01,$80
+db $00,$01,$00,$70
+db $00,$00,$02,$80
+db $00,$00,$02,$80
+db $FF
+..Index03:    ; def. $adf1
+db $00,$02,$00,$a0
+db $00,$00,$01,$20
+db $12,$02,$00,$20
+db $00,$00,$02,$20
+db $00,$02,$00,$30
+db $FF
+..Index04:    ; def. $ae06
+db $00,$00,$02,$80
+db $00,$00,$02,$40
+db $01,$01,$00,$10
+db $00,$00,$02,$40
+db $00,$01,$00,$e0
+db $00,$00,$02,$80
+db $00,$00,$02,$7b
+db $FF
+..Index05:    ; def. $ae23
+db $00,$02,$00,$20
+db $00,$00,$01,$40
+db $02,$02,$00,$30
+db $00,$00,$02,$40
+db $00,$02,$00,$10
+db $FF
+..Index06:    ; def. $ae38
+db $00,$00,$02,$80
+db $00,$00,$02,$80
+db $00,$01,$00,$10
+db $00,$00,$01,$40
+db $01,$01,$00,$30
+db $00,$00,$01,$40
+db $01,$00,$00,$70
+db $00,$00,$01,$80
+db $00,$02,$00,$10
+db $FF
+..Index07:    ; def. $ae5d
+db $00,$00,$02,$40
+db $01,$02,$00,$20
+db $00,$00,$02,$40
+db $01,$00,$00,$50
+db $00,$00,$01,$80
+db $00,$02,$00,$10
+db $FF
+..Index08:    ; def. $ae76
+db $00,$00,$01,$80
+db $00,$00,$01,$20
+db $02,$11,$00,$40
+db $00,$00,$02,$20
+db $02,$00,$00,$30
+db $00,$00,$01,$80
+db $00,$01,$00,$10
+db $00,$00,$01,$80
+db $00,$00,$01,$80
+db $FF
+..Index09:    ; def. $ae9b
+db $00,$02,$00,$80
+db $FF
+..Index0a:    ; def. $aea0
+db $00,$00,$02,$80
+db $01,$00,$00,$30
+db $00,$00,$02,$20
+db $01,$11,$00,$a0
+db $00,$00,$02,$20
+db $01,$01,$00,$10
+db $00,$00,$01,$c0
+db $FF
+..Index0b:    ; def. $aebd
+db $00,$00,$01,$40
+db $02,$02,$00,$10
+db $00,$00,$01,$20
+db $02,$12,$00,$a0
+db $00,$00,$01,$20
+db $02,$00,$00,$30
+db $00,$00,$02,$80
+db $FF
+..Index0c:    ; def. $aeda
+db $00,$00,$02,$40
+db $01,$02,$00,$20
+db $00,$00,$01,$40
+db $00,$02,$00,$50
+db $FF
+..Index0d:    ; def. $aeeb
+db $00,$00,$02,$80
+db $00,$00,$02,$40
+db $01,$01,$00,$20
+db $00,$00,$01,$40
+db $01,$00,$00,$30
+db $00,$00,$02,$20
+db $01,$11,$00,$40
+db $00,$00,$01,$20
+db $00,$00,$01,$80
+db $FF
+..Index0e:    ; def. $af10
+db $00,$00,$01,$80
+db $00,$00,$01,$40
+db $02,$01,$00,$50
+db $00,$00,$02,$40
+db $02,$00,$00,$60
+db $00,$00,$02,$80
+db $00,$02,$00,$10
+db $FF
+..Index0f:    ; def. $af2d
+db $00,$00,$02,$80
+db $01,$00,$00,$70
+db $00,$00,$01,$40
+db $01,$02,$00,$40
+db $00,$00,$01,$40
+db $FF
+..Index10:    ; def. $af42
+db $00,$00,$02,$80
+db $00,$00,$02,$60
+db $11,$01,$00,$a0
+db $00,$00,$02,$20
+db $00,$01,$00,$40
+db $00,$00,$02,$80
+db $00,$00,$02,$80
+db $FF
+..Index11:    ; def. $af5f
+db $00,$00,$02,$80
+db $00,$00,$02,$80
+db $00,$01,$00,$20
+db $00,$00,$02,$40
+db $02,$01,$00,$30
+db $00,$00,$02,$40
+db $02,$00,$00,$10
+db $00,$00,$02,$40
+db $02,$02,$00,$20
+db $00,$00,$01,$40
+db $02,$00,$00,$50
+db $00,$00,$01,$80
+db $00,$01,$00,$10
+db $00,$00,$01,$80
+db $00,$00,$01,$80
+db $FF
+..Index12:    ; def. $af9c
+db $00,$02,$00,$10
+db $00,$00,$02,$80
+db $01,$00,$00,$60
+db $00,$00,$01,$40
+db $01,$02,$00,$30
+db $00,$00,$02,$40
+db $01,$00,$00,$20
+db $00,$00,$01,$80
+db $FF
+..Index13:    ; def. $afbd
+db $00,$02,$00,$50
+db $00,$00,$01,$40
+db $02,$02,$00,$30
+db $00,$00,$02,$40
+db $FF
+..Index14:    ; def. $afce
+db $00,$00,$02,$80
+db $00,$00,$02,$40
+db $01,$01,$00,$30
+db $00,$00,$02,$40
+db $00,$01,$00,$50
+db $00,$00,$02,$80
+db $00,$00,$02,$80
+db $FF
+..Index15:    ; def. $afeb
+db $00,$00,$01,$40
+db $02,$02,$00,$20
+db $00,$00,$01,$20
+db $02,$12,$00,$80
+db $00,$00,$01,$20
+db $02,$00,$00,$60
+db $00,$00,$02,$80
+db $00,$02,$00,$10
+db $FF
+..Index16:    ; def. $b00c
+db $00,$00,$02,$80
+db $01,$00,$00,$40
+db $00,$00,$02,$20
+db $01,$11,$00,$a0
+db $00,$00,$02,$20
+db $01,$01,$00,$20
+db $00,$00,$01,$40
+db $00,$00,$01,$80
+db $FF
+..Index17:    ; def. $b02d
+db $00,$00,$02,$40
+db $01,$02,$00,$30
+db $01,$02,$00,$08
+db $00,$00,$01,$40
+db $00,$02,$00,$40
+db $00,$02,$00,$08
+db $FF
+..Index18:    ; def. $b046
+db $00,$00,$01,$80
+db $00,$00,$01,$80
+db $00,$01,$00,$40
+db $00,$00,$02,$40
+db $02,$01,$00,$40
+db $00,$00,$02,$40
+db $00,$00,$02,$80
+db $FF
+..Index19:    ; def. $b063
+db $00,$00,$01,$80
+db $02,$00,$00,$20
+db $00,$00,$01,$40
+db $02,$01,$00,$70
+db $00,$00,$02,$40
+db $02,$00,$00,$20
+db $00,$00,$02,$80
+db $FF
+..Index1a:    ; def. $b080
+db $00,$00,$02,$80
+db $01,$00,$00,$20
+db $00,$00,$01,$40
+db $01,$02,$00,$70
+db $00,$00,$02,$40
+db $01,$00,$00,$20
+db $00,$00,$01,$80
+db $FF
+..Index1b:    ; def. $b09d
+db $00,$00,$02,$20
+db $11,$02,$00,$20
+db $00,$00,$01,$20
+db $00,$02,$00,$30
+db $FF
+..Index1c:    ; def. $b0ae
+db $00,$00,$01,$80
+db $00,$00,$01,$80
+db $00,$01,$00,$50
+db $00,$00,$02,$80
+db $02,$00,$00,$10
+db $00,$00,$02,$80
+db $FF
+..Index1d:    ; def. $b0c7
+db $00,$00,$01,$80
+db $02,$00,$00,$40
+db $00,$00,$02,$40
+db $02,$02,$00,$50
+db $00,$00,$02,$40
+db $00,$02,$00,$40
+db $FF
+..Index1e:    ; def. $b0e0
+db $00,$02,$00,$30
+db $00,$00,$01,$40
+db $02,$02,$00,$20
+db $00,$00,$02,$40
+db $00,$02,$00,$10
+db $FF
+..Index1f:    ; def. $b0f5
+db $00,$00,$02,$80
+db $00,$00,$02,$80
+db $00,$01,$00,$60
+db $00,$00,$01,$80
+db $01,$00,$00,$20
+db $00,$00,$01,$80
+db $FF
+..Index20:    ; def. $b10e
+db $00,$00,$02,$80
+db $00,$00,$02,$80
+db $00,$01,$00,$80
+db $00,$00,$01,$40
+db $01,$01,$00,$10
+db $00,$00,$01,$40
+db $01,$00,$00,$80
+db $00,$00,$01,$80
+db $FF
+..Index21:    ; def. $b12f
+db $00,$00,$02,$80
+db $00,$00,$02,$40
+db $01,$01,$00,$60
+db $00,$00,$01,$40
+db $01,$00,$00,$90
+db $00,$00,$02,$40
+db $01,$01,$00,$80
+db $00,$00,$01,$40
+db $00,$00,$01,$80
+db $FF
+..Index22:    ; def. $b154
+db $00,$00,$01,$80
+db $00,$00,$01,$80
+db $00,$01,$00,$a0
+db $00,$01,$00,$c0
+db $00,$00,$02,$40
+db $02,$01,$00,$a0
+db $00,$00,$02,$40
+db $02,$00,$00,$a0
+db $02,$00,$00,$c0
+db $00,$00,$02,$80
+db $FF
+..Index23:    ; def. $b17d
+db $00,$00,$02,$80
+db $01,$00,$00,$a0
+db $01,$00,$00,$c0
+db $00,$00,$01,$40
+db $01,$02,$00,$a0
+db $00,$00,$01,$40
+db $00,$02,$00,$a0
+db $00,$02,$00,$c0
+db $FF
+..Index24:    ; def. $b19e
+db $00,$00,$02,$80
+db $00,$00,$02,$40
+db $01,$01,$00,$80
+db $00,$00,$02,$40
+db $00,$01,$00,$a0
+db $00,$01,$00,$80
+db $00,$00,$02,$80
+db $00,$00,$02,$80
+db $FF
+..Index25:    ; def. $b1bf
+db $00,$02,$00,$a0
+db $00,$02,$00,$80
+db $00,$00,$01,$40
+db $02,$02,$00,$80
+db $00,$00,$02,$40
+db $FF
+}
+
+;org $83B1D4
+
+
+org $83b401
+.ChoiceHandlerPointers:
+{
+dw ..Index00    ; $b44f, inaccessible
+dw ..Cape2Ed    ; Index $01 at $b451
+dw ..Cape2It    ; Index $02 at $b47d
+dw ..Ed2Cape    ; Index $03 at $b4a8
+dw ..It2Cape    ; Index $04 at $b4cc
+dw ..MP2It    ; Index $05 at $b4f0
+dw ..It2MP    ; Index $06 at $b51a
+dw ..Frja2Mn    ; Index $07 at $b53f
+dw ..Mn2Frja    ; Index $08 at $b563
+dw ..Frja2X    ; Index $09 at $b587
+dw ..Angl2Wtma    ; Index $0A at $b5a1
+dw ..Wtma2X    ; Index $0B at $b5c7
+dw ..Wtma2GtWl    ; Index $0C at $b5f2
+dw ..GtWl2Wtma    ; Index $0D at $b62a
+dw ..Wtma2Euro    ; Index $0E at $b650
+dw ..Euro2Wtma    ; Index $0F at $b697
+dw ..Euro2Krss    ; Index $10 at $b6bd
+dw ..Krss2Euro    ; Index $11 at $b6f3
+dw ..NtVl2X    ; Index $12 at $b719
+dw ..NtVl2AW    ; Index $13 at $b73f
+dw ..AW2NtVl    ; Index $14 at $b778
+dw ..Angl2X    ; Index $15 at $b7a5
+dw ..Dao2NtVl    ; Index $16 at $b7b5
+dw ..Dao2Pymd    ; Index $17 at $b7e2
+dw ..Pymd2Dao    ; Index $18 at $b81a
+dw ..NtVl2Dao    ; Index $19 at $b843
+dw ..Euro2NtVl    ; Index $1A at $b88c
+dw ..Cape2X    ; Index $1B at $b8d6
+dw ..Index1C    ; Index $1C at $b8e6
+dw ..Index1D    ; Index $1D at $b8ec
+dw ..Index1E    ; Index $1E at $b8f2
+dw ..Index1F    ; Index $1F at $b8f8
+dw ..Index20    ; Index $20 at $b8fe
+dw ..Index21    ; Index $21 at $b904
+dw ..Index22    ; Index $22 at $b90a
+dw ..Index23    ; Index $23 at $b910
+dw ..Index24    ; Index $24 at $b916
+dw ..Index25    ; Index $25 at $b91c
+dw ..Index26    ; Index $26 at $b922
+}
+
+..Index00:  ; $b44f
+cop #$C5
+
+..Cape2Ed:    ; Index $01 at $b451
+cop #$BF : dw ...Text    ; $b463
+cop #$BE : db $02,$01 : dw ...Options    ; $b45d
+  cop #$C5
+...Options:
+  dw .DoMoveEd2Cape_EnterCape
+  dw .DoMoveEd2Cape_EnterCape, .DoMoveCape2Ed
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$cb,$ac,$44,$83,$a7,$80,$a2,$83,$0e,$a3,$ac,$42,$80,$a3,$a4,$8b,$84,$ac
+db $ca
+
+..Cape2It:    ; Index $02 at $b47d
+cop #$BF : dw ...Text    ; $b48f
+cop #$BE : db $02,$01 : dw ...Options    ; $b489
+  cop #$C5
+...Options:
+  dw .DoMoveEd2Cape_EnterCape
+  dw .DoMoveEd2Cape_EnterCape, .DoMoveCape2It
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$cb,$ac,$48,$a4,$8e,$a2,$a9,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ac,$ca
+db $ca
+
+..Ed2Cape:    ; Index $03 at $b4a8
+cop #$BF : dw ...Text    ; $b4ba
+cop #$BE : db $02,$01 : dw ...Options    ; $b4b4
+  cop #$C5
+...Options:
+  dw .DoMoveCape2Ed_EnterEd
+  dw .DoMoveCape2Ed_EnterEd, .DoMoveEd2Cape
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$61,$a5,$88,$a4,$cb,$ac,$d6,$47,$42,$80,$a0,$84
+db $ca
+
+..It2Cape:    ; Index $04 at $b4cc
+cop #$BF : dw ...Text    ; $b4de
+cop #$BE : db $02,$01 : dw ...Options    ; $b4d8
+  cop #$C5
+...Options:
+  dw .DoMoveCape2It_EnterIt
+  dw .DoMoveCape2It_EnterIt, .DoMoveIt2Cape
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$61,$a5,$88,$a4,$cb,$ac,$d6,$47,$42,$80,$a0,$84
+db $ca
+
+..MP2It:    ; Index $05 at $b4f0
+cop #$BF : dw ...Text    ; $b502
+cop #$BE : db $02,$01 : dw ...Options    ; $b4fc
+  cop #$C5
+...Options:
+  dw .DoMoveIt2MP_EnterMP
+  dw .DoMoveIt2MP_EnterMP, .DoMoveMP2It
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$cb,$ac,$48,$a4,$8e,$a2,$a9,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ac
+db $ca
+
+..It2MP:    ; Index $06 at $b51a
+cop #$BF : dw ...Text    ; $b52c
+cop #$BE : db $02,$01 : dw ...Options    ; $b526
+  cop #$C5
+...Options:
+  dw .DoMoveMP2It_EnterIt
+  dw .DoMoveMP2It_EnterIt, .DoMoveIt2MP
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$61,$a5,$88,$a4,$cb,$ac,$d6,$1e,$62,$a5,$88,$8d,$a3
+db $ca
+
+..Frja2Mn:    ; Index $07 at $b53f
+cop #$BF : dw ...Text    ; $b551
+cop #$BE : db $02,$01 : dw ...Options    ; $b54b
+  cop #$C5
+...Options:
+  dw .DoMoveMine2Frja_EnterFrja
+  dw .DoMoveMine2Frja_EnterFrja, .DoMoveFrja2Mine
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$61,$a5,$88,$a4,$cb,$ac,$d6,$0e,$4c,$88,$8d,$84
+db $ca
+
+..Mn2Frja:    ; Index $08 at $b563
+cop #$BF : dw ...Text    ; $b575
+cop #$BE : db $02,$01 : dw ...Options    ; $b56f
+  cop #$C5
+...Options:
+  dw .DoMoveFrja2Mine_EnterMine
+  dw .DoMoveFrja2Mine_EnterMine, .DoMoveMine2Frja
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$cb,$ac,$45,$a2,$84,$84,$89,$88,$80,$ac
+db $ca
+
+..Frja2X:    ; Index $09 at $b587
+cop #$BF : dw ...Text    ; $b597
+cop #$BE : db $01,$01 : dw ...Options    ; $b593
+  cop #$C5
+...Options:
+  dw .DoMoveMine2Frja_EnterFrja
+  dw .DoMoveMine2Frja_EnterFrja
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$61,$a5,$88,$a4
+db $ca
+
+..Angl2Wtma:    ; Index $0A at $b5a1
+cop #$BF : dw ...Text    ; $b5b3
+cop #$BE : db $02,$01 : dw ...Options    ; $b5ad
+  cop #$C5
+...Options:
+  dw .DoMoveWtma2Angl_EnterAngl
+  dw .DoMoveWtma2Angl_EnterAngl, .DoMoveAngl2Wtma
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$61,$a5,$88,$a4,$cb,$ac,$67,$80,$a4,$84,$a2,$8c,$88,$80
+db $ca
+
+..Wtma2X:    ; Index $0B at $b5c7
+cop #$BF : dw ...Text    ; $b5d9
+cop #$BE : db $02,$01 : dw ...Options    ; $b5d3
+  cop #$C5
+...Options:
+  dw .DoMoveAngl2Wtma_EnterWtma
+  dw .DoMoveAngl2Wtma_EnterWtma, .DoMoveWtma2Angl
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$61,$a5,$88,$a4,$cb,$ac,$40,$8d,$86,$84,$8b,$ac,$66,$88,$8b,$8b,$80,$86,$84
+db $ca
+
+..Wtma2GtWl:    ; Index $0C at $b5f2
+cop #$BF : dw ...Text    ; $b606
+cop #$BE : db $32,$01 : dw ...Options    ; $b5fe
+  cop #$C5
+...Options:
+  dw .DoMoveGtWl2Wtma_EnterWtma
+  dw .DoMoveGtWl2Wtma_EnterWtma, .DoMoveWtma2GtWl, .DoMoveWtma2Angl
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$40,$8d,$86,$84,$8b,$ac,$66,$88,$8b,$8b,$80,$86,$84,$cb,$ac,$d6,$16,$67,$80,$8b,$8b
+db $ca
+
+..GtWl2Wtma:    ; Index $0D at $b62a
+cop #$BF : dw ...Text    ; $b63c
+cop #$BE : db $02,$01 : dw ...Options    ; $b636
+  cop #$C5
+...Options:
+  dw .DoMoveWtma2GtWl_EnterGtWl
+  dw .DoMoveWtma2GtWl_EnterGtWl, .DoMoveGtWl2Wtma
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$61,$a5,$88,$a4,$cb,$ac,$67,$80,$a4,$84,$a2,$8c,$88,$80
+db $ca
+
+..Wtma2Euro:    ; Index $0E at $b650
+cop #$BF : dw ...Text    ; $b666
+cop #$BE : db $42,$01 : dw ...Options    ; $b65c
+  cop #$C5
+...Options:
+  dw .DoMoveGtWl2Wtma_EnterWtma
+  dw .DoMoveGtWl2Wtma_EnterWtma, .DoMoveWtma2GtWl, .DoMoveWtma2Angl, .DoMoveWtma2Euro
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$40,$8d,$86,$84,$8b,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ac,$cb,$ac,$d6,$16,$67,$80,$8b,$8b,$ac,$ac,$44,$a5,$a2,$8e,$ac,$82,$88,$a4,$a9,$ac
+db $ca
+
+..Euro2Wtma:    ; Index $0F at $b697
+cop #$BF : dw ...Text    ; $b6a9
+cop #$BE : db $02,$01 : dw ...Options    ; $b6a3
+  cop #$C5
+...Options:
+  dw .DoMoveWtma2Euro_EnterEuro
+  dw .DoMoveWtma2Euro_EnterEuro, .DoMoveEuro2Wtma
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$61,$a5,$88,$a4,$cb,$ac,$67,$80,$a4,$84,$a2,$8c,$88,$80
+db $ca
+
+..Euro2Krss:    ; Index $10 at $b6bd
+cop #$BF : dw ...Text    ; $b6d1
+cop #$BE : db $32,$01 : dw ...Options    ; $b6c9
+  cop #$C5
+...Options:
+  dw .DoMoveWtma2Euro_EnterEuro
+  dw .DoMoveWtma2Euro_EnterEuro, .DoMoveEuro2Wtma, .DoMoveEuro2Krss
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$4c,$a4,$2a,$64,$84,$8c,$a0,$8b,$84,$cb,$ac,$67,$80,$a4,$84,$a2,$8c,$88,$80
+db $ca
+
+..Krss2Euro:    ; Index $11 at $b6f3
+cop #$BF : dw ...Text    ; $b705
+cop #$BE : db $02,$01 : dw ...Options    ; $b6ff
+  cop #$C5
+...Options:
+  dw .DoMoveEuro2Krss_EnterKrss
+  dw .DoMoveEuro2Krss_EnterKrss, .DoMoveKrss2Euro
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$cb,$ac,$44,$a5,$a2,$8e,$ac,$82,$88,$a4,$a9,$ac
+db $ca
+
+..NtVl2X:    ; Index $12 at $b719
+cop #$BF : dw ...Text    ; $b72b
+cop #$BE : db $02,$01 : dw ...Options    ; $b725
+  cop #$C5
+...Options:
+  dw .DoMoveEuro2NtVl_EnterNtVl
+  dw .DoMoveEuro2NtVl_EnterNtVl, .DoMoveNtVl2Euro
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$cb,$ac,$44,$a5,$a2,$8e,$ac,$82,$88,$a4,$a9,$ac
+db $ca
+
+..NtVl2AW:    ; Index $13 at $b73f
+cop #$BF : dw ...Text    ; $b753
+cop #$BE : db $32,$01 : dw ...Options    ; $b74b
+  cop #$C5
+...Options:
+  dw .DoMoveEuro2NtVl_EnterNtVl
+  dw .DoMoveEuro2NtVl_EnterNtVl, .DoMoveNtVl2Euro, .DoMoveNtVl2AW
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$40,$8d,$8a,$8e,$a2,$ac,$67,$80,$a4,$ac,$cb,$ac,$44,$a5,$a2,$8e,$ac,$82,$88,$a4,$a9,$ac
+db $ca
+
+..AW2NtVl:    ; Index $14 at $b778
+cop #$BF : dw ...Text    ; $b78a
+cop #$BE : db $02,$01 : dw ...Options    ; $b784
+  cop #$C5
+...Options:
+  dw .DoMoveNtVl2AW_EnterAW
+  dw .DoMoveNtVl2AW_EnterAW, .DoMoveAW2NtVl
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$cb,$ac,$4d,$80,$a4,$88,$a6,$84,$a3,$0e,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ac
+db $ca
+
+..Angl2X:    ; Index $15 at $b7a5
+cop #$BF : dw ...Text    ; $b597
+cop #$BE : db $01,$01 : dw ...Options    ; $b7b1
+  cop #$C5
+...Options:
+  dw .DoMoveWtma2Angl_EnterAngl
+  dw .DoMoveWtma2Angl_EnterAngl
+...Text:
+
+..Dao2NtVl:    ; Index $16 at $b7b5
+cop #$BF : dw ...Text    ; $b7c7
+cop #$BE : db $02,$01 : dw ...Options    ; $b7c1
+  cop #$C5
+...Options:
+  dw .DoMoveNtVl2Dao_EnterDao
+  dw .DoMoveNtVl2Dao_EnterDao, .DoMoveDao2NtVl
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$cb,$ac,$4d,$80,$a4,$88,$a6,$84,$a3,$0e,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ac
+db $ca
+
+..Dao2Pymd:    ; Index $17 at $b7e2
+cop #$BF : dw ...Text    ; $b7f6
+cop #$BE : db $32,$01 : dw ...Options    ; $b7ee
+  cop #$C5
+...Options:
+  dw .DoMoveNtVl2Dao_EnterDao
+  dw .DoMoveNtVl2Dao_EnterDao, .DoMoveDao2NtVl, .DoMoveDao2Pymd
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$d6,$3f,$cb,$ac,$4d,$80,$a4,$88,$a6,$84,$a3,$0e,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ac
+db $ca
+
+..Pymd2Dao:    ; Index $18 at $b81a
+cop #$BF : dw ...Text    ; $b82c
+cop #$BE : db $02,$01 : dw ...Options    ; $b826
+  cop #$C5
+...Options:
+  dw .DoMoveDao2Pymd_EnterPymd
+  dw .DoMoveDao2Pymd_EnterPymd, .DoMovePymd2Dao
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$61,$a5,$88,$a4,$cb,$ac,$43,$80,$8e,$ac,$66,$88,$8b,$8b,$80,$86,$84
+db $ca
+
+..NtVl2Dao:    ; Index $19 at $b843
+cop #$BF : dw ...Text    ; $b859
+cop #$BE : db $42,$01 : dw ...Options    ; $b84f
+  cop #$C5
+...Options:
+  dw .DoMoveEuro2NtVl_EnterNtVl
+  dw .DoMoveEuro2NtVl_EnterNtVl, .DoMoveNtVl2Euro, .DoMoveNtVl2AW, .DoMoveNtVl2Dao
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$40,$8d,$8a,$8e,$a2,$ac,$67,$80,$a4,$ac,$cb,$ac,$44,$a5,$a2,$8e,$ac,$82,$88,$a4,$a9,$ac,$ac,$ac,$43,$80,$8e,$ac,$66,$88,$8b,$8b,$80,$86,$84,$ac
+db $ca
+
+..Euro2NtVl:    ; Index $1A at $b88c
+cop #$BF : dw ...Text    ; $b8a2
+cop #$BE : db $42,$01 : dw ...Options    ; $b898
+  cop #$C5
+...Options:
+  dw .DoMoveWtma2Euro_EnterEuro
+  dw .DoMoveWtma2Euro_EnterEuro, .DoMoveEuro2Wtma, .DoMoveEuro2Krss, .DoMoveEuro2NtVl
+...Text:
+db $c2,$11 : db $d2,$00
+  db $ac,$d6,$42,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$4c,$a4,$2a,$64,$84,$8c,$a0,$8b,$84,$ac,$cb,$ac,$67,$80,$a4,$84,$a2,$8c,$88,$80,$ac,$ac,$ac,$ac,$4d,$80,$a4,$88,$a6,$84,$a3,$0e,$ac,$66,$88,$8b,$2a
+db $ca
+
+..Cape2X:    ; Index $1B at $b8d6
+cop #$BF : dw ..Frja2X_Text    ; $b597
+cop #$BE : db $01,$01 : dw ...Options    ; $b8e2
+  cop #$C5
+...Options:
+  dw .DoMoveEd2Cape_EnterCape : dw .DoMoveEd2Cape_EnterCape
+
+..Index1C:    ; Index $1C at $b8e6
+cop #$BF : dw ..Blanks+3    ; $b92b
+cop #$C5
+..Index1D:    ; Index $1D at $b8ec
+cop #$BF : dw ..Blanks+6    ; $b92e
+cop #$C5
+..Index1E:    ; Index $1E at $b8f2
+cop #$BF : dw ..Blanks+9    ; $b931
+cop #$C5
+..Index1F:    ; Index $1F at $b8f8
+cop #$BF : dw ..Blanks+12    ; $b934
+cop #$C5
+..Index20:    ; Index $20 at $b8fe
+cop #$BF : dw ..Blanks+15    ; $b937
+cop #$C5
+..Index21:    ; Index $21 at $b904
+cop #$BF : dw ..Blanks+17    ; $b93a
+cop #$C5
+..Index22:    ; Index $22 at $b90a
+cop #$BF : dw ..Blanks+21    ; $b93d
+cop #$C5
+..Index23:    ; Index $23 at $b910
+cop #$BF : dw ..Blanks+24    ; $b940
+cop #$C5
+..Index24:    ; Index $24 at $b916
+cop #$BF : dw ..Blanks+27    ; $b943
+cop #$C5
+..Index25:    ; Index $25 at $b91c
+cop #$BF : dw ..Blanks+30    ; $b946
+cop #$C5
+..Index26:    ; Index $26 at $b922
+cop #$BF : dw ..TextNothing    ; $b949
+cop #$C5
+;org $83b928
+..Blanks:
+db $c2,$11 : db $ca
+db $c2,$11 : db $ca
+db $c2,$11 : db $ca
+db $c2,$11 : db $ca
+db $c2,$11 : db $ca
+db $c2,$11 : db $ca
+db $c2,$11 : db $ca
+db $c2,$11 : db $ca
+db $c2,$11 : db $ca
+db $c2,$11 : db $ca
+db $c2,$11 : db $ca
+..TextNothing:
+db $c2,$11
+  db $4d,$8e,$a4,$87,$88,$8d,$86,$4f,$4f    ; "Nothing!!"
+db $c0 
+
+;org $83b955
+.DoMoveEd2Cape:    ; $b955
+cop #$67 : dw $0200
+;org $83b959
+..EnterCape:
+cop #$26 : db $01 : dw $0178,$0040 : db $03,$00,$43
+cop #$C5
+
+.DoMoveCape2Ed:    ; $b965
+cop #$67 : dw $0100
+..EnterEd:
+cop #$26 : db $0a : dw $01f8,$02c0 : db $00,$20,$34
+cop #$C5
+
+.DoMoveCape2It:    ; $b975
+cop #$67 : dw $0300
+..EnterIt:
+cop #$26 : db $15 : dw $02d8,$02b0 : db $00,$00,$35
+cop #$C5
+
+.DoMoveIt2Cape:    ; $b985
+cop #$67 : dw $0400
+..EnterCape:
+cop #$26 : db $01 : dw $0178,$0040 : db $03,$00,$43
+cop #$C5
+
+.DoMoveMP2It:    ; $b995
+cop #$67 : dw $0800
+..EnterIt:
+cop #$26 : db $15 : dw $02d8,$02b0 : db $00,$00,$35
+cop #$C5
+
+.DoMoveIt2MP:    ; $b9a5
+cop #$67 : dw $0700
+..EnterMP:
+cop #$26 : db $1c : dw $0068,$01a0 : db $80,$00,$22
+cop #$C5
+
+.DoMoveFrja2Mine:    ; $b9b5
+cop #$67 : dw $0a00
+..EnterMine:
+cop #$26 : db $3e : dw $00a8,$03d0 : db $80,$00,$42
+cop #$C5
+
+.DoMoveMine2Frja:    ; $b9c5
+cop #$67 : dw $0b00
+..EnterFrja:
+cop #$26 : db $32 : dw $0130,$0350 : db $00,$00,$45
+cop #$C5
+
+.DoMoveAngl2Wtma:    ; $b9d5
+cop #$67 : dw $1100
+..EnterWtma:
+cop #$26 : db $78 : dw $0278,$0390 : db $00,$00,$45
+cop #$C5
+
+.DoMoveWtma2Angl:    ; $b9e5
+cop #$67 : dw $1200
+..EnterAngl:
+cop #$26 : db $69 : dw $02a0,$00c0 : db $00,$00,$13
+cop #$C5
+
+.DoMoveWtma2GtWl:    ; $b9f5
+cop #$67 : dw $1300
+..EnterGtWl:
+cop #$26 : db $82 : dw $0020,$0090 : db $87,$00,$18
+cop #$C5
+
+.DoMoveGtWl2Wtma:    ; $ba05
+cop #$67 : dw $1400
+..EnterWtma:
+cop #$26 : db $78 : dw $0278,$0390 : db $00,$00,$45
+cop #$C5
+
+.DoMoveWtma2Euro:    ; $ba15
+lda #$0007 : sta $0d60
+cop #$67 : dw $1500
+..EnterEuro:    ; $ba1f
+cop #$26 : db $91 : dw $03d0,$0430 : db $06,$00,$54
+cop #$C5
+
+.DoMoveEuro2Wtma:    ; $ba2b
+lda #$0007 : sta $0d60
+cop #$67 : dw $1600
+..EnterWtma:    ; $ba35
+cop #$26 : db $78 : dw $0278,$0390 : db $00,$00,$45
+cop #$C5
+
+.DoMoveEuro2Krss:    ; $ba41
+cop #$67 : dw $1700
+..EnterKrss:
+cop #$26 : db $a0 : dw $02c8,$01b0 : db $86,$00,$23
+cop #$C5
+
+.DoMoveKrss2Euro:    ; $ba51
+cop #$67 : dw $1800
+..EnterEuro:
+cop #$26 : db $91 : dw $03d0,$0430 : db $06,$00,$54
+cop #$C5
+
+.DoMoveEuro2NtVl:    ; $ba61
+cop #$67 : dw $1900
+..EnterNtVl:
+cop #$26 : db $ac : dw $01c0,$01d0 : db $06,$00,$22
+cop #$C5
+
+.DoMoveNtVl2Euro:    ; $ba71
+cop #$67 : dw $1a00
+..EnterEuro:
+cop #$26 : db $91 : dw $03d0,$0430 : db $06,$00,$54
+cop #$C5
+
+.DoMoveNtVl2AW:    ; $ba81
+cop #$67 : dw $1b00
+..EnterAW:
+cop #$26 : db $b0 : dw $01f8,$04c0 : db $80,$00,$54
+cop #$C5
+
+.DoMoveAW2NtVl:    ; $ba91
+cop #$67 : dw $1c00
+..EnterNtVl:
+cop #$26 : db $ac : dw $01c0,$01d0 : db $06,$00,$22
+cop #$C5
+
+.DoMoveDao2NtVl:    ; $baa1
+cop #$67 : dw $2000
+..EnterNtVl:
+cop #$26 : db $ac : dw $01c0,$01d0 : db $06,$00,$22
+cop #$C5
+
+.DoMoveDao2Pymd:    ; $bab1
+cop #$67 : dw $1e00
+..EnterPymd:
+cop #$26 : db $cc : dw $0010,$00d0 : db $87,$00,$44
+cop #$C5
+
+.DoMoveNtVl2Dao:    ; $bac1
+cop #$67 : dw $1d00
+..EnterDao:
+cop #$26 : db $c3 : dw $0010,$00e0 : db $07,$00,$23
+cop #$C5
+
+.DoMovePymd2Dao:    ; $bad1
+cop #$67 : dw $1f00
+..EnterDao:
+cop #$26 : db $c3 : dw $0010,$00e0 : db $07,$00,$23
+cop #$C5
+
+
+;org $83bae1
+phx
+lda $0018 : sta $001a
+  sec : sbc #$0006 : sta $0018
+bra LR_StageBcdInManualOam_DoHundreds    ; +$1c
+;org $83baf1
+LR_StageBcdInManualOam:
+phx
+lda $0000 : bit #$F000 : bne .Done
+lda $14 : sec : sbc #$000C : sta $0018
+lda $16 : sta $001C
+lda $0E : sta $0002
+.DoHundreds:
+lda $0001 : and #$000F : beq .LessThan100
+  jsr SR_StageManualOam
+  lda $0018 : clc : adc #$0008 : sta $0018
+  bra .DoTens
+.LessThan100:
+lda $0018 : clc : adc #$0004 : sta $0018
+.DoTens:
+lda $0000 : lsr : lsr : lsr : lsr : beq .LessThan10
+  and #$000F : jsr SR_StageManualOam
+  lda $0018 : clc : adc #$0008 : sta $0018
+  bra .DoOnes
+.LessThan10:
+lda $0018 : clc : adc #$0004 : sta $0018
+.DoOnes:
+lda $0000 : and #$000F : jsr SR_StageManualOam
+.Done:
+plx
+rtl
+
+SR_StageManualOam:
+ldx $00D8
+clc : adc #$0070 : ora $0002 : sta $7F3104,x
+lda $0018 : sta $7F3100,x
+lda $001C : sta $7F3102,x
+lda $00D8 : clc : adc #$0006 : sta $00D8
+rts
+
+;org $83bb85
+LR_AllowAttackPreempt:
+php
+rep #$20
+lda $0656 : bit #$8000 : beq .NotAttacking
+ldy #$0000
+.TryNextTarget:
+ldx $0C00,y : beq .NoMoreTargets
+iny : iny
+lda $0010,x : bit #$D460 : bne .TryNextTarget
+lda $7F1002,x : beq .TryNextTarget
+  sta $0000,x
+lda #$0000 : sta $7F1002,x
+.NotAttacking:
+.NoMoreTargets:
+plp
+rtl
+
+;org $83bbb4
+LR_CheckPlayerDeath:
+php
+rep #$20
+lda $09AE : bit #$0020 : bne .Done
+  bit #$0200 : bne .Done
+lda $0ACE : bne .Done
+.PlayerDies:
+lda #$0200 : tsb $09AE
+ldy $09AA
+lda #$D62F : sta $0000,y
+lda #$0080 : sta $0002,y
+jsl LR_HaltAndInvulPlayer
+.Done:
+plp
+rtl
+
+;org $83bbe4
+LR_HandleCollisions:
+php
+phb
+rep #$20 : stz $09EA
+ldx $09AA
+lda $0010,x : bit #$0040 : beq .PlayerAliveCheckCollisions
+jmp .Done
+
+.IsHostile:    ; org $83bbf9
+bit #$0080 : beq .NextActor
+bit #$0040 : bne .NextActor
+lda $0012,y : bit #$0010 : bne .NextActor
+stx $0E
+sty $08
+tyx
+lda $7F0028,x : bmi .NextGroup
+jsr SR_ProcessHostileCollisions
+bra .NextGroup
+
+.PlayerAliveCheckCollisions:    ; org $83bc1b
+ldx #$0000 : stx $0E
+.NextGroup:
+ldx $0E
+stz $20
+stz $24
+.NextActor:    ; org $83bc26
+ldy $0C00,x : bne +
+  jmp .Done
++:
+inx : inx
+lda $0010,y
+  bit #$0400 : beq .IsHostile
+  bit #$0140 : bne .NextActor
+  bit #$0020 : beq +
+    inc $20
++:
+stx $0E
+sty $08
+sep #$20
+  tyx
+  lda $7F0008,x : pha : plb
+rep #$20
+lda $7F000C,x : tay
+  sta $42
+.BuildHitbox:
+lda $000E,x : asl : asl
+lda $0004,y : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+bcs .WithHorizontalMirror
+  adc $0014,x : sta $04
+  lda $0005,y : and #$00FF : clc : adc $04 : sta $06
+  bra .BuildVerticalHitbox
+.WithHorizontalMirror:
+  eor #$FFFF : inc a : clc : adc $0014,x : sta $06
+  lda $0005,y : and #$00FF : eor #$FFFF : inc a : clc : adc $06 : sta $04
+; org $83bc9a
+.BuildVerticalHitbox:
+lda $0006,y : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  clc : adc $0016,x : sta $00
+lda $0007,y : and #$00FF : clc : adc $00 : sta $02
+ldx #$0000
+.TryNextCandidate:    ; org $83bcbc
+ldy $0C00,x : bne +
+  jmp .NextGroup
++:
+inx : inx
+lda $20 : bne ..CandidateIsPickup
+  lda $0010,y : bit #$76E0 : beq ..CandidateIsValid
+  bra .TryNextCandidate
+..CandidateIsPickup:
+stz $24
+lda $0010,y : bit #$74E0 : bne .TryNextCandidate
+phx
+  tyx
+  lda $7F002A,x : bit #$0010 : bne ..UsePickupCollisionPointer
+plx
+bra .TryNextCandidate
+
+..UsePickupCollisionPointer:    ; org $83bcec
+plx
+inc $24
+..CandidateIsValid:
+lda $0020,y : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  sec : sbc $0014,y : eor #$FFFF : inc a : cmp $06 : bcs .TryNextCandidate
+lda $0021,y : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  clc : adc $0014,y : cmp $04 : bcc .TryNextCandidate
+lda $0022,y : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  sec : sbc $0016,y : eor #$FFFF : inc a : cmp $02 : bcs .TryNextCandidate
+lda $0023,y : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  clc : adc $0016,y : cmp $00 : bcs .GotContact
+jmp .TryNextCandidate
+
+.GotContact:    ; org $83bd52
+phx
+jsr SR_ActorCollisionResponse    ; $BF27
+plx
+jmp .TryNextCandidate
+.Done:
+plb
+plp
+rtl
+
+
+;org $83bd5d
+SR_ProcessHostileCollisions:
+sep #$20
+  lda $7F0008,x : pha : plb
+rep #$20
+lda $7F000C,x : tay
+  sta $42
+lda $0014,x : sta $04
+lda $0016,x : sta $00
+lda $0000,y : ora #$FF00 : clc : adc $04 : sta $04
+lda $0002,y : and #$00FF : asl : asl : asl : asl : clc : adc $04 : sta $06
+lda $0001,y : ora #$FF00 : clc : adc $00 : sta $00
+lda $0003,y : and #$00FF : asl : asl : asl : asl : clc : adc $00 : sta $02
+ldx #$0000
+.TryNextActor:
+ldy $0C00,x : bne +
+  jmp .Done
++:
+inx : inx
+lda $0010,y : bit #$36F0 : bne .TryNextActor
+lda $0020,y : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  sec : sbc $0014,y : eor #$FFFF : inc : cmp $06 : bcs .TryNextActor
+lda $0021,y : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  clc : adc $0014,y : cmp $04 : bcc .TryNextActor
+lda $0022,y : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  sec : sbc $0016,y : eor #$FFFF : inc : cmp $02 : bcs .TryNextActor
+lda $0023,y : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  clc : adc $0016,y : cmp $00 : bcs .GotContact
+jmp .TryNextActor
+.GotContact:
+tyx
+lda $08 : tax
+lda $7F101E,x : lsr
+tyx
+  sta $7F101E,x
+inc : pha
+eor #$FFFF : inc : clc : adc $7F0026,x : bpl +
+  lda #$0000
++:
+sta $7F0026,x : sta $0AE2
+phx
+  lda $7F0020,x : tax
+  lda $810000,x : sta $0AE0
+plx : txa : tcd
+lda $12 : bit #$0020 : bne ..NoShowDamage
+..DoShowDamage:
+pla
+jsr SR_Bin2Bcd : bcs ..PostShowDamage
+pha
+  cop #$A5 : dl EMonsterDamageCounter : dw $0000, $2F00    ; $80dcb4
+pla : sta $0028,y
+bra ..PostShowDamage
+..NoShowDamage:
+pla
+..PostShowDamage:
+lda #$0080 : tsb $10
+lda $09AE : bit #$0010 : bne ..NoReaction
+lda $12 : bit #$0010 : beq ..WithReaction
+..NoReaction:
+lda $0AE2 : bne ..ApplyIframes
+...PrepareForDeath:
+lda #$0040 : tsb $10    ; Set !AFIsDying.
+lda $7F1004,x : beq ...NoDeathPointer
+...HasDeathPointer:
+  sta $00
+lda $7F1006,x : sta $02
+stz $08 : stz $2C : stz $2E
+bra ..Finalize
+...NoDeathPointer:
+lda #$0080 : sta $02    ; i.e. BankOf(EBasicMonsterDeath)
+lda.w #EBasicMonsterDeath : sta $00    ; #$db8a
+stz $08
+lda #$0400 : tsb $10
+bra ..Finalize
+..WithReaction:
+cop #$A5 : dl EDamageReactionHandler : dw $0000, $2000    ; $80d877
+lda #$0000 : sta $002C,y
+  sta $002E,y
+lda $7F002A,x : and #$0020
+phx
+  tyx : sta $7F002A,x
+plx
+phy
+phd
+jsr S_83C142 : bcc +
+  cop #$48
++:
+pld
+ply
+sta $0028,y
+tdc : tax
+..ApplyIframes:
+lda $12 : bit #$0001 : beq ...NoStun
+...WithStun:
+lda #$FFEF : sta $7F0028,x : bra +
+...NoStun:
+lda #$0011 : sta $7F0028,x
++:
+cop #$07 : db $05
+..Finalize:
+lda $12 : bit #$0020 : bne .Done
+...ShowHp:
+sep #$20
+lda $0AE0 : sta $09E4 : sta $09EA
+lda $0AE2 : sta $09E6
+rep #$20
+.Done:
+lda #$0000 : tcd
+rts
+
+;org $83bf27
+SR_ActorCollisionResponse:
+sep #$20
+lda #$81
+  pha : plb
+rep #$20
+lda $24 : beq SR_DamageEnemies
+stz $24
+tyx
+lda $7F1016,x : beq B_83BF40
+sta $0000,x
+rts
+; org $83bf40
+B_83BF40:    ; $83BF40
+txa
+phd : tcd
+lda #$C418 : sta $00
+lda #$0080 : sta $02
+lda #$0040 : tsb $10
+pld
+jsl LR_GetPlayerFacingDirection    ; $83F0CA
+pea $BF83 : bcc B_83BF5D
+rts
+; org $83bf5d
+B_83BF5D:    ; $83BF5D
+and #$000F : bne B_83BF69
+lda #$FFFC : sta $040A
+rts
+; org $83bf69
+B_83BF69:    ; $83BF69
+dec : bne B_83BF73
+lda #$0004 : sta $040A
+rts
+; org $83bf73
+B_83BF73:    ; $83BF73
+dec : bne B_83BF7D
+lda #$0004 : sta $0408
+rts
+; org $83bf7d
+B_83BF7D:    ; $83BF7D
+lda #$FFFC : sta $0408
+rts
+
+;org $83bf84
+txy
+rts
+
+;org $83bf86
+SR_DamageEnemies:    ; $83BF86
+tyx : stx $3E
+lda $0010,x : bit #$0010 : beq +
+  jmp .NoDamage
++:    ; $83BF94
+stz $20
+lda $08
+cmp #$1000 : beq .PostRangedAttackBonus
+  lda $09E2 : sta $20
+.PostRangedAttackBonus:    ; $83BFA2
+lda $0AD4 : sta $08
+lda $0ADE : clc : adc $20 : clc : adc $09E0 : sta $20
+txa : tcd
+lda $7F0020,x : tay
+lda $0000,y : and #$00FF : sta $0AE0
+lda $0002,y : and #$00FF : sec : sbc $0020 : eor #$FFFF : inc
+cmp #$0001 : bpl +
+  lda #$0001
++:
+clc : adc $0008 : sta $7F101E,x
+pha
+eor #$FFFF : inc : clc : adc $7F0026,x : bpl +
+  lda #$0000
++:
+sta $7F0026,x : sta $0AE2
+lda $12 : bit #$0020 : bne .NoShowDamage
+.DoShowDamage:
+pla
+jsr SR_Bin2Bcd : bcs .PostShowDamage    ; No-show if out of range.
+pha
+cop #$A5 : dl EMonsterDamageCounter : dw $0000, $2B00
+lda $0012,y : ora #$1000 : sta $0012,y
+pla : sta $0028,y : bra .PostShowDamage
+; org $83c01d
+.NoShowDamage:    ; $83C01D
+pla
+.PostShowDamage:    ; $83C01E
+lda #$0080 : tsb $10
+lda $09AE : bit #$0010 : bne .NoReaction
+lda $12 : bit #$0010 : beq .WithReaction
+.NoReaction:
+lda $0AE2 : bne .CheckHurtPointer
+..PrepareForDeath:
+lda #$0040 : tsb $10    ; Set !AFIsDying.
+lda $7F1004,x : beq ..NoDeathPointer
+..HasDeathPointer:
+  sta $00
+lda $7F1006,x : sta $02
+stz $08 : stz $2C : stz $2E
+bra .Finalize
+..NoDeathPointer:
+lda #$0080 : sta $02    ; i.e. BankOf(EBasicMonsterDeath)
+lda.w #EBasicMonsterDeath : sta $00    ; #$db8a
+stz $08
+lda #$0400 : tsb $10
+bra .Finalize
+.WithReaction:    ; $83C065
+txa : tcd
+cop #$A5 : dl EDamageReactionHandler : dw $0000, $2000    ; $80d877
+lda #$0000 : sta $002C,y
+  sta $002E,y
+lda $7F002A,x : and #$0020
+phx
+  tyx : sta $7F002A,x
+plx
+phy
+phd
+jsr S_83C142 : bcc +
+  cop #$48
++:
+pld
+ply
+sta $0028,y
+tdc : tax
+; org $83c097
+.CheckHurtPointer:    ; $83C097
+lda $7F1000,x : beq .ApplyIframes
+  sta $00
+lda #$0000 : sta $7F1000,x
+lda $02 : and #$00FF : bne .ApplyIframes
+nop
+; org $83c0ae
+.ApplyIframes:    ; $83C0AE
+lda $12 : bit #$0001 : beq ..NoStun
+..WithStun:
+lda #$FFEF : sta $7F0028,x : bra +
+..NoStun:
+lda #$0011 : sta $7F0028,x
++:
+cop #$07 : db $05
+.Finalize:
+lda $12 : bit #$0020 : bne .Done
+..ShowHp:
+sep #$20
+lda $0AE0 : sta $09E4 : sta $09EA
+lda $0AE2 : sta $09E6
+rep #$20
+; org $83c0e2
+.Done:
+lda #$0000 : tcd
+ldx $0E
+lda $0BFE,x : tax
+lda $7F002A,x : bit #$0050 : beq .Return
+.CheckCollisionPointer:
+  and #$FFAF : sta $7F002A,x
+  lda $7F1008,x : beq ..ReverseMovementSense
+    sta $0000,x
+    lda #$0000 : sta $7F1008,x
+..ReverseMovementSense:    ; $83C10C
+  lda $0012,x : eor #$6000 : sta $0012,x
+.Return:    ; $83C115
+rts
+; org $83c116
+.NoDamage:    ; $83C116
+txa : tcd
+lda $10 : ora #$0080 : sta $10
+lda #$FFEF : sta $7F0028,x
+lda $7F1000,x : beq ..PostHurtPointer
+  sta $00
+  lda #$0000 : sta $7F1000,x
+  lda $02 : and #$00FF : bne ..PostHurtPointer
+  nop
+..PostHurtPointer:    ; $83C13D
+cop #$07 : db $09
+bra .Done
+
+;org $83c142
+S_83C142:
+ldy $000E
+ldx $0BFE,y
+cpx $09AA : sec : bne B_83C14F
+rts
+B_83C14F:
+sep #$20
+lda $7F0008,x
+pha
+plb
+rep #$20
+lda $000E,x : asl : asl
+ldy $0042
+lda $0004,y : and #$00FF : bit #$0080 : beq B_83C16F : ora #$FF00
+B_83C16F:
+bcs B_83C188
+clc : adc $0014,x : sta $0018
+lda $0005,y : and #$00FF
+lsr
+clc : adc $0018 : sta $0018 : bra J_83C1A5
+B_83C188:
+eor #$FFFF : inc
+clc : adc $0014,x : sta $0018
+lda $0005,y : and #$00FF
+lsr : eor #$FFFF : inc
+clc : adc $0018 : sta $0018
+J_83C1A5:
+lda $0006,y : and #$00FF : bit #$0080 : beq B_83C1B3 : ora #$FF00
+B_83C1B3:
+clc : adc $0016,x : sta $001C
+lda $0007,y : and #$00FF
+lsr
+clc : adc $001C : sta $001C : sep #$20
+lda $21 : sec : sbc $20
+rep #$20 : and #$00FF
+lsr : bit #$0040 : beq B_83C1DD : ora #$FF80
+B_83C1DD:
+clc : adc $14 : sta $001A : sep #$20
+lda $23 : sec : sbc $22
+rep #$20 : and #$00FF
+lsr : bit #$0040 : beq B_83C1F8 : ora #$FF80
+B_83C1F8:
+clc : adc $16 : sta $001E
+lda #$0000 : tcd
+lda $18 : sec : sbc $1A : bcs B_83C22A : eor #$FFFF : inc : sta $08
+lda $1C : sec : sbc $1E : bcs B_83C222 : eor #$FFFF : inc
+cmp $08 : bcs B_83C256
+nop
+nop : bra J_83C24C
+B_83C222:
+cmp $08 : bcs B_83C251
+nop
+nop : bra J_83C24C
+B_83C22A:
+sta $08
+lda $1C : sec : sbc $1E : bcs B_83C23F : eor #$FFFF : inc
+cmp $08 : bcs B_83C256
+nop
+nop : bra J_83C247
+B_83C23F:
+cmp $08 : bcs B_83C251
+nop
+nop : bra J_83C247
+J_83C247:
+clc
+lda #$0002
+rts
+J_83C24C:
+clc
+lda #$0003
+rts
+B_83C251:
+clc
+lda #$0001
+rts
+B_83C256:
+clc
+lda #$0000
+rts
+
+;org $83c25b
+
+
+
+org $83c3e0
+lda $0010,y : bit #$0020 : beq B_83C3EB
+jmp J_83C4D5
+; org $83c3eb
+#B_83C3EB:
+lda $000E,y : asl : asl
+lda $0004,x : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+bcs B_83C413
+adc $0014,y : sta $00
+lda $0005,x : and #$00FF
+lsr a : clc : adc $00 : sta $00
+bra J_83C42D
+; org $83c413
+#B_83C413:
+eor #$FFFF : inc : clc : adc $0014,y : sta $00
+lda $0005,x : and #$00FF
+  lsr a
+  eor #$FFFF : inc
+  clc : adc $00
+  sta $00
+; org $83c42d
+#J_83C42D:
+lda $0006,x : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+clc : adc $0016,y : sta $02
+lda $0007,x : and #$00FF
+  lsr a
+  clc : adc $02
+  sta $02
+sep #$20
+  lda #$81 : pha : plb
+rep #$20
+sty $08 : tyx
+lda $7F0020,x : tay
+lda $0001,y : and #$00FF
+  sec : sbc $0ADC
+  beq ZeroOrNegativeDamage
+  bcs GotDamage
+#ZeroOrNegativeDamage:    ; org $83c46b
+lda #$0001
+#GotDamage:
+eor #$FFFF : inc : clc : adc $0ACE : bpl GotPlayerHp
+  lda #$0000   ; Clamp to 0 if underflowing.
+#GotPlayerHp:
+sta $0ACE
+lda $09AA : tcd : tax
+lda #$0080 : tsb $10
+lda #$003C : sta $7F0028,x
+lda $09AE : bit #$1800 : bne PostDamageReactionHandled
+;org $83c497
+cop #$A5 : dl EDamageReactionHandler : db $00,$00 : dw $2400    ; $80d877
+cpy #$1fc0 : beq $1d
+lda $7f002a,x : and #$0020
+  phx
+  tyx
+  sta $7f002a,x
+plx
+lda #$0f00 : tsb $065a
+jsr $c524 : sta $28
+stz $2c
+stz $2e
+#PostDamageReactionHandled:    ; org $83c4c2
+lda $0ad4 : beq WillSound
+#AdultSound:
+cop #$06 : db $08
+bra +
+#WillSound:
+cop #$06 : db $07
++:
+lda #$0000 : tcd
+clc
+rts
+;org $83c4d5
+
+
+org $83c58f
+SR_Bin2Bcd:    ; org $83c58f
+pha
+ldy $0000    ; Back up value.
+stz $0000
+cmp #$03E8 : bcs .OutOfRange999
+cmp #$01F4 : bcc .GroupHundreds
+.Group500:
+  sec : sbc #$01F4 : pha
+    lda #$0005 : sta $0000
+  pla
+.GroupHundreds:
+cmp #$0064 : bcc .MoveHundredsToHighByte
+  sec : sbc #$0064
+  inc $0000
+  bra .GroupHundreds
+.MoveHundredsToHighByte:
+pha
+  lda $0000 : xba : and #$FF00 : sta $0000
+pla
+sep #$20
+cmp #$32 : bcc .GroupTens
+.Group50:
+  sec : sbc #$32 : pha
+  lda #$05 : sta $0000
+  pla
+.GroupTens:
+cmp #$0A : bcc .PutTensInPlace
+  sec : sbc #$0A
+  inc $0000
+  bra .GroupTens
+.PutTensInPlace:
+pha
+  lda $0000 : asl : asl : asl : asl : ora $01,s : sta $01,s
+pla
+rep #$20
+sta $01,s
+sty $0000
+pla
+clc
+rts
+.OutOfRange999:
+sty $0000
+pla
+sec
+rts
+
+;org $83c5ff
+LR_SetSpriteOrder:
+php
+phd
+rep #$20
+ldy #$0000
+lda $0058
+; org $83c609
+.CheckNextActor:
+tax : tcd
+bne +
+  jmp .AllActorsChecked
++:
+lda $14 : sec : sbc $18 : sec : sbc $068A : cmp #$0100
+  bcc ..OkayXCheckY
+  bmi ..OffLeftCheckRight
+jmp ..MarkOffscreen
+
+..OffLeftCheckRight:    ; org $83c623
+lda $14 : clc : adc $1C : sec : sbc $068A : cmp #$0100
+  bcs ..MarkOffscreen
+..OkayXCheckY:    ; org $83c631
+lda $16 : sec : sbc $1A : sec : sbc $068E : cmp #$00E0
+  bcc ..OkayXOkayY
+  bpl ..MarkOffscreen
+lda $16 : clc : adc $1E : sec : sbc $068E : cmp #$00E0
+  bcs ..MarkOffscreen
+
+..OkayXOkayY:    ; org $83c64f
+lda $10
+  bit #$2000 : bne ..MarkOnscreen  ; But don't mark as collider.
+  bit #$0003 : beq ..UseYAsPriority
+  bit #$0002 : bne ..SendToBack
+lda #$01FE : bra ..AddToColliderList  ; And send to front.
+
+..UseYAsPriority:    ; org $83c665
+lda $16 : sec : sbc $068E : cmp #$0100 : bcc +
+..SendToBack:
+  lda #$00FF
++:
+eor #$00FF : asl
+..AddToColliderList:    ; org $83c677
+cmp #$0200 : bcs ..AddToColliderList
+  sta $0C00,y
+  txa : sta $0C02,y
+  iny : iny : iny : iny
+..MarkOnscreen:    ; org $83c687
+lda #$4000 : trb $10
+lda $04
+jmp .CheckNextActor
+..MarkOffscreen:
+lda #$4000 : tsb $10
+lda $04
+jmp .CheckNextActor
+.AllActorsChecked:    ; org $83c69b
+lda #$FFFF : sta $0C00,y
+lda #$0000 : tcd
+lda #$0422 : sta $02    ; Next free OAM stage site.
+tsc : sta $00
+lda #$0BFF : tcs
+; Now $0c00 (stack) contains priority-actor pairs.
+; Code fills $0200 with OAM sites for each priority,
+;  and fills OAM with the linked actor IDs.
+.CheckNextSpritePriority:    ; org $83c6b1
+plx : bmi .ResolveConflicts
+ldy $0200,x : bne ..PriorityConflict
+..OkayPriority:
+lda $02 : sta $0200,x    ; Record OAM site awarded.
+tay
+pla : sta $0000,y    ; Record actor ID there.
+lda #$0000 : sta $0002,y    ; Dummy extra 2 bytes.
+lda $02 : clc : adc #$0004 : sta $02    ; Advance OAM ptr.
+bra .CheckNextSpritePriority
+..PriorityConflict:    ; org $83c6d3
+lda $02 : sta $0200,x    ; Record OAM site awarded.
+tax
+pla : sta $0000,x    ; Record requesting actor ID there,
+tya : sta $0002,x    ;   and conflicting other OAM site.
+lda $02 : clc : adc #$0004 : sta $02    ; Advance OAM ptr.
+bra .CheckNextSpritePriority
+.ResolveConflicts:    ; org $83c6eb
+lda #$01FF : tcs
+ldx #$0000
+bra ..PullNextOamByPriority
+..ZeroFinishedPriority:
+pha
+pla
+..PullNextOamByPriority:
+ply : beq ..PullNextOamByPriority
+  bmi .Done
+..RecordActorByPriority:    ; org $83c6fb
+lda $0000,y : sta $0C00,x
+inx : inx
+lda $0002,y : beq ..ZeroFinishedPriority    ; 2,y contains conflicting OAM site, if any.
+tay : bra ..RecordActorByPriority
+.Done:    ; org $83c70b
+stz $0C00,x
+lda $00 : tcs
+pld
+plp
+rtl
+
+
+;org $83C714
+LR_RenderActors:
+php                          
+rep #$20                     
+lda #$06FE : sta $08    ; Target of $06fe, stored in $0008 for later.
+stz $06FF : stz $070F : stz $14
+lda $068A : sec : sbc #$0010 : sta $1A    ; $1A = MapLayerCameraX - #$10
+lda $068E : sec : sbc #$0010 : sta $1E    ; $1E = MapLayerCameraY - #$10
+lda #$0622 : sta $06    ; $06 = hardcoded OAM buffer @$0622
+lda #$0004 : sta $0E    ; $0E = hardcoded #$0004
+tsc : sta $00    ; $00 = current stack location
+lda #$0621 : tcs    ; Set stack position to $0621, so...
+ldx #$0010
+lda #$E080    ;  ...we can fill OAM buffer $0422-$0621 with $e080.
+-:
+pha : pha : pha : pha
+pha : pha : pha : pha
+pha : pha : pha : pha
+pha : pha : pha : pha
+dex : bne -    ; bne $ED / -$13
+lda $00 : tcs    ; Restore stack.
+jsr SR_PushManualOam
+stz $00D8
+ldx #$0000
+-:
+lda $0C00,x : beq .Finalize    ; Is an event on-screen?
+  inx : inx        ; If an event is on-screen,
+  phx              ;  store the next on-screen table index,
+    tax : jsr SR_WriteSpriteIfVisible   ; .X = event-addr, and render/process ($c849).
+  plx              ; Then return to top of loop (or quit now).
+  bcc -    ; +$F1 (-$0F)
+  bra .Quit    ; +$0C
+.Finalize:
+sep #$20
+lda $00
+-:
+  lsr a : lsr a
+  dec $0E : bne -    ; $FA / -$06
+sta ($06)
+.Quit:
+plp
+rtl
+
+; org $83c78b
+SR_PushManualOam:
+ldx #$0000
+txy
+lda $06EE : bit #$1000 : bne ++    ;+$59
+-:
+lda $7F3100,x : bpl +
+  rts
++:
+lda $7F3102,x : sec : sbc $068E : cmp #$00F0 : bcs +++    ;$3D 
+sta $0423,y
+lda $7F3104,x : sta $0424,y
+lda $7F3100,x : sec : sbc $068A : cmp #$0110 : bcs +++    ;$26 
+sep #$20
+sta $0422,y
+xba
+lsr : ror $00
+clc : ror $00
+dec $0E : bne +    ;$0A
+  lda $00 : sta ($06)
+    inc $06
+  lda #$04 : sta $0E
++:
+rep #$20
+iny : iny : iny : iny
+cpy #$0200 : bne +++
+  rts
++++:
+inx : inx : inx : inx : inx : inx
+bra -    ; +$A7 (-$59)
+++:
+lda $00DA : bne +
+  rts
++:
+ldx #$0600
+ldy #$0422
+lda $00DA : bit #$FE00 : beq +
+  lda #$0200
++:
+dec
+phb
+  mvn $7F,$00
+plb
+lda $00DA : lsr : lsr : lsr : lsr : sta $0E
+lda $00DA : lsr : and #$0006 : sta $00
+sep #$20
+-:
+dec $0E : bmi +
+  lda #$AA : sta ($06)
+  inc $06
+  bra -    ; +$F4 (-$0C)
++:
+ldy $00DA
+ldx $00
+lda $83C841,x : sta $00
+lda $83C842,x : sta $0E
+rep #$20
+rts
+
+db $00,$04,$80,$03,$A0,$02,$A8,$01
+
+;org $83c849
+; Process on-screen event that appeared in RAM table $0c00.
+SR_WriteSpriteIfVisible:
+phb
+sep #$20
+ lda $7F0008,x    ; Work in sprite data bank; .X = event-addr
+ pha : plb
+rep #$20
+lda $0014,x
+  sec : sbc $0018,x
+  sec : sbc $1A : sta $18    ; $18 = EventX - XOffset - CameraX
+lda $0016,x                  ;  i.e. X distance from camera.
+  sec : sbc $001A,x          ; $1C = EventY - YOffset - CameraY
+  sec : sbc $1E : sta $1C    ;  i.e. Y distance from camera.
+lda $000E,x : sta $04        ; $04 = EventSpriteFlags.
+  stz $02                    ; $02 = 0.
+lda $0010,x                  ; EventPhysicsFlags.
+.ForcePaletteIfDamaged:
+bit #$0080 : beq ..Continue    ; +$1B ; Force palette only if hit...
+bit #$0010 : bne ..Continue    ; +$16 ;  ...and not invulnerable...
+bit #$0400 : bne +$00    ; (No-op due to zero branch.)
+lda $7F0028,x : beq ..RecallAndContinue ; +$08 ;  ...and iframe counter > 0...
+lsr a : bcc ..RecallAndContinue         ; +$05 ;  ...and iframe counter is even.
+lda #$0E00 : sta $02      ; For palette-force: set $02 = #$0E00 (was 0).
+..RecallAndContinue:
+lda $0010,x         ; Clobbered .A, so need to recall EventPhysicsFlags.
+..Continue:
+bit #$8000 : bpl .NonPlayerActor    ; +$03 ; Branch on PlayerActorFlag.
+  jmp .PlayerActor    ; $C928
+.NonPlayerActor:
+lda $7F000C,x : clc : adc #$0008 : tax    ; .X=SpriteDataPtr+8 i.e. .X=&numSpriteTiles
+lda $0000,x : and #$00FF    ; .A = numSpriteTiles.
+  inx                       ; .X=&numSpriteTiles+1
+sta $10                     ; $10 = numSpriteTiles.
+..TryRenderTile:
+lda $04 : asl    ; EventSpriteFlags:MirrorYFlag into carry.
+lda $0003,x      ; .A = TileYOffset, both bytes;
+bcc +            ; [$83C8B9] ; if MirrorYFlag was set,
+  xba            ;  swap the bytes first,
++:
+and #$00FF       ;  then zero the unused one.
+  clc : adc $1C                     ; TileYOffset += YDistanceFromCamera.
+  cmp #$00F0 : bcs ..FlushOffScreenSprite    ; +$5C
+sbc #$0010 : sta $0423,y            ; It's on-screen. SBC #$10, STA $0423,y (i.e. byte 3 of entry 0<=y<=numTiles).
+lda $0005,x : eor $04 : ora $02     ; $0424,y = TileID,TileProps XOR SpriteFlags (OR #$0E00 if hurt).
+  sta $0424,y
+lda $04 : asl : asl      ; EventSpriteFlags:MirrorXFlag into carry.
+lda $0001,x              ; Do the above all over again for X:
+bcc +
+  xba                    ;  mirror the offset if needed,
++:
+and #$00FF                   
+  clc : adc $18
+  cmp #$0110 : bcs ..FlushOffScreenSprite    ; +$37 ; compare position to camera location,
+sbc #$000F                   
+sep #$20                     
+sta $0422,y              ; $0422,y=TileXOffset+XDistanceFromCamera.
+xba                          
+lsr a : ror $00          ; Roll bit-9 of xpos and charaddr into
+lda $0000,x : lsr a : ror $00    ; OAMHigh buffer ($00).
+dec $0E    ; $0E counts out 4 tiles = 8 OAMHigh bits, after which we...
+bne +
+  lda $00 : sta ($06)    ; ...flush the 8 accumulated OAMHigh bits.
+  inc $06
+  lda #$04 : sta $0E
++:
+rep #$20
+iny : iny : iny : iny                          
+cpy #$0200 : beq ..Done    ; +$0A ; Stop after #$0200 bytes.
+..NextTile:
+txa : clc : adc #$0007 : tax    ; .X += 7 moves to next tile.
+dec $10 : bne ..TryRenderTile    ; -$6E
+..Done:
+plb                          
+rts                          
+..FlushOffScreenSprite:
+lda #$E080 : sta $0422,y    ; Tile was off-screen. Set its coordinates to extreme values.
+bra ..NextTile
+
+.PlayerActor:
+jsr $CA19      ; Update $09cc, set #$0008 in $09ec (purpose unknown).
+lda $09AE : bpl ..UseBody    ; +$06
+lda $7F000E,x : bra ..UseAccumulator    ; +$09
+..UseBody:
+lda $0AD4 : asl
+  clc : adc $0AD4 : asl
+..UseAccumulator:
+tax            ; .X = 6*Body (normal) or $7F:0E (special).
+$83C940 lda $81D974,x
+$83C944 sta $06FC                    
+$83C947 lda $81D976,x                
+$83C94B and #$00FF                   
+$83C94E sta ($08)                    ; Hardcoded: write sprite bank to $06fe.
+$83C950 inc $08                      
+$83C952 lda $09CC                    ; Updated $09cc (player sprite address),
+$83C955 clc                          
+$83C956 adc #$0008                   ;   plus 8,
+$83C959 tax                          ;   into .X (i.e. .X = &numSpriteTiles).
+$83C95A lda $0000,x                  ; .A = numSpriteTiles
+$83C95D and #$00FF                   
+$83C960 inx                          ; .X = &TileSector
+$83C961 sta $10                      ; $10 = numSpriteTiles
+$83C963 lda $04                      
+$83C965 asl                          
+$83C966 lda $0003,x                  
+$83C969 bcc +$01                     ; [$83C96C] 
+$83C96B xba                          
+$83C96C and #$00FF                   
+$83C96F clc                          
+$83C970 adc $1C                      
+$83C972 cmp #$00F0                   
+$83C975 bcc +$03                     ; [$83C97A] 
+$83C977 jmp $CA05                    ; [$83CA05] 
+
+$83C97A sbc #$0010                   
+$83C97D sta $0423,y                  
+$83C980 lda $0005,x                  
+$83C983 eor $04                      
+$83C985 ora $02                      
+$83C987 pha                          
+$83C988 and #$01FF                   
+$83C98B asl                          
+$83C98C asl                          
+$83C98D asl                          
+$83C98E asl                          
+$83C98F asl                          
+$83C990 adc $06FC                    
+$83C993 sta ($08)                    
+$83C995 inc $08                      
+$83C997 inc $08                      
+$83C999 pla                          
+$83C99A and #$FE00                   
+$83C99D ora $14                      
+$83C99F sta $0424,y                  
+$83C9A2 lda $14                      
+$83C9A4 inc a                        
+$83C9A5 inc a                        
+$83C9A6 bit #$0010                   
+$83C9A9 beq +$04                     ; [$83C9AF] 
+$83C9AB clc                          
+$83C9AC adc #$0010                   
+$83C9AF sta $14                      
+$83C9B1 lda $04                      
+$83C9B3 asl                          
+$83C9B4 asl                          
+$83C9B5 lda $0001,x                  
+$83C9B8 bcc +$01                     ; [$83C9BB] 
+$83C9BA xba                          
+$83C9BB and #$00FF                   
+$83C9BE clc                          
+$83C9BF adc $18                      
+$83C9C1 cmp #$0110                   
+$83C9C4 bcs +$3F                     ; [$83CA05] 
+$83C9C6 sbc #$000F                   
+$83C9C9 sep #$20                     
+$83C9CB sta $0422,y                  
+$83C9CE xba                          
+$83C9CF lsr a                        
+$83C9D0 ror $00                      
+$83C9D2 lda $0000,x                  
+$83C9D5 lsr a                        
+$83C9D6 ror $00                      
+$83C9D8 dec $0E                      
+$83C9DA bne +$0A                     ; [$83C9E6] 
+$83C9DC lda $00                      
+$83C9DE sta ($06)                    
+$83C9E0 inc $06                      
+$83C9E2 lda #$04                     
+$83C9E4 sta $0E                      
+$83C9E6 rep #$20                     
+$83C9E8 iny                          
+$83C9E9 iny                          
+$83C9EA iny                          
+$83C9EB iny                          
+$83C9EC cpy #$0200                   
+$83C9EF beq +$0D                     ; [$83C9FE] 
+$83C9F1 txa                          
+$83C9F2 clc                          
+$83C9F3 adc #$0007                   
+$83C9F6 tax                          
+$83C9F7 dec $10                      
+$83C9F9 beq +$03                     ; [$83C9FE] 
+$83C9FB jmp $C963                    ; [$83C963] 
+
+$83C9FE lda #$0000                   
+$83CA01 sta ($08)                    
+$83CA03 plb                          
+$83CA04 rts                          
+
+$83CA05 lda #$0004                   
+$83CA08 tsb $09AE                    
+$83CA0B lda #$0008                   
+$83CA0E tsb $09EC                    
+$83CA11 lda #$E080                   
+$83CA14 sta $0422,y                  
+$83CA17 bra +$D8 (-$28)              ; [$83C9F1] 
+
+$83CA19 lda $09AE                    
+$83CA1C bit #$0004                   ; If #$0004 is-in $09ae...
+$83CA1F bne +$16                     ; [$83CA37]
+$83CA21 lda $7F000C,x                
+$83CA25 cmp $09CC                    ; Or if this frame's data pointer
+$83CA28 bne +$0D                     ; [$83CA37] 
+$83CA2A lda $7F0008,x                
+$83CA2E cmp $09CE                    ;   is different from last frame's...
+$83CA31 bne +$04                     ; [$83CA37] 
+$83CA33 lda $09CC                    
+$83CA36 rts                          ; [$83C92B] 
+$83CA37 lda $09AE                    ; Then force-update $09cc,
+$83CA3A and #$FFFB                   ; set #$0008 in $09ec,
+$83CA3D sta $09AE                    ; clear #$0004 from $09ae for good
+$83CA40 lda $7F0008,x                ; measure, and return.
+$83CA44 sta $09CE                    
+$83CA47 lda $7F000C,x                
+$83CA4B sta $09CC                    
+$83CA4E lda #$0008                   
+$83CA51 tsb $09EC                    
+$83CA54 rts                          ; [$83C92B] 
+
+;org $83CA55
+LR_AnimateSprite:
+{
+PHB
+SEP #$20
+ LDA $7F0008,x  ; Bank of sprite data.
+ PHA : PLB    ; Now working in that bank.
+ REP #$20
+LDA $28    ; Indexes a sprite animation: running, attacking, etc.
+ASL    ; Add 2*index to sprite data address.
+CLC : ADC $7F0006,x : TAY
+LDA $2A    ; Frame within the active animation, e.g. Will's hair blowing.
+ASL    ; .Y = @(SpriteAddr + 2*AnimIndex) + 4*FrameIndex.
+ASL    ;  That's a pointer to the number of GameFrames this
+CLC : ADC $0000,y : TAY
+LDA $0000,y  ;  AnimFrame lasts; if negative, branch ahead to
+BMI .SecAndReturn  ;  set carry and return, doing nothing else. (+$79)
+STA $08    ; Wait=@(@(SpriteAddr + 2*AnimIndex) + 4*FrameIndex).
+LDA $0002,y  ; Next two bytes after Wait, plus 4,
+TAY    ;  will go into $7F:0C, sprite physical data pointer.
+CLC : ADC #$0004 : STA $7F000C,x
+LDA $0E    ; $0E in the general case is event properties, but
+ROL A    ;  for sprites it contains property flags. Since
+PHP    ;  C=0, ROL acts like ASL but puts the high bit
+LDA $0002,y  ;  in C. We grab two bytes after the pointer after
+STA $0002  ;  Wait to put in Low$0002. (Physics is 4 bytes after
+BCC +$01  ;  Wait.) These bytes go in $1E,$1A if the high bit
+ XBA    ;  of $0E is 1, $1A,$1E if it's 0.
+SEP #$20  ; Now I know that $1A is sprite's Y-offset from
+ STA $1A    ;  event position, and that the high bit of $0E flips
+ XBA    ;  the sprite vertically. So one of the data bytes
+ STA $1E    ;  is selected as the sprite's vertical position
+REP #$20  ;  based on its mirroring, and the other isn't clear.
+LDA $0000,y  ; The two bytes that are at the pointer after Wait
+STA $0000  ;  go into Low$0000, but this is redundant, because
+PLP    ;  here we PLP to restore the n-flag from ROL $0E,
+BPL +$01  ;  i.e. whether bit-14 is 0, which I know reflects
+ XBA    ;  the sprite horizontally. Normally one places the
+STA $0000  ;  two bytes at the pointer after Wait at Low$0000,
+AND #$00FF  ;  mirroring swaps them first; then the second one
+BIT #$0080  ;  is zeroed, leaving .A = $0000, which if
+BEQ +$03  ;  negative is then padded to a 2-byte negative.
+ ORA #$FF00  ;  That final value becomes $18, the sprite's X-
+STA $18    ;  offset from the event position.
+LDA $0001  ; $0001 is the other, unused reflection state's X-
+AND #$00FF  ;  offset. This too is padded to a 2-byte negative
+BIT #$0080  ;  if it's negative, and the result stored in
+BEQ +$03  ;  $1C, just as the unused reflection state's Y-
+ ORA #$FF00  ;  offset was stored in $1E.
+STA $1C
+INC $2A    ; Advance AnimFrame.
+LDA $12    ; Physics flags.
+BIT #$0100  ; Check for #$0100;
+BNE .ClcAndReturn  ;  if it's set, don't fill $20-$23, just CLC+return. (+$1F)
+BIT #$0080  ;   But if #$0100 is not present, check for #$0080;
+BNE .NoShiftY  ; if it's not present, (+$10)
+LDA $0000  ;  the "active" and "inactive" X-offsets
+STA $20    ;  go into $20,
+LDA $0002  ;  and the "active" and "inactive" Y-offsets
+SEC    ;  (shifted upward by 8 pixels) go into $22.
+SBC #$0008  ;  This might be building the event's hitbox based
+STA $22    ;  on its sprite's position w.r.t. the event.
+BRA .ClcAndReturn  ;  Animation advance successful. CLC and return. (+$0A)
+.NoShiftY:
+LDA $0000  ; #$0080 is set but #$0100 is not. Build the hit-
+STA $20    ; box in X and Y based on sprite positions of
+LDA $0002  ; reflection states, but don't shift by 8.
+STA $22
+.ClcAndReturn:
+CLC    ; Animation advance successful. Clear carry,
+PLB
+RTL    ;  and return.
+.SecAndReturn:
+STZ $2A    ; Skip here if the WaitTime we loaded was negative.
+SEC    ;  That means there's nothing to animate;
+PLB    ;  signal this to the caller by setting the carry
+RTL    ;  and returning.
+}
+
+;org $83CAF5
+LR_ActActors:
+php
+phd
+rep #$20
+lda $09AE : bit #$0008 : beq +    ; If attack disabled,
+  lda #$8000 : trb $0656          ;   disable attack.
++:
+bit #$0010 : beq +
+  jmp LR_ActActorsWhileQuake    ; $CC3D
++:
+lda $09EC : bit #$0080 : beq +
+  jmp $CBA3
++:
+lda $56 : beq .Return    ; +$72 to $CB90
+.NextActor:
+tcd : tax
+lda $10 : bit #$2000 : beq .WithRender    ; $CB3D
+.NoRender:
+dec $08 : bpl .NoRender_Post    ; +$68 to $CB93
+stz $08
+phk : pea .NoRender_Post-1    ; $CB92
+sep #$20
+  lda $02 : pha
+rep #$20
+lda $00 : dec : pha
+rtl
+.WithRender:    ; $CB3D
+bit #$0080 : beq ..DoneIframes    ; +$20
+..HandleIframes:
+lda $7f0028,x : beq ..ClearIframeFlag
+  bmi ..FixIframeCounter    ; +$0c
+dec : sta $7f0028,x
+cpx $09aa : beq ..DoneIframes    ; +$0e
+  bra .CheckNext    ; +$36
+..FixIframeCounter:
+inc : sta $7f0028,x
+  bne ..DoneIframes    ; +$05
+..ClearIframeFlag:
+lda #$0080 : trb $10
+..DoneIframes:
+dec $08 : bpl .WithRender_Post
+stz $08
+phk : pea .WithRender_Post-1    ; $CB77
+sep #$20
+  lda $02 : pha
+rep #$20
+lda $00 : dec : pha
+rtl
+.WithRender_Post:
+lda $10 : and #$FFFB : sta $10
+  bit #$0008 : beq ..NoWorldCollide    ; +$05
+    jsr SR_EngineMoveWithWorldCollide : bra .CheckNext    ; $d276
+..NoWorldCollide:
+jsr SR_EngineMoveNoWorldCollide    ; $d1f5
+.CheckNext:    ; $cb8c
+lda $06 : bne .NextActor
+.Return:
+pld
+plp
+rtl
+;org $83cb93
+.NoRender_Post:
+lda $10 : bit #$2000 : beq .WithRender_Post
+lda $12 : bit #$0008 : beq .CheckNext
+bra .WithRender_Post
+;org $83cba3
+
+
+
+org $83cc3d
+LR_ActActorsWhileQuake:
+lda $56 : bne .NextActor
+  jmp .Return
+.NextActor:
+tcd : tax
+lda $12 : bit #$1004 : bne .DoAct
+.MaybeSkipAct:
+lda $10 : bit #$1400 : beq .SkipAct
+.DoAct:
+bit #$2000 : beq .WithRender    ; bug... sometimes checks $12 instead of $10
+.NoRender:
+dec $08 : bmi +
+  jmp .NoRender_Post
++:
+stz $08
+phk : pea .NoRender_Post-1    ; $CCEE
+sep #$20
+  lda $02 : pha
+rep #$20
+lda $00 : dec : pha
+rtl
+
+.WithRender:    ; org $83cc72
+bit #$0080 : beq ..DoneIframes
+..HandleIframes:
+lda $7F0028,x : beq ..ClearIframeFlag
+  bmi ..FixIframeCounter
+dec : sta $7F0028,x
+cpx $09AA : beq ..DoneIframes
+bra .CheckNext
+..FixIframeCounter:    ; org $83cc8b
+inc : sta $7F0028,x : bne ..DoneIframes
+..ClearIframeFlag:
+lda #$0080 : trb $10
+..DoneIframes:
+dec $08 : bpl .WithRender_Post
+stz $08
+phk : pea .WithRender_Post-1    ; $CCAC
+sep #$20
+  lda $02 : pha
+rep #$20
+lda $00 : dec : pha
+rtl
+.WithRender_Post:
+lda $10 : and #$FFFB : sta $10
+  bit #$0008 : beq ..NoWorldCollide
+    jsr SR_EngineMoveWithWorldCollide : bra .CheckNext    ; $d276
+..NoWorldCollide:
+jsr SR_EngineMoveNoWorldCollide
+bra .CheckNext
+; org $83ccc3
+.CheckNext:
+lda $06 : beq .Return
+jmp .NextActor
+.Return:
+pld
+plp
+rtl
+; org $83cccd
+.SkipAct:
+bit #$0080 : beq .CheckNext
+..HandleIframes:
+lda $7F0028,x : beq ..ClearIframeFlag
+  bmi ..FixIframeCounter
+dec : sta $7F0028,x
+bra .CheckNext
+..FixIframeCounter:
+inc : sta $7F0028,x
+bra .CheckNext
+..ClearIframeFlag:
+lda #$0080 : trb $10
+bra .CheckNext
+.NoRender_Post:
+lda $10 : bit #$2000 : beq .WithRender_Post
+lda $12 : bit #$0008 : beq .CheckNext
+bra .WithRender_Post
+warnpc $83ccff
+
+
+
+org $83CE8F
+LR_AllocThinker:
+LDA [$52]
+BMI .SecAndReturn    ; +$0C ; No more slots available.
+TAY    ; Got a slot. Put it in Y.
+LDA #$0000 : STA [$52]    ; Clear slot from slotlist.
+INC $52 : INC $52    ; Advance slotlist pointer.
+CLC		; Clear carry,
+RTL		; and return.
+.SecAndReturn
+SEC
+RTL
+
+;org $83cea1
+LR_ParseActorList:
+{
+php
+rep #$20
+stz $0056
+stz $0058
+lda #$008C : sta $40
+ldx $0646
+lda $8C8000,x : sta $3E
+  beq .Quit
+lda [$3E] : and #$00FF : cmp #$00FF : beq .Quit
+jsl LR_AllocActor    $80b501
+sty $0056
+bra .InitNewActor
+.NextEntry:    ; org $83cecd
+lda [$3E] : and #$00FF : cmp #$00FF : beq .Done
+jsl LR_AllocActor    $80b501
+tya : sta $0006,x
+txa : sta $0004,y
+.InitNewActor:
+tyx
+jsr SR_MakeActorFromList    ; $CF1B
+bcc .NextEntry
+.Done:    ; org $83cee9
+stx $0058
+.Quit:
+lda #$1000 : sta $09F4
+plp
+rtl
+}
+
+
+;org $83cef4
+SR_MakeActorFromList_NextActor:
+tya : inc : clc : adc $3E : sta $3E
+lda [$3E] : and #$00FF : cmp #$00FF : bne SR_MakeActorFromList
+dec $4E : dec $4E
+txa : sta [$4E]
+dec $0DBC
+ldy $0004,x
+lda #$0000 : sta $0006,y : tyx
+sec
+rts
+SR_MakeActorFromList:    ; org $83cf1b
+ldy #$0000
+lda [$3E],y : iny : and #$00FF : asl : asl : asl : asl : sta $0014,x
+lda [$3E],y : iny : and #$00FF : asl : asl : asl : asl : sta $0016,x
+lda [$3E],y : iny : bit #$0001 : bne .LiteralParam
+.DerivedParam:
+  and #$00F6 : xba
+  ora $06F0 : sta $000E,x
+bra +
+.LiteralParam:    ; org $83cf4c
+  and #$00FF : lsr : sta $000E,x
++:
+lda [$3E],y : iny : iny : sta $42
+lda [$3E],y : iny : and #$00FF : sta $44
+lda [$3E],y : iny : and #$00FF : sta $7F0020,x : beq .PostParseHp
+lda [$3E],y : iny : and #$00FF : sta $7F0022,x : beq .PostParseMonId
+jsr SR_FixMapAndSecIfMonDead    ; $d0db
+bcc .PostParseMonId
+jmp SR_MakeActorFromList_NextActor
+
+.PostParseMonId:    ; org $83cf81
+lda $7F002A,x : ora #$0100 : sta $7F002A,x
+lda [$3E],y : iny : and #$00FF : sta $7F0024,x
+inc $0AEC
+sed
+  lda $0AEE : clc : adc #$0001 : sta $0AEE
+cld
+.PostParseHp:    ; org $83cfa5
+tya : clc : adc $3E : sta $3E
+ldy #$0000
+lda [$42],y : iny : and #$00FF : sta $0028,x
+lda [$42],y : iny : iny : ora #$4000 : sta $0010,x
+tya : clc : adc $42 : sta $0000,x
+lda $44 : sta $0002,x
+phd
+txa : tcd
+lda $10 : bmi .SpawnPlayer    ; $83d00f
+lda #$4000 : sta $7F0006,x
+lda #$007E : sta $7F0008,x
+jsl LR_AnimateSprite    ; $83ca55
+lda $14 : clc : adc #$0008 : sta $14
+stz $08
+pld
+lda $7F0020,x : bne .ConvertHpIndexToAddr
+rts
+.ConvertHpIndexToAddr:    ; org $83cff8
+asl : asl : clc : adc #$ABF0 : sta $7F0020,x
+tay
+lda $0000,y : and #$00FF : sta $7F0026,x
+clc
+rts
+;org $83d00f
+.SpawnPlayer:
+lda #$0088 : trb $09AE
+lda $0E : bit #$0600 : beq .DoneFlags
+pha
+and #$F9FF : sta $0E
+lda $01,s : bit #$0200 : beq +
+..DisableAttack:
+  lda #$0008 : tsb $09AE
++:
+pla : bit #$0400 : beq .DoneFlags
+  lda #$0080 : tsb $09AE
+..DoneFlags:
+lda $0650 : and #$00FF : asl : tay
+lda.w Table_PlayerSpawnSpritesAndMoves,y : and #$00FF : sta $28    ; $ABDE
+lda $0AD4 : asl : asl : clc : adc $0AD4 : clc : adc $0AD4 : tay
+lda.w Table_PlayerSpriteSources,y : sta $7F0006,x                  ; $D971
+lda.w 2+Table_PlayerSpriteSources,y : and #$00FF : sta $7F0008,x   ; $D973
+lda $064C : ora $064E : beq ..FromStairs
+..FromRoomInit:
+lda $064C : clc : adc #$0008 : sta $14
+lda $064E : clc : adc #$0010 : sta $16
+stz $064C
+stz $064E
+jsl LR_AnimateSprite    ; $83ca55
+stz $08
+bra ..PositionCamera
+..FromStairs:    ; org $83d092
+lda $14 : clc : adc #$0008 : sta $14
+..PositionCamera:
+lda $14 : sta $09A2
+lsr : lsr : lsr : lsr : sta $09A6
+lda $14 : sec : sbc #$0080 : bpl +
+  lda #$0000
++:
+sta $06BE
+sta $068A
+lda $16 : sec : sbc #$0010 : sta $09A4
+lsr : lsr : lsr : lsr : sta $09A8
+lda $16 : sec : sbc #$0080 : bpl +
+  lda #$0000
++:
+sta $06C2
+sta $068E
+pld
+clc
+rts
+
+
+;org $83d0db
+SR_FixMapAndSecIfMonDead:
+phy
+phx : sta $0000
+lsr : lsr : lsr : tay
+lda #$0000
+sep #$20
+lda $0000 : and #$07 : tax
+lda.l Lut_PowersOfTwo83,x : and $0A80,y : bne .MonIsDead    ; $83d125,x
+clc
+rep #$20
+plx
+ply
+rts
+.MonIsDead:    ; org $83d0fe
+rep #$20
+lda $03,s : tay
+lda [$3E],y : and #$00FF : beq .DoneOrSkippedRearrange
+nop
+jsl LR_StageMapRearrange    ; $82a363
+bcs .DoneOrSkippedRearrange
+ldy $3E : phy
+ldy $40 : phy
+jsl LR_DoMapRearrange    ; $82a220
+ply : sty $40
+ply : sty $3E
+.DoneOrSkippedRearrange:    ; org $83d121
+sec
+plx
+ply
+rts
+;org $83d125
+Lut_PowersOfTwo83:
+db $01,$02,$04,$08,$10,$20,$40,$80
+
+
+;org $83d12d
+LR_ThinkThinkersA:
+php
+phd
+rep #$20
+lda $5A : beq .Return    ; +$25 to $d15a
+.Next:
+tcd : tax
+lda $7f000e,x : bit #$0004 : bne .Post    ; +$16
+dec $08 : bpl .Post    ; $12
+stz $08
+phk : pea .Post-1    ; $d155
+sep #$20
+  lda $02 : pha
+rep #$20
+lda $00 : dec : pha
+rtl
+.Post:    ; $d156
+lda $06 : bne .Next
+.Return:
+pld
+plp
+rtl
+
+;org $83d15d
+LR_ThinkThinkersB:
+php
+phd
+rep #$20
+lda $5A : beq .Return    ; +$25 to $d18a
+.Next:
+tcd : tax
+lda $7f000e,x : bit #$0004 : bne .Post    ; +$16
+dec $08 : bpl .Post    ; $12
+stz $08
+phk : pea .Post-1    ; $d185
+sep #$20
+  lda $02 : pha
+rep #$20
+lda $00 : dec : pha
+rtl
+.Post:    ; $d186
+lda $06 : bne .Next
+.Return:
+pld
+plp
+rtl
+
+;org $83d18d
+LR_ThinkThinkersC:
+php
+phd
+rep #$20
+lda $5A : beq .Return    ; +$2a to $d1bf
+.Next:
+tcd : tax
+lda $7f000e,x
+  bit #$0800 : bne .Post    ; +$1b to $d1bb
+  bit #$0004 : bne .Post    ; +$16 to $d1bb
+dec $08 : bpl .Post    ; $12
+stz $08
+phk : pea .Post-1    ; $d1ba
+sep #$20
+  lda $02 : pha
+rep #$20
+lda $00 : dec : pha
+rtl
+.Post:    ; $d186
+lda $06 : bne .Next
+.Return:
+pld
+plp
+rtl
+
+;org $83d1c2
+LR_ThinkThinkersD:
+php
+phd
+rep #$20
+lda $5A : beq .Return    ; +$28 to $d1f2
+.Next:
+tcd : tax
+lda $7f000e,x : and #$0804 : cmp #$0804 : bne .Next    ; +$16 to $d1ee
+dec $08 : bpl .Post    ; $12
+stz $08
+phk : pea .Post-1    ; $d1ed
+sep #$20
+  lda $02 : pha
+rep #$20
+lda $00 : dec : pha
+rtl
+.Post:    ; $d186
+lda $06 : bne .Next
+.Return:
+pld
+plp
+rtl
+
+;org $83d1f5
+SR_EngineMoveNoWorldCollide:
+.CheckX:
+lda $2C : beq .CheckExplicitX
+tay
+lda $0002,y : sta $2C
+lda $12 : bit #$4000 : beq ..NoMirrorX
+lda $0000,y : eor #$FFFF : inc a : bra .WriteX
+..NoMirrorX:
+lda $0000,y : bra .WriteX
+.CheckExplicitX:
+lda $12 : bit #$4000 : beq ..NoMirrorX
+lda $7F002C,x : eor #$FFFF : inc a : bra .WriteX
+..NoMirrorX:
+lda $7F002C,x
+.WriteX:
+  clc : adc $14 : sta $14
+lda #$0000 : sta $7F002C,x
+.CheckY:
+lda $2E : beq .CheckExplicitY
+tay
+lda $0002,y : sta $2E
+lda $12 : bit #$2000 : beq ..NoMirrorY
+lda $0000,y : eor #$FFFF : inc a : bra .WriteY
+..NoMirrorY:
+lda $0000,y : bra .WriteY
+.CheckExplicitY:
+lda $12 : bit #$2000 : beq ..NoMirrorY
+lda $7F002E,x : eor #$FFFF : inc a : bra .WriteY
+..NoMirrorY:
+lda $7F002E,x
+.WriteY:
+  clc : adc $16 : sta $16
+lda #$0000 : sta $7F002E,x
+rts
+
+;org $83d276
+SR_EngineMoveWithWorldCollide:
+lda $06DE : sec : sbc #$0010 : sta $0004
+.TryCheckX:
+lda $2C : beq ..TryExplicitX
+tay
+lda $0000,y : bne ..WriteTempX
+lda $0002,y : sta $2C
+  bra .TryCheckY
+..TryExplicitX:
+lda $7F002C,x : beq .TryCheckY
+..WriteTempX:
+  sta $001A
+lda $12 : bit #$4000 : beq ..NoMirrorX
+  lda $001A : eor #$FFFF : inc a : sta $001A
+..NoMirrorX:
+lda $001A
+  pea .DoRealMoveX-1
+  bpl +
+jmp .CheckWest
++:
+jmp .CheckEast
+
+.DoRealMoveX:
+lda $2C : beq ..TryExplicitX
+..ImplicitX:
+tay
+lda $0002,y : sta $2C : bcs .TryCheckY
+lda $12 : bit #$4000 : beq ...NoMirrorX
+lda $0000,y : eor #$FFFF : inc a : bra ..WriteX
+...NoMirrorX:
+lda $0000,y : bra ..WriteX
+..TryExplicitX:
+bcs ..ClearExplicitX
+lda $12 : bit #$4000 : beq ...NoMirrorX
+lda $7F002C,x : eor #$FFFF : inc a : bra .WriteX
+...NoMirrorX:
+lda $7F002C,x
+..WriteX:
+  clc : adc $14 : sta $14
+..ClearExplicitX:
+lda #$0000 : sta $7F002C,x
+
+.TryCheckY:
+clc
+lda $2E : beq ..TryExplicitY
+tay
+lda $0000,y : bne ..WriteTempY
+lda $0002,y : sta $2E : bra .CheckOtherFlags
+..TryExplicitY:
+lda $7F002E,x : beq .CheckOtherFlags
+..WriteTempY:
+  sta $001E
+lda $12 : bit #$2000 : beq ...NoMirrorY
+lda $001E : eor #$FFFF : inc a : sta $001E
+...NoMirrorY:
+lda $001E
+  pea .DoRealMoveY-1
+  bpl +
+jmp .CheckNorth
++:
+jmp .CheckSouth
+
+.DoRealMoveY:
+lda $2E : beq ..TryExplicitY
+..ImplicitY:
+tay
+lda $0002,y : sta $2E : bcs .CheckOtherFlags
+lda $12 : bit #$2000 : beq ...NoMirrorY
+lda $0000,y : eor #$FFFF : inc a : bra ..WriteY
+...NoMirrorY:
+lda $0000,y : bra ..WriteY
+..TryExplicitY:
+bcs ..ClearExplicitY
+lda $12 : bit #$2000 : beq ...NoMirrorY
+lda $7F002E,x : eor #$FFFF : inc a : bra ..WriteY
+...NoMirrorY:
+lda $7F002E,x
+..WriteY:
+  clc : adc $16 : sta $16
+..ClearExplicitY:
+lda #$0000 : sta $7F002E,x
+
+.CheckOtherFlags:
+lda $10 : bit #$0004 : bne .CollidesWithMonsters
+rts
+
+.CollidesWithMonsters:
+lda $7F002A,x : bit #$0040 : bne ..XorMirrors    ; ???
+rts
+
+..XorMirrors:
+and #$FFBF : sta $7F002A,x
+lda $12 : eor #$6000 : sta $12
+rts
+
+.CheckWest:
+phb
+clc : adc $14 : sta $0018
+lda #$0000 : tcd
+jsr S_83D708
+bcc B_83D3B0
+plb
+txa : tcd
+rts
+
+B_83D3B0:    ; $d3b0
+lda $7F000C,x : tay
+sep #$20
+  lda $7F0008,x : pha : plb
+rep #$20
+lda $0003,y : and #$00FF : sta $0E
+lda $0000,y : ora #$FF00 : clc : adc $18 : bmi B_83D419
+  cmp $06D6 : bcc B_83D419
+  cmp $06DA : bcs B_83D419
+lsr : lsr : lsr : lsr : sta $18
+lda $0001,y : ora #$FF00 : clc : adc $0016,x : pha
+lsr : lsr : lsr : lsr : sta $1C
+jsl LR_GetTileTableIndex83
+sty $00
+J_83D3F9:
+lda [$80],y : bit #$00F0 : beq B_83D403
+jmp J_83D4CE
+B_83D403:
+and #$000F : bne B_83D413
+dec $0E : beq B_83D413
+jsr S_83D7B4 : sty $00 : bra J_83D3F9
+B_83D413:
+asl : txy : tax
+jmp ($D4AD,x)
+B_83D419:
+pha
+lda #$000F : bra B_83D413
+
+.CheckEast:
+phb : clc : adc $14 : sta $0018
+lda #$0000 : tcd
+jsr S_83D708 : bcc B_83D433
+plb : txa : tcd
+rts
+
+B_83D433:    ; $d433
+lda $7F000C,x : tay : sep #$20
+lda $7F0008,x
+pha
+plb
+rep #$20
+lda $0003,y : and #$00FF : sta $0E
+lda $0000,y : ora #$FF00 : clc : adc $18
+dec a : bmi B_83D419 : cmp $06D6 : bcc B_83D419 : clc : adc #$0010 : cmp $06DA : bcs B_83D419 : sec : sbc #$0010
+lsr : lsr : lsr : lsr : sta $18
+lda $0002,y : and #$00FF : clc : adc $18 : sta $18
+lda $0001,y : ora #$FF00 : clc : adc $0016,x
+pha
+lsr : lsr : lsr : lsr : sta $1C
+jsl S_83D78A : sty $00
+J_83D490:
+lda [$80],y : bit #$00F0 : bne J_83D4CE : and #$000F : bne B_83D4A7
+dec $0E : beq B_83D4A7
+jsr S_83D7B4 : sty $00 : bra J_83D490
+B_83D4A7:
+asl : txy : tax
+jmp ($D4AD,x)
+
+dw $d541,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd,$d4cd
+
+;org $83d4cd
+tyx
+J_83D4CE:
+txa : tcd
+lda #$0004 : tsb $10
+lda $001A : bmi B_83D506
+lda $7F000C,x : tay
+lda $0000,y : ora #$FF00 : clc : adc $14 : clc : adc $001A : and #$FFF0 : sta $001A
+lda $0000,y : ora #$FF00 : eor #$FFFF : inc a : clc : adc $001A : sta $14
+pla
+plb : sec
+rts
+B_83D506:
+lda $7F000C,x : tay
+lda $0000,y : ora #$FF00 : clc : adc $14 : clc : adc $001A : bit #$000F : beq B_83D524 : and #$FFF0 : clc : adc #$0010
+B_83D524:
+sta $001A
+lda $0000,y : ora #$FF00 : eor #$FFFF : inc a : clc : adc $001A : sta $14
+pla
+plb : sec
+rts
+
+;org $83d53b
+B_83D53B:
+txa : tcd
+pla
+plb
+clc
+rts
+
+;org $83d541
+tyx
+lda $01,s : bit #$000F : beq B_83D53B
+jsr S_83D7B4
+lda [$80],y : and #$00FF : beq B_83D53B
+jmp J_83D4CE
+
+;org $83d556
+.CheckNorth:
+phb : clc : adc $16 : sta $001C
+lda #$0000 : tcd
+jsr S_83D708 : bcc B_83D56A
+plb : txa : tcd
+rts
+
+B_83D56A:
+lda $7F000C,x : tay : sep #$20
+lda $7F0008,x
+pha
+plb
+rep #$20
+lda $0002,y : and #$00FF : sta $0E
+lda $0000,y : ora #$FF00 : clc : adc $0014,x
+pha
+lsr : lsr : lsr : lsr : sta $18
+lda $0001,y : ora #$FF00 : clc : adc $1C : bmi B_83D5D2 : cmp $06D8 : bcc B_83D5D2 : cmp $04 : bcs B_83D5D2
+lsr : lsr : lsr : lsr : sta $1C
+jsl S_83D78A : sty $00
+J_83D5B2:
+lda [$80],y : bit #$00F0 : beq B_83D5BC
+jmp J_83D67C
+B_83D5BC:
+and #$000F : bne B_83D5CC
+dec $0E : beq B_83D5CC
+jsr S_83D7CA : sty $00 : bra J_83D5B2
+B_83D5CC:
+asl : txy : tax
+jmp ($D65C,x)
+B_83D5D2:
+lda #$000F : bra B_83D5CC
+
+.CheckSouth:
+phb : clc : adc $16 : sta $001C
+lda #$0000 : tcd
+jsr S_83D708 : bcc B_83D5EB
+plb : txa : tcd
+rts
+
+B_83D5EB:
+lda $7F000C,x : tay : sep #$20
+lda $7F0008,x
+pha
+plb
+rep #$20
+lda $0002,y : and #$00FF : sta $0E
+lda $0000,y : ora #$FF00 : clc : adc $0014,x
+pha
+lsr : lsr : lsr : lsr : sta $18
+lda $0001,y : ora #$FF00 : clc : adc $1C : bmi B_83D5D2 : cmp $06D8 : bcc B_83D5D2 : cmp $04 : bcs B_83D5D2
+dec a
+lsr : lsr : lsr : lsr : sta $1C
+lda $0003,y : and #$00FF : clc : adc $1C : sta $1C
+jsl S_83D78A : sty $00
+J_83D63F:
+lda [$80],y : bit #$00F0 : bne J_83D67C : and #$000F : bne B_83D656
+dec $0E : beq B_83D656
+jsr S_83D7CA : sty $00 : bra J_83D63F
+B_83D656:
+asl : txy : tax
+jmp ($D65C,x)
+
+dw $d6ef,$d704,$d704,$d704,$d704,$d704,$d704,$d704,$d704,$d704,$d704,$d704,$d704,$d704,$d704,$d704
+
+;org $83d67c
+J_83D67C:
+txa : tcd
+lda #$0004 : tsb $10
+lda $001E : bmi B_83D6B4
+lda $7F000C,x : tay
+lda $0001,y : ora #$FF00 : clc : adc $16 : clc : adc $001E : and #$FFF0 : sta $001E
+lda $0001,y : ora #$FF00 : eor #$FFFF : inc a : clc : adc $001E : sta $16
+pla
+plb : sec
+rts
+B_83D6B4:
+lda $7F000C,x : tay
+lda $0001,y : ora #$FF00 : clc : adc $16 : clc : adc $001E : bit #$000F : beq B_83D6D2 : and #$FFF0 : clc : adc #$0010
+B_83D6D2:
+sta $001E
+lda $0001,y : ora #$FF00 : eor #$FFFF : inc a : clc : adc $001E : sta $16
+pla
+plb : sec
+rts
+
+;org $83d6e9
+B_83D6E9:
+txa : tcd
+pla
+plb
+clc
+rts
+
+;org $83d6ef
+tyx
+lda $01,s : bit #$000F : beq B_83D6E9
+jsr S_83D7CA
+lda [$80],y : and #$00FF : beq B_83D6E9
+jmp J_83D67C
+
+;org $83d704
+tyx : jmp J_83D67C
+
+;org $83d708
+S_83D708:
+lda $18 : pha
+lda $1C : pha
+lda $0014,x : sec : sbc #$0008 : bit #$000F : beq .ClcAndReturn
+  lsr : lsr : lsr : lsr : sta $18
+lda $0016,x : sec : sbc #$0010 : bit #$000F : beq .ClcAndReturn
+  lsr : lsr : lsr : lsr : sta $1C
+jsl LR_GetTileTableIndex83 : sty $00
+lda [$80],y : and #$00FF : beq .GotPassable
+  cmp #$0006 : bne .ClcAndReturn
+jsr S_83D7B4 : sty $00
+jsr S_83D7CA
+lda [$80],y : and #$00FF : cmp #$0006 : bne .ClcAndReturn
+  bra .SecAndReturn
+.GotPassable:
+lda $00 : sta $02
+jsr S_83D7CA
+lda [$80],y : and #$00FF : cmp #$0009 : bne .ClcAndReturn
+lda $02 : sta $00
+jsr S_83D7B4
+lda [$80],y : and #$00FF : cmp #$0009 : bne .ClcAndReturn
+.SecAndReturn:
+pla : sta $1C
+pla : sta $18 : sec
+rts
+.ClcAndReturn:
+pla : sta $1C
+pla : sta $18 : clc
+rts
+
+
+;org $83d78a
+; Expects $18,$1C have high nibble = screen no., low nibble = tile no.
+; Requires rep #$20.
+LR_GetTileTableIndex83:
+{
+php
+lda $1C : asl : asl : asl : asl
+pha
+sep #$20
+lda $0693    ; !MapLayerWidthHigh
+jsl LR_MultiplyBytesOfA : sta $02,s
+lda $18 : and #$0F
+  clc : adc $01,s : sta $01,s
+lda $18 : lsr : lsr : lsr : lsr
+  clc : adc $02,s : sta $02,s
+ply
+plp
+rtl
+}
+
+;org $83d7b4
+S_83D7B4:
+php
+lda $00
+  sep #$20
+  clc : adc #$10 : bcs B_83D7C1
+tay
+plp
+rts
+B_83D7C1:
+xba : clc : adc $0693
+xba : tay
+plp
+rts
+
+;org $83d7ca
+S_83D7CA:
+php : sep #$20
+lda $00 : inc a : bit #$0F : beq B_83D7DC
+  sta $00
+rep #$20
+ldy $00
+plp
+rts
+B_83D7DC:
+xba
+lda $01 : inc a
+xba : clc : adc #$F0 : tay
+plp
+rts
+
+
+
+;org $83d7e7
+LR_LoadThinkers:
+php
+rep #$20
+stz $005a
+stz $005c
+ldx $0646
+lda $8ce5e5,x : beq .Return    ; +$36
+  sta $3e
+lda #$008C : sta $40    ; i.e. bank of thinker table
+lda [$3e] : bit #$0080 : bne .Done    ; +$28
+jsl LR_AllocThinker : sty $005a    ; $83ce8f
+bra ++
+;org $83D810
+.ParseNext:
+lda [$3e] : and #$00ff : cmp #$00ff
+beq .Done    ; +$12 ; $d82c, exits loop
+jsl LR_AllocThinker    ; reserve memory for minor event, pointer in y
+tya	: sta $0006,x    ; Set next.
+txa	: sta $0004,y    ; Set previous.
+++:
+tyx
+jsr SR_InitThinker    ; $d831
+bra .ParseNext    ; +$e4 ; return to lda [$3e]
+.Done:
+stx $005c
+.Return:
+plp
+rtl
+
+;org $83d831
+SR_InitThinker:
+{
+ldy #$0000
+lda [$3e],y : iny
+  and #$00ff : sta $7f0002,x
+lda [$3e],y : iny : iny
+  sta $42
+lda [$3e],y : iny
+  and #$00ff : sta $44
+tya : clc : adc $3e : sta $3e
+ldy #$0000
+lda [$42],y : iny : iny
+  sta $7f000e,x
+tya : clc : adc $42 : sta $0000,x
+lda $44 : sta $0002,x
+rts
+}
+
+
+;org $83d86a
+LR_ClearSpritePriorityList:
+php
+rep #$20
+ldx #$0000 : txa
+-:
+  sta $0200,x
+  inx : inx : cpx #$0200 : bne -
+dec a : sta $0200,x
+plp
+rtl
+
+;org $83d881
+LR_PushPlayerVram:
+{
+lda $09ec : bit #$80 : bne +
+  rtl
++:
+and #$F7 : sta $09ec
+lda #$80 : sta $2115
+lda #$01 : sta $4300
+lda #$18 : sta $4301
+lda $06fe : sta $4304
+ldy #$0001
+ldx #$4000 : stx $2116
+jsr .HelperA
+cpy #$0011 : bne +
+  ldx #$4200 : stx $2116
+  jsr .HelperA
++:
+ldy #$0001
+ldx #$4100 : stx $2116
+jsr .HelperB
+cpy #$0011 : bne +
+  ldx #$4300 : stx $2116
+  jsr .HelperB
++:
+rtl
+.HelperA:    ;org $83d8d8
+ldx $06fe,y : beq .Done
+  stx $4302
+lda #$40 : sta $4305
+lda #$01 : sta $420b
+iny : iny : cpy #$0011 : bne .HelperA
+.Done:
+rts
+.HelperB:    ;org $83d8f2
+rep #$20
+lda $06fe,y : beq .Done
+  clc : adc #$0200 : sta $4302
+sep #$20
+lda #$40 : sta $4305
+lda #$01 : sta $420b
+iny : iny : cpy #$0011 : bne .HelperB
+.Done:
+sep #$20
+rts
+}
+
+;org $83d916
+LR_SaveToSramA:
+{
+php
+phx
+phy
+phb
+rep #$20
+and #$0003 : xba : asl : tax
+lda $0644 : sta $0B06
+ldy #$0000
+phx
+-:    ; org $83d92c
+lda $0A00,y : sta $306200,x
+inx : inx
+iny : iny
+cpy #$01FC : bne -
+plx
+jsl LR_CalculateSramChecksum
+lda $0018 : sta $3063FC,x
+lda $001C : sta $3063FE,x
+plb
+ply
+plx
+plp
+rtl
+}
+warnpc $83d954
+
+
+org $83d9b8
+LR_CalculateSramChecksum:
+{
+php
+phx
+rep #$20
+lda #$3652 : sta $0018
+  sta $001C
+lda #$00FE : sta $000E
+-:    ; org $83d9cb
+lda $306200,x : pha
+  clc : adc $0018 : sta $0018
+pla : eor $001C : sta $001C
+inx : inx
+dec $000E : bne -
+plx
+plp
+rtl
+}
+
+;org $83D9E8
+LR_CheckAndProcessMapTransition:
+lda $0D52 : ora $0D53 : bne LR_ProcessMapTransition
+lda $0642 : bne LR_ProcessMapTransition
+rtl
+LR_ProcessMapTransition:    ; org $83d9f6
+lda $0654
+  bmi .SpecialFade
+  beq .NoFadeTo
+    jsr SR_FadeScreenForMapChange    ; $83DABB
+.NoFadeTo:    ; org $83da00
+  stz $0654
+.SpecialFade:    ; org $83da03
+stz $66
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
+jsl LR_SetScreenBlackForceBlank   ; $8281BC
+lda #$00 : xba
+lda $0D52 : ora $0D53 : beq .NotToWorldMap
+.GoingToWorldMap:
+rep #$20
+lda $0D52 : sta $0D54
+stz $0D52
+lda $0652 : sta $0D6C
+stz $0652
+lda #$0000
+sep #$20
+lda $0642 : sta $0D6E
+lda $0644 : sta $0D6F
+lda #$FE : bra +
+.NotToWorldMap:    ; org $83da41
+lda $0644 : sta $0D6E
+stz $0D6F
+lda $0642
++:
+stz $0642 : sta $0644
+rep #$20
+asl : sta $0646
+sep #$20
+jsl S_83DD56
+jsl S_83DECD
+jsl LR_TryUpdateStatusBar    ; $808206
+jsl LR_WaitForNmi            ; $828043
+jsl LR_ResetNmi              ; $828191
+jsl LR_SetScreenBlack        ; $8281AF
+lda $0654 : bne B_83DA81
+  jsr S_83DC92
+  ldx #$000F : stx $0654
+B_83DA81:    ; org $83da81
+ldx #$0000 : stx $064A
+  stx $0648
+lda $00B4 : beq .MapNameDismissed
+.ShowNameAwaitInput:    ; org $83da8f
+jsl S_80811E
+lda $0656 : ora $0657 : ora $0660 : ora $0661 : beq .ShowNameAwaitInput
+stz $00B4
+stz $00B5
+jsl LR_ClearBg3BelowStatus    ; $82F06A
+lda #$01 : tsb $09EC
+jsl S_80811E
+.MapNameDismissed:    ; org $83dab4
+stz $09AC
+stz $09AD
+rtl
+
+;org $83dabb
+SR_FadeScreenForMapChange:
+
+
+
+org $83dd56
+LR_InitMemForNewMap:
+stz $420C
+ldx #$0000
+stx $065C : stx $0AD0 : stx $0ACC : stx $09EC
+stx $09AE : stx $0A00 : stx $06C0 : stx $06BE : stx $06C4
+stx $06C2 : stx $06C6 : stx $06C8 : stx $06CA : stx $06CC
+stx $068E : stx $0690 : stx $068A : stx $068C : stx $09B2
+stx $09B4 : stx $0408 : stx $040A : stx $0AE4 : stx $0AEC
+stx $0AEE : stx $09E0 : stx $00DA : stx $0DBC : stx $09CC
+stx $09CE : stx $00B2 : stx $0C07 : stx $0800 : stx $00EA
+dex : stx $040C
+lda #$00 : sta $7F0C00 : sta $7F0C01 : sta $7F0C02
+lda #$E0 : sta $2132
+lda #$78 : sta $2109
+stz $2111 : stz $2111 : stz $2112 : stz $2112
+lda $0A1F : and #$7F : sta $0A1F
+lda #$01 : sta $0AE4
+lda #$22 : sta $210B
+stz $2106 : stz $2123 : stz $2124 : stz $2125
+stz $212A : stz $212B : stz $2126 : stz $2128 : stz $2129
+lda #$FF : sta $2127
+lda #$E0 : sta $2132
+jsl S_82F076
+jsl S_8283BB
+jsl S_83E050
+jsl S_82A1E9
+jsl S_82A5F0
+ldx #$0000 : stx $065A : stx $0656 : stx $0660
+jsl S_83CDDC
+jsl S_83CEA1
+jsl S_82A11B
+jsl S_83D7E7
+jsl S_83DFA0
+jsl S_83DFF8
+jsl S_83D86A
+jsl S_82A957
+jsl S_83CAF5
+jsl S_83CAF5
+jsl S_83E146
+jsl S_83D12D
+jsl S_83D15D
+jsl S_83E146
+stz $420C
+cop #$CC : db $FF
+lda #$FF : sta $7F3100 : sta $7F3101
+jsl S_83C5FF
+jsl S_83C714
+jsl S_83D881
+lda $06EF : bit #$08 : beq B_83DEA2
+jsl S_82897D
+bra J_83DEBA
+;org $83dea2
+B_83DEA2:
+lda $069B : beq B_83DEAE
+ldx #$0000
+jsl S_82AB8A
+B_83DEAE:
+lda $069D
+beq J_83DEBA
+ldx #$0002
+jsl S_82AB8A
+;org $83deba
+J_83DEBA:
+stz $06F6
+ldx #$0000
+stx $06E4 : stx $06E6 : stx $06E8 : stx $06EA
+rtl
+warnpc $83decd
+
+
+
+org $83dff8
+LR_LoadSpecialVram:
+php
+lda $0644
+  cmp #$f7 : beq .Nothing    ; Credits
+  cmp #$fe : beq .Nothing    ; World map
+  cmp #$8c : beq .Nothing    ; Attract 1
+.Items:
+ldx #$4200 : stx $2116
+ldx #$0000
+lda #$C0
+ldy #$1C00
+jsl LR_ImmDmaYFromAXToVram    ; $8283a2
+lda $09ae : bit #$08 : beq .CheckFirebird
+.TownFeatures:
+ldx #$4400 : stx $2116
+ldx #$D580
+lda #$9C
+ldy #$0800
+jsl LR_ImmDmaYFromAXToVram    ; $8283a2
+plp
+rtl
+.CheckFirebird:
+lda $0644 : cmp #$E8 : bne .Nothing
+ldx #$4400 : stx $2116
+ldx #$CA80
+lda #$9C
+ldy #$0600
+jsl LR_ImmDmaYFromAXToVram    ; $8283a2
+.Nothing:
+plp
+rtl
+
+
+;org $83e050
+LR_BackupCameraData:
+ldx $0652 : bne .BoundedCamera
+.UnboundedCamera:
+ldx $0692 : stx $06DA
+ldx $0696 : stx $06DC
+  stx $06DE
+ldx #$0000 : stx $06D6
+  stx $06D8
+bra .AnyCamera
+.BoundedCamera:    ; org $83e06f
+lda $0652
+pha
+  and #$0F : sta $06D7
+pla
+lsr : lsr : lsr : lsr : sta $06D9
+lda $0653
+pha
+  and #$0F : sta $06DB
+pla
+lsr : lsr : lsr : lsr : sta $06DD
+  sta $06DF
+.AnyCamera:    ; org $83e094
+stz $06DC
+stz $06DE
+rep #$20
+stz $0652
+lda #$0100 : sec : sbc $06EC : clc : adc $06DC : sta $06DC
+sep #$20
+rtl
+warnpc $83e0af
+
+
+
+
+org $83e146
+LR_ClearDmaChannelCounter:
+lda $6c : bmi .Done
+stz $66
+lda #$02 : sta $68
+lda #$10 : sta $6a
+.Done:
+stz $6c
+rtl
+
+;org $83e157
+PrepareDMAOnNextAvailable:
+{
+PHP
+PHX
+SEP #$20
+PHA    ; Push Arg3
+LDA #$00
+XBA
+PHA    ; Push Arg4
+TAX
+LDA $D8BE,x  ; Default params for register Arg4
+LDX $006A  ; Next available DMA channel
+ORA #$40  ; If HDMA, table is pointers, not data
+STA $4300,x
+LDA $02,s  ; Arg3
+STA $4307,x  ; If HDMA, data source bank = Arg3
+BRA +$13
+;org $83e173
+PrepareDMAOnSelected:
+PHP    ; COP #$02 starts here instead
+PHX
+SEP #$20
+PHA
+LDA #$00
+XBA
+PHA
+TAX
+LDA $D8BE,x
+LDX $006A
+STA $4300,x
+PLA    ; BRA +$13 branches here
+STA $4301,x
+REP #$20
+TYA
+STA $4302,x
+SEP #$20
+PLA
+STA $4304,x
+LDA $0068
+TSB $0066
+ASL $0068
+LDA $006A
+ADC #$10
+STA $006A
+PLX
+PLP
+RTL
+}
+
+
+;org $83e1aa
+EMusicSetterWithFade:
+{
+sep #$20
+lda #$F1 : sta $2140
+rep #$20
+cop #$C2
+lda $2140 : and #$00FF : cmp #$00F1 : beq +
+  rtl
++:
+sep #$20 : lda #$01 : sta $2140 : rep #$20
+cop #$C2
+sep #$20 : lda $2140 : rep #$20
+beq EMusicSetterImmediate
+rtl
+}
+
+;org $83e1d6
+EMusicSetterImmediate:
+{
+sep #$20 : lda #$F0 : sta $2140 : rep #$20
+cop #$C2
+sep #$20 : lda $2140 : rep #$20
+beq +
+  rtl
++:
+cop #$C2
+sep #$20 : lda #$FF : sta $2140 : rep #$20
+lda $7F000A,x : sta $06FA
+cop #$C2
+lda $06FA : cmp #$FFFF : beq +
+  rtl
++:
+cop #$DA : db $01
+sep #$20 : lda #$01 : sta $2140 : rep #$20
+cop #$C2
+stz $06F8
+stz $06FA
+cop #$E0
+}
+
+;org $83e21e
+LR_PushNewMusicDataIfQueued:
+{
+ldx $06FA : beq .Done
+  bmi .Done
+rep #$20
+txa : asl : clc : adc $06FA : tax
+lda.l Table_MusicAddresses-3,x    ; $81cba3,x
+sta $46
+sta $0687
+lda.l Table_MusicAddresses-2,x    ; $81cba4,x
+sta $47
+sta $0688
+jsl LR_ResetNmi    ; $828191
+jsl UpdateApu    ; $82909B
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
+lda #$FFFF : sta $06FA
+sep #$20
+.Done:
+rtl
+}
+
+;org $83e255
+LR_ParseDialogueScript:
+php
+phd
+phx
+lda #$0000 : tcd
+ldx $0998
+.NextToken:
+sep #$20
+  lda $0000,y : cmp #$C0 : bcc .Literal    ; $14
+rep #$20
+iny
+pea .NextToken-1    ; $E25E
+and #$001F : asl
+  phx
+  tax
+lda $83e2c3,x
+plx
+dec : pha
+rts
+.Literal:    ; org $83e27c
+rep #$20
+and #$00ff
+iny
+sta $00
+ora $0986 : ora #$2100
+ldx $0998
+sta $7f0200,x
+clc : adc #$0010 : sta $7f0240,x
+inx : inx : stx $0998
+lda $0654 : beq .NextToken
+lda $00 : pha
+lda #$0001 : tsb $09ec
+jsr $e7ba
+pla : cmp #$00ac : beq .NextToken
+lda $06f8 : and #$FF00 : ora $0996 : sta $06f8
+bra .NextToken
+;org $83e2c3
+.FunctionPointers:
+{
+dw .HoldClearReturn    ; $C0 at $e2f5, awaits + clears screen + ends text
+dw $e30f    ; @$e30f set text box pos, db $c1 : db PosX,PosY; minimum 1,1
+dw $e335    ; Card $C2 at $e335, "yellow"
+dw $e35b    ; @$e35b set palette, db $c3 : db Pal
+dw $e36b    ; Card $C4 at $e36b
+dw .IncludeIndexed    ; db $c5 : dw PtrList,Index
+dw .CardC6    ; Card $C6 at $e393
+dw $e43f    ; @$e43f set text box size, db $c7 : db SizeX,SizeY
+dw .Clear    ; Card $C8 at $e579
+dw .Delay    ; @$e5eb, db $c9 : db Delay
+dw .Return    ; $CA at $e307
+dw $e5f8    ; Card $CB at $e5f8, "new-line"
+dw $e61e    ; Card $CC at $e61e, "moves the text down"
+dw .IncludeLong    ; @$e636, db $cd : dl IncAddr
+dw $e656    ; Card $CE at $e656, "page-auto"
+dw $e6a4    ; Card $CF at $e6a4, "page-prompt"
+dw .Hold    ; Card $D0 at $e6d2, "pause-input"
+dw .Jump    ; Card $D1 at $e6e7, "text pointer"
+dw $e6ec    ; Card $D2 at $e6ec, "changes the sound"
+dw $e6f7    ; Card $D3 at $e6f7, "default"
+dw $e721    ; Card $D4 at $e721
+dw $e736    ; Card $D5 at $e736, "delay speed"
+dw $e743    ; Card $D6 at $e743, dict key 1
+dw $e769    ; Card $D7 at $e769, dict key 2
+dw $e78f    ; Card $D8 at $e78f
+}
+.HoldClearReturn:    ; Card $C0 at $e2f5
+jsr .Hold
+jsr .Clear
+lda #$0f00 : trb $0658
+lda $0b04 : sta $007e
+.Return:    ; Card $CA at $e307
+stx $0998
+plx
+plx
+pld
+plp
+rtl
+;org $83e30f
+
+
+org $83e36f
+.IncludeIndexed:    ; Card $C5 at $e36f
+{
+phy
+stx $0998
+ldx $0002,y
+lda $0000,x : asl : clc : adc $0000,y : tax
+lda $0000,x : tay
+ldx $0998
+jsl LR_ParseDialogueScript    ; $83e255
+ldx $0998
+ply
+iny : iny : iny : iny
+rts
+}
+;org $83e393
+.CardC6:
+{
+phy
+lda #$0000
+pha : pha : pha : pha
+stx $0998
+lda $0000,y : pha
+lda $0002,y : pha
+--:
+lda $03,s : sec : sbc $07,s
+  ldy #$0000
+-:
+  sec : sbc #$0004 : bmi +
+  beq +
+    iny : bra -
++:    ; $e3b9
+clc : adc #$0004 : sta $05,s
+tya : sta $09,s
+asl : clc : adc $01,s : tay
+lda $0000,y : tax
+lda $05,s : tay
+txa
+-:    ; $83e3cf
+dey : beq +
+  lsr : lsr : lsr : lsr : bra -
++:
+and #$000f : tax : bne +
+  lda $05,s : dec : beq +
+    lda $0b,s : beq ++
++:    ; $e3e7
+lda $83e42f,x : and #$00ff : ora $0986 : ora #$2100
+ldx $0998
+sta $7f0200,x
+clc : adc #$0010 : sta $7f0240,x
+inx : inx : stx $0998
+lda $0b,s : inc : sta $0b,s
+++:
+lda $09,s : bne +
+  lda $05,s : dec : beq ++
++:
+lda $07,s : inc : sta $07,s
+jsr $e7ba
+bra --
+++:    ; $e420
+ldx $0998
+pla : pla : pla
+pla : pla : pla
+ply
+iny : iny : iny : iny
+rts
+
+;org $83e42f
+db $20,$21,$22,$23,$24,$25,$26,$27
+db $28,$29,$40,$41,$42,$43,$44,$45
+}
+
+;org $83e43f
+
+org $83e4ce
+dw $2010,$2011,$6010,$2012,$6012,$a010,$a011,$e010
+
+org $83e579
+.Clear:
+{
+
+}
+
+org $83e5eb
+.Delay:
+{
+phy
+lda $0000,y : and #$00ff
+jsr $e7b5
+ply
+iny
+rts
+}
+;org $83e5f8
+
+org $83e636
+.IncludeLong:
+{
+phy
+phb
+lda $0000,y : pha
+sep #$20
+lda $0002,y : pha : plb
+rep #$20
+ply
+stx $0998
+jsl LR_ParseDialogueScript    ; $83e255
+ldx $0998
+plb
+ply
+iny : iny : iny
+rts
+}
+;org $83e656
+
+org $83e6d2
+.Hold:
+{
+
+}
+
+org $83e6e7
+.Jump:    ; Card $D1
+{
+lda $0000,y : tay
+rts
+}
+
+org $83e7b5
+php
+sep #$20
+bra +
+;org $83e7ba
+php
+sep #$20
+lda $007e : beq ++
++:
+;org $83e7c2
+pha
+lda $0654 : bne +
+pla
+plp
+rts
+;org $83e7cb
+-:
+pha
++:
+jsl $80811e    ; i.e. delay frame
+pla : dec : bne -
+++:
+plp
+rts
+
+
+org $83ea62
+LR_ParseBg3Script:
+php
+phb
+.NextCard:    ; $83ea64
+sep #$20
+  lda $0000,y
+    iny
+  cmp #$12 : bcs .Literal    ; $83ea7c
+rep #$20
+.Subroutine:
+phx
+  and #$00FF : asl : tax     ; In jsr, inputs are $01,s=here; $03,s=destTile;
+  jsr (SR_ParseBg3Card,x)    ; ($ea8c,x)   .Y=argAddress
+plx
+bra .NextCard    ; $83ea64
+; org $83ea7c
+.Literal:    ; $83ea7c
+sta $7F0200,x
+xba
+lda $099F : sta $7F0201,x
+inx : inx
+bra .NextCard    ; $83ea64
+
+;org $83ea8c
+SR_ParseBg3Card:    ; $83ea8c
+dw .EndScript    ; Card $00 @ $EC52
+dw .SetNewDestTile    ; Card $01 @ $ED00
+dw .IncludeLong    ; Card $02 @ $ED0B
+dw .SetNewTileMask    ; Card $03 @ $ED2B
+dw .IncludeAbsoluteIndexed    ; Card $04 @ $ED3C
+dw .DrawNibblesAsNumber    ; Card $05 @ $ED6F
+dw .DrawBorderedRectangle    ; Card $06 @ $EDE3
+dw .Type07    ; Card $07 @ $EEA5
+dw .Type08    ; Card $08 @ $EEF5
+dw .Type09    ; Card $09 @ $EF3E
+dw .ClampAndShowPlayerHp    ; Card $0a @ $EB1B
+dw .ClampAndShowEnemyHp    ; Card $0b @ $EBFC
+dw .Type0c    ; Card $0c @ $EF1F
+dw .SkipTwoRows    ; Card $0d @ $EC57
+dw .DrawDpNumbers    ; Card $0e @ $EC64
+dw .ZeroRectangle    ; Card $0f @ $EAE2
+dw .IncludeIndexed    ; Card $10 @ $EABD
+dw .SkipRow    ; Card $11 @ $EAB0
+
+;org $83eab0
+.SkipRow:    ; Card $11
+{
+lda $09A0 : clc : adc #$0040 : sta $09A0
+  sta $03,s
+rts
+}
+;org $83eabd
+.IncludeIndexed:    ; Card $10
+{
+phy
+phb
+lda $06,s : tax
+lda $0000,y : and #$00FF : asl
+pha
+sep #$20
+  lda #$81 : pha : plb
+rep #$20
+ply
+lda.w Bg3_IndexedIncludes,y : tay    ; $81eb0f
+jsl LR_ParseBg3Script
+txa : sta $06,s
+plb
+ply
+iny
+rts
+}
+;org $83eae2
+.ZeroRectangle:    ; Card $0f
+{
+phy
+lda $05,s : sta $00    ; !AbsoluteTileIndex = $00
+  tax
+lda $0000,y : and #$00FF : sta $0E    ; !NumColumns = $0E
+  sta $10    ; !ThisColumn = $10
+lda $0001,y : sta $12    ; !NumRows = $12
+..NextRow:    ; org $83eaf7
+lda #$0000
+..NextTile:    ; org $83eafa
+sta $7F0200,x
+inx : inx
+dec $10 : bpl ..NextTile
+dec $12 : bmi ..Done
+lda $00 : clc : adc #$0040 : sta $00
+  tax
+lda $0E : sta $10
+bra ..NextRow
+..Done:    ; org $83eb17
+ply
+iny : iny
+rts
+}
+;org $83eb1b
+.ClampAndShowPlayerHp:    ; Card $0a
+{
+phy
+stz $08
+lda $0ACA : cmp #$0029 : bmi +
+  lda #$0028 : sta $0ACA
+lda $0ACE : cmp #$0029 : bmi +
+  lda #$0028 : sta $0ACE
++:    ; org $83eb3a
+lda $0ACE : lsr : sta $00
+  bcc ..GotBrightPipCount
+    inc $08
+..GotBrightPipCount:
+asl
+  clc : adc $08
+  sec : sbc $0ACA
+  eor #$FFFF : inc a
+  lsr a
+  sta $02    ; Dark pip count.
+lda $08
+  clc : adc $02
+  clc : adc $00
+  asl
+  sec : sbc $0ACA
+  bcs ..GotPipCounts
+    inc $02
+..GotPipCounts:    ; org $83eb64
+lda #$0800 : sta $0004
+lda $05,s
+jsr .SR_DrawHpPips
+ply
+rts
+}
+; org $83eb71
+.SR_DrawHpPips:
+{
+tax
+ldy #$000A : stz $06
+lda $00 : beq ..DoneBrightPips
+lda #$2006 : ora $0004
+
+..NextBrightPip:    ; org $83eb81
+  sta $7F0200,x
+inx : inx
+dey : bne ...ThisRowOkay
+  jsr ..SR_AdvanceToNextRow
+...ThisRowOkay:    ; org $83eb8d
+dec $00 : beq ..DoneBrightPips
+bra ..NextBrightPip
+
+..DoneBrightPips:    ; org $83eb93
+lda $08 : beq ..DoneHalfBrightPip
+  lda #$2007 : ora $04 : sta $7F0200,x
+  inx : inx
+  dey : bne ..DoneHalfBrightPip
+    jsr ..SR_AdvanceToNextRow
+..DoneHalfBrightPip:    ; org $83eba8
+lda $02 : beq ..DoneDarkPips
+lda #$20FF : ora $04
+
+..NextDarkPip:    ; org $83ebb1
+  sta $7F0200,x
+inx : inx
+dey : bne ...ThisRowOkay
+  jsr ..SR_AdvanceToNextRow
+...ThisRowOkay:    ; org $83ebbd
+dec $02 : beq ..DoneDarkPips
+  bra ..NextDarkPip
+
+..DoneDarkPips:    ; org $83ebc3
+lda $06 : bne ..DoneFirstRow
+lda #$0000
+..ClearFirstRowTile:    ; org $83ebca
+  sta $7F0200,x
+inx : inx
+dey : bne ..ClearFirstRowTile
+jsr ..SR_AdvanceToNextRow
+ldy #$000A
+..DoneFirstRow:    ; org $83ebd9
+lda #$0000
+..ClearSecondRowTile:    ; org $83ebdc
+  sta $7F0200,x
+inx : inx
+dey : bne ..ClearSecondRowTile
+rts
+
+..SR_AdvanceToNextRow:    ; org $83ebe6
+pha
+  txa : clc : adc #$002C : tax
+    sta $06
+    cmp #$0100 : bcs ...OverrunQuitDrawing
+pla
+ldy #$000A
+rts
+...OverrunQuitDrawing:    ; org $83ebf9
+pla
+pla
+rts
+}    ; .SR_DrawHpPips
+; org $83ebfc
+.ClampAndShowEnemyHp:    ; Card $0b
+{
+phy
+stz $0008
+lda $09E4 : cmp #$0029 : bmi +
+  lda #$0028 : sta $09E4
+lda $09E6 : cmp #$0029 : bmi +
+  lda #$0028 : sta $09E6
+; org $83ec1c
++:
+lda $09E6 : lsr : sta $00
+  bcc ..GotBrightPipCount
+    inc $08
+; org $83ec26
+..GotBrightPipCount:
+asl
+  clc : adc $08
+  sec : sbc $09E4
+  eor #$FFFF : inc a
+  lsr a
+  sta $02    ; Dark pip count.
+lda $08
+  clc : adc $02
+  clc : adc $00
+  asl
+  sec : sbc $09E4
+  bcs ..GotPipCounts
+    inc $02
+; org $83ec46
+..GotPipCounts:
+lda #$0400 : sta $04
+lda $05,s
+jsr .SR_DrawHpPips    ; $eb71
+ply
+rts
+;org $83ec52
+.EndScript:    ; Card $00
+pla
+plx
+plb
+plp
+rtl
+}
+;org $83ec57
+.SkipTwoRows:    ; Card $0d
+{
+lda $09A0 : clc : adc #$0080 : sta $09A0
+  sta $03,s
+rts
+}
+;org $83ec64
+.DrawDpNumbers:    ; Card $0e
+{
+phy
+lda $05,s : tax    ; DestTile.
+stz $0006
+stz $0000    ; Place value accumulator.
+lda $099E : ora #$0030 : sta $0004    ; Tile mask.
+lda $0000,y : tay    ; y=ArgAddr -> y=Arg
+lda $0000,y : sec    ; y=Arg -> y=(Arg)
+
+..CollectHundreds:    ; org $83ec7f
+inc $0000
+sbc #$0064 : bcs ..CollectHundreds
+adc #$0064 : sta $0002    ; !Residual = $0002
+lda $0000 : dec : cmp #$0009 : bcc ..CountHundreds
+  lda #$0009    ; Clamp to 9xx.
+..CountHundreds:    ; org $83ec99
+bit #$000F : beq ..NoHundreds
+  ora $0004
+  inc $0006
+  bra ..DoneHundreds
+..NoHundreds:    ; org $83eca6
+lda #$2000
+..DoneHundreds:    ; org $83eca9
+stz $0000
+lda $0002 : sec
+
+..CollectTens:    ; org $83ecb0
+inc $0000
+sbc #$000A : bcs ..CollectTens
+adc #$000A : sta $0002    ; !Residual = $0002 again
+lda $0000 : dec a : bne ..CountedTens
+..NoTens:
+  lda $0006 : bne ..HaveHundredsNoTens
+    lda #$2000
+    bra ..NoHundredsOrTens
+..HaveHundredsNoTens:    ; org $83ecce
+  lda #$0000
+..CountedTens:    ; org $83ecd1
+ora $0004
+#Fallthrough:
+..NoHundredsOrTens:    ; org $83ecd4
+stz $0000
+  sta $7F0200,x
+inx : inx
+lda $0002 : sec
+
+..CollectOnes:    ; org $83ece1
+inc $0000
+sbc #$0001 : bcs ..CollectOnes
+lda $0000 : dec : ora $0004
+stz $0000
+  sta $7F0200,x
+inx : inx : txa : sta $05,s
+ply
+iny : iny
+rts
+}
+;org $83ed00
+.SetNewDestTile:    ; Card $01
+{
+lda $0000,y
+  iny : iny
+  sta $09A0
+  sta $03,s
+rts
+}
+;org $83ed0b
+.IncludeLong:    ; Card $02
+{
+lda $03,s : tax
+phy
+phb
+lda $0000,y : pha
+sep #$20
+  lda $0002,y : pha : plb
+rep #$20
+ply
+jsl LR_ParseBg3Script
+plb
+ply
+iny : iny : iny
+txa : sta $03,s
+rts
+}
+;org $83ed2b
+.SetNewTileMask:    ; Card $03
+{
+sep #$20
+lda $099F : and #$E3 : ora $0000,y
+  iny
+  sta $099F
+rep #$20
+rts
+}
+;org $83ed3c
+.IncludeAbsoluteIndexed:    ; Card $04
+{
+phy
+phb
+ldx $0003,y
+lda $0000,x : asl : pha
+lda $0000,y : pha
+sep #$20
+  lda $0002,y : pha : plb
+rep #$20
+pla : clc : adc $01,s : tay
+pla
+lda $0000,y : tay
+lda $06,s : tax
+jsl LR_ParseBg3Script
+plb
+pla
+clc : adc #$0005 : tay
+txa : sta $03,s
+rts
+}
+;org $83ed6f
+.DrawNibblesAsNumber:    ; Card $05
+{
+lda $03,s : tax
+phy
+lda $0000,y : and #$00FF : sta $000E    ; Counter.
+  sta $0010    ; NumTiles.
+  asl
+phx
+  clc : adc $01,s : sta $01,s    ; Start drawing at end of number.
+  tax
+lda $0001,y : tay    ; BaseAddress.
+lda $099E : sep #$20
+
+..NextNibbleOrTwo:    ; org $83ed90
+lda $0000,y : and #$0F : ora #$30    ; Make low nibble a tile.
+rep #$20
+  dex : dex
+  sta $7F0200,x
+sep #$20
+dec $000E : beq ..ConvertLeadingZeroesToDots
+  lda $0000,y : iny : and #$F0
+  lsr : lsr : lsr : lsr : ora #$30    ; Make high nibble a tile.
+  rep #$20
+  dex : dex
+  sta $7F0200,x
+  sep #$20
+  dec $000E : bne ..NextNibbleOrTwo
+..ConvertLeadingZeroesToDots:    ; org $83edc1
+dec $0010 : beq ..Done
+lda $7F0200,x : cmp #$30 : bne ..Done
+lda #$20 : sta $7F0200,x
+  inx : inx
+  bra ..ConvertLeadingZeroesToDots
+
+..Done:    ; org $83edd8
+rep #$20
+plx
+ply
+iny : iny : iny
+txa : sta $03,s
+rts
+}
+;org $83ede3
+.DrawBorderedRectangle:    ; Card $06
+{
+phy
+lda $0000,y : and #$00FF : sta $0000    ; NumCols.
+lda $0001,y : and #$00FF : sta $0002    ; NumRows.
+lda $0002,y : tax    ; StartTile.
+
+..DrawFirstRow:
+pha
+lda $099E : ora #$0010 : sta $7F0200,x
+lda $0000 : sta $000E    ; ColCounter.
+lda $099E : ora #$0011
+...DrawTile:    ; org $83ee11
+  sta $7F0202,x
+  inx : inx
+  dec $000E : bne ...DrawTile
+lda $099E : ora #$4010 : sta $7F0202,x
+lda $01,s : clc : adc #$0040 : tax
+lda $0002 : sta $000E    ; RowCounter.
+
+..DrawNextRow:    ; org $83ee33
+phx
+lda $099E : ora #$0012 : sta $7F0200,x
+lda $0000 : sta $0010    ; ColCounter.
+lda $099E : ora #$0040
+...DrawTile:    ; org $83ee4a
+  sta $7F0202,x
+  inx : inx
+  dec $0010 : bne ...DrawTile
+lda $099E : ora #$4012 : sta $7F0202,x
+pla : clc : adc #$0040 : tax
+dec $000E : bne ..DrawNextRow
+
+..DrawLastRow:
+lda $099E : ora #$8010 : sta $7F0200,x
+lda $0000 : sta $000E
+lda $099E : ora #$8011
+...DrawTile:    ; org $83ee80
+  sta $7F0202,x
+  inx : inx
+  dec $000E : bne ...DrawTile
+lda $099E : ora #$C010 : sta $7F0202,x
+pla
+  ply
+  clc : adc #$0082 : sta $09A0
+  sta $03,s
+iny : iny : iny : iny
+rts
+}
+;org $83eea5
+.Type07
+{
+phy
+lda $0000,y : tax
+stz $0000
+sep #$20
+phx
+
+J_83EEB0:    ; org $83eeb0
+lda $7F0200,x : beq B_83EEBD
+inx : inx
+inc $0000 : bra J_83EEB0
+
+B_83EEBD:    ; org $83eebd
+dec $0000
+rep #$20
+plx
+
+B_83EEC3:    ; org $83eec3
+lda $0000 : sta $000E
+phx
+lda #$0000
+
+B_83EECD:    ; org $83eecd
+sta $7F0200,x
+inx : inx
+dec $000E : bne B_83EECD
+lda $7F0200,x : tay
+lda #$0000 : sta $7F0200,x
+plx
+txa : clc : adc #$0040 : tax
+lda $7F0200,x : bne B_83EEC3
+ply
+iny
+iny
+rts
+}
+;org $83eef5
+
+
+org $83ef97
+LR_GiveItemAOrSec:
+{
+php
+sep #$20
+bit #$80 : bne .IsStatOrPickup
+pha
+ldy #$0000
+.CheckInvSlotEmpty:
+lda $0AB4,y : bne ..NotEmpty
+jmp .GotEmptyInvSlot
+..NotEmpty:
+iny : cpy #$0010 : bne .CheckInvSlotEmpty
+jmp .InvFull
+
+.IsStatOrPickup:    ; org $83efb3
+sec : sbc #$80 : beq .IsHpJewel
+dec : beq .IsStrJewel
+dec : bne .IsPickup
+jmp .IsDefJewel
+.IsPickup:    ; org $83efc1
+dec : beq ..SmallDp
+dec : beq ..MediumDp
+dec : beq ..BigDp
+..HpPickup:
+rep #$20
+lda #$0005 : clc : adc $0B22 : sta $0B22
+phd
+  txa : tcd
+  cop #$A5 : dl EHpPickupCounter : dw $0000, $2F00    ; $80dd03
+pld
+cop #$06 : db $22
+jmp .ClcAndRtl
+..SmallDp:    ; org $83efe9
+lda #$01 : bra ..AwardDp
+..MediumDp:
+lda #$02 : bra ..AwardDp
+..BigDp:
+lda #$05
+..AwardDp:
+rep #$20
+and #$00FF : clc : adc $0AD6 : cmp #$03E7 : bcc +
+  lda #$03E7
++:
+sta $0AD6
+cop #$06 : db $22
+bra .ClcAndRtl
+.IsHpJewel:    ; org $83f00c
+rep #$20
+lda #$0080 : trb $09EC
+sep #$20
+cop #$06 : db $25
+lda $0ACA : clc : adc #$01 : bvc +
+  lda #$55
++:
+sta $0ACA
+  sec : sbc $0ACE : sta $0B22
+ldy #$0000
+bra .ClcAndRtl
+.IsStrJewel:    ; org $83f032
+rep #$20
+lda #$0080 : trb $09EC
+sep #$20
+cop #$06 : db $25
+lda $0ADE : clc : adc #$01 : bvc +
+  lda #$55
++:
+sta $0ADE
+ldy #$0000
+bra .ClcAndRtl
+.IsDefJewel:    ; org $83f051
+rep #$20
+lda #$0080 : trb $09EC
+sep #$20
+cop #$06 : db $25
+lda $0ADC : clc : adc #$01 : bvc +
+  lda #$55
++:
+sta $0ADC
+ldy #$0000
+bra .ClcAndRtl
+
+.GotEmptyInvSlot:    ; org $83f070
+pla : sta $0AB4,y
+  sta $0DB8
+  stz $0DB9
+ldy #$FF1F
+.ClcAndRtl:    ; org $83f07d
+plp
+clc
+rtl
+.InvFull:    ; org $83f080
+pla : sta $0DB8
+  stz $0DB9
+ldy #$FF02
+plp
+sec
+rtl
+}
+;org $83f08d
+
+
+org $83f0ca
+LR_GetPlayerFacingDirection:
+{
+PHP
+REP #$20
+TXY
+LDX $09AA  ; Player-event
+LDA $09AE  ; Player attack and control flags
+BMI +$1B  ; If $09ae doesn't have #$8000, do the following.
+LDA $0028,x  ; Player sprite index
+TAX
+LDA $83F11F,x  ; This data table follows this SR.
+AND #$00FF  ; Grab the byte indexed by Player$28.
+CMP #$0004
+BPL +$04  ; If it's 4 or less,
+TYX    ;  restore X,
+PLP    ;  restore P,
+CLC    ;  clear C,
+RTL    ;  and return with it.
+TYX    ; If it's greater than 4,
+PLP    ;  still restore X and P,
+SEC    ;  but SET carry,
+RTL    ;  and return with it.
+PLY    ; $83f0ee; only accessible by jumping here.
+BRA +$E5 ;(-$1B)
+PHY    ; If $09ae contains #$8000, pick up here.
+TXY    ;   (Might mean "special sprite due to special attack".)
+LDA $0AC8  ; Face direction after special attack?
+AND #$00FF
+SEC
+SBC #$0004  ; If $0AC8 is less than 4, set carry
+BMI +$EF ;(-$11)  ;   and return with $0AC8 - 4.
+ASL    ; If $0AC8 is greater than 4,
+TAX    ;   double it,
+LDA $83F177,x  ;   and read that index's value from this table.
+SEC
+SBC #$F177  ;   Remove its implicit offset,
+CLC
+ADC $0028,y  ;   and add the calling event's sprite index.
+TAX
+PLY
+LDA $83F177,x  ;   Then read THAT new index's value from the same
+AND #$00FF  ;   table. If it's above 4,
+CMP #$0004  ;  set the carry and return.
+BPL +$CF ;(-$31)
+TYX    ;   Otherwise,
+PLP    ;  clear the carry and return.
+CLC
+RTL
+}
+
+;org $83f11f
+.LutSpriteDirections:
+db $00,$01,$02,$03,$00,$01,$02,$03
+db $00,$01,$02,$03,$00,$01,$02,$03
+db $00,$01,$02,$03,$00,$01,$02,$03
+db $00,$00,$00,$00,$00,$01,$01,$01
+db $02,$02,$02,$03,$03,$03,$01,$01
+db $00,$00,$01,$00,$01,$00,$01,$00
+db $02,$03,$02,$03,$02,$03,$00,$01
+db $02,$03,$00,$01,$02,$03,$00,$01
+db $02,$03,$02,$03,$00,$01,$02,$03
+db $00,$01,$04,$04,$04,$04,$04,$04
+db $00,$01,$02,$03,$04,$04,$04,$04
+
+;org $83f177
+.SpecialLutPointers:
+dw $f17f,$f19a,$f1c6,$f1ca
+
+;org $83f17f
+db $00,$01,$02,$03,$00,$01,$02,$03
+db $00,$01,$02,$03,$00,$00,$00,$01
+db $01,$01,$02,$02,$02,$03,$03,$03
+db $04,$04,$04
+
+;org $83f19a
+db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+
+;org $83f1c6
+db $00,$00,$00,$00
+
+;org $83f1ca
+db $00,$00,$00,$00,$00,$00
+
+
+;org $83f1d0
+LR_TryFrameEndAdHocDma:
+php
+rep #$20
+lda $7F0C07 : beq .Done
+  sta $2116
+lda #$0000 : sta $7F0C07
+lda $7F0C09 : sta $4305
+lda $7F0C03 : sta $4302
+sep #$20
+lda $7F0C05 : sta $4304
+lda #$01 : sta $420B
+.Done:
+plp
+rtl
+
+
+;org $83F201
+Bank83Free:
+fill $840000-Bank83Free

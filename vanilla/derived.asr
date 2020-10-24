@@ -1,0 +1,277 @@
+arch 65816
+hirom
+fillbyte $FF
+padbyte $FF
+
+table "table_dialogue.txt",rtl
+
+!PlayerActorId = $09AA ; almost always = #$1000
+
+; Actor memory $10
+!AFPlayer     = #$8000
+!AFOffscreen  = #$4000
+!AFNoRender   = #$2000
+!AFTalkable   = #$1000
+!AFNoPause    = #$0800
+!AFIsWeapon   = #$0400
+!AFNoWeaponHit= #$0200
+!AFNoPlayerHit= #$0100
+!AFHurt       = #$0080
+!AFDying      = #$0040
+!AFPickup     = #$0020
+!AFNoTakeDamage=#$0010
+!AFWorldCollide=#$0008
+!AFIsWColliding=#$0004
+!AFRenderFront= #$0002
+!AFRenderBack = #$0001
+
+; Actor memory $12
+!AFMoveNeg    = #$4000
+!AFMovePos    = #$2000
+!AFConstHitbox= #$0100
+!AFHighHitbox = #$0080
+!AFRecursiveE0= #$0040
+!AFHideHP     = #$0020
+!AFNoRecoil   = #$0010
+!AFPersistH   = #$0002
+!AFNoStun     = #$0001
+
+; COP sheet:
+; == HDMA ==
+; cop #$00                        ; Generate scaled 16-bit sine/HDMA @ $7E8900-CFF
+; cop #$01 : dl SrcAddr : db Reg  ; H/DMA to Reg on next avail channel
+; cop #$02 : dl SrcAddr : db Reg  ; DMA to Reg on next avail channel
+; cop #$03 : db Channel : dl SrcAddr : db Reg  ; H/DMA to Reg
+; == SOUND ==
+; cop #$04 : db MusicId   ; Play music
+; cop #$05 : db MusicId   ; Fade out then play music
+; cop #$06 : db SoundId   ; Sound on channel 3
+; cop #$07 : db SoundId   ; Sound on channel 2
+; cop #$08 : db SoundId1,SoundId2   ; Sound on both channels
+; cop #$09 : db Shift     ; Tempo modifier
+; cop #$0A : db RawVal    ; Write to $2140
+; == SOLID MASKS, SET ==
+; cop #$0B                    ; Solid mask $Fx here
+; cop #$0C                    ; Solid mask $0x here
+; cop #$0D : db OffsX,OffsY   ; Solid mask $Fx relative
+; cop #$0E : db OffsX,OffsY   ; Solid mask $0x relative
+; cop #$0F : db AbsX,AbsY     ; Solid mask $Fx absolute
+; cop #$10 : db AbsX,AbsY     ; Solid mask $0x absolute
+; cop #$11                    ; Solid mask $00, all touched
+; cop #$12 : db AbsX,AbsY     ; Solid mask $x0 absolute
+; == SOLID MASKS, BRANCH ==
+; cop #$13 : dw JmpAddr                   ; Branch if this solid is not $00
+; cop #$14 : db OffsX,OffsY : dw JmpAddr  ; Branch if relative solid is not $00
+; cop #$15 : dw JmpAddr            ; Branch if north solid is not $00
+; cop #$16 : dw JmpAddr            ; Branch if south solid is not $00
+; cop #$17 : dw JmpAddr            ; Branch if west solid is not $00
+; cop #$18 : dw JmpAddr            ; Branch if east solid is not $00
+; cop #$19 : db MusicId : dl TextAddr     ; Music and text
+; cop #$1A : db Type : dw JmpAddr  ; Branch if this solid is Type
+; cop #$1B : db Type : dw JmpAddr  ; Branch if north solid is Type
+; cop #$1C : db Type : dw JmpAddr  ; Branch if south solid is Type
+; cop #$1D : db Type : dw JmpAddr  ; Branch if west solid is Type
+; cop #$1E : db Type : dw JmpAddr  ; Branch if east solid is Type
+; == UTILITIES ==
+; cop #$1F : dw JmpAddr     ; Branch if not on gridline
+; cop #$20 : db AcNum,Dist : dw JmpAddr  ; Branch if numbered Other in Dist
+; cop #$21 : db Dist : dw JmpAddr        ; Branch if player in Dist
+; cop #$22 : db Spr,Speed   ; Movement
+; cop #$23           ; RNG
+; cop #$24 : db Max  ; RNG 0..Max into $0420
+; cop #$25 : db AbsX,AbsY   ; Set position
+; cop #$26 : db MapNum : dw PosX,PosY : db DirAndSave,NegBounds,PosBounds  ; Change map
+; == POSITION/DISTANCE ==
+; cop #$27 : db Delay                ; Wait Delay if off-screen ($10&#$4000)
+; cop #$28 : dw PosX,PosY,JmpAddr    ; Branch if player at Pos
+; cop #$29 : db AcNum : dw PosX,PosY,JmpAddr       ; Branch if numbered Other at Pos
+; cop #$2A : dw Dist,WestAddr,HereAddr,EastAddr    ; Branch on PlayerX in Dist
+; cop #$2B : dw Dist,NorthAddr,HereAddr,SouthAddr  ; Branch on PlayerY in Dist
+; cop #$2C : dw NearYAddr,NearXAddr                ; Branch on PlayerY/X nearer to This
+; cop #$2D                   ; Return A=DirToPlayer, 0/1/2 = N/NE/E etc.
+; cop #$2E : db OffsX,OffsY  ; Return A=DirToPlayer from relative
+; cop #$2F : db DirToPlayer : dw JmpAddr               ; Branch if DirToPlayer is
+; cop #$30 : db OffsX,OffsY,DirToPlayer : dw JmpAddr   ; Branch if DirToPlayer from relative is
+; cop #$31 : dw SouthAddr,NorthAddr,WestAddr,EastAddr  ; Branch on Player face dir
+; == UTILITIES ==
+; cop #$32 : db BgChg  ; Stage BgChange
+; cop #$33             ; Exec BgChange
+; cop #$34             ; Castoth doors, eq. cop #$32 : db $7F:24 : cop #$08 : db $0f,$0f : cop #$33
+; cop #$35             ; Return A=CardinalToPlayer, 0/1/2/3 = N/E/S/W
+; == PALETTE BUNDLES ==
+; cop #$36                            ; PalBundle restart
+; cop #$37 : db PalBundleIndex        ; PalBundle start
+; cop #$38 : db PalBundleIndex,Iters  ; PalBundle start, loop for Iters
+; cop #$39                            ; PalBundle advance, return if more Pals
+; cop #$3A                            ; PalBundle advance+loop, return if more Pals or Iters
+; cop #$3B : db Param : dl Addr       ; New thinker with Param
+; cop #$3C : dl Addr                  ; New thinker
+; cop #$3D            ; Thinker die after next return
+; == CONTROLLER/PLAYER ==
+; cop #$3E : dw BtnMask           ; Return if buttons not pressed this frame (&#$0001 or previous)
+; cop #$3F : dw BtnMask           ; Return if buttons pressed this frame (&#$0001 or previous)
+; cop #$40 : dw BtnMask,JmpAddr   ; Branch if buttons pressed this frame (&#$0001 or previous)
+; cop #$41 : dw BtnMask,JmpAddr   ; Branch if buttons not pressed this frame (&#$0001 or previous)
+; cop #$42 : db AbsX,AbsY,Type    ; Set solid type
+; cop #$43                        ; Snap to grid
+; cop #$44 : db XLeft,YUp,XRight,YDown : dw JmpAddr  ; Branch if player in area, signed relative
+; cop #$45 : db XLeft,YTop,XRight,YBot : dw JmpAddr   ; Branch if player in area, absolute
+; == UTILITIES ==
+; cop #$46      ; Actor04 pos to Here
+; cop #$47      ; Actor06 pos to Here
+; cop #$48      ; Return CardinalToPlayer, 0/1/2/3 = S/N/W/E
+; cop #$49 : db PlayerBody : dw JmpAddr  ; Branch if PlayerBody is NOT
+; cop #$4A      ; Utility for #$43?
+; cop #$4B : db Arg1,Arg2,Arg3  ; Mode7?
+; cop #$4C : db Arg1            ; Mode7?
+; cop #$4D : db Arg1,Arg2       ; Mode7?
+; cop #$4E : db Arg1,Arg2       ; Mode7?
+; cop #$4F : dl SrcAddr : dw VramWord,XferSizeB       ; Ad hoc DMA next VBlank
+; cop #$50 : dl SrcAddr : db OffsW,PalWord,XferSizeW  ; MVN to Pal stage $7F0A00
+; cop #$51 : dl SrcAddr : dw DestAddr7E               ; Decompress
+; cop #$52 : db Spr,Speed,MaxTime  ; Stage movement
+; cop #$53                         ; Do movement
+; cop #$54 : dl Arg                ; Set $7F0000,x = Arg and 03,x = $00
+; cop #$55 : db Spr,New24,New25    ; Reset sprite and set $24 and $25
+; cop #$56        ; ???, advance sprite subject to global variable states?
+; == AI CONTROL ==
+; cop #$57 : dl OnDeath     ; Set OnDeath
+; cop #$58 : dw OnHit       ; Set OnHit
+; cop #$59 : dw Dodge       ; Set Dodge
+; cop #$5A : dw OnCollide   ; Set OnCollide
+; cop #$5B : dw Arg         ; Set $7F:2A |= Arg
+; cop #$5C : dw Arg         ; Set $7F:2A &= Arg
+; cop #$5D : dw JmpAddr     ; Branch if low-priority sprite behind wall
+; cop #$5E : dw Arg         ; Set $7F:1016
+; == UTILITIES ==
+; cop #$5F : dw BaseAddr : db BytesPerPeriod  ; Init HDMA sine curves
+; cop #$60 : db Delay,Layer                   ; Advance HDMA sine curves
+; cop #$61 : dl SrcAddr : db Reg              ; Queue HDMA from sine curves
+; cop #$62 : db MatchTile : dw JmpAddr        ; Dupe of cop #$1A
+; cop #$63 : db InitSpeed,NegLogA,GndTilePos  ; Stage gravity
+; cop #$64                           ; Do gravity (must rtl to move)
+; cop #$65 : dw PosX,PosY : db Dummy,WMapMoveId     ; Stage scripted world map move
+; cop #$66 : dw PosX,PosY : db WMapOptsId     ; Stage choices world map move
+; cop #$67 : db Dummy,WMapMoveId              ; Do chosen world map move
+; cop #$68 : dw JmpAddr   ; Branch if off-screen
+; cop #$69 : dw Min       ; Return if $00E4 < Min
+; cop #$6A : dw NewAddr   ; Set CodePtr of Actor06
+; cop #$6B : dw TextAddr  ; Text script (alt vers w/no screen refresh)
+; cop #$6C : db New12,New10   ; Set $7F:12,10 = New12,New10
+; cop #$6D : db Diam,Angle    ; Orbit actor with ID at $0000
+; == SPRITES/MOVEMENT ==
+; cop #$80 : db Spr               ; Set new Spr, #$8x = HMirror; or Spr=$FF to reset current
+; cop #$81 : db Spr,XMove         ; Stage X movement
+; cop #$82 : db Spr,YMove         ; Stage Y movement
+; cop #$83 : db Spr,XMove,YMove   ; Stage X+Y movement
+; cop #$84 : db Spr,Iters         ; Stage Spr loop for Iters
+; cop #$85 : db Spr,Iters,XMove   ; Stage Spr loop and X movement for Iters
+; cop #$86 : db Spr,Iters,YMove   ; Stage Spr loop and Y movement for Iters
+; cop #$87 : db Spr,Iters,XMove,YMove  ; Stage Spr loop and X+Y movement for Iters
+; cop #$88 : dl MetaspriteAddr    ; Set new metasprite data address
+; cop #$89            ; Do single Spr Iter
+; cop #$8A            ; Do Spr loops
+; cop #$8B            ; Do single Spr frame, no-return
+; cop #$8C : db SprFrame    ; Do Spr loops, but no-return if at SprFrame
+; cop #$8D : db Spr         ; Set Spr as #$80, and update hitbox if allowed
+; cop #$8E : db PlayerSpr       ; Player special sprite
+; cop #$8F : db BodySpr         ; Player sprite for body sprite set
+; cop #$90 : db BodySpr,XMove   ; Stage player X movement
+; cop #$91 : db BodySpr,YMove   ; Stage player Y movement
+; cop #$92 : db BodySpr,XMove,YMove  ; Stage player X+Y movement
+; cop #$93      ; Do single Spr Iter (dupe of #$89)
+; cop #$94 : db BodySpr,XMove,YMove,SolidType  ; As #$92 and use SolidType for #$96-8 check
+; cop #$95      ; As #$8F but use value at $0000 for BodySpr
+; cop #$96 : dw BtnMask   ; Unused check if stuck
+; cop #$97 : dw BtnMask   ; Unused check if bounded above
+; cop #$98 : dw BtnMask   ; Unused check if bounded below
+; == ACTOR CONTROL ==
+; cop #$99 : dl SpawnAddr04             ; Spawn new Actor04
+; cop #$9A : dl SpawnAddr04 : dw New10  ; Spawn new Actor04 with $10=New10
+; cop #$9B : dl SpawnAddr               ; Spawn new Actor06
+; cop #$9C : dl SpawnAddr : dw New10
+; cop #$9D : dl SpawnAddr : dw OffsX,OffsY
+; cop #$9E : dl SpawnAddr : dw OffsX,OffsY,New10
+; cop #$9F : dl SpawnAddr : dw AbsX,AbsY
+; cop #$A0 : dl SpawnAddr : dw AbsX,AbsY,New10
+; cop #$A1 : dl ChildAddr04 : dw New10
+; cop #$A2 : dl ChildAddr : dw New10
+; cop #$A3 : dl ChildAddr : dw AbsX,AbsY,New10
+; cop #$A4 : dl ChildAddr : db OffsX,OffsY : dw New10
+; cop #$A5 : dl ChildAddrL : db OffsX,OffsY : dw New10      ; Child is last in $06 order
+; cop #$A6 : dl ChildAddrL : db Spr,OffsX,OffsY : dw New10
+; cop #$A7        ; Actor die after next return (w/children if so flagged)
+; cop #$A8        ; Kill Actor04
+; cop #$A9        ; Kill Actor06
+; == MOVEMENT ==
+; cop #$AA : db XMove           ; Stage and save XMove
+; cop #$AB : db YMove           ; Stage and save YMove
+; cop #$AC : db XMove,YMove     ; Stage and save X/YMove
+; cop #$AD : db ForceSW         ; Set/clear forced south/west movement
+; cop #$AE : db ForceNE         ; Set/clear forced north/east movement
+; cop #$AF : db ForceNeg        ; Set/clear both to force negative movement
+; cop #$B0 : db XMoveL,YMoveL   ; Stage and save X/YMove for Last actor
+; cop #$B1                      ; Load saved move
+; == ACTOR FLAGS ==
+; cop #$B2      ; Set max collision priority flag
+; cop #$B3      ; Set min collision priority flag
+; cop #$B4      ; Clear max collision priority flag
+; cop #$B5      ; Clear min collision priority flag
+; cop #$B6 : db NewPriority     ; Update sprite priority bits (in $0F)
+; cop #$B7 : db NewPalette      ; Update sprite palette bits (in $0F)
+; cop #$B8      ; Toggle HMirror
+; cop #$B9      ; Toggle VMirror
+; cop #$BA      ; Unset HMirror
+; cop #$BB      ; Set HMirror
+; == UTILITIES ==
+; cop #$BC : db OffsX,OffsY     ; Set new position immediate
+; cop #$BD : dl Bg3ScriptAddr   ; Run BG3 script
+; cop #$BE : db OptCounts,SkipLines : dw OptionsAddr : ... : OptionsAddr: dw CancelAddr[,ChoiceAddr1,...]    ; 
+; cop #$BF : dw TextAddr        ; Text message
+; == EXECUTION CONTROL ==
+; cop #$C0 : dw OnInteract      ; Set ptr on player chat/pickup
+; cop #$C1      ; Set ActorPtr here and continue
+; cop #$C2      ; Set ActorPtr here and return
+; cop #$C3 : dl NewPtr : dw Delay   ; Set ActorPtr, return, and delay
+; cop #$C4 : dl NewPtr              ; Set ActorPtr and return
+; cop #$C5      ; Restore SavedPtr
+; cop #$C6 : dw SavedPtr  ; Set SavedPtr
+; cop #$C7 : dl NewPtr    ; Set ActorPtr and continue there
+; cop #$C8 : dw SubPtr    ; Set SavedPtr here and continue at SubPtr (i.e. subroutine)
+; cop #$C9 : dw SubPtr    ; Set SavedPtr here, ActorPtr at sub, and return
+; cop #$CA : db Iters     ; Loop to next cop #$CB for Iters
+; cop #$CB                ; Loop end, return if unfinished Iters
+; == GAME LOGIC ==
+; cop #$CC : db SetFlag   ; Set flag
+; cop #$CD : dw SetFlagW
+; cop #$CE : db ClearFlag
+; cop #$CF : dw ClearFlagW
+; cop #$D0 : db Flag,Val : dw IfThenAddr      ; Branch if Flag is Val (0/1)
+; cop #$D1 : dw FlagW : db Val : dw IfThenAddr
+; cop #$D2 : db Flag,Val                      ; Return if Flag is not Val (0/1)
+; cop #$D3 : dw FlagW : db Val
+; cop #$D4 : db AddItemId : dw FullInvAddr    ; Add item, or branch if inv is full
+; cop #$D5 : db RemoveItemId                  ; Remove item
+; cop #$D6 : db ItemId : dw HasItemAddr
+; cop #$D7 : db ItemId : dw EquippedItemAddr
+; cop #$D8        ; Set monster killed flag
+; cop #$D9 : dw IndexAddr,JmpListAddr         ; Switch-case, jump to indexed addr
+; cop #$DA : db Delay
+; cop #$DB : dw Delay
+; cop #$DC  ; South-going stairs helper
+; cop #$DD  ; North-going stairs helper
+; cop #$DE  ; East-going stairs helper
+; cop #$DF  ; West-going stairs helper
+; cop #$E0  ; Die immediate (w/children if so flagged)
+; cop #$E1  ; Restore SavedPtr and set A=#$FFFF
+; cop #$E2 : dl NewPtr  ; Set ActorPtr but continue here
+
+; Button mask: ACSTUDLR--LR----
+
+
+
+
+
+
+
+

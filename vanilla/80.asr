@@ -1,0 +1,4914 @@
+arch 65816
+hirom
+fillbyte $FF
+padbyte $FF
+
+org $808000
+sei : clc : xce    ; and fall through to reset vector.
+ResetVector:
+jml TopOfRomInit
+CopVector:
+jml CopHandler    ; $80846D
+NmiVector:
+jml NmiHandler    ; $8082F8
+BrkVector:
+jml BrkHandler    ; $808013
+BrkHandler:
+rti
+;org $808014
+TopOfRomInit:
+cld
+rep #$30
+lda #$0000 : tcd
+lda #$01FF : tcs
+sep #$20
+lda #$81 : pha : plb
+lda #$01 : sta $420D
+jsl InitMmio    ; $829F31
+jsl InitRam     ; $829E44
+jsl InitApu     ; $82908E
+jsl LR_SetScreenBlackForceBlank    ; $8281BC
+sec : ror $0654
+lda $000100 : ldy #$0000 : cmp #$83 : beq +
+ ldy #$0000
++:
+tya : sta $0642
+jsl LR_ProcessMapTransition    ; $83D9F6
+stz $0654
+lda #$20 : sta $099F
+rep #$20
+lda #$0009 : sta $09C8 : sta $09CA
+lda #$0008 : sta $0ACA : sta $0ACE
+lda #$0001 : sta $0ADE
+lda #$0000 : sta $0ADC
+lda #$C384 : sta $09BA : sta $09BC
+lda #$C3A4 : sta $09C0 : sta $09BE : sta $09C4 : sta $09C2
+lda #$FFFF : sta $0B28 : sta $0B2A : sta $0B2C
+  sta $0B2E : sta $0B30 : sta $0B32
+sep #$20
+lda #$FB : sta $0642
+lda #$00 : sta $0AA2
+
+;org $8080b5
+FrameMasterRoutine:
+jsl LR_WaitForNmi    ; $828043
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
+jsl LR_ThinkThinkersA    ; $83D12D
+jsl LR_CheckAndProcessMapTransition    ; $83D9E8
+;org $8080C5
+jsl $82A5DD
+jsl LR_CheckSpecialButtons    ; $838000
+jsr SR_UpdatePlayerCanRunTimer    ; $82DE
+jsl LR_ActActors    ; $83CAF5
+ldx $00D8
+lda #$FF : sta $7F3100,x : sta $7F3101,x
+jsl LR_SetSpriteOrder    ; $83c5ff
+jsl LR_HandleCollisions    ; $83BBE4
+jsl $83C25E
+jsl LR_CheckPlayerDeath    ; $83bbb4
+jsl LR_AllowAttackPreempt    ; $83bb85
+ldx #$0000 : jsl $82AC2E
+ldx #$0002 : jsl $82AC2E
+jsl LR_ClearDmaChannelCounter    ; $83E146
+jsl LR_ThinkThinkersB    ; $83D15D
+jsl LR_RenderActors    ; $83C714
+jsl LR_TryUpdateStatusBar    ; $808206
+jsl LR_PushNewMusicDataIfQueued    ; $83E21E
+jsl LR_ResetNmi    ; $828191
+brl FrameMasterRoutine    ; +$FF97
+
+;org $80811E
+phb
+pha
+xba
+pha
+phx
+phy
+phd
+rep #$20
+lda #$0000 : tcd
+sep #$20
+lda #$81 : pha : plb
+jsl $83CCFF 
+ldx $00D8
+lda #$FF : sta $7F3100,x
+  sta $7F3101,x
+jsl LR_SetSpriteOrder    ; $83c5ff
+ldx #$0000 : jsl $82AC2E
+ldx #$0002 : jsl $82AC2E
+jsl LR_ClearDmaChannelCounter    ; $83E146
+jsl LR_ThinkThinkersD    ; $83D1C2
+jsl LR_RenderActors    ; $83C714
+lda #$08 : trb $09EC 
+jsl LR_ResetNmi    ; $828191
+jsl LR_WaitForNmi    ; $828043
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
+jsl LR_ThinkThinkersC    ; $83D18D
+pld
+ply
+plx
+pla
+xba
+pla
+plb
+rtl
+
+; org $80817d
+LR_RefreshScreen:
+phb
+pha
+xba
+pha
+phx
+phy
+phd
+rep #$20
+lda #$0000 : tcd
+sep #$20
+lda #$81 : pha : plb
+jsl LR_SetSpriteOrder    ; $83c5ff
+jsl LR_RenderActors    ; $83C714
+jsl LR_ClearDmaChannelCounter    ; $83E146
+jsl LR_ThinkThinkersD    ; $83D1C2
+jsl LR_TryUpdateStatusBar    ; $808206
+jsl LR_ResetNmi    ; $828191
+jsl LR_WaitForNmi    ; $828043
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
+jsl LR_ThinkThinkersC    ; $83D18D
+pld
+ply
+plx
+pla
+xba
+pla
+plb
+rtl
+
+;org $8081bc
+S_8081BC:    ; Minimal processing frame, used during music loads.
+php
+sep #$20
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
+phb
+lda #$81 : pha : plb
+jsl LR_FakeNmiImmediate    ; $82803B
+jsl LR_ThinkThinkersC    ; $83D18D
+jsl $83CD6E
+ldx $00D8
+lda #$FF : sta $7F3100,x
+  sta $7F3101,x
+jsl LR_SetSpriteOrder    ; $83c5ff
+ldx #$0000 : jsl $82AC2E
+ldx #$0002 : jsl $82AC2E
+jsl LR_ClearDmaChannelCounter    ; $83E146
+jsl LR_ThinkThinkersD    ; $83D1C2
+jsl LR_RenderActors    ; $83C714
+plb
+jsl LR_ResetNmi    ; $828191
+plp
+rtl
+
+;org $808206
+LR_TryUpdateStatusBar:
+lda $09ed : bit #$40 : beq +
+  rtl
++:
+.DoUpdate:
+php
+ldx #$0000
+sep #$20
+lda $09ec : and #$01 : pha
+lda $09af : bit #$02 : bne .SkipHeal    ; +$23
+lda $0036 : bit #$07 : bne .SkipHeal    ; +$1C
+lda $0b22 : beq .SkipHeal    ; +$17
+  dec : sta $0b22    ; $0b22 = heal capacity
+lda $0ace : cmp $0aca : bne .DoHeal
+  stz $0b22
+  bra .SkipHeal
+.DoHeal:
+inc $0ace
+cop #$06 : db $0D
+.SkipHeal:    ; $8244
+lda $0ace : cmp $0ad0 : bne .HpChanged    ; +$10
+lda $0aca : cmp $0acc : bne .HpChanged    ; +$08
+lda $0ad6 : cmp $0ada : beq .AllChangesProcessed
+.HpChanged:    ; $825c
+lda #$10 : tsb $09ec
+rep #$20
+stz $0ad8
+lda $0ad6
+.CollectDpInHundreds:
+sec : sbc #$0064 : bmi ..DoneCollecting
+  inc $0ad8 : bra .CollectDpInHundreds
+..DoneCollecting:
+cop #$BD : dl $81e7f6
+.AllChangesProcessed:    ; $8279
+rep #$20
+lda $09ea : beq +    ; +$19
+  lda #$0019 : sta $0ae4
+  cop #$BD : dl $81e818
+  lda #$0010 : tsb $09ec
+  lda #$003c : sta $0ae4
+  bra +$24
++: ;$8299
+lda $0AE4 : beq .NoUpdateEnemyHp
+dec $0AE4 : bne .NoUpdateEnemyHp
+lda #$001E : sta $0AE4
+stz $09E6
+stz $09E4
+cop #$BD : dl $81E818
+lda #$0010 : tsb $09EC
+stz $0AE4
+.NoUpdateEnemyHp:
+lda $0ACE : sta $0AD0
+lda $0ACA : sta $0ACC
+lda $0AD6 : sta $0ADA
+sep #$20
+lda $09EC : and #$FE : ora $01,s : sta $09EC
+pla
+plp
+rtl
+
+;org $8082de
+SR_UpdatePlayerCanRunTimer:
+php
+rep #$20
+lda $040c : bmi +
+  dec : sta $040c    ; "can-run timer"
++:
+lda $040e : cmp #$0100 : bcs +
+  inc a
++:
+sta $040e    ; ???
+plp
+rts
+
+;org $8082f8
+NmiHandler:
+php
+phb
+rep #$20
+pha
+phx
+phy
+cld
+sep #$20
+lda #$81 : pha : plb
+stz $420C
+jsr SR_UpdateBgScrollRegisters
+jsl S_82AF5F
+jsl LR_PushPalettesAndColdata    ; $829DE2
+jsl LR_PushOam    ; $829E1D
+jsl S_82B038
+lda #$80 : sta $2115
+lda #$18 : sta $4301
+lda #$01 : sta $4300
+lda $09EC : bit #$08 : bne B_80834A
+lda $0800 : bne B_808344
+  jsl LR_TryFrameEndAdHocDma    ; $83F1D0
+  jsl S_82A310
+  jsr SR_DmaLowStageToVram    ; $808411
+  bra .PollController
+B_808344:
+jsl S_82A310
+bra .PollController
+B_80834A:
+jsl LR_PushPlayerVram    ; $83D881
+.PollController:    ; org $80834e
+lda $66 : sta $420C    ; Enable HDMA channels, bitwise.
+rep #$20
+-:
+lda $4212 : ror    ; Await auto-joypad read finish.
+bcs -
+lda $4218 : sta $0660    ; Joypad read.
+lda $06FA : beq .NormalFrame
+  bmi .PostWriteSound
+jsl S_8081BC    ; No acting, just rendering.
+bra .PostWriteSound
+.NormalFrame:
+lda $36 : lsr
+lda #$0000
+bcs .WriteSound    ; Skip writing sound on odd-numbered frames.
+  lda $06F8
+  stz $06F8
+.WriteSound:    ; org $80837c
+sta $2142
+.PostWriteSound:
+inc $36
+ply
+plx
+pla
+plb
+plp
+rti
+
+; org $808387
+SR_UpdateBgScrollRegisters:
+lda $06EF : bit #$08 : bne .Mode7
+lda $06EE : bmi .InvertedMode1
+.Mode1:
+ldx #$0000
+ldy #$0000
+jsr SR_UpdateMode1Scroll
+ldx #$0002
+ldy #$0002
+bra +
+; org $8083a4
+.InvertedMode1:
+ldx #$0002
+ldy #$0000
+jsr SR_UpdateMode1Scroll
+ldx #$0000
+ldy #$0002
++:
+jsr SR_UpdateMode1Scroll
+rts
+; org $8083b7
+.Mode7:
+lda $068A : sta $210D
+lda $068B : and #$7F : sta $210D
+lda $068E : sta $210E
+lda $068F : and #$7F : sta $210E
+rts
+
+; org $8083d4
+SR_UpdateMode1Scroll:
+lda $06C7,x : bpl B_8083E4
+  lda $06C6,x : sta $210D,y
+  lda $06C7,x
+  bra J_8083ED
+B_8083E4:    ; org $8083e4
+lda $068A,x : sta $210D,y
+lda $068B,x
+J_8083ED:    ; org $8083ed
+  and #$03 : sta $210D,y
+lda $06CB,x : bpl B_808402
+  lda $06CA,x : sta $210E,y
+  lda $06CB,x
+  bra J_80840B
+B_808402:    ; org $808402
+lda $068E,x : sta $210E,y
+lda $068F,x
+J_80840B:    ; org $80840b
+  and #$03 : sta $210E,y
+rts
+
+;org $808411
+SR_DmaLowStageToVram:
+ldx $00B2 : bne +
+  rts
++:
+  stx $4305
+ldx $00B0 : stx $2116
+ldx $00AC : stx $4302
+lda $00AE : sta $4304
+lda #$01 : sta $420B
+ldx #$0000 : stx $00B2
+rts
+
+;org $808438
+SR_DmaClearOamStage:
+php
+sep #$20
+  lda #$00 : sta $2183
+rep #$20
+  lda #$0422 : sta $2181
+  ldy #$0200 : sty $4305
+sep #$20
+lda #$08 : sta $4300
+lda #$80 : sta $4301
+lda #$80 : sta $4304
+ldx.w #.Data : stx $4302    ; #$846c
+lda #$01 : sta $420B
+plp
+rts
+.Data:
+db $e0
+
+
+;org $80846D
+CopHandler:
+rep #$20
+txy
+lda $04,s : sta $0C
+lda $02,s : dec : sta $0A
+lda [$0A]
+  inc $0A
+and #$00FF : asl : tax
+jmp (.Pointers,x)    ; ($8485,x)
+.Pointers:
+{
+dw Cop_00    ; $864e    ; COP #$00
+dw Cop_01    ; $8689    ; COP #$01
+dw Cop_02    ; $86a0    ; COP #$02
+dw Cop_03    ; $86b7    ; COP #$03
+dw Cop_04    ; $8714    ; COP #$04
+dw Cop_05    ; $8749    ; COP #$05
+dw Cop_06    ; $877e    ; COP #$06
+dw Cop_07    ; $8792    ; COP #$07
+dw Cop_08    ; $87a6    ; COP #$08
+dw Cop_09    ; $87b5    ; COP #$09
+dw Cop_0A    ; $87c9    ; COP #$0A
+dw $8876    ; COP #$0B
+dw $888c    ; COP #$0C
+dw $88a2    ; COP #$0D
+dw Cop_0E    ; $88c8    ; COP #$0E
+dw Cop_0F    ; $88ee    ; COP #$0F
+dw Cop_10    ; $8925    ; COP #$10
+dw Cop_11    ; $895c    ; COP #$11
+dw $8975    ; COP #$12
+dw Cop_13    ; $89ac    ; COP #$13
+dw Cop_14    ; $89d3    ; COP #$14
+dw $8a22    ; COP #$15
+dw $8a4d    ; COP #$16
+dw $8a78    ; COP #$17
+dw $8aa3    ; COP #$18
+dw $87dd    ; COP #$19
+dw $8ace    ; COP #$1A
+dw $8b01    ; COP #$1B
+dw $8b38    ; COP #$1C
+dw $8b6f    ; COP #$1D
+dw $8ba6    ; COP #$1E
+dw Cop_1F    ; $8bdd    ; COP #$1F
+dw Cop_20    ; COP #$20 def. $8c19
+dw Cop_21    ; COP #$21 def. $8c26
+dw Cop_22    ; $8c6f    ; COP #$22
+dw Cop_23    ; COP #$23
+dw $902b    ; COP #$24
+dw $904e    ; COP #$25
+dw $9072    ; COP #$26
+dw $90ce    ; COP #$27
+dw $90f4    ; COP #$28
+dw $90fa    ; COP #$29
+dw $9135    ; COP #$2A
+dw $915f    ; COP #$2B
+dw $9189    ; COP #$2C
+dw Cop_2D    ; $91b8    ; COP #$2D
+dw $9236    ; COP #$2E
+dw $926a    ; COP #$2F
+dw $9299    ; COP #$30
+dw Cop_31    ; $92e8    ; COP #$31
+dw $9317    ; COP #$32
+dw $9328    ; COP #$33
+dw $9352    ; COP #$34
+dw $91cc    ; COP #$35
+dw $9361    ; COP #$36
+dw $9364    ; COP #$37
+dw $9381    ; COP #$38
+dw $93aa    ; COP #$39
+dw $93ce    ; COP #$3A
+dw $9400    ; COP #$3B
+dw $943c    ; COP #$3C
+dw $9443    ; COP #$3D
+dw $9485    ; COP #$3E
+dw $94ad    ; COP #$3F
+dw $94d5    ; COP #$40
+dw $9501    ; COP #$41
+dw $952f    ; COP #$42
+dw $8de6    ; COP #$43
+dw Cop_44    ; $956b COP #$44
+dw Cop_45    ; $95ea COP #$45
+dw $9647    ; COP #$46
+dw $964c    ; COP #$47
+dw $965e    ; COP #$48
+dw $9668    ; COP #$49
+dw $8e19    ; COP #$4A
+dw $9685    ; COP #$4B
+dw $96ca    ; COP #$4C
+dw $9703    ; COP #$4D
+dw $9774    ; COP #$4E
+dw $98b8    ; COP #$4F
+dw $9930    ; COP #$50
+dw $997b    ; COP #$51
+dw $8e36    ; COP #$52
+dw $8f0d    ; COP #$53
+dw $99bf    ; COP #$54
+dw $99da    ; COP #$55
+dw $99f5    ; COP #$56
+dw $9a67    ; COP #$57
+dw $9a82    ; COP #$58
+dw $9a92    ; COP #$59
+dw $9aa2    ; COP #$5A
+dw $9ac2    ; COP #$5B
+dw $9ad6    ; COP #$5C
+dw $9aea    ; COP #$5D
+dw $9ab2    ; COP #$5E
+dw $9b89    ; COP #$5F
+dw $9c3a    ; COP #$60
+dw $9c91    ; COP #$61
+dw $9b41    ; COP #$62
+dw $9cb4    ; COP #$63
+dw $9cfa    ; COP #$64
+dw $9d52    ; COP #$65
+dw $9d81    ; COP #$66
+dw $9da3    ; COP #$67
+dw $9dbd    ; COP #$68
+dw $9dea    ; COP #$69
+dw $9e06    ; COP #$6A
+dw $a958    ; COP #$6B
+dw $a992    ; COP #$6C
+dw $a9ae    ; COP #$6D
+dw $c200    ; COP #$6E
+dw $a720    ; COP #$6F
+dw $e62a    ; COP #$70
+dw $292a    ; COP #$71
+dw $00ff    ; COP #$72
+dw $1e9f    ; COP #$73
+dw $7f00    ; COP #$74
+dw $06bd    ; COP #$75
+dw $0900    ; COP #$76
+dw $0400    ; COP #$77
+dw $069d    ; COP #$78
+dw $fa00    ; COP #$79
+dw $2aa5    ; COP #$7A
+dw $0283    ; COP #$7B
+dw $bb40    ; COP #$7C
+dw $2aa7    ; COP #$7D
+dw $2ae6    ; COP #$7E
+dw $ff29    ; COP #$7F
+dw Cop_80    ; $9e23    ; COP #$80
+dw $9e35    ; COP #$81
+dw $9e57    ; COP #$82
+dw $9e79    ; COP #$83
+dw $9eab    ; COP #$84
+dw $9ec8    ; COP #$85
+dw $9ef5    ; COP #$86
+dw $9f22    ; COP #$87
+dw $9f8f    ; COP #$88
+dw $9faa    ; COP #$89
+dw $9fc0    ; COP #$8A
+dw $9fde    ; COP #$8B
+dw $9ff1    ; COP #$8C
+dw Cop_8D    ; $a01e    ; COP #$8D
+dw $a036    ; COP #$8E
+dw Cop_8F    ; $a06b    ; COP #$8F
+dw $a081    ; COP #$90
+dw $a0a7    ; COP #$91
+dw $a0cd    ; COP #$92
+dw $a103    ; COP #$93
+dw $a119    ; COP #$94
+dw $a159    ; COP #$95
+dw $a16e    ; COP #$96
+dw $a1b5    ; COP #$97
+dw $a200    ; COP #$98
+dw $a24b    ; COP #$99
+dw $a267    ; COP #$9A
+dw $a28c    ; COP #$9B
+dw $a2a8    ; COP #$9C
+dw $a2cd    ; COP #$9D
+dw $a303    ; COP #$9E
+dw $a342    ; COP #$9F
+dw $a370    ; COP #$A0
+dw $a3a7    ; COP #$A1
+dw $a3d4    ; COP #$A2
+dw $a401    ; COP #$A3
+dw $a440    ; COP #$A4
+dw $a499    ; COP #$A5
+dw $a533    ; COP #$A6
+dw $a5de    ; COP #$A7
+dw $a6a1    ; COP #$A8
+dw $a6b1    ; COP #$A9
+dw $a6c1    ; COP #$AA
+dw $a6d7    ; COP #$AB
+dw $a6ed    ; COP #$AC
+dw $a713    ; COP #$AD
+dw $a731    ; COP #$AE
+dw $a74f    ; COP #$AF
+dw $a76d    ; COP #$B0
+dw $a799    ; COP #$B1
+dw $a7b3    ; COP #$B2
+dw $a7be    ; COP #$B3
+dw $a7c9    ; COP #$B4
+dw $a7d4    ; COP #$B5
+dw $a7df    ; COP #$B6
+dw $a7f4    ; COP #$B7
+dw $a809    ; COP #$B8
+dw $a816    ; COP #$B9
+dw $a823    ; COP #$BA
+dw $a82e    ; COP #$BB
+dw $a839    ; COP #$BC
+dw Cop_BD   ; $a867    ; COP #$BD
+dw $a894    ; COP #$BE
+dw $a8fb    ; COP #$BF
+dw $a9eb    ; COP #$C0
+dw $a9fb    ; COP #$C1
+dw $aa07    ; COP #$C2
+dw $aa13    ; COP #$C3
+dw $aa30    ; COP #$C4
+dw $aa60    ; COP #$C5
+dw $aa8b    ; COP #$C6
+dw $aa9b    ; COP #$C7
+dw $aab6    ; COP #$C8
+dw $aac6    ; COP #$C9
+dw $aad8    ; COP #$CA
+dw $ab0e    ; COP #$CB
+dw $ab41    ; COP #$CC
+dw $ab51    ; COP #$CD
+dw $ab60    ; COP #$CE
+dw $ab70    ; COP #$CF
+dw $ab7f    ; COP #$D0
+dw $ab8e    ; COP #$D1
+dw $abc2    ; COP #$D2
+dw $abd7    ; COP #$D3
+dw $ac05    ; COP #$D4
+dw $ac27    ; COP #$D5
+dw $ac38    ; COP #$D6
+dw $ac5a    ; COP #$D7
+dw $ac82    ; COP #$D8
+dw $ac94    ; COP #$D9
+dw $acc1    ; COP #$DA
+dw $acd6    ; COP #$DB
+dw $acdf    ; COP #$DC
+dw $ad17    ; COP #$DD
+dw $ad57    ; COP #$DE
+dw $ad8f    ; COP #$DF
+dw $a5f7    ; COP #$E0
+dw $aa74    ; COP #$E1
+dw $aa47    ; COP #$E2
+dw $80ea    ; COP #$E3
+}
+
+db $FD    ; Garbage byte?
+;org $80864e
+Cop_00:
+
+
+
+
+org $808689
+Cop_01: ; As $03 but use next available.
+{
+TYX
+LDA [$0A]
+INC $0A
+INC $0A
+TAY; Y = Arg1-2
+LDA [$0A]; A = Arg3-4
+INC $0A
+INC $0A
+JSL $83E157
+LDA $0A
+STA $02,s
+RTI
+}
+Cop_02:
+{
+tyx
+lda [$0a]
+inc $0a
+inc $0a
+tay; Y = Arg1-2
+lda [$0a]
+inc $0a
+inc $0a
+jsl $83e173
+lda $0a
+sta $02,s
+rti
+}
+Cop_03:
+{
+PHY
+LDA [$0A]
+INC $0A
+AND #$00FF
+STA $0002; Arg1 in $0002, DMA channel number
+ASL
+ASL
+ASL
+ASL
+STA $0000; Arg1 * #$10 in $0000, convenience
+LDX $0002
+SEP #$20
+LDA $80B11D,x; A = 2^Arg1
+TSB $0066; Set 2^Arg1 in $0066, Channel in use
+REP #$20
+LDA [$0A]
+INC $0A
+INC $0A
+TAY; Y = Arg2-3
+LDA [$0A]
+INC $0A
+INC $0A
+PHP
+SEP #$20
+PHA; Push Arg4
+LDA #$00
+XBA
+PHA; Push Arg5
+TAX
+LDA $D8BE,x; A = Default param for register Arg5
+LDX $0000
+ORA #$40; HDMA table contains pointers, not data
+STA $4300,x; 
+LDA $02,s; 
+STA $4307,x; HDMA source data is in bank Arg4
+PLA; Pull Arg5
+STA $4301,x; Destination register = Arg5
+REP #$20
+TYA
+STA $4302,x; Arg2-3, address low bytes
+SEP #$20
+PLA; Pull Arg4
+STA $4304,x; Arg4, address high byte
+PLP
+PLX
+LDA $0A
+STA $02,s
+RTI
+}
+Cop_04:
+{
+tyx
+phx
+jsr $b189
+tyx
+lda #$E1D6 : sta $0000,x
+lda #$0083 : sta $0002,x
+lda $0012,x : ora #$1000 : sta $0012,x
+lda $0010,x : and #$EFFF : sta $0010,x
+lda [$0A] : inc $0a : and #$00FF : sta $7f000a,x
+plx
+lda $0A : sta $02,s
+rti
+}
+Cop_05:
+{
+tyx
+phx
+jsr $b189
+tyx
+lda #$E1AA : sta $0000,x
+lda #$0083 : sta $0002,x
+lda $0012,x : ora #$1000 : sta $0012,x
+lda #$0010,x : and #$EFFF : sta $0010,x
+lda [$0a] : inc $0a : and #$00FF : sta $7F000A,x
+plx
+lda $0a : sta $02,s
+rti
+}
+Cop_06:
+{
+tyx
+lda [$0a]
+inc $0a
+and #$00ff
+sep #$20 : sta $06f9 : rep #$20
+lda $0a : sta $02,s
+rti
+}
+Cop_07:    ; $8792
+{
+tyx
+lda [$0a]
+inc $0a
+and #$00ff
+sep #$20 : sta $06f8 : rep #$20
+lda $0a : sta $02,s
+rti
+}
+Cop_08:    ; $87a6
+{
+tyx
+lda [$0a]
+inc $0a : inc $0a
+sta $06f8
+lda $0a : sta $02,s
+rti
+}
+Cop_09:    ; $87b5
+{
+tyx
+lda [$0a]
+inc $0a
+and #$00ff
+sep #$20 : sta $2141 : rep #$20
+lda $0a : sta $02,s
+rti
+}
+Cop_0A:    ; $87c9
+{
+tyx
+lda [$0a]
+inc $0a
+and #$00ff
+sep #$20 : sta $2140 : rep #$20
+lda $0a : sta $02,s
+rti
+}
+warnpc $8087de
+;Cop_0B:
+;Cop_0C:
+;Cop_0D:
+
+org $8088c8
+Cop_0E:
+{
+TYX
+JSR Dep_StoreRelativeTile ; After SR, $0018 and $001c contain
+PHX; X/Y coordinates floored to smalltile
+PHD; plus Arg1/Arg2 (respectively)
+LDA #$0000
+TCD
+LDX #$0000
+JSL LR_GetTileTableIndex82; Get index of tile whose coordinates are
+SEP #$20; x=$0018,y=$001c.
+LDA $7FC000,x; SR pulls calculation result into X.
+AND #$0F; Zero high nibble of that entry in
+STA $7FC000,x; table $7fc000.
+REP #$20
+PLD
+PLX
+LDA $0A
+STA $02,s
+RTI
+}
+Cop_0F:
+{
+tyx
+lda [$0a] : inc $0a : and #$00ff : sta $0018
+lda [$0a] : inc $0a : and #$00ff : sta $001c
+phx
+phd
+lda #$0000 : tcd
+ldx #$0000
+jsl LR_GetTileTableIndex82
+sep #$20
+lda #$7FC000,x : ora #$F0 : sta $7FC000,x
+rep #$20
+pld
+plx
+lda $0a : sta $02,s
+rti
+}
+Cop_10:
+{
+tyx
+lda [$0a] : inc $0a : and #$00ff : sta $0018
+lda [$0a] : inc $0a : and #$00ff : sta $001c
+phx
+phd
+lda #$0000 : tcd
+ldx #$0000
+jsl LR_GetTileTableIndex82
+sep #$20
+lda #$7FC000,x : and #$0F : sta $7FC000,x
+rep #$20
+pld
+plx
+lda $0a : sta $02,s
+rti
+}
+Cop_11:
+{
+TYX
+LDA $14 : STA $0018
+LDA $16 : STA $001C
+LDA #$0001 : STA $0000
+JSR MaskTileTypesUnderObject
+LDA $0A : STA $02,s
+RTI
+}
+;Cop_12:
+org $8089ac
+Cop_13:
+{
+TYX
+LDA $14
+STA $0018
+LDA $16
+STA $001C
+JSR SR_ReturnTileTypeAtPixel    ; $B43B
+BIT #$000F
+BNE +$0B
+LDA [$0A]
+INC $0A
+INC $0A
+LDA $0A
+STA $02,s
+RTI
+LDA [$0A]
+INC $0A
+INC $0A
+STA $02,s
+RTI
+}
+Cop_14:
+; ...
+
+org $808ace
+Cop_1A:    ; Branch if on tile type
+{
+tyx
+lda $14 : sta $0018
+lda $16 : sta $001C
+jsr SR_ReturnTileTypeAtPixel    ; $B43B
+and #$00FF : pha
+lda [$0A]
+  inc $0A
+  and #$00FF : cmp $01,s : beq .MatchedDoBranch
+lda [$0A]
+  inc $0A : inc $0A
+ply
+lda $0A : sta $02,s
+rti
+.MatchedDoBranch:
+pla
+lda [$0A]
+  inc $0A : inc $0A
+  sta $02,s
+rti
+warnpc $808b01
+}
+
+org $808bdd
+Cop_1F:
+{
+TYX
+PHB
+LDA $16
+BIT #$000F; 
+BEQ +$0A; If Y coordinate is not exactly
+PLB; at a tile boundary,
+LDA [$0A]; branch to Arg1-2.
+INC $0A
+INC $0A
+STA $02,s
+RTI
+LDA $7F000C,x; If Y coordinate is exactly at a tile
+TAY; boundary, load address of table
+SEP #$20; of sprite physical data
+LDA $7F0008,x; ($0C-$0D low two bytes,
+PHA;  $08 bank).
+PLB;
+REP #$20;
+LDA $0000,y; 
+ORA #$FF00; Expand $0000,y to 2-byte negative.
+CLC
+ADC $14; Add to (subtract from) X coordinate.
+BIT #$000F; If calculated coordinate is not at a
+BNE +$D9 ;(-$27); tile boundary, branch to Arg1-2.
+PLB
+LDA [$0A]; True Y coordinate and adjusted X
+INC $0A; coordinate are both at tile
+INC $0A; boundaries. Don't branch; continue.
+LDA $0A
+STA $02,s
+RTI
+}
+;org $808c19
+Cop_20: ; Check if Other is in distance
+{
+tyx              ;
+lda [$0A]        ;
+inc $0A          ;
+and #$00FF       ;
+jsr SR_GetActorIdFromOrder     ; $B125
+bra Cop_21_IsYInDistance     ; $04
+}
+;org $808c26
+Cop_21: ; Check if Player is in distance
+{
+$808C26 tyx              ;
+$808C27 ldy !PlayerActorId
+.IsYInDistance:
+$808C2A lda [$0A]        ;
+$808C2C inc $0A          ;
+$808C2E and #$00FF       ;
+$808C31 asl              ;
+$808C32 asl              ;
+$808C33 asl              ;
+$808C34 asl              ;
+$808C35 inc a            ;
+$808C36 sta $0000        ;
+$808C39 lda $14          ;
+$808C3B sec              ;
+$808C3C sbc $0014,y      ;
+$808C3F bpl +     ; $04
+$808C41 eor #$FFFF       ;
+$808C44 inc a            ;
++:
+$808C45 cmp $0000        ;
+$808C48 bcs .NotInRange     ; $1A
+$808C4A lda $16          ;
+$808C4C sec              ;
+$808C4D sbc $0016,y      ;
+$808C50 bpl +     ; $04
+$808C52 eor #$FFFF       ;
+$808C55 inc a            ;
++:
+$808C56 cmp $0000        ;
+$808C59 bcs .NotInRange     ; $09
+$808C5B lda [$0A]        ;
+$808C5D inc $0A          ;
+$808C5F inc $0A          ;
+$808C61 sta $02,s        ;
+$808C63 rti              ;
+.NotInRange:
+$808C64 lda [$0A]        ;
+$808C66 inc $0A          ;
+$808C68 inc $0A          ;
+$808C6A lda $0A          ;
+$808C6C sta $02,s        ;
+$808C6E rti              ;
+}
+;org $808c6f
+Cop_22:
+{
+TYX
+LDA $7F002A,x; Check whether movement is in process.
+BIT #$0002; If not,
+BNE +$03;   fail this branch and jump to the
+JSR $8D4D;   initialization routine, $8d4d.
+LDA $7F000E,x; Number of frames to move for; call it Tau. 
+AND #$00FF; Compares to $24, number of frames moved.
+CMP $24; If we've moved as many frames as we want,
+BNE +$03; jump far ahead, to $8d11.
+JMP $8D11
+SEP #$20
+LDA $24; Number of frames moved so far; call it t.
+STA $4202; Multiplicand A. 
+LDA $7F0018,x; X distance to move, i.e. x(Tau).
+AND #$FF;
+JSR $8D33; $0000 = $7F:18 * $24 / ($7F:0E - 1)
+SEC;  = x(Tau) * (t / (Tau - 1)), i.e. x(t).
+SBC $7F0000,x; Subtract x(t-1).
+BEQ +$22; If x(t) == x(t-1), skip to Y processing.
+REP #$20; But if x(t) != x(t-1), update x(t)
+AND #$00FF; and queue movement as follows.
+PHA; Save x(t) - x(t-1), i.e. DeltaX.
+LDA $7F000E,x; Bit-14 of Tau determines sign of deltaX.
+ASL; So ASL Tau and use bmi to check that bit.
+BMI +$03; If bit is clear, result reads positive,
+PLA; so DeltaX should be positive. No need to
+BRA +$05; change sign of x(t) - x(t-1).
+PLA; If bit is set, result reads negative.
+EOR #$FFFF; Recall DeltaX and negate it (2's-
+INC A; complement-style).
+STA $7F002C,x; Store DeltaX in $7F:2C.
+SEP #$20; 
+LDA $0000; Store x(t)
+STA $7F0000,x; in $7F:00.
+LDA $7F001A,x; Y distance to move, i.e. y(Tau).
+AND #$FF
+JSR $8D33; $0000 = y(t) = y(Tau) * (t / (Tau - 1)).
+SEC
+SBC $7F0001,x; Subtract y(t-1).
+REP #$20; Same process as above, but for y.
+BEQ +$22
+AND #$00FF
+PHA
+LDA $7F000E,x
+ASL
+BCS +$03; Use BCS because top bit sets sign of DeltaY.
+PLA
+BRA +$05
+PLA
+EOR #$FFFF
+INC A
+STA $7F002E,x; Store DeltaY in $7F:2E.
+SEP #$20
+LDA $0000
+STA $7F0001,x
+REP #$20
+INC $24; t++.
+LDA $7F0002,x; Sprite animation counter.
+DEC A; Decrement every frame.
+BPL +$08; If it was 0,
+JSL $83CA55;  animate sprite and move event,
+BCS +$FA ;(-$06);  and check counter again.
+LDA $08;  Load event thinking countdown.
+STZ $08; Zero event thinking countdown,
+STA $7F0002,x; and instead save it as the animation countdown.
+PLA; In any case, do no further processing
+PLA; and return to the event handler.
+RTL; $808d10
+;$808d10:
+LDA $7F002A,x; Clear flag #$0002 from this byte.
+AND #$FFFD
+STA $7F002A,x
+LDA $0A
+INC A
+INC A
+STA $00; Continue execution after this COP next frame.
+PLA
+PLA
+RTL; $808d24
+;$808d25:; Pulls multiplication product.
+NOP
+LDY $4216; Multiplication result, or division remainder.
+RTS; $808d29
+;$808d2a:; Pulls division quotient.
+NOP
+NOP
+NOP
+NOP
+NOP
+LDA $4214; Division quotient.
+RTS; $808d32
+;$808d33:; Returns $4202 * A / $7F..0E.
+STA $4203; Multiplicand B.
+JSR $8D25; Y = multiplication result.
+STY $4204; Dividend low byte.
+LDA $7F000E,x; Number of frames to move for.
+DEC A
+STA $4206; Divisor. If nonzero, use $8d2a to
+BEQ +$03; pull quotient; if zero, return 0.
+JSR $8D2A
+STA $0000
+RTS; $808d4c
+;$808d4d:; Initialization. Called if $7F:2A doesn't have #$0002.
+STZ $0004
+LDA $0A
+DEC A
+DEC A
+STA $00; Set event pointer to this COP for next frame.
+LDY #$0001
+LDA [$0A]
+AND #$00FF
+CMP #$00FF
+BNE +$02; Load A with current sprite index ($28), or
+LDA $28; with Arg1 if Arg1 is set (i.e. not #$FF).
+JSR $9F5F; Set sprite flag #$4000 to high bit of new sprite index.
+LDA $7F0018,x; x(Tau) ...
+SEC; ...
+SBC $14; minus x(0).
+CLC
+BPL +$05
+EOR #$FFFF
+INC A; STZ $0004, {SEC,} ROR $0004 sets $0004 =
+SEC;   #$8000 if x(Tau) - x(0) < 0, i.e. DeltaX < 0.
+ROR $0004
+BIT #$FF00; If requested movement exceeds #$FF,
+BEQ +$03; only move #$FE instead.
+LDA #$00FE
+STA $7F0018,x; Set x(Tau) = $7F:18 - $14.
+LDA $7F001A,x; Same as above, for y instead of x.
+SEC
+SBC $16
+CLC
+BPL +$05
+EOR #$FFFF
+INC A
+SEC
+ROR $0004
+BIT #$FF00
+BEQ +$03
+LDA #$00FE
+STA $7F001A,x
+CMP $7F0018,x; Load whichever of x(Tau) or y(Tau) is larger.
+BCS +$04
+LDA $7F0018,x
+PHA; Save that larger value.
+LDA [$0A],y; Load the next parameter,
+AND #$00FF; which should be 1 byte,
+PLY; and set Y to the larger distance value.
+SEP #$20
+JSL $8281E8; Y / A, i.e. larger distance / nextArg.
+INC A; Sets Tau to distance / nextArg, i.e.
+STA $7F000E,x; movespeed will be nextArg px/frame.
+LDA $0005; High byte of $0004, affected by ROR, but not in this COP.
+STA $7F000F,x
+REP #$20
+LDA #$0000
+STA $7F0000,x; Movement is beginning. Clear temporary variables.
+STA $7F0002,x
+STA $24
+STZ $2C
+STZ $2E
+LDA $7F002A,x
+ORA #$0002
+STA $7F002A,x; Set this flag to indicate movement in process.
+RTS; $808de5
+}
+;...
+org $808ffc
+Cop_23:
+{
+phy
+sep #$20
+ldx #$000f
+lda #$00
+xba
+clc
+-:
+  lda $0410,x : adc $040f,x : sta $040f,x
+  dex : bne -
+ldx #$0010
+-:
+  inc $040f,x : bne +
+  dex : bne -
++:
+rep #$20
+plx
+lda $0a : sta $02,s
+lda $0410 : and #$00ff
+rti
+}
+warnpc $80902a
+;...
+org $809072
+Cop_26:
+{
+tyx
+lda [$0A]
+  inc $0A
+  and #$00FF : sta $0642   ; MapID
+lda [$0A]
+  inc $0A : inc $0A
+  sta $064C                ; PosX
+lda [$0A]
+  inc $0A : inc $0A
+  sta $064E                ; PosY
+lda [$0A]
+  inc $0A
+  and #$00FF : sta $0650   ; FaceAndSetWarp
+lda [$0A]
+  inc $0A : inc $0A
+  sta $0652                ; MapSize, CamBounds
+lda $0650 : bit #$0080 : bne .DoSetDeathWarp
+lda $0A : sta $02,s
+rti
+.DoSetDeathWarp:
+and #$FF7F : sta $0650
+lda $0A : sec : sbc #$0008 : sta $0AF0
+  sta $0AF4
+lda $0C : sta $0AF2
+  sta $0AF6
+lda $0A : sta $02,s
+rti
+}
+;org $8090ce
+;...
+org $8091b8
+Cop_2D:
+{
+TYX
+LDA $14
+STA $0018
+LDA $16
+STA $001C
+JSR $AFCE
+LDA $0A
+STA $02,s
+TYA
+RTI
+}
+;...
+org $8092e8
+Cop_31:
+{
+TYX
+JSL $83F0CA
+BEQ +$11; If 0 goto...
+DEC A : BEQ +$13; If 1 goto...
+DEC A : BEQ +$15; If 2 goto...
+DEC A : BEQ +$17; If 3 goto...
+LDA #$0008; If 4 or more,
+CLC;  add 8 to pointer
+ADC $0A;  and return there
+BRA +$14;  (i.e. don't branch).
+LDY #$0000 : BRA +$0D  ; If 0, jump to Arg1-2.
+LDY #$0002 : BRA +$08  ; If 1, jump to Arg3-4.
+LDY #$0004 : BRA +$03  ; If 2, jump to Arg5-6.
+LDY #$0006  ; If 3, jump to Arg7-8.
+LDA [$0A],y
+STA $02,s
+RTI
+}
+;org $809317
+Cop_32:
+{
+tyx
+lda [$0a] : inc $0a
+  and #$00ff : jsl LR_StageMapRearrange    ; $82a363
+lda $0a : sta $02,s
+rti
+}
+;org $809329
+Cop_33:
+{
+tyx
+sep #$20
+  jsl LR_RefreshScreen    ; $80817d
+  jsl $80811e
+rep #$20
+-:
+jsl $82a3a8 : bcs +
+  sep #$20
+  jsl $80811e
+  rep #$20
+bra -
++:
+sep #$20
+jsl $80811e
+rep #$20
+lda $0a : sta $02,s
+rti
+}
+;org $809352
+Cop_34:
+{
+tyx
+lda $7f0024,x : pha
+  lda #$0f0f : sta $06f8
+pla
+bra -
+}
+;...
+org $80956b
+Cop_44:
+{
+phy
+ldx $09AA
+ldy #$0000
+lda [$0A] : iny
+and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+asl : asl : asl : asl
+clc : adc $14 : cmp $0014,x : bcs .NotInArea
+lda [$0A],y : iny : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+asl : asl : asl : asl
+clc : adc $16 : cmp $0016,x : bcs .NotInArea
+lda [$0A],y : iny : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+asl : asl : asl : asl
+clc : adc $14 : cmp $0014,x : bcc .NotInArea
+lda [$0A],y : iny : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+asl : asl : asl : asl
+clc : adc $16 : cmp $0016,x : bcc .NotInArea
+plx
+lda [$0A],y : sta $02,s
+rti
+.NotInArea:
+plx
+lda $0A : clc : adc #$0006 : sta $02,s
+rti
+}
+;warnpc $8095ea
+Cop_45:
+{
+phy
+ldx $09AA
+ldy #$0000
+lda $0016,x : sec : sbc #$0008 : sta $0000
+lda [$0A] : iny
+  and #$00FF : asl : asl : asl : asl : cmp $0014,x : bcs .NotInArea
+lda [$0A],y : iny
+  and #$00FF : asl : asl : asl : asl : cmp $0000 : bcs .NotInArea
+lda [$0A],y : iny
+  and #$00FF : asl : asl : asl : asl : cmp $0014,x : bcc .NotInArea
+lda [$0A],y : iny
+  and #$00FF : asl : asl : asl : asl : cmp $0000 : bcc .NotInArea
+plx
+lda [$0A],y : sta $02,s
+rti
+.NotInArea:
+plx
+lda $0A : clc : adc #$0006 : sta $02,s
+rti
+}
+warnpc $809647
+;...
+org $8099f5
+Cop_56:    ; Advance sprite animation, subject to global variable states?
+{
+tyx
+lda $00B2 : beq +
+  pla
+  pla
+  rtl
++:
+phb
+lda $24 : sta $00B0
+sep #$20
+  lda $7F0008,x : pha : plb
+rep #$20
+lda $28 : asl : clc : adc $7F0006,x : tay
+lda $2A
+  inc $2A
+  asl : asl
+  clc : adc $0000,y : tay
+lda $0000,y : bmi .NoMoreFrames
+  sta $08
+lda $0002,y : tay
+lda $0012,y : and #$00FF
+  asl : asl : asl : asl : asl
+  clc : adc $7F0000,x : sta $00AC
+lda $7F0002,x : sta $00AE
+lda #$0020 : sta $00B2
+lda $000D,y : and #$00FF : beq +
+  lda #$0080 : sta $00B2
++:
+plb
+pla
+pla
+rtl
+.NoMoreFrames:
+stz $2A
+plb
+lda $0A : sta $02,s
+rti
+}
+;...
+org $809aea
+Cop_5D:  ; Branch if low-priority and behind any type other than $00 and $0E.
+{
+tyx
+lda $14 : lsr a : lsr a : lsr a : lsr a : sta $0018
+lda $16 : lsr a : lsr a : lsr a : lsr a : sta $001C
+phd
+lda #$0000 : tcd
+jsl LR_GetTileTableIndex83
+cpy #$4000 : bcs .DoBranch
+  lda $000F,x : and #$0010 : beq .LowRenderPriority
+  lda [$80],y : and #$000F : beq .NoBranch
+bra .NoBranch
+.LowRenderPriority:
+lda [$80],y
+  bit #$00F0 : bne .DoBranch
+  and #$000F : beq .NoBranch
+  cmp #$000E : bne .DoBranch
+.NoBranch:
+pld
+lda $0A : clc : adc #$0002 : sta $02,s
+rti
+.DoBranch:
+pld
+lda [$0A]
+  inc $0A : inc $0A
+  sta $02,s
+rti
+warnpc $809b41
+}
+;...
+org $809b41
+Cop_62:    ; $9b41
+{
+tyx
+lda $14 : lsr : lsr : lsr : lsr : sta $0018
+lda $16 : lsr : lsr : lsr : lsr : sta $001C
+lda [$0A]
+  inc $0A
+  and #$00FF : sta $0000
+phd
+lda #$0000 : tcd
+  jsl LR_GetTileTableIndex83
+  cpy #$4000 : bcs .TileMatchedOrInvalid
+  lda [$80],y : and #$000F : cmp $00 : beq .TileMatchedOrInvalid
+pld
+lda $0A : clc : adc #$0002 : sta $02,s
+rti
+.TileMatchedOrInvalid:
+pld
+lda [$0A]
+  inc $0A : inc $0A
+  sta $02,s
+rti
+}
+warnpc $809b89
+;...
+org $809cb4
+; Stage acceleration due to gravity, by setting engine ExplicitYMove.
+Cop_63:    ; $9cb4
+{
+tyx
+lda [$0A] : inc $0A
+  and #$00FF
+  bit #$0080 : beq +
+    ora #$FF00
++:
+  sta $7F1012,x               ; $7f1012 = sign-extended Arg1
+lda [$0A] : inc $0A
+  and #$00FF
+  sta $7F1010,x               ; $7f1010 = Arg2
+lda [$0A] : inc $0A
+  and #$00FF
+  asl : asl : asl : asl : bit #$0800 : beq +
+    eor #$FFFF : inc a
++:
+  clc : adc $16 : sta $7F001A,x    ; $7f001a = sign-extended 16*Arg3 + ActorY
+lda #$0000 : sta $7F1014,x    ; $7f1014 = counter = 0 initially
+lda $0A : sta $02,s
+rti
+}
+; Perform acceleration.
+Cop_64:    ; $9cfa
+{
+tyx
+lda $7F1010,x : tay                  ; y = Arg2 (of previous cop #$63)
+lda $7F1014,x : inc : sta $7F1014,x  ; inc counter
+sep #$20
+  sta $4202
+  lsr a : sta $4203
+  lda #$00 : xba
+rep #$20
+lda $4216    ; = 1.5 * (1 + $7F1014,x) == 1.5 * counter
+.DivideBy2ExpYStep:
+dey : bmi .DoneDivide
+  lsr a : bra .DivideBy2ExpYStep
+.DoneDivide:    ; A = 1.5 * (1+$7F1014,x) / 2^$7F1010,x == 1.5 * counter / 2^Arg2
+pha
+  lda $7F1012,x : sec : sbc $01,s : sta $01,s
+pla : eor #$FFFF : inc a : sta $7F002E,x      ; ExplicitYMove = (1.5 * counter / 2^Arg2) - Arg1 == (3 * counter / 2^(1+Arg2)) - Arg1
+  bmi .Return0                                ; Return 0 if ExplicitYMove < 0,
+lda $16 : bmi .Return0                        ;   or if ActorY < 0,
+lda $7F001A,x : sec : sbc $16 : bcs .Return0  ;   or if within Arg3 tiles below initial pos.
+.ReturnFFFF:          ; IOW return -1 if onscreen, moving south, below initial pos + threshold.
+lda $0A : sta $02,s
+lda #$FFFF
+rti
+.Return0:
+lda $0A : sta $02,s
+lda #$0000
+rti
+}
+;org $809d52
+Cop_65:    ; $9d52, scripted world map movement (but await cop #$26)
+{
+tyx
+lda [$0A]
+  inc $0A : inc $0A
+  sta $0D52
+lda [$0A]
+  inc $0A : inc $0A
+  sta $0D56
+lda [$0A]
+  inc $0A
+  and #$00FF : sta $0D5E
+lda [$0A]
+  inc $0A
+  and #$00FF : sta $0D5A
+stz $0D58
+lda $0A : sta $02,s
+rti
+}
+;org $809d81
+Cop_66:    ; $9d81, choices world map movement (but await cop #$26)
+{
+tyx
+lda [$0A]
+  inc $0A : inc $0A
+  sta $0D52
+lda [$0A]
+  inc $0A : inc $0A
+  sta $0D56
+lda [$0A]
+  inc $0A
+  and #$00FF : sta $0D58
+lda $0A : sta $02,s
+rti
+}
+;org $809da3
+Cop_67:    ; $9da3, stage map movement but await cop #$26
+{
+tyx
+lda [$0A]
+  inc $0A
+  and #$00FF : sta $0D5E
+lda [$0A]
+  inc $0A
+  and #$00FF : sta $0D5A
+lda $0A : sta $02,s
+rti
+}
+;org $809dbd
+
+org $809e23
+Cop_80:    ; $9e23
+{
+tyx
+lda [$0A]
+  inc $0A
+and #$00FF
+jsr $9F5F
+lda $0A : sta $00
+  sta $02,s
+rti
+}
+;...
+org $80a01e
+Cop_8D:    ; $a01e
+{
+tyx
+lda [$0A]
+  inc $0A
+and #$00FF
+jsr SR_SetSpriteIndexMaybeMirror    ; $9f5f
+jsl LR_AnimateSprite    ; $83ca55
+stz $2A
+lda $0A : sta $00
+  sta $02,s
+rti
+}
+;...
+org $80a06b
+Cop_8F:
+{
+tyx
+lda [$0A]
+  inc $0A
+and #$00FF : sta $28
+  stz $2A
+jsr SR_SetSpriteDataOnPlayerBody    ; $AF6D
+lda $0A : sta $00
+  sta $02,s
+rti
+}
+;...
+org $80a16e
+Cop_96:    ; On button press, set/clear wall stuck flag if on boundary, else animate and exit if possible.
+{
+tyx
+lda [$0A]
+inc $0A : inc $0A
+cmp $0656 : bne .Return    ; Don't check if wrong buttons.
+lda $16 : bit #$000F : bne .TryAnimate   ; Don't check (but try animate) if off tile y-boundary.
+  sta $001C
+lda $14 : sta $0018
+jsr SR_ReturnTileTypeAtPixel    ; $b43b
+and #$00FF : bit #$00F0 : bne .MarkAsWalkingIntoWall
+  cmp #$000F : beq .MarkAsWalkingIntoWall
+  cmp $09B0 : bne .Return
+.TryAnimate:    ; org $80a19e
+jsl LR_AnimateSprite    ; $83ca55
+bcc .AnimOkayDoExit
+.NoAnimsDoReturn:
+.Return:
+lda $0A : sta $02,s
+rti
+
+.MarkAsWalkingIntoWall:    ; org $80a1a9
+lda $10 : ora #$0004 : sta $10
+bra .Return
+
+.AnimOkayDoExit:    ; org $80a1b2
+pla
+pla
+rtl
+}
+;org $80a1b5
+Cop_97:    ; As #$96 but checks on north tile.
+{
+tyx
+lda [$0A]
+inc $0A : inc $0A
+cmp $0656 : bne .Return
+lda $16 : bit #$000F : bne .TryAnimate
+  sec : sbc #$0010 : sta $001C
+lda $14 : sta $0018
+jsr SR_ReturnTileTypeAtPixel    ; $b43b
+  and #$00FF : bit #$00F0 : bne .MarkAsWalkingIntoWall
+  cmp #$000F : beq .MarkAsWalkingIntoWall
+  cmp $09B0 : bne .Return
+.TryAnimate:    ; org $80a1e9
+jsl LR_AnimateSprite    ; $83CA55
+bcc .AnimOkayDoExit
+.NoAnimsDoReturn:
+.Return:    ; org $80a1ef
+lda $0A : sta $02,s
+rti
+
+.MarkAsWalkingIntoWall:    ; org $80a1f4
+lda $10 : ora #$0004 : sta $10
+bra .Return
+
+.AnimOkayDoExit:    ; org $80a1fd
+pla
+pla
+rtl
+}
+;org $80a200
+Cop_98:    ; As #$96 but checks on south tile.
+{
+tyx
+lda [$0A]
+inc $0A : inc $0A
+cmp $0656 : bne .Return
+lda $16 : bit #$000F : bne .TryAnimate
+  clc : adc #$0010 : sta $001C
+lda $14 : sta $0018
+jsr SR_ReturnTileTypeAtPixel    ; $b43b
+  and #$00FF : bit #$00F0 : bne .MarkAsWalkingIntoWall
+  cmp #$000F : beq .MarkAsWalkingIntoWall
+  cmp $09B0 : bne .Return
+.TryAnimate:    ; org $80a234
+jsl LR_AnimateSprite    ; $83CA55
+bcc .AnimOkayDoExit
+.NoAnimsDoReturn:
+.Return:    ; org $80a23a
+lda $0A : sta $02,s
+rti
+
+.MarkAsWalkingIntoWall:    ; org $80a23f
+lda $10 : ora #$0004 : sta $10
+bra .Return
+
+.AnimOkayDoExit:    ; org $80a248
+pla
+pla
+rtl
+}
+;org $80a24b
+
+
+
+;...
+org $80a867
+Cop_BD:
+{
+phy
+phb
+lda [$0A] : inc $0A : inc $0A
+  tay
+lda [$0A] : inc $0A
+  and #$00FF
+sep #$20
+  pha : plb
+rep #$20
+lda #$0000 : tcd
+jsl LR_ParseBg3Script    ; $83ea62
+plb
+pla : tax : tcd
+lda #$0001 : tsb $09EC
+lda $0A : sta $02,s
+rti
+}
+;org $80a894
+
+org $809f5f ; Usage: High bit of new sprite index is artificial,
+SR_SetSpriteIndexMaybeMirror:
+{
+STZ $2A    ;   used to set/clear X-mirror sprite flag #$4000.
+CMP #$00FF ; If the requested sprite index (NB: NOT the
+BNE +$01   ; cop argument, which if #$FF is ignored)
+RTS        ; is #$FF, give up and return.
+BIT #$0080 ; If the requested sprite index is negative,
+BEQ .NoMirror  ; +$13   ; then
+AND #$FF7F ;   clear the negative bit
+STA $28    ;   and store the new value.
+LDA $12    ;   If the physics flags
+BIT #$0002 ;   do include this one,
+BEQ +$01   ;     stop processing
+RTS        ;     and return.
+LDA #$4000 ;   If not,
+TSB $0E    ;     set #$4000 in the sprite properties
+RTS        ;     and return.
+.NoMirror:
+STA $28    ; The requested sprite index was not negative.
+LDA $12    ; Store it in $28 directly, and again check
+BIT #$0002 ; whether the physics flags include #$0002.
+BEQ +$01   ; If so,
+RTS        ;   stop processing and return.
+LDA #$4000 ; If not,
+TRB $0E    ;   clear #$4000 from the sprite properties
+RTS        ;   and return.
+}
+
+
+org $80a9ae
+Cop_6D:
+{
+tyx
+lda [$0A]
+inc $0A
+and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  clc : adc $7F0012,x : sta $7F0012,x
+lda [$0A]
+inc $0A
+and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  clc : adc $7F0010,x : sta $7F0010,x
+ldy $0000
+jsl LR_OrbitAtY
+lda $0A : sta $02,s
+rti
+}
+;org $80a9eb
+
+
+org $80ac05
+Cop_D4:
+{
+tyx
+lda [$0A] : inc $0A
+and #$00FF
+jsl LR_GiveItemAOrSec : bcs .InvFullDoBranch
+lda [$0A] : inc $0A : inc $0A
+lda $0A : sta $02,s
+rti
+.InvFullDoBranch:
+lda [$0A] : inc $0A : inc $0A : sta $02,s
+rti
+}
+warnpc $80ac27
+
+
+
+
+org $80acdf
+Cop_DC:    ; South-going stairs.
+{
+tyx
+lda $2A : and #$00FF : dec : bmi .StepDoneCheckNext
+sep #$20
+  sta $2A
+rep #$20
+bra .ContinueThisStep
+.StepDoneCheckNext:    ; org $80acf0
+rep #$20
+jsr SR_SecIfStairMoverDone : bcc .DoMove    ; $b136
+.Done:
+lda $0A : sta $02,s
+rti
+.DoMove:    ; org $80acfc
+sta $2A
+.ContinueThisStep:    ; org $80acfe
+lda $2B : and #$000F : clc : adc $06C2 : sta $06C2
+  cmp $06DC : bpl .OutsideCameraBounds
+pla
+pla
+rtl
+.OutsideCameraBounds:    ; org $80ad12
+lda $0A : sta $02,s
+rti
+}
+;org $80ad17
+Cop_DD:    ; North-going stairs.
+{
+tyx
+lda $2A : and #$00FF : dec : bmi .StepDoneCheckNext
+sep #$20
+  sta $2A
+rep #$20
+bra .ContinueThisStep
+.StepDoneCheckNext:    ; org $80ad28
+rep #$20
+jsr SR_SecIfStairMoverDone : bcc .DoMove    ; $b136
+.Done:
+lda $0A : sta $02,s
+rti
+.DoMove:    ; org $80ad34
+sta $2A
+.ContinueThisStep:    ; org $80ad36
+lda $2B : and #$000F : sec : sbc $06C2 : beq +
+  bpl .OutsideCameraBounds
+eor #$FFFF : inc a
++:
+sta $06C2
+  cmp $06D8 : bmi .OutsideCameraBounds
+pla
+pla
+rtl
+.OutsideCameraBounds:    ; org $80ad52
+lda $0A : sta $02,s
+rti
+}
+;org $80ad57
+Cop_DE:    ; East-going stairs.
+{
+tyx
+lda $2A : and #$00FF : dec : bmi .StepDoneCheckNext
+sep #$20
+  sta $2A
+rep #$20
+bra .ContinueThisStep
+.StepDoneCheckNext:    ; org $80ad68
+rep #$20
+jsr SR_SecIfStairMoverDone : bcc .DoMove    ; $b136
+.Done:
+lda $0A : sta $02,s
+rti
+.DoMove:    ; org $80ad74
+sta $2A
+.ContinueThisStep:    ; org $80ad76
+lda $2B : and #$000F : clc : adc $06BE : sta $06BE
+  cmp $06DA : bpl .OutsideCameraBounds
+pla
+pla
+rtl
+.OutsideCameraBounds:    ; org $80ad8a
+lda $0A : sta $02,s
+rti
+}
+;org $80ad8f
+Cop_DF:    ; West-going stairs.
+{
+tyx
+lda $2A : and #$00FF : dec : bmi .StepDoneCheckNext
+sep #$20
+  sta $2A
+rep #$20
+bra .ContinueThisStep
+.StepDoneCheckNext:    ; org $80ada0
+rep #$20
+jsr SR_SecIfStairMoverDone : bcc .DoMove    ; $b136
+.Done:
+lda $0A : sta $02,s
+rti
+.DoMove:    ; org $80adac
+sta $2A
+.ContinueThisStep:    ; org $80adae
+lda $2B : and #$000F : sec : sbc $06BE : beq +
+  bpl .OutsideCameraBounds
+eor #$FFFF : inc
++:
+sta $06BE
+cmp $06D6 : bmi .OutsideCameraBounds
+pla
+pla
+rtl
+.OutsideCameraBounds:    ; org $80adca
+lda $0A : sta $02,s
+rti
+}
+;org $80adcf
+
+
+
+org $80AF6D
+SR_SetSpriteDataOnPlayerBody:
+{
+lda $0AD4 : asl
+  clc : adc $0AD4 : asl : tay    ; .Y = 6*Body
+lda.w Table_PlayerSpriteSources,y : sta $7F0006,x    ; $D971
+lda.w Table_PlayerSpriteSources,y : and #$00FF : sta $7F0008,x    ; $D973
+lda #$8000 : trb $09AE    ; Clear !FPlayerSpecialSprite.
+rts
+}
+
+org $80AF8F
+Dep_StoreRelativeTile:
+{
+LDA [$0A]
+INC $0A
+AND #$00FF
+BIT #$0080
+BEQ +$03
+ORA #$FF00; Expand Arg1 to 2-byte negative if needed
+ASL
+ASL
+ASL
+ASL
+CLC
+ADC $14; A = (#$10 * Arg1) + X-coordinate
+LSR A
+LSR A
+LSR A; Net effect is to floor X-coordinate
+LSR A; to a smalltile (16x16) coordinate
+STA $0018; and store result + Arg1 in $0018
+LDA [$0A]
+INC $0A
+AND #$00FF
+BIT #$0080
+BEQ +$03
+ORA #$FF00; Expand Arg2 to 2-byte negative if needed
+ASL
+ASL
+ASL
+ASL
+CLC
+ADC $16
+SEC
+SBC #$0010
+LSR A
+LSR A
+LSR A; Net effect is to floor Y-coordinate
+LSR A; to a smalltile (16x16) coordinate
+STA $001C; and store result + Arg2 in $001c
+RTS
+}
+; $80afce:
+SR_GetDirectionToPlayer:
+{
+LDY $09AA
+LDA $0014,y; PlayerX
+SEC
+SBC $0018; EventX
+BMI +$40; If PlayerX > EventX Then
+STA $0000;   $0000 = PlayerX - EventX
+LDA $0016,y;   PlayerY
+SEC;   |
+SBC $001C;   EventY
+BMI +$18;   If PlayerY > EventY Then
+LDY #$0002;     y = 2
+CMP #$0010;     |
+BCC +$6E;     If PlayerY - EventY > #$10 Then [Else Return]
+LDY #$0004;       y = 4
+LDA $0000;       |
+CMP #$0010;       |
+BCC +$63;       If PlayerX - EventX > #$10 Then [Else Return]
+LDY #$0003;         y = 3
+BRA +$5E;   |     return
+EOR #$FFFF;   Else [PlayerY < EventY]
+INC A;     |
+LDY #$0002;     y = 2
+CMP #$0010;     |
+BCC +$52;     If EventY - PlayerY > #$10 Then [Else Return]
+LDY #$0000;       y = 0
+LDA $0000;       |
+CMP #$0010;       |
+BCC +$47;       If PlayerX - EventX > #$10 Then [Else Return]
+LDY #$0001;         y = 1
+BRA +$42;         return
+EOR #$FFFF; Else [PlayerX < EventX]
+INC A;   |
+STA $0000;   $0000 = EventX - PlayerX
+LDA $0016,y;   |
+SEC;   |
+SBC $001C;   |
+BMI +$18;   If PlayerY > EventY Then
+LDY #$0006;     y = 6
+CMP #$0010;     |
+BCC +$2A;     If PlayerY - EventY > #$10 Then [Else Return]
+LDY #$0004;       y = 4
+LDA $0000;       |
+CMP #$0010;       |
+BCC +$1F;       If EventX - PlayerX > #$10 Then [Else Return]
+LDY #$0005;         y = 5
+BRA +$1A;   |     return
+EOR #$FFFF;   Else
+INC A;     |
+LDY #$0006;     y = 6
+CMP #$0010;     |
+BCC +$0E;     If EventY - PlayerY > #$10 Then [Else Return]
+LDY #$0000;       y = 0
+LDA $0000;       |
+CMP #$0010;       |
+BCC +$03;       If EventX - PlayerX > #$10 Then [Else Return]
+LDY #$0007;         y = 7, return
+TYA
+RTS
+}
+
+
+
+org $80B05E
+LR_SecOnDefeatedBossA:
+
+
+
+org $80B069
+LR_SetFlagBossADefeated:
+
+
+
+org $80B074
+SR_SetFlagEnemyADefeated:
+
+
+
+org $80B095
+SR_SecOnDefeatedEnemyA:
+
+
+
+org $80B0B7
+SR_SetFlagA:
+
+
+
+org $80B0D8
+SR_ClearFlagA:
+
+
+
+org $80B0FB
+SR_SecOnFlagA:
+{
+phx
+sta $0000
+lsr : lsr : lsr : tay
+lda #$0000
+sep #$20
+lda $0000 : and #$07 : tax
+lda.l T_PowersOfTwo80,x : and $0A00,y
+sec
+bne +
+  clc
++:
+rep #$20
+plx
+rts
+}
+
+;org $80b11d
+T_PowersOfTwo80:
+db $01,$02,$04,$08,$10,$20,$40,$80
+
+
+;org $80b125
+SR_GetActorIdFromOrder:
+{
+sep #$20         ;
+xba              ;
+lda #$30         ;
+jsl LR_MultiplyBytesOfA     ; $8281D1
+rep #$20         ;
+clc              ;
+adc #$1000       ;
+tay              ;
+rts              ;
+}
+
+;org $80b136
+SR_SecIfStairMoverDone:
+{
+php
+phx
+lda $06E2 : inc $06E2
+asl : clc : adc $06E0 : tax
+lda $0000,x : bit #$FF00 : beq .IsDone
+.NotDone:
+plx
+plp
+clc
+rts
+.IsDone:
+stz $06E2
+plx
+plp
+sec
+rts
+}
+
+;org $80b157
+
+
+org $80b345; $0000, $0018, $001C
+MaskTileTypesUnderObject:
+{
+PHB; =
+PHD; 0/1, eventX, eventY
+PHX
+LDA #$0000
+TCD
+LDA $7F000C,x; Event sprite state
+TAY; Y = sprite state
+SEP #$20
+LDA $7F0008,x; Bank of sprite data
+PHA
+PLB; DBR now contains bank of sprite data
+REP #$20
+LDA $0000,y; Load sprite data
+ORA #$FF00; Clear low byte, leaves $0001,y * #$100
+CLC
+ADC $18; Add to eventX
+LSR A
+LSR A
+LSR A
+LSR A
+STA $18; Convert to tile coordinate
+LDA $0002,y; Load sprite data + 2
+AND #$00FF; Clear high byte, leaves $0002,y
+STA $1A; Store as-is
+LDA $0001,y; Load sprite data + 1
+ORA #$FF00; Clear low byte, leaves $0002,y * #$100
+CLC
+ADC $1C; Add to eventY
+LSR A
+LSR A
+LSR A
+LSR A
+STA $1C; Convert to tile coordinate
+LDA $0003,y; Load sprite data + 3
+AND #$00FF; Clear high byte, leaves $0003,y
+STA $1E; Store as-is
+LDX #$0000; Clear x
+JSL $82B0A3; X = table-index of tile $0018,$001C
+CPX #$4000; Value returned is out of range,
+BCS +$54;   skip way ahead
+LDA $1A; Careful, due to JSL, accumulator is 8-bit...
+STA $18; Restore $0002,y in $18
+TXA
+STA $1C; $1C = tile coordinates within bigtile
+LDA $00; Still 1, so we jump to $b3ef.
+BEQ +$03;   
+JMP $B3EF
+TXA
+SEP #$20
+TAX
+LDA $7FC000,x
+AND #$0F
+STA $7FC000,x
+DEC $18
+BEQ +$0F
+REP #$20
+TXA
+INC A
+BIT #$000F
+BNE +$E6 ;(-$1A)
+CLC
+ADC #$00F0
+BRA +$E0 ;(-$20)
+DEC $1E
+BEQ +$21
+LDA $1A
+STA $18
+LDA $1C
+CLC
+ADC #$10
+BCS +$08
+STA $1C
+REP #$20
+LDA $1C
+BRA +$C9 ;(-$37)
+STA $1C
+REP #$20
+LDA $1C
+CLC
+ADC $0692
+STA $1C
+BRA +$BB ;(-$45)
+REP #$20
+PLX
+PLD
+PLB
+RTS; This is $80b3ee
+;$80b3ef:
+TXA; X still table index of tile
+SEP #$20
+TAX; LOOP START
+LDA $7FC000,x
+AND #$00; Clear all tile properties,
+STA $7FC000,x;   make passable
+DEC $18; Was $0002,y, now $0002,y - 1
+BEQ +$0F; If zero, goto DEC $1E below
+REP #$20
+TXA; Restore table index of tile to A,
+INC A;   and advance one tile.
+BIT #$000F; If the new tile is still in this
+BNE +$E6 ;(-$1A);   row, return to LOOP START above.
+CLC; We overflowed a row. Go back to the
+ADC #$00F0;   previous row, 1 bigtile over,
+BRA +$E0 ;(-$20) ;   and return to LOOP START above.
+DEC $1E; Cleared $0002,y tiles. Now dec $1e.
+BEQ +$21; If zero, goto REP #$20 below.
+LDA $1A; Restore $0002,y in $18.
+STA $18;   (Still 8-bit accumulator here.)
+LDA $1C; Recall tile coordinate within bigtile,
+CLC;   and advance one row.
+ADC #$10;   If it overflows, the carry is set;
+BCS +$08;   skip to the second STA $1C to fix this.
+STA $1C; Save the row-advanced coordinate,
+REP #$20; ...
+LDA $1C; ...
+BRA +$C9 ;(-$37); and return to the top, $b3ef.
+STA $1C; Overflowed down to the next y bigtile.
+REP #$20;   Save our tile coordinate, then use
+LDA $1C;   16-bit mode to advance by
+CLC;   #$100 times
+ADC $0692;   the number of bigtile columns.
+STA $1C; Save the table index,
+BRA +$BB ;(-$45);   and return to the top, $b3ef.
+REP #$20; All done:
+PLX; we cleared $0002,y tiles per row
+PLD; for $0003,y rows.
+PLB; Since we JMP'd here, this RTS
+RTS; returns to the COP.
+}
+; org $80b43b
+SR_ReturnTileTypeAtPixel:
+{
+PHD
+LDA #$0000 : TCD
+LDA $18 : AND #$FFF0 : BMI .ReturnSolid
+  CMP $06D6 : BCC .ReturnSolid
+  CMP $06DA : BCS .ReturnSolid
+  lsr : lsr : lsr : lsr : sta $18
+LDA $1C : BMI .ReturnSolid
+  CMP $06D8 : BCC .ReturnSolid
+  CMP $06DE : BCS .ReturnSolid
+  lsr : lsr : lsr : lsr : dec : sta $1C
+JSL LR_GetTileTableIndex83    ; $83D78A
+CPY #$4000 : BCS .ReturnSolid
+LDA [$80],y : BIT #$00F0 : BEQ .ReturnFound
+.ReturnSolid:
+LDA #$000F
+.ReturnFound:
+PLD
+RTS
+}
+
+LR_SetFlag20A:    ; $80b481
+clc : adc #$0200
+jsr SR_SetFlagA    ; $B0B7
+rtl
+
+LR_SecOnFlag20A:    ; $80B489
+rep #$20
+and #$00FF
+clc : adc #$0200
+jsr SR_SecOnFlagA    ; $B0FB
+rtl
+
+LR_SecOnFlag30A:    ; $80b496
+and #$00FF
+clc : adc #$0300
+jsr SR_SecOnFlagA    ; $b0fb
+rtl
+
+LR_SetFlag30A:    ; $80b4a1
+and #$00FF
+clc : adc #$0300
+jsr SR_SetFlagA    ; $B0B7
+rtl
+
+;org $80b4ac
+LR_SecOnFlag51A:
+and #$00FF
+clc : adc #$0510
+jsr SR_SecOnFlagA    ; $b0fb
+rtl
+
+;org $80b4b7
+LR_SecOnFlagA:
+and #$00FF
+jsr SR_SecOnFlagA    ; $b0fb
+rtl
+
+;org $80b4be
+LR_SetFlagA:
+and #$00FF
+jsr SR_SetFlagA    ; $b0b7
+rtl
+
+;org $80b4c5
+LR_ClearFlagA:
+and #$00FF
+jsr SR_ClearFlagA    ; $b0d8
+rtl
+
+;org $80b4cc
+LR_ClearMonsterKilledFlags:
+phx
+ldx #$0000
+lda #$0000
+.Next16:
+  sta $000a80,x
+  inx : inx
+  cpx #$0020 : bne .Next16
+plx
+rtl
+
+;org $80b4e0
+LR_SetFlag10A:
+and #$00FF : clc : adc #$0100
+jsr SR_SetFlagA    ; $b0b7
+rtl
+
+;org $80b4eb
+LR_ClearFlag10A:
+and #$00ff : clc : adc #$0100
+jsr SR_ClearFlagA    ; $b0d8
+rtl
+
+;org $80b4f6
+LR_SecOnFlag10A:
+and #$00ff : clc : adc #$0100
+jsr SR_SecOnFlagA    ; $b0fb
+rtl
+
+
+;org $80b501
+LR_AllocActor:
+lda ($4E) : bmi .OutOfMemory
+  tay
+lda #$0000 : sta ($4E)
+inc $4E : inc $4E
+inc $0DBC
+clc
+rtl
+.OutOfMemory:
+ldy #$1FC0
+sec
+rtl
+
+
+;org $80b519
+TIndexedPaletteBundleOnce:
+cop #$36
+cop #$39
+cop #$3d
+rtl
+
+;org $80B520
+db $00,$08
+TIndexedPaletteBundle:
+cop #$36
+cop #$39
+bra TIndexedPaletteBundle
+
+
+
+org $80b5b3
+TPlayerDeathPaletteBundle:
+cop #$37 : db $10
+cop #$39
+cop #$37 : db $0E
+cop #$39
+cop #$3D
+rtl
+warnpc $80b5c0
+
+
+
+org $80b88b
+db $04,$08
+jsr SR_ClearBgScrollCounters
+lda #$0000 : sta $7F000A,x
+cop #$C1
+lda $7F000A,x : sta $0012
+  inc : sta $7F000A,x
+jsr S_80B8D4
+sep #$20
+lda $0002 : xba
+lda $0060
+ldy $005E
+jsl PrepareDMAOnSelected
+lda #$01 : sta $0060
+rep #$20
+stz $005E
+rtl
+
+SR_ClearBgScrollCounters:    ; org $80b8c3
+ldy #$0000
+lda #$0000
+-:
+sta $0720,y
+  iny : iny
+  cpy #$0030 : bne -
+rts
+
+S_80B8D4:    ; org $80b8d4
+phx
+lda #$0000 : tcd
+lda $06E4 : sta $1A
+lda #$00E0 : sta $10
+lda $7F0002,x : asl : tax
+lda $CC00,x : tax
+lda $0003,x : bit #$0040 : beq +
+  lda $1A : asl : asl : asl : asl : sta $1A
++:
+lda $0690 : sta $1C
+lda $068A : sta $18
+lda $0003,x : bit #$0080 : beq +
+  lda $068E : sta $1C
+  lda $068C : sta $18
++:
+lda $0012
+lsr : bcs +
+  lda $0002,x : sta $64 : sta $60
+  lda $0000,x : sta $62 : sta $5E : bra ++
++:
+  lda $0002,x : sta $64 : sta $60
+  lda $0000,x : clc : adc #$0200 : sta $62 : sta $5E
+++:    ; org $80b941
+lda $0003,x : and #$003F : sta $02
+jsr SR_StoreDmaTargetWriteSize
+lda $0004,x : and #$00FF : sta $00
+txa : clc : adc #$0005 : tax
+lda $00 : cmp #$0004 : beq J_80B98E
+  cmp #$0009 : beq B_80B9B3
+J_80B966:    ; org $80b966
+lda $0000,x : beq B_80B981
+  clc : adc $1C : sta $1C
+  bmi B_80B97E
+pha
+  jsr S_80BB63
+  txa : clc : adc $00 : tax
+pla : bra J_80B966
+B_80B97E:    ; org $80b97e
+jsr J_80BACD
+B_80B981:    ; org $80b981
+lda #$0000 : sta [$62]
+stz $62
+stz $64
+pla : tcd : tax
+rts
+J_80B98E:    ; org $80b98e
+lda $0000,x : beq B_80B9A6
+clc : adc $1C : sta $1C
+bmi B_80B9A3
+  tay : txa : clc : adc $00 : tax : tya
+  bra J_80B98E
+B_80B9A3:    ; org $80b9a3
+jsr J_80BB1F
+B_80B9A6:    ; org $80b9a6
+lda #$0000 : sta [$62]
+stz $62
+stz $64
+pla : tcd : tax
+rts
+B_80B9B3:    ; org $80b9b3
+dec $00
+stz $08
+J_80B9B7:    ; org $80b9b7
+lda $0000,x : bmi B_80BA00
+sec : sbc $068A : bmi B_80B9C9
+cmp #$00FF : bcs J_80B9F9
+bra J_80B9D6
+B_80B9C9:    ; org $80b9c9
+clc : adc $0002,x : bmi J_80B9F9
+cmp #$00FF : bcs J_80B9F9
+bra J_80B9D6
+J_80B9D6:    ; org $80b9d6
+lda $0004,x : sec : sbc $068E : bmi B_80B9E9
+cmp #$00FF : bcs J_80B9F9
+jsr S_80BA1B : bra J_80B9F9
+B_80B9E9:    ; org $80b9e9
+clc : adc $0006,x : beq J_80B9F9
+bmi J_80B9F9
+cmp #$00FF : bcs J_80B9F9
+jsr S_80BA1B
+J_80B9F9:    ; org $80b9f9
+txa : clc : adc $00 : tax : bra J_80B9B7
+B_80BA00:    ; org $80ba00
+ldy #$0001
+lda #$0001 : sta [$62]
+lda #$0000 : sta [$62],y
+ldy #$0003 : sta [$62],y
+ldy #$0004 : sta [$62],y
+pla : tcd : tax
+rts
+
+S_80BA1B:    ; org $80ba1b
+lda $0004,x : sec : sbc $068E : bcs B_80BA2E
+clc : adc $0006,x : sta $26
+stz $24
+bra J_80BA35
+B_80BA2E:    ; org $80ba2e
+sta $24
+lda $0006,x : sta $26
+J_80BA35:    ; org $80ba35
+lda $0000,x : sec : sbc $068A : bcs B_80BA4A
+clc : adc $0002,x : and #$00FF : xba : sta $20
+bra J_80BA5A
+B_80BA4A:    ; org $80ba4a
+sta $20
+clc : adc $0002,x : cmp #$0100 : bcc +
+  lda #$FFFF
++:
+sta $21
+J_80BA5A:    ; org $80ba5a
+ldy $20
+jsr S_80BA60
+rts
+S_80BA60:    ; org $80ba60
+lda $24 : sec : sbc $08 : beq B_80BA91
+sta $0E
+clc : adc $08 : sta $08
+lda $0E
+B_80BA70:    ; org $80ba70
+stz $0E : cmp #$0080 : bmi B_80BA80
+sec : sbc #$007F : sta $0E
+lda #$007F
+B_80BA80:    ; org $80ba80
+sta [$62] : inc $62
+lda #$0000 : sta [$62]
+inc $62 : inc $62
+lda $0E : bne B_80BA70
+B_80BA91:    ; org $80ba91
+lda $26 : clc : adc $08 : sta $08
+lda $26
+B_80BA9A:    ; org $80ba9a
+stz $26 : cmp #$0080 : bmi B_80BAAA
+sec : sbc #$007F : sta $26
+lda #$007F
+B_80BAAA:    ; org $80baaa
+sta [$62] : inc $62
+tya : sta [$62]
+inc $62 : inc $62
+lda $26 : bne B_80BA9A
+rts
+
+;org $80BABA
+SR_StoreDmaTargetWriteSize:
+lda $02 : tay
+lda.w Table_DefaultDMAParams,y    ; $D8BE
+  and #$0007 : tay
+lda.w Table_DefaultDMAParams_WriteSize,y    ; $D8FE
+  and #$00FF : sta $04
+rts
+
+J_80BACD:    ; org $80bacd
+eor #$FFFF : inc a
+pha
+jsr S_80BB63
+lda $10 : sec : sbc $01,s : sta $10
+pla
+B_80BADD:    ; org $80badd
+stz $0E
+cmp #$0080 : bmi +
+  sec : sbc #$007F : sta $0E
+  lda #$007F
++:    ; org $80baed
+sta [$62]
+ldy #$0001
+lda $06
+lsr : lsr : lsr : lsr : bit #$0800 : beq +
+  ora #$F000
++:
+sta [$62],y
+lda $62 : clc : adc $04 : sta $62
+lda $0E : bne B_80BADD
+lda $10 : bpl B_80BB12
+rts
+B_80BB12:    ; org $80bb12
+txa : clc : adc $00 : tax
+lda $0000,x : bne +
+  rts
++:
+bra J_80BACD
+
+J_80BB1F:    ; org $80bb1f
+eor #$FFFF : inc a
+pha
+lda $10 : sec : sbc $01,s : sta $10
+pla
+B_80BB2C:    ; org $80bb2c
+stz $0E
+cmp #$0080 : bmi +
+  sec : sbc #$007F : sta $0E
+  lda #$007F
++:
+sta [$62]
+lda $0002,x
+ldy #$0001 : sta [$62],y
+lda $62 : clc : adc $04 : sta $62
+lda $0E : bne B_80BB2C
+lda $10 : bpl +
+  rts
++:
+txa : clc : adc $00 : tax
+lda $0000,x : bne +
+  rts
++:
+bra J_80BB1F
+
+S_80BB63:    ; org $80bb63
+lda $0004,x : beq B_80BB7B
+ldy $18
+jsl LR_YTimesAOverB : clc : adc $0006,x
+ldy $0002,x : sta $0000,y : sta $06
+rts
+B_80BB7B:    ; org $80bb7b
+ldy $0002,x
+lda $0006,x : clc : adc $0000,y : clc : adc $1A : sta $0000,y : sta $06
+rts
+warnpc $80bb8e
+
+
+
+
+
+
+org $80BCDF
+db $04,$08
+TCometResetShimmer:
+cop #$02 : dl .Data : db $10
+rtl
+.Data:
+db $70,$00,$00 : db $10,$00,$00 : db $01,$00,$00 : db $01,$00,$00 : db $00
+;org $80BCF5
+db $04,$08
+TCometVerticalShimmer:
+lda #$0001 : sta $7F0008,x
+cop #$5F  : db $00,$88,$08
+lda #$0000 : sta $7E8C30 : sta $7E8E30
+cop #$C2
+cop #$D0
+  db $FF,$00 : dw TCometVerticalShimmer ;[$BCF7] ; Refresh table if leaving inv.
+cop #$60 : db $05,$02
+cop #$61 : db $00,$8C,$7E,$10
+rtl
+;org $80BD21
+db $04,$08
+TCometHorizontalShimmer:
+lda #$0008 : sta $7F0008,x
+cop #$5F : db $00,$84,$08
+cop #$C2
+cop #$D0
+  db $FF,$00 : dw TCometHorizontalShimmer-2   ; Harmless bug.
+cop #$60 : db $05,$02
+cop #$61 : db $00,$84,$7E,$0F
+rtl
+;org $80BD42
+db $04,$08
+TCometConditionalShimmer:
+lda #$0002 : sta $7F0008,x
+cop #$5F : db $00,$80,$08
+cop #$C2
+cop #$D0
+  db $FF,$00 : dw TCometConditionalShimmer-2    ; Harmless bug.
+cop #$D0
+  db $01,$01 : dw .CometDead
+cop #$60 : db $05,$02
+cop #$61 : db $00,$84,$7E,$0D
+rtl
+.CometDead:
+lda #$0070 : sta $7F0008,x       ; Materialization magic.
+cop #$5F : db $00,$80,$04
+cop #$C2
+cop #$D0
+  db $FF,$00 : dw .CometDead    ; Refresh table if leaving inv.
+lda $7F0008,x : dec a : sta $7F0008,x
+beq .Sleep      ; [$80BD93]
+cop #$60 : db $05,$02
+cop #$61 : db $00,$84,$7E,$0D
+rtl
+.Sleep:
+cop #$C1
+rtl
+
+db $04,$08
+;org $80bd98
+
+
+
+org $80bf89
+db $00,$08
+TPlayerChatListener:
+
+
+
+org $80c2bb
+db $00 : dw $2000
+EBossClearRewarder:
+{
+phx
+sep #$20
+ldx #$0000
+lda $0644
+.TryMatchMap:
+cmp.l Lut_BossClearRoomSets,x : beq .MatchedMap    ; $80c312,x
+  inx : inx : inx : inx
+  bra .TryMatchMap
+.MatchedMap:    ; $80c2d3
+rep #$20
+txa
+stx $20
+plx
+lsr a : lsr a
+jsl LR_SecOnDefeatedBossA : bcs .DoneQuit    ; $80b05e
+cop #$C1
+lda $09ae : bit #$0020 : bne +
+  rtl
++:
+phx
+  ldx $20
+  lda.l Lut_BossClearRoomSets,x : sta $0004    ; $80c312
+  jsr SR_GiveRoomRewardsInRange    ; $c33e
+plx
+lda $0aca : sec : sbc $0ace : sta $0b22
+lda $20 : lsr : lsr : jsl LR_SetFlagBossADefeated    ; $80b069
+.DoneQuit:
+cop #$C1
+nop : nop : nop
+rtl
+;org $80c312
+Lut_BossClearRoomSets:
+{
+db $29,$0c,$29,$00
+db $55,$3d,$55,$00
+db $67,$5a,$67,$00
+db $8a,$6d,$8a,$00
+db $dd,$a0,$dd,$00
+db $f8,$00,$00,$00
+db $29,$00,$00,$00
+db $29,$00,$00,$00
+db $29,$00,$00,$00
+db $29,$00,$00,$00
+db $29,$00,$00,$00
+}
+;org $80c33e
+SR_GiveRoomRewardsInRange:
+xba : and #$00ff : sta $000e
+lda $0004 : and #$00ff : tay
+sep #$20
+bra .CheckNextRoom
+.AwardGivenCheckNext:
+sep #$20
+iny
+.CheckNextRoom:
+lda.w Lut_RoomClearRewards,y : bne .RoomHasAward   ; $aade,y
+  iny : cpy $000e : bcc .CheckNextRoom
+    bra .Done
+.RoomHasAward:
+rep #$20
+and #$00ff : sta $0004
+tya
+phy
+  jsl LR_SecOnFlag30A    ; $80b496
+ply
+bcs .AwardGivenCheckNext
+phy
+  tya : jsl LR_SetFlag30A    ; $80b4a1
+ply
+lda $0004
+pea .AwardGivenCheckNext-1    ; $c34f
+dec : bne .NotHp
+.IsHp:
+  inc $0aca
+  rts
+.NotHp:
+dec : bne .NotStr
+.IsStr:
+  inc $0ade
+  rts
+.NotStr:
+dec : beq .IsDef
+  rts
+.IsDef:
+inc $0adc
+rts
+.Done:
+rep #$20
+rts
+}
+
+;org $80c397
+
+
+
+org $80C3D9
+cop #$A5 : dl EDamageReactionHandler : db $00,$00 : dw $2400    ; $80d877
+
+
+org $80c418
+EObjectDeathWithSparkle:
+cop #$A5 : dl EObjectDeathSparkle : dw $0000, $0302
+cop #$E0
+; org $80c423
+EObjectDeathSparkle:
+cop #$06 : db $09
+cop #$88 : dl $8EE000
+cop #$80 : db $2A
+cop #$89
+cop #$E0
+
+;org $80C432
+PlayerFreezePointer:
+cop #$D0 : db $00,$01 : dw .Sprite11
+cop #$8F : db $01
+bra .Sleep
+.Sprite11:
+cop #$8F : db $11
+.Sleep:
+cop #$C1
+cop #$89
+bra .Sleep
+
+;org $80c446
+lda #$0200 : tsb $10
+cop #$8E : db $04
+.Animate:
+cop #$80 : db $1F
+cop #$89
+bra .Animate
+
+;org $80c455
+lda #$0200 : trb $10
+PlayerUnfreezePointer:
+jml EPlayer_FromCastothFreeze    ; $82C3C8
+
+
+
+org $80C66F
+db $00,$00,$30
+ERedJewelPickup:
+cop #$C0 : db .OnUse    ; $C681
+cop #$88 : dl $8EE000
+cop #$8D : db $00
+cop #$C1
+rtl
+.OnUse:    ; $C681
+lda $0E : clc : adc #$0080 : jsl LR_SecOnFlag20A : bcs .Done
+cop #$D4 : db $01 : dw ..OnFullInv    ; $C6A1
+cop #$BF : dw .TextGet    ; $C6A6
+lda $0E : clc : adc #$0080 : jsl LR_SetFlag20A    ; $80B481
+rtl
+.OnFullInv:    ; $C6A1
+cop #$BF : dw .TextFullInv    ; $C6BF
+.Done:    ; $C6A5
+rtl
+.TextGet:    ; $C6A6
+; "You found a Red Jewel!"
+db $c1,$03,$11,$c7,$0d,$03,$69,$8e,$a5,$ac,$d6,$8f,$80,$ac,$62,$84,$83,$ac,$49,$84,$a7,$84,$8b,$4f,$c0
+.TextFullInv:    ; $C6BF
+; "You found a Jewel but your inventory is full."
+db $c1,$03,$11,$c7,$0d,$03,$69,$8e,$a5,$ac,$d6,$8f,$80,$ac,$49,$84,$a7,$84,$8b,$ac,$81,$a5,$a4
+db $cb,$d6,$fe,$d6,$a0,$88,$a3,$ac,$85,$a5,$8b,$8b,$2a,$c0
+
+
+
+
+
+org $80C993
+db $D3,$CE,$C2,$00,$D6,$68,$D6,$A0,$88,$A3,$AC,$85,$A5,$8B,$8B,$2A,$CB,$69,$8E,$A5,$AC,$D6,$78,$82,$80,$A2,$A2,$A9,$AC,$8C,$8E,$A2,$84,$2A,$C3,$00,$C0
+
+;org $80c9b8
+EBreakingWallExplosionFactory:
+{
+cop #$CA : db $08
+  cop #$DA : db $03
+  cop #$9C : dl EBreakingWallExplosion : dw $0302
+cop #$CB
+cop #$E0
+; org $80c9c9
+EBreakingWallExplosion:
+cop #$88 : dl $8EE000
+cop #$B7 : db $00
+cop #$B6 : db $30
+cop #$23 : and #$001F
+  sec : sbc #$0010
+  clc : adc $14
+  sta $14
+cop #$23 : and #$001F
+  sec : sbc #$0010
+  clc : adc $16
+  sta $16
+cop #$08 : db $0F, $0F
+cop #$80 : db $01
+cop #$89
+cop #$E0
+}
+
+;org $80c9fb
+db $00 : dw $0100
+
+
+
+org $80CA0a
+sta $7f0020,x
+
+
+
+org $80CA42
+db $00,$00,$30
+EWorldMapTransitionListener:
+{
+lda $0644
+cmp #$0001 : bne +$03 : jmp .HandleMap01    ; $caca
+cmp #$000a : bne +$03 : jmp .HandleMap0A    ; $cb11
+cmp #$0015 : bne +$03 : jmp .HandleMap15    ; $cb2a
+cmp #$001c : bne +$03 : jmp .HandleMap1C    ; $cb5f
+cmp #$0032 : bne +$03 : jmp .HandleMap32    ; $cb78
+cmp #$003e : bne +$03 : jmp .HandleMap3E    ; $cba7
+cmp #$0069 : bne +$03 : jmp .HandleMap69    ; $cbc0
+cmp #$0071 : bne +$03 : jmp .HandleMap71    ; $cbef
+cmp #$0083 : bne +$03 : jmp .HandleMap83    ; $cc34
+cmp #$0092 : bne +$03 : jmp .HandleMap92    ; $cc4d
+cmp #$00a1 : bne +$03 : jmp .HandleMapA1    ; $cc92
+cmp #$00ad : bne +$03 : jmp .HandleMapAD    ; $ccab
+cmp #$00b1 : bne +$03 : jmp .HandleMapB1    ; $ccf0
+cmp #$00c3 : bne +$03 : jmp .HandleMapC3    ; $cd09
+cmp #$00cc : bne +$03 : jmp .HandleMapCC    ; $cd38
+rtl
+.Done:
+lda #$0400 : sta $064A    ; Default fade parameters.
+cop #$C1
+rtl
+.HandleMap01:
+cop #$C1
+lda $09A4 : cmp #$0010 : bcc +$01 : rtl    ; Continue if Y < $10.
+cop #$D0 : db $26,$01 : dw ..Flag26Set    ; $caf1
+cop #$D0 : db $25,$01 : dw ..Flag25Set    ; $cb01
+lda #$0000 : sta $0d60    ; Will only.
+cop #$66 : dw $00d4,$03a4 : db $01
+jmp .Done
+..Flag26Set:
+lda #$0000 : sta $0d60
+cop #$66 : dw $00d4,$03a4 : db $02
+jmp .Done
+..Flag25Set:
+lda #$0000 : sta $0d60
+cop #$66 : dw $00d4,$03a4 : db $1b
+jmp .Done
+.HandleMap0A:
+lda $09A4 : cmp #$02D0 : beq +$01 : rtl
+lda #$0000 : sta $0D60
+cop #$66 : dw $0104,$0334 : db $03
+jmp .Done    ; $cac1
+.HandleMap15:
+cop #$D0 : db $01,$01 : dw ..Flag01Set    ; $CB38
+cop #$45 : db $2D,$2E,$2F,$30 : dw ..InArea    ; $CB39
+..Flag01Set:
+rtl
+..InArea:
+cop #$D0 : db $4A,$01 : dw ..Flag4ASet    ; $CB4F
+lda #$0000 : sta $0D60
+cop #$66 : dw $00C4,$02B4 : db $04
+jmp .Done    ; $cac1
+..Flag4ASet:
+lda #$0000 : sta $0D60
+cop #$66 : dw $00C4,$02B4 : db $06
+jmp .Done    ; $cac1
+.HandleMap1C:
+cop #$45 : db $06,$1C,$08,$1E : dw ..InArea
+rtl
+..InArea:
+lda #$0000 : sta $0D60
+cop #$66 : dw $0134,$0284 : db $05
+jmp .Done    ; $cac1
+.HandleMap32:
+cop #$45 : db $12,$3C,$16,$3E : dw ..InArea
+rtl
+..InArea:
+cop #$D0 : db $65,$01 : dw ..Flag65Set    ; $CB97
+lda #$0000 : sta $0D60
+cop #$66 : dw $0254,$02D4 : db $09
+jmp .Done    ; $cac1
+..Flag65Set:
+lda #$0000 : sta $0D60
+cop #$66 : dw $0254,$02D4 : db $07
+jmp .Done    ; $cac1
+HandleMap3E:
+cop #$45 : db $0A,$3F,$0C,$40 : dw ..InArea
+rtl
+..InArea:
+lda #$0000 : sta $0D60
+cop #$66 : dw $0334,$0334 : db $08
+jmp .Done    ; $cac1
+.HandleMap69:
+cop #$45 : db $29,$0D,$2C,$0F : dw ..InArea
+rtl
+..InArea:
+cop #$D0 : db $8D,$01 : dw ..Flag8DSet    ; $CBDF
+lda #$0000 : sta $0D60
+cop #$66 : dw $0384,$0164 : db $15
+jmp .Done    ; $cac1
+..Flag8DSet:
+lda #$0000 : sta $0D60
+cop #$66 : dw $0384,$0164 : db $0A
+jmp .Done    ; $cac1
+.HandleMap71:
+cop #$45 : db $27,$3D,$29,$40 : dw ..InArea
+rtl
+..InArea:
+cop #$D0 : db $94,$01 : dw ..Flag94Set    ; $CC24
+cop #$D0 : db $8E,$01 : dw ..Flag8ESet    ; $CC14
+lda #$0000 : sta $0D60
+cop #$66 : dw $02D4,$01A4 : db $0B
+jmp .Done    ; $cac1
+..Flag8ESet:
+lda #$0000 : sta $0D60
+cop #$66 : dw $02D4,$01A4 : db $0C
+jmp .Done    ; $cac1
+..Flag94Set:
+lda #$0000 : sta $0D60
+cop #$66 : dw $02D4,$01A4 : db $0E
+jmp .Done    ; $cac1
+.HandleMap83:
+cop #$45 : db $00,$08,$01,$0B : dw ..InArea
+rtl
+..InArea:
+lda #$0000 : sta $0D60
+cop #$66 : dw $02A4,$0124 : db $0D
+jmp .Done    ; $cac1
+.HandleMap92:
+cop #$45 : db $3F,$42,$40,$48 : dw ..InArea
+rtl
+..InArea:
+cop #$D0 : db $AC,$01 : dw ..FlagACSet    ; $CC82
+cop #$D0 : db $9F,$01 : dw ..Flag9FSet    ; $CC72
+lda #$0000 : sta $0D60
+cop #$66 : dw $01D4,$0134 : db $0F
+jmp .Done    ; $cac1
+..Flag9FSet:
+lda #$0000 : sta $0D60
+cop #$66 : dw $01D4,$0134 : db $10
+jmp .Done    ; $cac1
+..FlagACSet:
+lda #$0000 : sta $0D60
+cop #$66 : dw $01D4,$0134 : db $1A
+jmp .Done    ; $cac1
+.HandleMapA1:
+cop #$45 : db $2F,$1B,$30,$1C : dw ..InArea
+rtl
+..InArea:
+lda #$0000 : sta $0D60
+cop #$66 : dw $0214,$00B4 : db $11
+jmp .Done    ; $cac1
+.HandleMapAD:
+cop #$45 : db $1F,$1B,$20,$20 : dw ..InArea
+rtl
+..InArea:
+cop #$D0 : db $B6,$01 : dw ..FlagB6Set    ; $CCE0
+cop #$D0 : db $B1,$01 : dw ..FlagB1Set    ; $CCD0
+lda #$0000 : sta $0D60
+cop #$66 : dw $0124,$01A4 : db $12
+jmp .Done    ; $cac1
+..FlagB1Set:
+lda #$0000 : sta $0D60
+cop #$66 : dw $0124,$01A4 : db $13
+jmp .Done    ; $cac1
+..FlagB6Set:
+lda #$0000 : sta $0D60
+cop #$66 : dw $0124,$01A4 : db $19
+jmp .Done    ; $cac1
+.HandleMapB1:
+cop #$45 : db $1D,$4F,$24,$50 : dw ..InArea
+rtl
+..InArea:
+lda #$0000 : sta $0D60
+cop #$66 : dw $0134,$0154 : db $14
+jmp .Done    ; $cac1
+.HandleMapC3:
+cop #$45 : db $00,$0D,$01,$11 : dw ..InArea
+rtl
+..InArea:
+cop #$D0 : db $B4,$01 : dw ..FlagB4Set    ; $CD28
+lda #$0000 : sta $0D60
+cop #$66 : dw $0094,$0114 : db $16
+jmp .Done    ; $cac1
+..FlagB4Set:
+lda #$0000 : sta $0D60
+cop #$66 : dw $0094,$0114 : db $17
+jmp .Done    ; $cac1
+.HandleMapCC:
+cop #$45 : db $00,$0D,$01,$0F : dw ..InArea
+cop #$45 : db $3F,$0D,$40,$0F : dw ..InArea
+rtl
+..InArea:
+lda #$0000 : sta $0D60
+cop #$66 : dw $0074,$00B4 : db $18
+jmp .Done    ; $cac1
+}
+
+;org $80cd59
+; Statue-Get cutscene handler.
+db $00,$00,$30
+
+
+org $80cf8e
+ESimpleScreenShake:
+
+
+org $80D090
+sta $7f0020,x
+
+
+org $80d2d0
+db $00 : dw $2000
+ERampLauncherToWest:
+cop #$C1
+.Listen:
+lda $14 : clc : adc #$0008 : sta $0018
+lda $09B2 : jsr SR_ClcIfFastAndNotSpecialMove : bcc .SpeedOkay
+  rtl
+.SpeedOkay:
+ldy $09AA
+lda $0016,y : sec : sbc $16 : bpl +
+  eor #$FFFF : inc
++:
+cmp #$0019 : bmi .VerticalOkay
+  rtl
+.VerticalOkay:
+lda $0014,y : sec : sbc #$0008 : sec : sbc $0018 : bmi .DirectionOkay
+  rtl
+.DirectionOkay:
+bpl +
+  eor #$FFFF : inc
++:
+cmp #$000F : bcc .DistanceOkay
+  rtl
+.DistanceOkay:
+cop #$C1
+ldy $09AA
+lda $0014,y : sec : sbc $14 : beq .DoLaunch
+  bpl +
+    eor #$FFFF : inc
++:
+cmp #$0010 : bcs .PlayerTooFarAbortLaunch
+.PlayerStillTrying:
+rtl
+.PlayerTooFarAbortLaunch:
+cop #$C4 : dl .Listen
+.DoLaunch:
+lda #$D4D2 : sta $0000,y
+lda #$0080 : sta $0002,y
+jsr SR_StartSoaringPlayer    ; $d496
+cop #$C4 : dl .Listen
+
+;org $80d348
+db $00 : dw $2000
+ERampLauncherToEast:
+
+
+org $80d496
+SR_StartSoaringPlayer:
+stz $09b2
+stz $09b4
+lda $0e
+phx
+  tyx
+  sta $7f0020,x
+  lda #$0000 : sta $002c,x : sta $002e,x
+plx
+lda #$0f00 : tsb $065a
+lda #$0800 : tsb $09ae
+rts
+
+; org $80d4bb
+SR_ClcIfFastAndNotSpecialMove:
+bpl +
+  eor #$FFFF : inc
++:
+cmp #$0006 : bcc .TooSlowOrSpecial
+lda $09AE : bit #$0800 : bne .TooSlowOrSpecial
+clc
+rts
+.TooSlowOrSpecial:
+sec
+rts
+warnpc $80d4d2
+
+org $80d4f5
+EPlayer_Soaring:
+cop #$9B : dl ESoaringPlayerMover    ; $80d5c0
+phx
+  ldx $06
+  lda #$0008 : sta $7F0012,x
+plx
+lda #$0008 : trb $10
+lda #$0200 : tsb $10
+.RepeatAnim:
+cop #$92 : db $24, $0F, $00
+cop #$89
+bra .RepeatAnim
+warnpc $80d518
+
+org $80D58A
+SR_StopSoaringPlayer:
+phx
+ldx $09AA
+lda #$0082 : sta $0002,x
+lda #$C3C8 : sta $0000,x
+lda #$0000 : sta $002C,x : sta $002E,x : sta $0008,x
+lda $0010,x : and #$FDFF : ora #$0008 : sta $0010,x
+lda #$0F00 : trb $065A
+lda #$0800 : trb $09AE
+plx
+rts
+;org $80D5C0
+ESoaringPlayerMover:
+phx
+ldx $04
+lda $7F0020,x : asl : clc : adc $7F0020,x : tax
+lda.l Table_SoaringSpeeds+2,x : and #$00FF : tay    ; $81D90D
+lda.l Table_SoaringSpeeds,x : sec : sbc.w #Table_SoaringSpeeds    ; $81D90B
+  plx
+  sta $7F0010,x
+tya : sta $7F0014,x
+stz $2A
+lda.w #ReturnPoint80D5F1 : sta $7F001E,x    ; #$D5F1
+#ReturnPoint80D5F1:
+phx
+lda $7F0010,x : clc : adc $2A
+  inc $2A
+  tax
+lda.l Table_SoaringSpeeds,x : and #$00FF : bit #$0080 : beq +    ; $81D90B
+  ora #$FF00
++:
+  ldx $04
+clc : adc $0016,x : sta $0016,x
+plx
+cop #$CB
+lda $7F0012,x : sta $09B2
+jsr SR_StopSoaringPlayer
+lda #$0000 : sta $09B6
+lda #$0007 : sta $09B8
+cop #$E0
+
+;org $80d62f
+EPlayer_Die:
+{
+lda #$0040 : tsb $10
+lda #$FFF0 : tsb $065A
+cop #$DA : db $20
+cop #$3C : dl TPlayerDeathPaletteBundle
+cop #$9B : dl EPlayerDeathSparkSpawner
+cop #$DA : db $77
+lda #$8000 : trb $10
+cop #$08 : db $0C, $0C    ; Dark Space bzzp sound
+cop #$88 : dl $8EE000
+cop #$80 : db $1C
+cop #$89
+lda #$000F : sta $7F0010,x
+.DarkenScreenLoop:    ; org $80d664
+sep #$20
+lda $7F0010,x : dec : bmi +
+  sta $7F0010,x
+  sta $2100
+rep #$20
+cop #$DA : db $03
+bra .DarkenScreenLoop
++:
+rep #$20
+cop #$3B : db $0B : dl TIndexedPaletteBundleOnce
+cop #$3B : db $0D : dl TIndexedPaletteBundleOnce
+cop #$C2
+phb
+lda $0AD6 : cmp #$0064 : bcc .NoExtraLives
+.WithExtraLives:
+  sbc #$0064 : sta $0AD6
+lda $0ACA : lsr : sta $0ACE
+sep #$20
+lda $0AF6 : pha : plb
+ldy $0AF4
+bra .ParseRespawnData
+.NoExtraLives:
+stz $0AD6
+lda $0644 : and #$00FF : cmp #$00E8 : bne ..RespawnAsWill
+..RespawnAsShadow:
+lda #$0002 : sta $0AD4
+bra +
+..RespawnAsWill:
+stz $0AD4
++:
+lda $0ACA : sta $0ACE
+ldy #$0000
+lda #$0000
+..RespawnMonsters:
+sta $0A80,y : iny : iny
+cpy #$0020 : bne ..RespawnMonsters
+sep #$20
+lda $0AF2 : pha : plb
+ldy $0AF0
+.ParseRespawnData:    ; org $80d6e6
+lda $0000,y : sta $0642
+lda $0005,y : and #$7F : sta $0650
+rep #$20
+lda $0001,y : sta $064C
+lda $0003,y : sta $064E
+lda $0006,y : sta $0652
+plb
+lda #$0404 : sta $064A : inc $0AF8
+stz $0654
+cop #$C1
+rtl
+}
+
+; org $80d718
+EPlayerDeathSparkSpawner:
+{
+lda #$2000 : tsb $10
+cop #$88 : dl $8EE000
+cop #$B7 : db $00
+cop #$DA : db $0B
+cop #$A4 : dl EPlayerDeathSparkA : dw $D8E7, $0700
+cop #$DA : db $02
+cop #$A4 : dl EPlayerDeathSparkB : dw $E819, $0700
+cop #$DA : db $04
+cop #$A4 : dl EPlayerDeathSparkA : dw $F8E7, $0700
+cop #$DA : db $62
+cop #$E0
+EPlayerDeathSparkA:    ; org $80d74e
+lda #$0001 : tsb $10
+cop #$83 : db $15, $2D, $2F
+cop #$89
+lda #$0001 : trb $10
+lda #$0002 : tsb $10
+cop #$83 : db $15, $2E, $30
+cop #$89
+lda #$0002 : trb $10
+bra EPlayerDeathSparkA
+EPlayerDeathSparkB:    ; org $80d772
+lda #$0001 : tsb $10
+cop #$83 : db $15, $2E, $2F
+cop #$89
+lda #$0001 : trb $10
+lda #$0002 : tsb $10
+cop #$83 : db $15, $2D, $30
+cop #$89
+lda #$0002 : trb $10
+bra EPlayerDeathSparkB
+}
+
+
+;org $80d796
+ERespawnMessage:
+{
+lda #$CFF0 : tsb $065A
+stz $0AF8
+cop #$DA : db $02
+lda $0AD4 : bne .NotWill
+  cop #$BF : dw .TextForWill    ; $D7C2
+  bra .Done
+.NotWill:
+dec : bne .IsShadow
+  cop #$BF : dw .TextForFreedan    ; $D818
+  bra .Done
+.IsShadow:
+  cop #$BF : dw .TextForShadow    ; $D848
+.Done:
+lda #$CFF0 : trb $065A
+cop #$E0
+;org $80D7C2
+.TextForWill:
+db $D3,$67,$88,$8B,$8B,$2F,$AC,$48,$AC,$80,$8C,$AC,$A3,$8E,$8C,$84,$A4,$88,$8C,$84,$A3,$AC,$CB,$80,$A7,$80,$A2,$84,$AC,$8E,$85,$AC,$87,$80,$A6,$88,$8D,$86,$AC,$85,$80,$8B,$8B,$84,$8D,$AC,$CB,$88,$8D,$AC,$80,$AC,$D7,$90,$48,$AC,$8A,$8D,$8E,$A7,$2A,$AC,$4C,$A5,$A3,$A4,$AC,$CB,$D6,$98,$D6,$70,$80,$AC,$8D,$88,$86,$87,$A4,$8C,$80,$A2,$84,$2A,$AC,$C0
+.TextForFreedan:    ;org $80D818
+db $D3,$45,$A2,$84,$84,$83,$80,$8D,$2F,$AC,$D6,$61,$48,$AC,$A4,$87,$88,$8D,$8A,$CB,$D6,$6B,$88,$A4,$2B,$AC,$D6,$D7,$A0,$8B,$80,$82,$84,$CB,$D7,$A0,$85,$80,$8C,$88,$8B,$88,$80,$A2,$2A,$2A,$2A,$C0
+.TextForShadow:    ;org $80D848
+db $D3,$63,$87,$80,$83,$8E,$A7,$2F,$AC,$D6,$61,$48,$AC,$A4,$87,$88,$8D,$8A,$CB,$D6,$6B,$88,$A4,$2B,$AC,$D6,$D7,$A0,$8B,$80,$82,$84,$CB,$D7,$A0,$85,$80,$8C,$88,$8B,$88,$80,$A2,$2A,$2A,$2A,$C0
+}
+
+;org $80D877
+EDamageReactionHandler:
+{
+lda $7F002A,x : bit #$0020 : bne +    ; Don't do WorldCollide during recoil if forced-moving.
+  lda #$0008 : tsb $10
++:
+lda #$0008 : tsb $12    ; ???
+lda $12 : bit #$0010 : bne .NoRecoil
+phx
+  ldy $24
+  lda $0014,y : sta $7F0010,x : sta $14    ; XPos when damage taken.
+  lda $0016,y : sta $7F0012,x : sta $16    ; YPos when damage taken.
+  tyx
+  lda $7F101C,x
+plx
+    sta $7F101C,x
+lda $0028,x : cmp #$0004 : bcs .NoRecoil
+.WithRecoil:
+pea .PostRecoilCheck-1
+  dec : bmi .WithRecoil_ToSouth
+  dec : bmi .WithRecoil_ToNorth
+  dec : bmi .WithRecoil_ToWest
+  bra .WithRecoil_ToEast
+
+.NoRecoil:
+cop #$DA : db $0F
+lda $10 : bit #$0400 : beq +
+  jmp .HandleDamagedPlayer
++:
+jmp .RecoilComplete
+
+.WithRecoil_ToSouth:
+lda #$6000 : trb $12
+sec : jsr SR_FillDamageRecoilMovePattern
+rts
+.WithRecoil_ToNorth:
+lda #$6000 : trb $12
+cop #$AF : db $01    ; Force negative movement.
+sec : jsr SR_FillDamageRecoilMovePattern
+rts
+.WithRecoil_ToWest:
+lda #$6000 : trb $12
+cop #$AF : db $01    ; Force negative movement.
+clc : jsr SR_FillDamageRecoilMovePattern
+rts
+.WithRecoil_ToEast:
+lda #$6000 : trb $12
+clc : jsr SR_FillDamageRecoilMovePattern
+rts
+
+.PostRecoilCheck:    ; org $80d904
+cop #$C2
+cop #$CA : db $10
+  ldy $24
+  lda $14 : sta $0014,y
+  lda $16 : sta $0016,y
+cop #$CB
+lda $10 : bit #$0400 : beq +    ; IsWeapon flag
+  jmp .HandleDamagedPlayer
++:
+lda $10 : bit #$0008 : beq .RecoilComplete    ; Logic continues after 17 frames if not a WCollider.
+lda $26 : bne .AwaitRecoilX
+.AwaitRecoilY:
+lda $7F0012,x : sec : sbc $16 : beq .RecoilComplete
+  bpl +
+    eor #$FFFF : inc a
++:
+bit #$000F : bne ..NotOnGridline
+  jsr SR_SecOnIncompleteRecoil : bcc .RecoilComplete
+..NotOnGridline:    ; org $80d945
+ldx $24
+lda $002C,x : bne +
+  stz $0008,x
++:
+lda #$0000 : sta $002E,x
+  sta $7F002E,x
+bra .RecoilComplete+2    ; Skip a redundant ldx $24.
+.AwaitRecoilX:
+lda $7F0010,x : sec : sbc $14 : beq .RecoilComplete
+  bpl +
+    eor #$FFFF : inc a
++:
+bit #$000F : bne ..NotOnGridline
+  jsr SR_SecOnIncompleteRecoil : bcc .RecoilComplete
+..NotOnGridline:
+ldx $24
+lda $002E,x : bne +
+  stz $0008,x
++:
+lda #$0000 : sta $002C,x
+  sta $7F002C,x
+.RecoilComplete:    ; org $80d988
+ldx $24
+lda $7F0026,x : bne .HandleNotDead
+.HandleIsDead:
+lda $0010,x : bit #$0040 : bne .Die
+  ora #$0040 : sta $0010,x
+lda $7F1004,x : beq ..NoDeathPointer
+
+..HasDeathPointer:
+  sta $0000,x
+lda $7F1006,x : sta $0002,x
+lda #$0000 : sta $0008,x : sta $002C,x : sta $002E,x
+bra .Die
+
+..NoDeathPointer:
+lda #$0080 : sta $0002,x    ; i.e. BankOf(EBasicMonsterDeath)
+lda.w #EBasicMonsterDeath : sta $0000,x    ; #$DB8A
+lda #$0000 : sta $0008,x
+bra .Die
+
+.HandleNotDead:
+lda $7F1000,x : beq ..NoDamagePointer
+..HasDamagePointer:
+  sta $0000,x
+lda #$0000 : sta $7F1000,x
+..NoDamagePointer:
+lda #$FFF4 : sta $7F0028,x
+.Die:    ; org $80d9e7
+tdc
+tax
+cop #$E0
+
+.HandleDamagedPlayer:
+phx
+ldx $09AA
+lda $09AE : bit #$0A00 : bne ..NoRestoreControl
+  lda #$0082 : sta $0002,x    ; i.e. BankOf(EPlayer)
+  lda.w #EPlayer_ParseAct : sta $0000,x    ; #$C3C8
+..NoRestoreControl:
+lda #$FFE2 : sta $7F0028,x
+plx
+lda #$0F00 : trb $065A
+cop #$E0
+}    ; EDamageReactionHandler
+
+;org $80da13
+SR_SecOnIncompleteRecoil:
+{
+sta $0000    ; Delta of recoiled object's final-initial positions.
+pea .Done-1    ; $DA40
+lda $7F101C,x : bne .NotType0
+lda $0000 : cmp #$0030
+rts
+.NotType0:
+dec a : bne .NotType1
+lda $0000 : cmp #$0020
+rts
+.NotType1:
+dec a : bne .NotType2
+lda $0000 : cmp #$0040
+rts
+.NotType2:
+lda $0000 : cmp #$0040
+rts
+.Done:
+clc
+bne B_80DA45
+rts
+#B_80DA45:
+sec
+rts
+}
+
+;org $80da47
+SR_FillDamageRecoilMovePattern:
+{
+pea .Done-1
+.FindRecoilType:
+lda $7F101C,x : bne ..NotFast
+..Fast:
+ldy #$0044
+rts
+..NotFast:
+dec a : bne ..NotFastDupe1
+ldy #$0046
+rts
+..NotFastDupe1:
+dec a : bne ..NotFastDupe2
+ldy #$0046
+rts
+..NotFastDupe2:
+ldy #$0046
+rts
+.Done:
+lda.w Table_MovePatternPointers,y    ; $b086
+bcs ..MoveY    ; c is input to this SR.
+..MoveX:
+  sta $2C
+  lda #$0001 : sta $26    ; Retval marker for X movement.
+  rts
+..MoveY:
+sta $2E
+stz $26
+rts
+}
+
+;org $80da78
+EMonsterDeathAbove:    ; DP drops will fall through solids except $00 and $0E.
+{
+cop #$88 : dl $8EE000
+cop #$B7 : db $00
+lda #$6000 : trb $12
+lda $26 : bne .RewardDpOrNothing
+lda $0644 : jsl LR_SecOnFlag30A : bcs .RewardDpOrNothing
+ldy $0644
+lda $AADE,y : and #$0003 : sta $0000
+cop #$D9 : dw $0000, $DAA4
+  dw .RewardDpOrNothing, .RewardHp
+  dw .RewardStr, .RewardDef
+.RewardHp:
+cop #$8D : db $0C
+lda #$FFFF : sta $7F0010,x
+lda #$0080 : bra .HandleReward
+.RewardStr:
+cop #$8D : db $0D
+lda #$FFFF : sta $7F0010,x
+lda #$0081 : bra .HandleReward
+.RewardDef:
+cop #$8D : db $0E
+lda #$FFFF : sta $7F0010,x
+lda #$0082 : bra .HandleReward
+.RewardDpOrNothing:
+lda $7F0020,x : tay
+lda $0003,y : and #$0003 : sta $0000
+cop #$D9 : dw $0000, $DAED
+  dw .Done, .RewardDpSmall
+  dw .RewardDpMed, .RewardDpBig
+.RewardDpSmall:
+cop #$8D : db $04
+lda #$0083 : bra .HandleReward
+.RewardDpMed:
+cop #$8D : db $05
+lda #$0084 : bra .HandleReward
+.RewardDpBig:
+cop #$8D : db $06
+lda #$0085
+.HandleReward:    ; org $80db0b
+sta $7F000A,x
+lda $16 : sta $24
+lda #$0007 : sta $26
+lda $16 : and #$FFF0 : sta $16
+bra J_80DB43
+B_80DB21:    ; org $80db21
+dec $26 : bpl B_80DB2C
+lda $24 : inc : sta $16
+bra J_80DB47
+B_80DB2C:    ; org $80db2c
+phx
+  tyx : lda $7FC000,x
+plx
+and #$00FF : cmp #$000E : beq J_80DB47
+lda $16 : clc : adc #$0010 : sta $16
+J_80DB43:    ; org $80db43
+cop #$13 : dw B_80DB21
+J_80DB47:    ; org $80db47
+lda $16 : sta $7F001A,x
+lda $14 : sta $7F0018,x
+lda $24 : sta $16
+cop #$22 : db $FF, $04
+cop #$AC : db $00, $45
+cop #$DA : db $0B
+cop #$A2 : dl B_80E155 : dw $2300
+B_80DB69:    ; org $80db69
+cop #$CA : db $64
+cop #$C1
+cop #$8B
+cop #$CB
+lda $28 : cmp #$0008 : bcs B_80DB69 : clc : adc #$0005 : sta $28
+cop #$CA : db $0A
+cop #$C1
+cop #$8B
+cop #$CB
+.Done:    ; org $80db88
+cop #$E0
+}
+
+;org $80db8a
+EBasicMonsterDeath:
+lda $7F0020,x : cmp #$ABF0 : bne +$03
+  jmp ++    ; $DBB6
++:
+lda $7F002A,x : bit #$0080 : bne +
+sed
+  lda $0AEE : sec : sbc #$0001 : sta $0AEE
+cld
+lda $0AEC : dec a : sta $0AEC
+  sta $7F0010,x
+++:    ; $DBB6
+lda #$0000
+  sta $2C
+  sta $2E
+  sta $7F002C,x
+  sta $7F002E,x
+cop #$07 : db $06
+cop #$A5 : dl $80df15 : db $00,$00 : dw $0302
+lda $0012,y : ora #$1000 : sta $0012,y
+cop #$DA : db $02
+lda $7F0020,x : cmp #$ABF0 : bne +$03
+  jmp $DC5F
++:
+lda $7F002A,x : bit #$0080 : bne +$6D     [$80DC5F] 
+cop #$D8      ; Flag as killed.
+lda $0644 : jsl LR_SecOnFlag30A
+bcs +
+  lda $7F0010,x : beq ++
++:
+lda $7F0020,x : tay
+lda $0003,y : and #$00FF : beq ++
+  jmp $DD5B                    [$80DD5B] 
+++:
+$80DC13 lda #$2000 : tsb $10                      
+$80DC18 lda $7F002A,x : bit #$0008 : beq +
+$80DC21 cop #$0C              ; Clear temp type type here.
++:
+$80DC23 lda $7F0024,x : beq +$2B                     [$80DC54] 
+$80DC29 jsl $80B4F6                  [$80B4F6] 
+$80DC2D bcs +$25                     [$80DC54] 
+$80DC2F lda $7F0024,x                
+$80DC33 jsl $80B4E0                  [$80B4E0] 
+$80DC37 cop #$A5 $F2,$DD,$80,$00,$00,$42,$03    [Child: $80DDF2] 
+$80DC40 lda $0012,y : ora #$1000 : sta $0012,y
+$80DC49 phx                          
+$80DC4A lda $7F0024,x : tyx                          
+$80DC4F sta $7F0024,x                
+$80DC53 plx                          
+$80DC54 lda $7F0010,x                <--Branch
+$80DC58 bne +$03                     [$80DC5D] 
+$80DC5A jmp $DD87                    [$80DD87] 
+
+$80DC5D cop #$E0                     <--Branch
+
+$80DC5F cop #$DA : db $02                 <--Branch
+$80DC62 lda #$2000 : tsb $10                      
+$80DC67 lda $7F002A,x : bit #$0008 : beq +$02                     [$80DC72] 
+$80DC70 cop #$0C                     
+$80DC72 cop #$DA : db $05                 <--Branch
+$80DC75 cop #$E0                     
+
+
+org $80dcb4
+EMonsterDamageCounter:
+lda #$3200 : sta $0E
+lda $16 : clc : adc #$FFF0 : sta $16
+ldy $24
+lda $0014,y : sta $20
+lda $0016,y : sta $22
+cop #$CA : db $10
+{
+  ldy $24
+  lda $0014,y : sec : sbc $20 : clc : adc $14 : sta $14
+  lda $0016,y : sec : sbc $22 : clc : adc $16 : clc : adc #$FFFF : sta $16
+  lda $0014,y : sta $20
+  lda $0016,y : sta $22
+  lda $28 : sta $0000
+  jsl LR_StageBcdInManualOam    ; $83BAF1
+}
+cop #$CB
+cop #$E0
+
+;org $80dd03
+EHpPickupCounter:
+cop #$CA : db $08
+  jsr S_80DD1D
+cop #$CB
+cop #$CA : db $10
+  lda $16 : clc : adc #$FFFF : sta $16
+  jsr S_80DD1D
+cop #$CB
+cop #$E0
+#S_80DD1D:
+phx
+ldx $00D8
+lda #$327A : sta $7F3104,x
+lda $14 : sec : sbc #$0004 : sta $7F3100,x
+lda $16 : sta $7F3102,x
+lda #$327B : sta $7F310A,x
+lda $14 : clc : adc #$0004 : sta $7F3106,x
+lda $16 : sta $7F3108,x
+lda $00D8 : clc : adc #$000C : sta $00D8
+plx
+rts
+
+;org $80dd5b
+dec : beq +
+dec : beq ++
+bra +++
++:
+;org $80dd63
+cop #$A5 : dl $80df29 : db $00,$00 : dw $0420
+jmp $dc13
+++:
+cop #$A5 : dl $80df52 : db $00,$00 : dw $0420
+jmp $dc13
++++:
+cop #$A5 : dl $80df7b : db $00,$00 : dw $0420
+jmp $dc13
+
+;org $80dd87
+ERoomClearRewarder:
+cop #$B7 : db $00
+ldy $0644
+lda $AADE,y : and #$00FF : pha
+  lda $0644
+  jsl LR_SecOnFlag30A : bcs .GotItOrNothing    ; $80b496
+  cop #$B7 : db $00
+  lda $01,s : beq .GotItOrNothing
+  lda #$0080 : tsb $09EC
+pla
+dec : beq .IsHpUpgrade
+dec : beq .IsStrUpgrade
+bra .IsDefUpgrade
+.GotItOrNothing:
+pla
+cop #$E0
+.IsHpUpgrade:    ; org $80ddb6
+cop #$A5 : dl EStatJewel_HP : dw $0000, $1000
+lda $0012,y : ora #$1000 : sta $0012,y
+cop #$E0
+.IsStrUpgrade:    ; org $80ddca
+cop #$A5 : dl EStatJewel_STR : dw $0000, $1000
+lda $0012,y : ora #$1000 : sta $0012,y
+cop #$E0
+.IsDefUpgrade:    ; org $80ddde
+cop #$A5 : dl EStatJewel_DEF : dw $0000, $1000
+lda $0012,y : ora #$1000 : sta $0012,y
+cop #$E0
+warnpc $80ddf2
+
+org $80df15
+EExplosionSprite:
+cop #$88 : dl $8EE000
+cop #$B7 : db $00
+cop #$80 : db $01
+cop #$89
+lda #$2000 : tsb $10
+cop #$E0
+warnpc $80df29
+
+org $80df38
+lda #$0083 : sta $7f000a,x
+lda #$0400 : trb $10
+cop #$84 : db $04,$0a
+cop #$8A
+cop #$84 : db $09,$96
+cop #$8A
+cop #$E0
+
+;org $80df52
+; Unknown actor, but it matches the others here.
+cop #$88 : dl $8ee000
+cop #$B7 : db $00
+cop #$A2 : dl $80e155 : dw $2700
+;org $80df61
+lda #$0084 : sta $7f000a,x
+lda #$0400 : trb $10
+cop #$84 : db $05,$0a
+cop #$8A
+cop #$84 : db $0a,$96
+cop #$8A
+cop #$E0
+
+;org $80df7b
+; Unknown actor.
+cop #$88 : dl $8ee000
+cop #$B7 : db $00
+cop #$A2 : dl $80e155 : dw $2700
+lda $0aca : lsr : lsr : cmp $0ace : bcc +
+  lda #$0020 : bra ++
++:
+lda $0aca : lsr : cmp $0ace : bcc +
+  lda #$0010 : bra ++
++:
+lda #$0000
+++:
+sta $26
+cop #$23
+phx
+  ldx $26
+  ldy #$0002
+  -:
+  cmp $80dffd,x : bcc +
+  inx : inx : inx : inx
+  dey : bpl -
++:
+lda $80dfff,x : dec
+plx
+pha
+rts
+
+;org $80dfc9
+lda #$0085 : sta $7f000a,x
+lda #$0400 : trb $10
+cop #$84 : db $06,$0a
+cop #$8A
+cop #$84 : db $0b,$96
+cop #$8A
+cop #$E0
+
+;org $80dfe3
+lda #$0086 : sta $7f000a,x
+lda #$0400 : trb $10
+cop #$84 : db $22,$b4
+cop #$8A
+cop #$84 : db $35,$3c
+cop #$8A
+cop #$E0
+
+;org $80dffd
+; Unknown data for the unknown actor. Randomly chooses a path.
+dw $000f,$dfe3 : dw $003c,$dfc9 : dw $0099,$df61 : dw $0100,$df38 
+dw $0019,$dfc9 : dw $004c,$df38 : dw $0099,$dfe3 : dw $0100,$df61 
+dw $000c,$df61 : dw $0033,$df38 : dw $007f,$dfc9 : dw $0100,$dfe3 
+
+;org $80e02d
+EStatJewel_HP:
+cop #$88 : dl $8ee000
+cop #$B7 : db $00
+cop #$8D : db $0c
+cop #$C8 : dw EStatJewel_FlyToPlayer
+lda $0ACA : clc : adc #$0001 : bvc B_80E048
+  lda #$0255
++:
+sta $0ACA
+sec : sbc $0ACE : sta $0B22
+cop #$BF : dw .Message    ; $E058
+cop #$E0
+.Message:
+; "Your HP (Power) \nhas increased! \0"
+db $D3,$D5,$01,$D2,$00
+db $D6,$68,$47,$60,$AC,$6E,$60,$8E,$A7,$84,$A2,$6F,$AC,$CB,$87,$80,$A3,$AC,$88,$8D,$82,$A2,$84,$80,$A3,$84,$83,$4F,$AC,$C0
+
+;org $80E07B
+EStatJewel_STR:
+cop #$88 : dl $8ee000
+cop #$B7 : db $00
+cop #$8D : db $0d
+cop #$C8 : dw EStatJewel_FlyToPlayer
+lda $0ade : clc : adc #$0001 : bvc +
+  lda #$0255
++:
+sta $0ade
+cop #$BF : dw .Message    ; $e09f
+cop #$E0
+.Message:
+; "Your STR (Strength) \nhas increased! \0"
+db $D3,$D5,$01,$D2,$00
+db $D6,$68,$63,$64,$62,$AC,$6E,$63,$A4,$A2,$84,$8D,$86,$A4,$87,$6F,$AC
+db $CB
+db $87,$80,$A3,$AC,$88,$8D,$82,$A2,$84,$80,$A3,$84,$83,$4F,$AC
+db $C0
+
+;org $80E0C6
+EStatJewel_DEF:
+cop #$88 : dl $8ee000
+cop #$B7 : db $00
+cop #$8D : db $0e
+cop #$C8 : dw EStatJewel_FlyToPlayer
+lda $0adc : clc : adc #$0001 : bvc +
+  lda #$0255
++:
+sta $0adc
+cop #$BF : dw .Message    ; $e0ea
+cop #$E0
+.Message:
+; "Your DEF (Defense) \nhas increased! \0"
+db $D3,$D5,$01,$D2,$00
+db $D6,$68,$43,$44,$45,$AC,$6E,$43,$84,$85,$84,$8D,$A3,$84,$6F,$AC,$CB,$87,$80,$A3,$AC,$88,$8D,$82,$A2,$84,$80,$A3,$84,$83,$4F,$AC,$C0
+
+;org $80E110
+EStatJewel_FlyToPlayer:
+lda #$6000 : trb $12
+cop #$86 : db $FF,$04,$12
+cop #$8A
+cop #$84 : db $FF,$03
+cop #$8A
+ldy $09AA
+lda $0014,y : sta $7F0018,x
+lda $0016,y : sec : sbc #$0008 : sta $7F001A,x
+cop #$52 : db $FF,$02,$FF
+cop #$53
+lda #$2000 : tsb $10
+lda #$0080 : trb $09EC
+cop #$06 : db $25
+lda $0644 : jsl LR_SetFlag30A     ; $80B4A1
+cop #$C5
+
+;org $80e155
+
+
+; org $80e256
+B_80E256:
+cop #$C6 : dw B_80E256
+cop #$C2
+cop #$40 : dw $0031, $E263
+; org $80e262
+B_80E262:
+rtl
+; org $80e263
+B_80E263:
+cop #$21 : db $0F : dw B_80E269
+rtl
+; org $80e269
+B_80E269:
+ldy $04
+lda $0010,y : bit #$0080 : beq B_80E27F
+lda $0012,y : bit #$0010 : bne B_80E27F
+nop : nop : nop
+rtl
+; org $80e27f
+B_80E27F:
+cop #$2A : dw $000F, B_80E30C, B_80E289, B_80E30C
+; org $80e289
+B_80E289:
+ldy $09AA
+lda $0016,y : sec : sbc $16 : bpl B_80E2D3
+bpl +
+  eor #$FFFF : inc a
++:
+cmp #$0020 : bcc B_80E2D1
+jsl LR_GetPlayerFacingDirection
+cmp #$0000 : bne B_80E2D1
+cop #$14 : db $00, $FF : dw B_80E2D1
+cop #$0C
+lda $16 : sec : sbc #$0010 : sta $16
+cop #$0B
+cop #$07 : db $2C
+jsr S_80E399
+cop #$CA : db $10
+  ldy $04
+  lda $0016,y : dec : sta $0016,y
+cop #$CB
+jsr S_80E3AC
+; org $80e2d1
+B_80E2D1:
+cop #$C5
+; org $80e2d3
+B_80E2D3:
+cmp #$0020 : bcc B_80E30A
+jsl LR_GetPlayerFacingDirection
+cmp #$0001 : bne B_80E30A
+cop #$14 : db $00, $01 : dw B_80E30A
+cop #$0C
+lda $16 : clc : adc #$0010 : sta $16
+cop #$0B
+cop #$07 : db $2C
+jsr S_80E399
+cop #$CA : db $10
+  ldy $04
+  lda $0016,y : inc : sta $0016,y
+cop #$CB
+jsr S_80E3AC
+; org $80e30a
+B_80E30A:
+cop #$C5
+; org $80e30c
+B_80E30C:
+cop #$2B : dw $000F, B_80E262, B_80E316, B_80E262
+; org $80e316
+B_80E316:
+ldy $09AA
+lda $0014,y : sec : sbc $14 : bpl B_80E360
+bpl +
+  eor #$FFFF : inc a
++:
+cmp #$0020 : bcc B_80E35E
+jsl LR_GetPlayerFacingDirection
+cmp #$0003 : bne B_80E35E
+cop #$14 : db $FF, $00 : dw B_80E35E
+cop #$0C
+lda $14 : sec : sbc #$0010 : sta $14
+cop #$0B
+cop #$07 : db $2C
+jsr S_80E399
+cop #$CA : db $10
+  ldy $04
+  lda $0014,y : dec : sta $0014,y
+cop #$CB
+jsr S_80E3AC
+; org $80e35e
+B_80E35E:
+cop #$C5
+; org $80e360
+B_80E360:
+cmp #$0020 : bcc B_80E397
+jsl LR_GetPlayerFacingDirection
+cmp #$0002 : bne B_80E397
+cop #$14 : db $01, $00 : dw B_80E397
+cop #$0C
+lda $14 : clc : adc #$0010 : sta $14
+cop #$0B
+cop #$07 : db $2C
+jsr S_80E399
+cop #$CA : db $10
+  ldy $04
+  lda $0014,y : inc : sta $0014,y
+cop #$CB
+jsr S_80E3AC
+; org $80e397
+B_80E397:
+cop #$C5
+
+; org $80e399
+S_80E399:
+ldy $04
+lda $0012,y
+pha
+  ora #$0010 : sta $0012,y
+pla : and #$0010 : sta $24
+rts
+
+; org $80e3ac
+S_80E3AC:
+ldy $04
+lda $0012,y : and #$FFEF : ora $24 : sta $0012,y
+rts
+warnpc $80e3ba
+
+
+org $80e4fc
+EChaserAlt:
+{
+txy
+ldx $0004,y
+lda $7F0014,x
+  tyx
+  sta $7F0014,x
+ldy $24
+lda $0014,y : sec : sbc $14 : bmi B_80E53D
+sta $0018
+lda $0016,y : sec : sbc #$0008 : sec : sbc $16 : bmi B_80E52F
+sta $001C
+cmp $0018 : bcc B_80E52D
+jmp J_80E5C1
+B_80E52D:    ; org $80e52d
+bra J_80E5A6
+B_80E52F:    ; org $80e52f
+eor #$FFFF : inc a : sta $001C
+cmp $0018 : bcs B_80E570 : bra J_80E58B
+B_80E53D:    ; org $80e53d
+eor #$FFFF : inc a : sta $0018
+lda $0016,y : sec : sbc #$0008 : sec : sbc $16 : bmi B_80E55E
+sta $001C
+cmp $0018 : bcc B_80E55B
+jmp J_80E5DC
+B_80E55B:    ; org $80e55b
+jmp J_80E5F6
+B_80E55E:    ; org $80e55e
+eor #$FFFF : inc a : sta $001C
+cmp $0018 : bcc B_80E56D
+jmp J_80E62A
+B_80E56D:    ; org $80e56d
+jmp J_80E610
+B_80E570:    ; org $80e570
+jsr SR_HelpChasers    ; jsr $eda8
+cop #$C1
+jsr S_80EE1C
+lda $16 : sec : sbc $0000 : sta $16
+lda $14 : clc : adc $0002 : sta $14
+jmp J_80E644
+J_80E58B:    ; org $80e58b
+jsr S_80EDC3
+cop #$C1
+jsr S_80EE1C
+lda $14 : clc : adc $0000 : sta $14
+lda $16 : sec : sbc $0002 : sta $16
+jmp J_80E644
+J_80E5A6:    ; org $80e5a6
+jsr S_80EDC3
+cop #$C1
+jsr S_80EE1C
+lda $14 : clc : adc $0000 : sta $14
+lda $16 : clc : adc $0002 : sta $16
+jmp J_80E644
+J_80E5C1:    ; org $80e5c1
+jsr SR_HelpChasers    ; jsr $eda8
+cop #$C1
+jsr S_80EE1C
+lda $16 : clc : adc $0000 : sta $16
+lda $14 : clc : adc $0002 : sta $14
+jmp J_80E644
+J_80E5DC:    ; org $80e5dc
+jsr SR_HelpChasers    ; jsr $eda8
+cop #$C1
+jsr S_80EE1C
+lda $16 : clc : adc $0000 : sta $16
+lda $14 : sec : sbc $0002 : sta $14
+bra J_80E644
+J_80E5F6:    ; org $80e5f6
+jsr S_80EDC3
+cop #$C1
+jsr S_80EE1C
+lda $14 : sec : sbc $0000 : sta $14
+lda $16 : clc : adc $0002 : sta $16
+bra J_80E644
+J_80E610:    ; org $80e610
+jsr S_80EDC3
+cop #$C1
+jsr S_80EE1C
+lda $14 : sec : sbc $0000 : sta $14
+lda $16 : sec : sbc $0002 : sta $16
+bra J_80E644
+J_80E62A:    ; org $80e62a
+jsr SR_HelpChasers    ; jsr $eda8
+cop #$C1
+jsr S_80EE1C
+lda $16 : sec : sbc $0000 : sta $16
+lda $14 : sec : sbc $0002 : sta $14
+bra J_80E644
+J_80E644:    ; org $80e644
+lda $0004,x : tay
+lda $0014,x : sta $0014,y
+lda $0016,x : sta $0016,y
+rtl
+warnpc $80e655
+}
+
+org $80e683
+EChaser:
+
+
+org $80EA96
+db $00,$00,$2C
+EParallax:
+EParallax_ScaleEffect:
+lda #$1000 : tsb $12
+jsr SR_SplitCoordinateNibbles    ; $ECF8
+cop #$C1
+jsr SR_ScaleEffectLayerByCoordinates    ; $ED0B
+rtl
+
+;org $80eaa7
+db $00,$00,$2c
+EParallax_ScaleEffectY:
+lda #$1000 : tsb $12
+jsr SR_SplitCoordinateNibbles    ; $ECF8
+cop #$C1
+lda $16 : beq .Done
+  ldy $06C2 : jsl LR_YTimesAOverB : sta $06C4
+.Done:
+rtl
+
+;org $80eac3
+db $00,$00,$24
+EParallax_ScaleEffectAndShift:
+lda #$1000 : tsb $12
+lda #$0000 : sta $24 : sta $26
+jsr SR_SplitCoordinateNibbles    ; $ECF8
+cop #$C1
+jsr SR_ScaleEffectLayerByCoordinates    ; $ED0B
+lda $06C0 : clc : adc $24 : sta $06C0
+lda $06C4 : clc : adc $26 : sta $06C4
+rtl
+
+;org $80EAED
+db $00,$00,$2c
+ECameraEtc:
+{
+lda #$1000 : tsb $12
+cop #$C1
+lda $06EE : bit #$0200 : beq +
+  rtl    ; Freezes camera.
++:
+phd
+lda $09F4 : tcd
+lda $14 : sec : sbc #$0008 : sta $09A2
+  lsr : lsr : lsr : lsr : sta $09A6
+lda $16 : sec : sbc #$0010 : sta $09A4
+  lsr : lsr : lsr : lsr : sta $09A8
+;org $80eb25
+lda $09AE : bit #$0100 : bne .Converge
+lda $14 : sec : sbc #$0080 : bmi .XFirst
+  cmp $06D6 : bmi .XFirst
+    clc : adc #$0100
+    cmp $06DA : bmi .XSecond
+      lda $06DA : bra .XSecond    ; +$0A
+      lda $06DA : bra .XSecond    ; +$05
+.XFirst:    ;org $80eb4d
+lda $06D6 : bra +
+.XSecond:   ;org $80eb52
+sec : sbc #$0100
++:
+sta $06BE
+lda $16 : sec : sbc #$0080 : bmi .YFirst
+  cmp $06D8 : bmi .YFirst
+    clc : adc #$0100
+    cmp $06DC : bmi .YSecond
+      lda $06DC : bra .YSecond
+      lda $06DC : bra .YSecond
+.YFirst:    ;org $80eb79
+lda $06D8 : bra +
+.YSecond:   ;org $80eb7e
+sec : sbc #$0100
++:
+sta $06C2
+.Converge:  ; org $80eb85
+lda $06BE : sec : sbc $068A : sta $06E4
+lda $06C2 : sec : sbc $068E : sta $06E6
+pld
+rtl
+}
+
+;org $80eb9b
+EStairCameraSouthMover:    ; org $80eb9b
+{
+lda #$6000 : trb $12
+cop #$C1
+lda #$FFFF : tsb $065A
+stz $0656
+jsr SR_SetupStairSpriteAndMovementNS
+lda #$2008 : trb $10
+cop #$95    ; Player Spr@$0000, using Body set
+cop #$93    ; Do one Spr iter, as #$89
+lda #$2000 : tsb $10
+stz $06E2
+lda $06E0 : and #$00FF : asl : tax
+lda.w Table_StairSpeedPointers,x : sta $06E0    ; $a95e
+stz $2A
+tdc : tax
+cop #$C1
+cop #$DC
+jsr SR_SetPostStairSpawnPoint
+lda #$2008 : trb $10
+jsr SR_SetupStairSpriteAndMovementNS
+cop #$95    ; Player Spr@$0000, using Body set
+cop #$93    ; Do one Spr iter, as #$89
+jsr SR_CopyMyDataToPlayer    ; $ed84
+lda #$FFFF : trb $065A
+cop #$E0
+}
+
+EStairCameraNorthMover:    ; org $80ebef
+{
+lda #$6000 : trb $12
+cop #$C1
+lda #$FFFF : tsb $065A
+stz $0656
+jsr SR_SetupStairSpriteAndMovementNS
+lda #$2008 : trb $10
+cop #$95    ; Player Spr@$0000, using Body set
+cop #$93    ; Do one Spr iter, as #$89
+lda #$2000 : tsb $10
+stz $06E2
+lda $06E0 : and #$00FF : asl : tax
+lda.w Table_StairSpeedPointers,x : sta $06E0    ; $a95e
+stz $2A
+tdc : tax
+cop #$C1
+cop #$DD
+jsr SR_SetPostStairSpawnPoint
+lda #$2008 : trb $10
+jsr SR_SetupStairSpriteAndMovementNS
+cop #$95    ; Player Spr@$0000, using Body set
+cop #$93    ; Do one Spr iter, as #$89
+jsr SR_CopyMyDataToPlayer    ; $ed84
+lda #$FFFF : trb $065A
+cop #$E0
+}
+
+EStairCameraWestMover:    ; org $80ec43
+{
+lda #$6000 : trb $12
+cop #$C1
+lda #$FFFF : tsb $065A
+stz $0656
+jsr SR_SetupStairSpriteAndMovementEW
+lda #$2008 : trb $10
+cop #$95    ; Player Spr@$0000, using Body set
+cop #$93    ; Do one Spr iter, as #$89
+lda #$2000 : tsb $10
+stz $06E2
+lda $06E0 : and #$00FF : asl : tax
+lda.w Table_StairSpeedPointers,x : sta $06E0    ; $a95e
+stz $2A
+tdc : tax
+cop #$C1
+cop #$DF
+jsr SR_SetPostStairSpawnPoint
+lda #$2008 : trb $10
+jsr SR_SetupStairSpriteAndMovementEW
+cop #$95    ; Player Spr@$0000, using Body set
+cop #$93    ; Do one Spr iter, as #$89
+jsr SR_CopyMyDataToPlayer    ; $ed84
+lda #$FFFF : trb $065A
+cop #$E0
+}
+
+EStairCameraEastMover:    ; org $80ec97
+{
+lda #$6000 : trb $12
+cop #$C1
+lda #$FFFF : tsb $065A
+stz $0656
+jsr SR_SetupStairSpriteAndMovementEW
+lda #$2008 : trb $10
+cop #$95    ; Player Spr@$0000, using Body set
+cop #$93    ; Do one Spr iter, as #$89
+lda #$2000 : tsb $10
+stz $06E2
+lda $06E0 : and #$00FF : asl : tax
+lda.w Table_StairSpeedPointers,x : sta $06E0    ; $a95e
+stz $2A
+tdc : tax
+cop #$C1
+cop #$DE
+jsr SR_SetPostStairSpawnPoint
+lda #$2008 : trb $10
+jsr SR_SetupStairSpriteAndMovementEW
+cop #$95    ; Player Spr@$0000, using Body set
+cop #$93    ; Do one Spr iter, as #$89
+jsr SR_CopyMyDataToPlayer    ; $ed84
+lda #$FFFF : trb $065A
+cop #$E0
+}
+
+
+;org $80ECEB
+SR_SplitNibblesAsY:    ; $ECEB
+{
+sep #$20
+ lsr : lsr : lsr : lsr
+rep #$20
+and #$0F0F : tay
+rts
+SR_SplitCoordinateNibbles:    ; $ECF8
+lda $14 : sec : sbc #$0008 : jsr SR_SplitNibblesAsY : sty $14    ; jsr $ECEB
+lda $16 : jsr SR_SplitNibblesAsY : sty $16
+rts
+SR_ScaleEffectLayerByCoordinates: ; $ED0B
+lda $14 : beq +
+  ldy $06BE : jsl LR_YTimesAOverB : sta $06C0
++:
+lda $16 : beq +
+  ldy $06C2 : jsl LR_YTimesAOverB : sta $06C4
++:
+rts
+}
+
+;org $80ed28
+SR_SetupStairSpriteAndMovementNS:
+{
+ldy $0650 : inc $0650
+lda $0000,y : and #$00FF : asl : tay
+lda.w Table_PlayerSpawnSpritesAndMoves,y : sta $0000    ; $ABDE
+  xba : and #$00FF : asl : tay
+lda.w Table_MovePatternPointers,y : sta $2E    ; $B086
+rts
+}
+SR_SetupStairSpriteAndMovementEW:    ; org $80ed48
+{
+ldy $0650 : inc $0650
+lda $0000,y : and #$00FF : asl : tay
+lda.w Table_PlayerSpawnSpritesAndMoves,y : sta $0000    ; $ABDE
+  xba : and #$00FF : asl : tay
+lda.w Table_MovePatternPointers,y : sta $2C    ; $B086
+rts
+}
+
+SR_SetPostStairSpawnPoint:    ; org $80ed68
+{
+lda $0650 : tay
+  clc : adc #$0004 : sta $0650
+lda $0000,y : clc : adc $14 : sta $14
+lda $0002,y : clc : adc $16 : sta $16
+rts
+}
+SR_CopyMyDataToPlayer:    ; org $80ed84
+{
+ldy $09AA
+lda $14 : sta $0014,y
+lda $16 : sta $0016,y
+lda $10 : ora #$0008 : and #$FDFF : sta $0010,y
+lda $28 : sta $0028,y
+lda #$0000 : sta $0008,y
+rts
+}
+
+
+;org $80EDA8  ;<--SR
+; Helps EChaser, but possibly other things too...
+SR_HelpChasers:
+lda $0018 : cmp $001C : bne +    ; $05
+  lda #$0000 : bra .StoreAndReturn    ; +$5B     ;[$80EE10]
++:
+ldy $0018
+lda $001C : lsr a : lsr a : lsr a : lsr a
+  bne .DoDivide    ; +$1C     ;[$80EDDD]
+bra .FixDivByZero    ; +$19     ;[$80EDDC]
+;<--SR
+lda $001C : cmp $0018 : bne +    ; $05     ;[$80EDD0]
+  lda #$0000 : bra .StoreAndReturn    ; +$40     ;[$80EE10]
++:
+ldy $001C
+lda $0018 : lsr a : lsr a : lsr a : lsr a
+  bne .DoDivide    ; +$01     ;[$80EDDD]
+.FixDivByZero:
+inc a
+.DoDivide:
+sep #$20
+jsl LR_DivideY16ByA8    ; $8281E8
+rep #$20
+and #$00FF
+  cmp #$0018 : bpl .Above18    ; $07
+  cmp #$0011 : bpl .Above11    ; +$10     ;[$80EE02]
+  bra .Below11    ; +$14     ;[$80EE08]
+.Above18:
+sec : sbc #$0010
+eor #$FFFF : inc a
+clc : adc #$0010
+bra .StoreAndReturn    ; +$0E     ;[$80EE10]
+.Above11:
+sec : sbc #$0010
+bra .StoreAndReturn    ; $08     ;[$80EE10]
+.Below11:
+eor #$FFFF : inc a
+clc : adc #$0010
+.StoreAndReturn:
+sta $7F0010,x
+lda #$0000 : sta $7F0012,x
+rts
+
+;org $80EE1C
+;<--SR
+lda $7F0010,x : asl : asl : asl : asl : asl : tay
+  lda $7F0012,x : sta $0004
+  asl : sta $0006
+tya
+clc : adc $0006 : tay
+lda $7F0014,x : sta $0000
+  clc : adc $0004 : and #$000F : sta $0008
+  sta $7F0012,x
+phx
+tyx
+stz $0002
+-:
+lda $80F193,x    ;<--Branch
+clc : adc $0002 : sta $0002
+inx : inx
+inc $0004
+lda $0004 : bit #$FFF0 : beq +    ; $0C     ;[$80EE75]
+  txa : sec : sbc #$0020 : tax
+  lda #$0000 : sta $0004
++
+cmp $0008 : bne -    ; +$D7 ;(-$29);[$80EE51]
+plx
+rts
+
+;org $80EE7C
+{
+;<--SR
+lda $7F0010,x
+cmp #$000D : bpl +$15     ;[$80EE9A]
+cmp #$0005 : bpl +$18     ;[$80EEA2]
+bra +$1E     ;[$80EEAA]
+;<--SR
+lda $7F0010,x
+cmp #$000D : bpl +$15     ;[$80EEAA]
+cmp #$0005 : bpl +$08     ;[$80EEA2]
+
+;<--Branch
+lda #$0000 : sta $0002
+bra +$0E     ;[$80EEB0]
+;<--Branch
+lda #$0001 : sta $0002
+bra +$06     ;[$80EEB0]
+;<--Branch
+lda #$0002 : sta $0002
+lda $0000 : clc : adc $0002 : and #$000F : sta $0004
+lda $7F000A,x
+lda $7F000E,x
+bmi +$55     ;[$80EF1C]
+sec
+sbc $0004
+bmi +$13     ;[$80EEE0]
+beq +$4D     ;[$80EF1C]
+cmp #$0001 : beq +$48     ;[$80EF1C]
+cmp #$000F : beq +$43     ;[$80EF1C]
+cmp #$0009 : bpl +$2D     ;[$80EF0B]
+bra +$11     ;[$80EEF1]
+;<--Branch
+cmp #$FFFF : beq +$37     ;[$80EF1C]
+cmp #$FFF1 : beq +$32     ;[$80EF1C]
+cmp #$FFF9 : bpl +$1C     ;[$80EF0B]
+bra +$00     ;[$80EEF1]
+
+lda $7F000E,x : dec a : sta $7F000E,x
+  sta $0004
+bpl +$2A     ;[$80EF29]
+lda #$000F : sta $7F000E,x
+  sta $0004
+bra +$1E     ;[$80EF29]
+;<--Branch
+lda $7F000E,x : inc a : and #$000F : sta $7F000E,x
+  sta $0004
+bra +$0D     ;[$80EF29]
+;<--Branch
+lda $0004 : sta $7F000E,x
+lda #$FFFF : sta $0000
+;<--Branch
+lda $0004,x : tay
+lda $7F000A,x : bmi +    ; $0D     ;[$80EF40]
+  clc : adc $0004 : sta $0028,y
+  lda #$0000 : sta $002A,y
++:  ;<--Branch
+lda $7F000A,x : bmi +    ; $0C     ;[$80EF52]
+phx
+ tyx : tya : tcd
+ jsl LR_AnimateSprite    ; $83CA55
+pla
+ txy : tax : tcd
++:    ;<--Branch
+lda $7F000A,x : sta $0006
+lda $7F000E,x : and #$000F
+phx
+ asl : tax
+ clc
+ lda $0006 : bpl +$01     ;[$80EF6A]
+   sec
+ lda $80EF72,x ;<--Branch
+ dec a
+plx
+pha
+rts
+;org $80ef72
+dw $EF92
+dw $EFB0
+dw $EFCE
+dw $EFEC
+dw $F00A
+dw $F028
+dw $F049
+dw $F06A
+dw $F08B
+dw $F0AC
+dw $F0CD
+dw $F0EE
+dw $F10F
+dw $F130
+dw $F151
+dw $F172
+;org $80EF92
+bcs +
+  lda $000E,y : and #$3FFF : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0001 : sta $0000
+  lda #$0010 : sta $7F0010,x
+..Done:
+rts
+;org $80EFB0
+bcs +
+  lda $000E,y : and #$3FFF : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0001 : sta $0000
+  lda #$0008 : sta $7F0010,x
+..Done:
+rts
+;org $80EFCE
+bcs +
+  lda $000E,y : and #$3FFF : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0002 : sta $0000
+  lda #$0000 : sta $7F0010,x
+..Done:
+rts
+;org $80EFEC
+bcs +
+  lda $000E,y : and #$3FFF : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0002 : sta $0000
+  lda #$0008 : sta $7F0010,x
+..Done:
+rts
+;org $80F00A
+bcs +
+  lda $000E,y : and #$3FFF : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0003 : sta $0000
+  lda #$0010 : sta $7F0010,x
+..Done:
+rts
+;org $80F028
+bcs +
+  lda $000E,y : and #$3FFF : ora #$8000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0003 : sta $0000
+  lda #$0008 : sta $7F0010,x
+..Done:
+rts
+;org $80F049
+bcs +
+  lda $000E,y : and #$3FFF : ora #$8000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0004 : sta $0000
+  lda #$0000 : sta $7F0010,x
+..Done:
+rts
+;org $80F06A
+bcs +
+  lda $000E,y : and #$3FFF : ora #$8000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0004 : sta $0000
+  lda #$0008 : sta $7F0010,x
+..Done:
+rts
+;org $80F08B
+bcs +
+  lda $000E,y : and #$3FFF : ora #$8000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0005 : sta $0000
+  lda #$0010 : sta $7F0010,x
+..Done:
+rts
+;org $80F0AC
+bcs +
+  lda $000E,y : and #$3FFF : ora #$C000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0005 : sta $0000
+  lda #$0008 : sta $7F0010,x
+..Done:
+rts
+;org $80F0CD
+bcs +
+  lda $000E,y : and #$3FFF : ora #$C000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0006 : sta $0000
+  lda #$0000 : sta $7F0010,x
+..Done:
+rts
+;org $80F0EE
+bcs +
+  lda $000E,y : and #$3FFF : ora #$C000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0006 : sta $0000
+  lda #$0008 : sta $7F0010,x
+..Done:
+rts
+;org $80F10F
+bcs +
+  lda $000E,y : and #$3FFF : ora #$4000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0007 : sta $0000
+  lda #$0010 : sta $7F0010,x
+..Done:
+rts
+;org $80F130
+bcs +
+  lda $000E,y : and #$3FFF : ora #$4000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0007 : sta $0000
+  lda #$0008 : sta $7F0010,x
+..Done:
+rts
+;org $80F151
+bcs +
+  lda $000E,y : and #$3FFF : ora #$4000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0008 : sta $0000
+  lda #$0000 : sta $7F0010,x
+..Done:
+rts
+;org $80F172
+bcs +
+  lda $000E,y : and #$3FFF : ora #$4000 : sta $000E,y
++:
+lda $0000 : bmi ..Done
+  lda #$0008 : sta $0000
+  lda #$0008 : sta $7F0010,x
+..Done:
+rts
+}
+
+;org $80F193
+
+
+org $80f3b3
+LR_HaltAndInvulPlayer:
+lda #$0000 : sta $09B2 : sta $09B4 : sta $0008,y
+lda $0010,y : ora #$0200 : sta $0010,y
+rtl
+
+;org $80F3C9
+LR_OrbitAtY:
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+LR_Orbit:    ; org $80f3d3
+lda $7F0010,x : and #$00FF : tay    ; Angle.
+sep #$20         
+clc              
+lda $C455,y      ; sin($7F:10) * #$80.
+bpl +
+  eor #$FF : inc a            
+  sec              ; Absolute value, and SEC to indicate sine was negative.
++:
+xba
+lda $7F0012,x    ; Scale factor for trig result.
+jsl LR_MultiplyBytesOfA      ;[$8281D1] ; Result is .A = $7F:12 * sin($7F:10) * #$80.
+rep #$20         
+xba : and #$00FF    ; XBA allows us to use high byte of result only.
+bcc +
+  eor #$FFFF : inc a  ; If sine result was negative, restore negative sign.
++:
+clc : adc $14 : sta $14   ; Result is This.x += ($7F:12 * sin($7F:10)) / 2.
+sep #$20         
+clc              
+lda $C495,y      ; Likewise use cosine for y coordinate.
+bpl +
+  eor #$FF : inc a
+  sec
++:
+xba              ;<--Branch
+lda $7F0012,x    
+jsl LR_MultiplyBytesOfA      ;[$8281D1] 
+rep #$20         
+xba : and #$00FF       
+bcc +
+  eor #$FFFF : inc a
++:
+clc : adc $16 : sta $16     ; Result is This.y += ($7F:12 * cos($7F:10)) / 2.
+rtl
+
+;org $80f428
+LR_EllipseOrbitAtY:    ; Like LR_Orbit, but $7F:10 and $7F:11 are different angles for x and y.
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+LR_EllipseOrbit:    ; org $80f432
+{
+lda $7F0010,x : and #$00FF : tay
+sep #$20
+clc
+lda $C455,y : bpl +
+  eor #$FF : inc a
+  sec
++:
+xba
+lda $7F0012,x : jsl LR_MultiplyBytesOfA
+rep #$20
+xba : and #$00FF : bcc +
+  eor #$FFFF : inc a
++:
+clc : adc $14 : sta $14
+lda #$0000
+sep #$20
+clc
+lda $7F0011,x : tay
+lda $C495,y : bpl +
+  eor #$FF : inc a
+  sec
++:
+xba
+lda $7F0013,x : jsl LR_MultiplyBytesOfA
+rep #$20
+xba : and #$00FF : bcc +
+  eor #$FFFF : inc a
++:
+clc : adc $16 : sta $16
+rtl
+}
+
+
+;org $80F48F
+Bank80Free:
+pad SnesHeader
+
+
+org $80FFB0
+SnesHeader:
+db $30,$31,$4a,$47,$20,$20,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+db $49,$4c,$4c,$55,$53,$49,$4f,$4e,$20,$4f,$46,$20,$47,$41,$49,$41 ; "ILLUSION OF GAIA"
+db $20,$55,$53,$41,$20,$31,$02,$0b,$03,$01,$33,$00,$56,$41,$a9,$be ; " USA "
+db $00,$00,$00,$00,$07,$80,$0f,$80,$00,$00,$0b,$80,$00,$00,$0f,$80
+db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$80,$00,$00
+
+
+

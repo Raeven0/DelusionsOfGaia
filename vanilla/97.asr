@@ -1,0 +1,265 @@
+arch 65816
+hirom
+fillbyte $FF
+
+
+
+org $978000
+; Friar metasprite data.
+dw AnimFriar00    ; $800E
+dw AnimFriar01    ; $8034
+dw AnimFriar02    ; $8042
+dw AnimFriar03    ; $8050
+dw AnimFriar04    ; $8062
+dw AnimFriar05    ; $8074
+dw AnimFriar06    ; $8086
+AnimFriar00:
+dw $0000, MetaFriar00SparkleA    ; $8098
+dw $0000, MetaFriar01SparkleB    ; $80C8
+dw $0000, MetaFriar02SparkleC    ; $80F8
+dw $0001, MetaFriar03HaloBright    ; $8128
+dw $0001, MetaFriar04HaloDim    ; $8151
+dw $0003, MetaFriar05SparkleC    ; $817A
+dw $0003, MetaFriar06SparkleB    ; $81AA
+dw $0003, MetaFriar07SparkleA    ; $81DA
+dw $0000, MetaFriar08BlankTile    ; $820A
+dw $FFFF
+AnimFriar01:
+dw $0000, MetaFriar13OrbSmallDim    ; $83B1
+dw $0000, MetaFriar14OrbSmallWaxing    ; $83C5
+dw $0000, MetaFriar03HaloBright    ; $8128
+dw $FFFF
+AnimFriar02:
+dw $0000, MetaFriar10OrbMidsizeDim    ; $8375
+dw $0000, MetaFriar11OrbMidsizeWaning    ; $8389
+dw $0000, MetaFriar16OrbMidsizeWithHalo    ; $83ED
+dw $FFFF
+AnimFriar03:
+dw $0000, MetaFriar09OrbMidsize    ; $821E
+dw $0000, MetaFriar0AOrbMidsize    ; $8247
+dw $0000, MetaFriar0BOrbSmallWithHalo    ; $8270
+dw $0000, MetaFriar0COrbSmallWithHalo    ; $82B5
+dw $FFFF
+AnimFriar04:
+dw $0001, MetaFriar0DOrbLargeDim    ; $82FA
+dw $0001, MetaFriar0EOrbLargeWaxing    ; $8323
+dw $0001, MetaFriar0FOrbLargeBright    ; $834C
+dw $0001, MetaFriar0EOrbLargeWaxing    ; $8323
+dw $FFFF
+AnimFriar05:
+dw $0001, MetaFriar10OrbMidsizeDim    ; $8375
+dw $0001, MetaFriar11OrbMidsizeWaning    ; $8389
+dw $0001, MetaFriar12OrbMidsizeWaxing    ; $839D
+dw $0001, MetaFriar11OrbMidsizeWaning    ; $8389
+dw $FFFF
+AnimFriar06:
+dw $0001, MetaFriar13OrbSmallDim    ; $83B1
+dw $0001, MetaFriar14OrbSmallWaxing    ; $83C5
+dw $0001, MetaFriar15OrbSmallBright    ; $83D9
+dw $0001, MetaFriar14OrbSmallWaxing    ; $83C5
+dw $FFFF
+
+MetaFriar00SparkleA:
+db $1A,$1C,$1B,$1B
+db $F8,$F0,$01,$01,$F8,$10,$F7,$10
+db $05
+db $00,$17,$17,$17,$17 : dw $04D5  ; Sparkle star A
+db $00,$00,$2E,$17,$17 : dw $04D5  ; Sparkle star A
+db $00,$17,$17,$2E,$00 : dw $04D5  ; Sparkle star A
+db $00,$2E,$00,$17,$17 : dw $04D5  ; Sparkle star A
+db $00,$17,$17,$00,$2E : dw $04D5  ; Sparkle star A
+
+MetaFriar01SparkleB:
+db $16,$18,$17,$17
+db $F8,$F0,$01,$01,$F8,$10,$F7,$10
+db $05
+db $00,$13,$13,$13,$13 : dw $04C4  ; Sparkle star B
+db $00,$00,$26,$17,$0F : dw $04C4  ; Sparkle star B
+db $00,$17,$0F,$26,$00 : dw $04C4  ; Sparkle star B
+db $00,$26,$00,$0F,$17 : dw $04C4  ; Sparkle star B
+db $00,$0F,$17,$00,$26 : dw $04C4  ; Sparkle star B
+
+MetaFriar02SparkleC:
+db $12,$14,$13,$13
+db $F8,$F0,$01,$01,$F8,$10,$F7,$10
+db $05
+db $00,$0F,$0F,$0F,$0F : dw $04C5  ; Sparkle star C
+db $00,$00,$1E,$17,$07 : dw $04C5  ; Sparkle star C
+db $00,$17,$07,$1E,$00 : dw $04C5  ; Sparkle star C
+db $00,$1E,$00,$07,$17 : dw $04C5  ; Sparkle star C
+db $00,$07,$17,$00,$1E : dw $04C5  ; Sparkle star C
+
+MetaFriar03HaloBright:
+db $0F,$10,$0F,$10
+db $F8,$F0,$01,$01,$F7,$12,$F7,$12
+db $04
+db $01,$00,$0F,$00,$0F : dw $0442  ; Halo star, bright
+db $01,$0F,$00,$00,$0F : dw $4442  ; Halo star, bright
+db $01,$00,$0F,$0F,$00 : dw $8442  ; Halo star, bright
+db $01,$0F,$00,$0F,$00 : dw $C442  ; Halo star, bright
+
+MetaFriar04HaloDim:
+db $0F,$10,$0F,$10
+db $F8,$F0,$01,$01,$F8,$10,$F6,$12
+db $04
+db $01,$00,$0F,$00,$0F : dw $02E8  ; Halo star, dim
+db $01,$0F,$00,$00,$0F : dw $42E8  ; Halo star, dim
+db $01,$00,$0F,$0F,$00 : dw $82E8  ; Halo star, dim
+db $01,$0F,$00,$0F,$00 : dw $C2E8  ; Halo star, dim
+
+MetaFriar05SparkleC:
+db $10,$12,$11,$11
+db $F8,$F0,$01,$01,$F8,$10,$F6,$11
+db $05
+db $00,$0D,$0D,$0D,$0D : dw $02C5  ; Sparkle star C
+db $00,$00,$1A,$04,$16 : dw $02C5  ; Sparkle star C
+db $00,$16,$04,$00,$1A : dw $02C5  ; Sparkle star C
+db $00,$1A,$00,$16,$04 : dw $02C5  ; Sparkle star C
+db $00,$04,$16,$1A,$00 : dw $02C5  ; Sparkle star C
+
+MetaFriar06SparkleB:
+db $14,$16,$15,$15
+db $F8,$F0,$01,$01,$F8,$10,$F6,$11
+db $05
+db $00,$11,$11,$11,$11 : dw $02C4  ; Sparkle star B
+db $00,$22,$00,$16,$0C : dw $02C4  ; Sparkle star B
+db $00,$0C,$16,$22,$00 : dw $02C4  ; Sparkle star B
+db $00,$00,$22,$0C,$16 : dw $02C4  ; Sparkle star B
+db $00,$16,$0C,$00,$22 : dw $02C4  ; Sparkle star B
+
+MetaFriar07SparkleA:
+db $1A,$1C,$1B,$1B
+db $F8,$F0,$01,$01,$F8,$10,$F7,$10
+db $05
+db $00,$17,$17,$17,$17 : dw $02D5  ; Sparkle star A
+db $00,$00,$2E,$18,$16 : dw $02D5  ; Sparkle star A
+db $00,$18,$16,$2E,$00 : dw $02D5  ; Sparkle star A
+db $00,$2E,$00,$16,$18 : dw $02D5  ; Sparkle star A
+db $00,$16,$18,$00,$2E : dw $02D5  ; Sparkle star A
+
+MetaFriar08BlankTile:
+db $40,$C8,$60,$00
+db $F8,$F0,$01,$01,$F8,$10,$F7,$10
+db $01
+db $00,$00,$00,$00,$58 : dw $02AF  ; Blank
+
+MetaFriar09OrbMidsize:
+db $0F,$10,$0F,$10
+db $F8,$F0,$01,$01,$F6,$15,$F6,$16
+db $04
+db $01,$00,$0F,$00,$0F : dw $0440  ; Orb, Midsize
+db $01,$0F,$00,$00,$0F : dw $4440  ; Orb, Midsize
+db $01,$00,$0F,$0F,$00 : dw $8440  ; Orb, Midsize
+db $01,$0F,$00,$0F,$00 : dw $C440  ; Orb, Midsize
+
+MetaFriar0AOrbMidsize:
+db $0E,$0F,$0E,$0F
+db $F8,$F0,$01,$01,$F7,$13,$F7,$14
+db $04
+db $01,$0D,$00,$00,$0D : dw $4440  ; Orb, Midsize
+db $01,$00,$0D,$00,$0D : dw $0440  ; Orb, Midsize
+db $01,$00,$0D,$0D,$00 : dw $8440  ; Orb, Midsize
+db $01,$0D,$00,$0D,$00 : dw $C440  ; Orb, Midsize
+
+MetaFriar0BOrbSmallWithHalo:
+db $0F,$10,$0F,$10
+db $F8,$F0,$01,$01,$F6,$14,$F6,$15
+db $08
+db $00,$08,$0F,$08,$0F : dw $0460  ; Orb, Small, Bright
+db $00,$0F,$08,$08,$0F : dw $4460  ; Orb, Small, Bright
+db $00,$08,$0F,$0F,$08 : dw $8460  ; Orb, Small, Bright
+db $00,$0F,$08,$0F,$08 : dw $C460  ; Orb, Small, Bright
+db $01,$00,$0F,$00,$0F : dw $0442  ; Halo star, bright
+db $01,$0F,$00,$00,$0F : dw $4442  ; Halo star, bright
+db $01,$00,$0F,$0F,$00 : dw $8442  ; Halo star, bright
+db $01,$0F,$00,$0F,$00 : dw $C442  ; Halo star, bright
+
+MetaFriar0COrbSmallWithHalo:
+db $0F,$10,$0F,$10
+db $F8,$F0,$01,$01,$F6,$14,$F6,$15
+db $08
+db $00,$09,$0E,$09,$0E : dw $0460  ; Orb, Small, Bright
+db $00,$0E,$09,$09,$0E : dw $4460  ; Orb, Small, Bright
+db $00,$09,$0E,$0E,$09 : dw $8460  ; Orb, Small, Bright
+db $00,$0E,$09,$0E,$09 : dw $C460  ; Orb, Small, Bright
+db $01,$00,$0F,$00,$0F : dw $0442  ; Halo star, bright
+db $01,$0F,$00,$00,$0F : dw $4442  ; Halo star, bright
+db $01,$00,$0F,$0F,$00 : dw $8442  ; Halo star, bright
+db $01,$0F,$00,$0F,$00 : dw $C442  ; Halo star, bright
+
+MetaFriar0DOrbLargeDim:
+db $10,$10,$10,$10
+db $F8,$F0,$01,$01,$F2,$1C,$F3,$1B
+db $04
+db $01,$00,$10,$00,$10 : dw $0444  ; Orb, Large, Dim
+db $01,$10,$00,$00,$10 : dw $4444  ; Orb, Large, Dim
+db $01,$00,$10,$10,$00 : dw $8444  ; Orb, Large, Dim
+db $01,$10,$00,$10,$00 : dw $C444  ; Orb, Large, Dim
+
+MetaFriar0EOrbLargeWaxing:
+db $10,$10,$10,$10
+db $F8,$F0,$01,$01,$F2,$1C,$F3,$1B
+db $04
+db $01,$00,$10,$00,$10 : dw $0446  ; Orb, Large, Waxing
+db $01,$10,$00,$00,$10 : dw $4446  ; Orb, Large, Waxing
+db $01,$00,$10,$10,$00 : dw $8446  ; Orb, Large, Waxing
+db $01,$10,$00,$10,$00 : dw $C446  ; Orb, Large, Waxing
+
+MetaFriar0FOrbLargeBright:
+db $10,$10,$10,$10
+db $F8,$F0,$01,$01,$F2,$1C,$F3,$1B
+db $04
+db $01,$00,$10,$00,$10 : dw $0448  ; Orb, Large, Bright
+db $01,$10,$00,$00,$10 : dw $4448  ; Orb, Large, Bright
+db $01,$00,$10,$10,$00 : dw $8448  ; Orb, Large, Bright
+db $01,$10,$00,$10,$00 : dw $C448  ; Orb, Large, Bright
+
+MetaFriar10OrbMidsizeDim:
+db $08,$08,$08,$08
+db $F8,$F0,$01,$01,$F8,$0F,$FA,$0E
+db $01
+db $01,$00,$00,$00,$00 : dw $044A  ; Orb, Midsize, Dim
+
+MetaFriar11OrbMidsizeWaning:
+db $08,$08,$08,$08
+db $F8,$F0,$01,$01,$F9,$0E,$F9,$0F
+db $01
+db $01,$00,$00,$00,$00 : dw $044C  ; Orb, Midsize, Waning
+
+MetaFriar12OrbMidsizeWaxing:
+db $08,$08,$08,$08
+db $F8,$F0,$01,$01,$F9,$0D,$FA,$0E
+db $01
+db $01,$00,$00,$00,$00 : dw $044E  ; Orb, Midsize, Waxing
+
+MetaFriar13OrbSmallDim:
+db $04,$04,$04,$04
+db $F8,$F0,$01,$01,$FB,$0A,$FC,$0A
+db $01
+db $00,$00,$00,$00,$00 : dw $0461  ; Orb, Small, Dim
+
+MetaFriar14OrbSmallWaxing:
+db $04,$04,$04,$04
+db $F8,$F0,$01,$01,$FB,$0A,$FC,$0A
+db $01
+db $00,$00,$00,$00,$00 : dw $0462  ; Orb, Small, Waxing
+
+MetaFriar15OrbSmallBright:
+db $04,$04,$04,$04
+db $F8,$F0,$01,$01,$FB,$0A,$FC,$0A
+db $01
+db $00,$00,$00,$00,$00 : dw $0463  ; Orb, Small, Bright
+
+MetaFriar16OrbMidsizeWithHalo:
+db $0F,$10,$0F,$10
+db $F8,$F0,$01,$01,$F5,$15,$F5,$15
+db $05
+db $01,$00,$0F,$0F,$00 : dw $8442  ; Halo star, bright
+db $01,$00,$0F,$00,$0F : dw $0442  ; Halo star, bright
+db $01,$0F,$00,$00,$0F : dw $4442  ; Halo star, bright
+db $01,$0F,$00,$0F,$00 : dw $C442  ; Halo star, bright
+db $01,$07,$08,$08,$07 : dw $044E  ; Orb, Midsize, Waxing
+
+warnpc $97841d
+ 
+

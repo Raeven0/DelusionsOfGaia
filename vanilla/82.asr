@@ -1,0 +1,5986 @@
+arch 65816
+hirom
+fillbyte $FF
+
+
+org $828000
+LR_YTimesAOverB:
+{
+sep #$20
+ sta $4202    ; mult1 = a
+ xba : pha    ; push HighA
+rep #$20
+tya
+sep #$20
+ sta $4203    ; mult2 = y
+ xba
+ nop : nop : nop
+ ldy $4216 : sta $4203    ; Y = a*y, next read will be a*z
+rep #$20
+tya    ; A = a*y
+sep #$20
+ sta $4204    ; $4204/5 = a*y + ($100 * a*z)
+ xba : clc : adc $4216 : sta $4205    ;^^
+ pla : sta $4206    ; divisor = b
+ nop : nop : nop : nop
+ nop : nop : nop : nop
+rep #$20
+lda $4214    ; returns a * (y + $100 * z) / b
+rtl
+}
+
+;org $82803B
+LR_FakeNmiImmediate:
+php
+rep #$20
+pha
+sep #$20
+bra LR_WaitForNmi_Process
+;org $828043
+LR_WaitForNmi:
+{
+php
+rep #$20
+pha
+sep #$20
+lda $804210
+-:
+lda $804210 : bpl -
+lda $804210
+.Process:
+lda $06ef : bit #$08 : beq .TryReadController
+.PushMode7Data:
+lda $C2 : sta $211B
+lda $C3 : sta $211B
+lda $C4 : sta $211C
+lda $C5 : sta $211C
+lda $C6 : sta $211D
+lda $C7 : sta $211D
+lda $C8 : sta $211E
+lda $C9 : sta $211E
+lda $CA : sta $211F
+lda $CB : and #$1F : sta $211F
+lda $CC : sta $2120
+lda $CD : and #$1F : sta $2120
+ldx $BE : stx $CE
+ldx $C0 : stx $D0
+.TryReadController:    ; $8280a6
+rep #$20
+lda $09ac : beq .ReadOkay
+  sta $0656
+  stz $09ac
+pla
+plp
+rtl
+.ReadOkay:
+lda $0660 : and #$0F00 : sta $065E    ; Clear buttons except arrows
+..CheckStart:
+lda $0DB2 : beq ..CheckSelect
+lda $0660 : bit #$1000 : beq ..CheckSelect
+lda $0DB2 : tsb $065E
+..CheckSelect:
+lda $0DB4 : beq ..CheckB
+lda $0660 : bit #$2000 : beq ..CheckB
+lda $0DB4 : tsb $065E
+..CheckB:
+lda $0DAA : beq ..CheckY
+lda $0660 : bit #$8000 : beq ..CheckY
+lda $0DAA : tsb $065E
+..CheckY:
+lda $0DAE : beq ..CheckA
+lda $0660 : bit #$4000 : beq ..CheckA
+lda $0DAE : tsb $065E
+..CheckA:
+lda $0DAC : beq ..CheckX
+lda $0660 : bit #$0080 : beq ..CheckX
+lda $0DAC : tsb $065E
+..CheckX:
+lda $0DB0 : beq ..CheckL
+lda $0660 : bit #$0040 : beq ..CheckL
+lda $0DB0 : tsb $065E
+..CheckL:
+lda $0DA8 : beq ..CheckR
+lda $0660 : bit #$0020 : beq ..CheckR
+lda $0DA8 : tsb $065E
+..CheckR:
+lda $0DA6 : beq +
+lda $0660 : bit #$0010 : beq +
+lda $0DA6 : tsb $065E
+..UpdateMasks:    ; org $828157
+lda $065E : sta $0656 : sta $0660
+  and $0658 : sta $0658
+    beq ..ResetDirectionHeldTimer
+  and $065C : beq ..ResetDirectionHeldTimer
+lda $0662 : inc : sta $0662
+  cmp #$000C : bne ..Done
+lda $065C : trb $0658
+..ResetDirectionHeldTimer:
+stz $0662
+..Done:
+lda $0658 : trb $0656
+lda $065A : trb $0656
+pla
+plp
+rtl
+}
+
+;org $828191
+LR_ResetNmi:
+{
+php : sep #$20
+pha
+lda $804210
+lda #$81 : sta $804200
+pla
+plp
+rtl
+}
+
+;org $8281A2
+LR_SetNoNmiNoIrqAutoJoypad:
+{
+php
+sep #$20 : pha
+lda #$01 : sta $804200
+pla
+plp
+rtl
+}
+
+;org $8281af
+LR_SetScreenBlack:
+{
+php
+sep #$20 : pha
+lda #$00 : sta $802100
+pla
+plp
+rtl
+}
+
+;org $8281bc
+LR_SetScreenBlackForceBlank:
+{
+php
+sep #$20 : pha
+lda #$80 : sta $802100
+pla
+plp
+rtl
+}
+
+;org $8281c9
+LR_IdleAFrames:
+{
+jsl LR_WaitForNmi    ; $828043
+dec : bne LR_IdleAFrames
+rtl
+}
+
+;org $8281d1
+LR_MultiplyBytesOfA:
+{
+sta $804202  ;<--SR
+xba
+sta $804203
+nop : nop : nop : nop
+lda $804217
+xba
+lda $804216
+rtl
+}
+; Division routine. .Al contains quotient, .Ah remainder.
+LR_DivideY16ByA8:    ; $8281E8
+{
+sty $4204    ;<--SR
+sta $4206
+nop : nop : nop : nop
+nop : nop : nop : nop
+lda $4216
+xba
+lda $4214
+rtl
+}
+warnpc $8281FE
+
+
+org $828270
+LR_QuintetDecomp:
+{
+php
+phb
+phx
+phy
+sep #$20
+lda #$7E : pha : plb
+ldx #$0200 : stx $74
+  stx $76
+lda #$20
+..WriteNextFiller:
+sta ($74) : inc $74 : bne ..WriteNextFiller
+lda #$EF : sta $74
+lda #$80 : sta $72
+ldx $7A
+ldy $78
+B_828295:    ; org $828295
+lda [$3E] : and $72 : pha
+lsr $72 : bcc B_8282A6
+  ror $72 : inc $3E : bne B_8282A6
+    inc $3F
+B_8282A6:    ; org $8282a6
+pla : beq B_8282B9
+jsr S_8282DE : sta $0000,x
+  inx
+  sta ($74)
+inc $74
+dey : bne B_828295
+bra J_8282D9
+B_8282B9:    ; org $8282b9
+jsr S_8282DE : sta $76
+jsr S_82833B : inc a : inc a
+B_8282C3:    ; org $8282c3
+xba
+lda ($76) : inc $76 : sta ($74) : inc $74 : sta $0000,x : inx
+dey : beq J_8282D9
+xba
+dec a : bne B_8282C3 : bra B_828295
+J_8282D9:    ; org $8282d9
+ply
+plx
+plb
+plp
+rtl
+S_8282DE:    ; org $8282de
+lda $72 : bmi B_828325 : asl : bmi B_82831E : asl : bmi B_828317 : asl : bmi B_828310 : asl : bmi B_828309 : asl : bmi B_828302 : asl : bmi B_8282FB
+rep #$20
+lda [$3E]
+xba : bra J_82832E
+B_8282FB:    ; org $8282fb
+rep #$20
+lda [$3E]
+xba : bra J_82832F
+B_828302:    ; org $828302
+rep #$20
+lda [$3E]
+xba : bra J_828330
+B_828309:    ; org $828309
+rep #$20
+lda [$3E]
+xba : bra J_828331
+B_828310:    ; org $828310
+rep #$20
+lda [$3E]
+xba : bra J_828332
+B_828317:    ; org $828317
+rep #$20
+lda [$3E]
+xba : bra J_828333
+B_82831E:    ; org $82831e
+rep #$20
+lda [$3E]
+xba : bra J_828334
+B_828325:    ; org $828325
+lda [$3E]
+rep #$20
+inc $3E
+sep #$20
+rts
+J_82832E:    ; org $82832e
+asl
+J_82832F:    ; org $82832f
+asl
+J_828330:    ; org $828330
+asl
+J_828331:    ; org $828331
+asl
+J_828332:    ; org $828332
+asl
+J_828333:    ; org $828333
+asl
+J_828334:    ; org $828334
+asl : inc $3E
+xba
+sep #$20
+rts
+S_82833B:    ; org $82833b
+lda $72 : cmp #$10 : bcc B_82835D
+lsr a
+lsr a
+lsr a
+lsr a : sta $72
+xba
+lda [$3E]
+xba
+rep #$20
+lsr a : bcs B_828357
+lsr a : bcs B_828357
+lsr a : bcs B_828357
+lsr a
+B_828357:    ; org $828357
+sep #$20
+xba : and #$0F
+rts
+B_82835D:    ; org $82835d
+lsr a : bcs B_82838E
+lsr a : bcs B_828381
+lsr a : bcs B_828375
+lda #$80 : sta $72
+lda [$3E]
+rep #$20
+inc $3E
+sep #$20
+and #$0F
+rts
+B_828375:    ; org $828375
+lda #$40 : sta $72
+rep #$20
+lda [$3E]
+xba : asl : bra J_82839A
+B_828381:    ; org $828381
+lda #$20 : sta $72
+rep #$20
+lda [$3E]
+xba : asl : asl : bra J_82839A
+B_82838E:    ; org $82838e
+lda #$10 : sta $72
+rep #$20
+lda [$3E]
+xba : asl : asl : asl
+J_82839A:    ; org $82839a
+inc $3E
+sep #$20
+xba : and #$0F
+rts
+}
+
+
+;org $8283a2
+LR_ImmDmaYFromAXToVram:
+stx $4302
+sta $4304
+sty $4305
+lda #$01 : sta $4300
+lda #$18 : sta $4301
+lda #$01 : sta $420B
+rtl
+
+
+;org $8283bb
+LR_LoadMapCardsAndAssets:
+php
+sep #$20
+jsr SR_SkipToMapFromStart    ; $828CF2
+.NextCard:
+jsr SR_GetMapHeaderByte    ; 828CE7
+  cmp #$00 : beq .GotEndCard
+pea .NextCard-1    ; $83C0
+rep #$20
+and #$00FF : asl : tax
+lda.l .CardHandlerPtrs,x : dec : pha
+sep #$20
+rts
+.GotEndCard:    ; org $8283db
+lda $0644 : cmp #$F7 : beq .Return
+jsr S_829020
+.Return:    ; org $8283e5
+plp
+rtl
+;org $8283e7
+.ForInv:
+php
+sep #$20
+jsr SR_SkipToMapFromStart
+..NextCard:    ; org $8283ed
+jsr SR_GetMapHeaderByte
+  cmp #$00 : beq ..Return
+pea ..NextCard-1    ; $83EC
+rep #$20
+and #$00FF : asl : tax
+lda.l .CardHandlerPtrs,x : cmp #$8B6D : beq ..SkipMusic
+dec : pha
+sep #$20
+rts
+..SkipMusic:    ; org $82840c
+iny : iny : iny : iny : iny
+sep #$20
+rts
+..Return:    ; org $828414
+plp
+rtl
+;org $828416
+.CardHandlerPtrs:
+{
+dw SR_HandleMapCardEnd    ; $00 @ $845c [RTS]
+dw SR_HandleMapCardEnd    ; $01 @ $845c [RTS]
+dw SR_HandleMapCardScreenSettings    ; Card $02 @ $8a6d
+dw SR_HandleMapCardVram    ; Card $03 @ $845d
+dw SR_HandleMapCard04    ; Card $04 @ $86c3
+dw SR_HandleMapCard05    ; Card $05 @ $8712
+dw SR_HandleMapCard06    ; Card $06 @ $87bc
+dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCard0E    ; Card $0e @ $8b69
+dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCardMetasprite    ; Card $10 @ $8be4
+dw SR_HandleMapCardMusic    ; Card $11 @ $8b6d
+dw SR_HandleMapCard12    ; $845c [RTS]
+dw SR_HandleMapCardCondBranch    ; Card $13 @ $8446
+dw SR_HandleMapCardBranchLabel    ; Card $14 @ $845b [INY; RTS]
+dw SR_HandleMapCardBranch    ; Card $15 @ $8d3d
+dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCard17    ; Card $17 @ $8c03
+}
+;org $828446
+SR_HandleMapCardCondBranch:    ; Card $13
+{
+php
+rep #$20
+jsr SR_GetMapHeaderByte
+phy
+  jsl LR_SecOnFlagA    ; $80b4b7
+ply
+bcc .NoBranch    ; +$04
+  plp
+  jmp SR_HandleMapCardBranch    ; $8d3d
+.NoBranch:
+iny
+plp
+rts
+}
+;org $82845b
+SR_HandleMapCardBranchLabel:    ; Card $14
+iny
+SR_HandleMapCardEnd:
+rts
+;org $82845d
+SR_HandleMapCardVram:
+{
+
+}
+
+
+org $828a6d
+SR_HandleMapCard02:
+{
+jsr SR_GetMapHeaderByte
+phy
+rep #$20
+  and #$00FF : asl : tax
+  lda $818000,x : sec : sbc #$8000 : tax
+sep #$20
+lda $818000,x : sta $212C : sta $212E
+lda $818001,x : sta $212D : sta $212F
+lda $818002,x : sta $2130
+lda $818003,x : sta $2131
+lda $818004,x : and #$30 : sta $06F1
+lda $818004,x
+stz $06A3
+stz $06A5
+ldy #$2000
+ror : bcc +
+  sty $06A2
++:
+ror : bcc +
+  sty $06A4
++:
+ror : ror : ror : ror : ror
+ldy #$00E0
+bcc +
+  ldy #$0100
++:
+sty $06EC
+ror : bcs +
+  lda #$01 : tsb $06A5
++:
+rep #$20
+lda $06A2 : cmp $06A6 : beq +
+  stz $0679
++:
+sta $06A6
+lda $06A4 : cmp $06A8 : beq +
+  stz $067C
++:
+sta $06A8
+sep #$20
+lda $818005,x : sta $06EE
+bmi +
+  lda $06EE : and #$03 : clc : adc #$10 : sta $2107
+  lda $06EE : lsr : lsr : and #$03 : clc : adc #$18 : sta $2108
+  bra ++
++:
+  lda $06EE : and #$03 : clc : adc #$18 : sta $2107
+  lda $06EE : lsr : lsr : and #$03 : clc : adc #$10 : sta $2108
+++:
+lda $818006,x : sta $2105
+lda $818007,x
+pha
+  and #$1F : sta $06EF
+  bit #$08 : beq +
+    stz $066E
++:
+  lda #$40 : trb $09ED
+pla : bpl +
+  lda #$40 : tsb $09ED
++:
+lda $818008,x
+lda $818009,x
+ply
+rts
+}
+
+;org $828b69
+SR_HandleMapCard0E:
+{
+iny : iny : iny
+rts
+}
+;org $828b6d
+SR_HandleMapCardMusic:
+{
+jsr SR_GetMapHeaderByte    ; $8ce7
+  sta $06f2
+jsr SR_GetMapHeaderByte    ; $8ce7
+  sta $06f4
+ldx #$003e : jsr SR_GetAssetAddressAsHirom    ; $8d8f
+lda $06f6 : cmp $06f4 : beq +    ; Check RoomGroup.
+  rts
++:
+ldx #$0687 : jsr SR_ClcIfCachedOrUpdateCache : bcs +
+  rts
++:
+lda #$1a : jsl LR_IdleAFrames    ; $8281c9
+lda $0d72 : beq .MusicOff
+  lda #$f2 : sta $2140
+  lda #$20 : jsl LR_IdleAFrames    ; $8281c9
+.MusicOff:
+lda #$f0 : sta $2140
+-:
+lda $2140 : bne -
+lda #$02 : jsl LR_IdleAFrames    ; $8281c9
+lda #$FF : sta $2140
+lda #$02 : jsl LR_IdleAFrames    ; $8281c9
+ldx $3e : stx $46
+ldx $40 : stx $48
+jsl UpdateApu    ; $82909b
+lda #$01 : sta $0d72
+lda #$03 : jsl LR_IdleAFrames    ; $8281c9
+lda $06f2 : beq +
+  lda #$01
++:
+sta $2140
+rts
+}
+;org $828be4
+SR_HandleMapCardMetasprite:
+{
+php
+rep #$20
+lda [$3A],y : sta $0666
+sep #$20
+iny : iny : iny
+ldx #$003E : jsr SR_GetAssetAddressAsHirom    ; $8d8f
+ldx #$0684 : jsr SR_ClcIfCachedOrUpdateCache : bcc .Done
+rep #$20
+lda [$3E]
+  inc $3E : inc $3E
+  cmp #$0000 : beq .AsUncomp
+.AsComp:
+sta $78
+sep #$20
+ldx #$4000 : stx $7A
+jsl LR_QuintetDecomp
+.Done:
+plp
+rts
+.AsUncomp:    ; org $828c1b
+stz $0664 : stz $0668
+ldx #$4000 : stx $42
+lda #$007E : sta $44
+jsr SR_PushMapData    ; $8dea
+plp
+rts
+}
+warnpc $828c30
+
+
+
+
+org $828ce7
+SR_GetMapHeaderByte:
+php
+sep #$20
+lda #$00 : xba
+lda [$3A],y : iny
+plp
+rts
+
+SR_SkipToMapFromStart:    ; org $828cf2
+ldy #$0000
+SR_SkipToMap:    ; org $828cf5
+{
+lda [$3A],y
+iny : iny
+cmp $0644 : bne .SkipCard
+rts
+.SkipCard:    ; org $828cff
+sep #$20
+lda [$3A],y
+iny
+cmp #$00 : beq SR_SkipToMap
+cmp #$13 : beq .Skip2Bytes
+cmp #$02 : beq .Skip1Byte
+cmp #$03 : beq .Skip7Bytes
+cmp #$04 : beq .Skip6Bytes
+cmp #$05 : beq .Skip7Bytes
+cmp #$06 : beq .Skip4Bytes
+cmp #$0E : beq .Skip3Bytes
+cmp #$10 : beq .Skip6Bytes
+cmp #$11 : beq .Skip5Bytes
+cmp #$14 : beq .Skip1Byte
+cmp #$15 : beq .Skip1Byte
+.Skip7Bytes:
+iny
+.Skip6Bytes:
+iny
+.Skip5Bytes:
+iny
+.Skip4Bytes:
+iny
+.Skip3Bytes:
+iny
+.Skip2Bytes:
+iny
+.Skip1Byte:
+iny
+bra .SkipCard
+}
+;org $828d3d
+SR_HandleMapCardBranch:    ; Card $15
+{
+jsr SR_GetMapHeaderByte    ; $8ce7
+pha
+ldy #$0000
+.SkipMapId:
+iny : iny
+.SkipCard:
+lda [$3A],y
+iny
+cmp #$00 : beq .SkipMapId
+cmp #$02 : beq .Skip1Byte
+cmp #$03 : beq .Skip7Bytes
+cmp #$04 : beq .Skip6Bytes
+cmp #$05 : beq .Skip7Bytes
+cmp #$06 : beq .Skip4Bytes
+cmp #$0E : beq .Skip3Bytes
+cmp #$10 : beq .Skip6Bytes
+cmp #$11 : beq .Skip5Bytes
+cmp #$12 : beq .StopHere    ; +$1C
+cmp #$13 : beq .Skip2Bytes
+cmp #$14 : beq .CheckLabelMatch
+cmp #$15 : beq .Skip1Byte
+.Skip7Bytes:
+iny
+.Skip6Bytes:
+iny
+.Skip5Bytes:
+iny
+.Skip4Bytes:
+iny
+.Skip3Bytes:
+iny
+.Skip2Bytes:
+iny
+.Skip1Byte:
+iny
+bra .SkipCard
+.CheckLabelMatch:    ; org $828d86
+lda [$3A],y
+iny
+cmp $01,s : bne .SkipCard
+.StopHere:
+pla
+rts
+}
+;org $828d8f
+SR_GetAssetAddressAsHirom:
+{
+php
+rep #$20
+lda [$3A],y
+  iny : iny
+  sta $0000,x
+sep #$20
+lda [$3A],y
+  iny
+  sta $0002,x
+  cmp #$70 : bcs .IsClean
+clc : adc #$80 : cmp #$A0 : bcc .DoneClean
+clc : adc #$20 : sta $0002,x
+lda $0001,x : and #$7F : sta $0001,x
+bra .IsClean
+
+.DoneClean:    ; org $828dbc
+sta $0002,x
+.IsClean:    ; org $828dbf
+plp
+rts
+}
+; org $828dc1
+SR_ClcIfCachedOrUpdateCache:
+{
+php
+rep #$20
+lda $3E : cmp $0000,x : bne .NotCached
+sep #$20
+lda $40 : cmp $0002,x : bne .NotCached
+rep #$20
+plp
+clc
+rts
+.NotCached:    ; org $828dd9
+sep #$20
+lda $40 : sta $0002,x
+rep #$20
+lda $3E : sta $0000,x
+plp
+sec
+rts
+}
+;org $828dea
+SR_PushMapData:
+{
+php
+phy
+sep #$20
+lda $3E : cmp #$80 : bcc .WithMvn
+  cmp #$C0 : bcs .WithDma
+rep #$20
+lda $3E : cmp #$8000 : bcc .WithMvn
+.WithDma:    ; org $828e01
+rep #$20
+lda $0666 : sec : sbc $0664 : sta $4305
+lda $3E : clc : adc $0664 : sta $4302
+lda $42 : clc : adc $0668 : sta $2181
+sep #$20
+lda $44 : cmp #$7F
+lda #$00 : adc #$00 : sta $2183
+lda #$00 : sta $4300
+lda #$80 : sta $4301
+lda $40 : sta $4304
+lda #$01 : sta $420B
+ply
+plp
+rts
+.WithMvn:    ; org $828e43
+phx
+sep #$20
+lda $40 : sta $0405
+lda $44 : sta $0404
+rep #$20
+lda $3E : clc : adc $0664 : tax
+lda $42 : clc : adc $0668 : tay
+lda $0666 : sec : sbc $0664 : dec
+jsr $0402
+plx
+ply
+plp
+rts
+}
+;org $828e6f
+{
+ldx #$0000
+B_828E72:    ; org $828e72
+lda $3E : cmp $0084,x : beq B_828E83
+J_828E79:    ; org $828e79
+inx : inx : inx : cpx #$000C : bne B_828E72
+clc
+rts
+B_828E83:    ; org $828e83
+sep #$20
+  lda $40 : cmp $0086,x : beq B_828E90
+rep #$20
+bra J_828E79
+B_828E90:    ; org $828e90
+rep #$20
+sec
+rts
+}
+;org $828e94
+
+
+org $829020
+#S_829020:
+ldx #$0000
+jsr S_829034
+lda $06EF : bit #$01 : beq B_829033
+ldx #$0002
+jsr S_829060
+#B_829033:    ; org $829033
+rts
+
+#S_829034:    ; org $829034
+ldy $06AA : sty $3E
+lda #$7F : sta $40
+lda $0693 : xba
+lda $0697
+jsl LR_MultiplyBytesOfA    ; $8281d1
+xba : tay : beq B_82905F
+ldx $069E
+
+#B_82904F:    ; org $82904f
+lda $7E0000,x : sta $3E
+lda [$3E] : sta $7F2000,x : inx
+dey : bne B_82904F
+
+#B_82905F:    ; org $82905f
+rts
+
+#S_829060:    ; org $829060
+ldy $06AC : sty $3E
+lda #$7F : sta $40
+lda $0695
+xba
+lda $0699
+jsl LR_MultiplyBytesOfA    ; $8281d1
+xba : tay : beq B_82908D
+ldx $0080
+
+#B_82907B:    ; org $82907b
+lda $7E0000,x : sta $3E
+lda [$3E] : beq B_829089
+  sta $7F0000,x
+
+#B_829089:    ; org $829089
+inx
+dey : bne B_82907B
+
+#B_82908D:    ; org $82908d
+rts
+
+
+;org $82908e
+InitApu:
+ldx.w #SpcInitData : stx $46    ; #$9210
+lda.b #$82 : sta $48           ; Bank of SpcProgram.
+jsr SR_WaitAndLoadApu    ; $919B
+UpdateApu:    ;org $82909b
+php
+phy
+jsr SR_WaitAndLoadApu    ; Assumes all music data starts with "end old music" program.
+dey : dey
+sep #$20
+lda #$FF : sta $2140
+lda #$CC : sta $30
+rep #$20
+lda #$BBAA
+-:
+  cmp $2140 : bne -
+lda [$46],y    ; $2e = offset for new data in free ARAM
+  iny : iny
+  sta $2E
+lda [$46],y    ; $28 = number of additional data blocks to push
+  iny : sty $32
+  and #$00FF : sta $28
+stz $2C
+.FindFreeMemory:    ; org $8290c9
+rep #$20
+ldx #$0000 : stx $4A
+sep #$20
+lda #$C5 : sta $4C
+ldy $32
+lda [$46],y
+  iny : sty $32
+  sta $2A
+stz $2B
+bit #$80 : beq +
+  jmp J_829153
++:
+rep #$20
+lda $2E : clc : adc $2C : sta $2E
+.CheckNextSound:    ; org $8290f1
+lda [$4A] : sta $2C
+  sta $34
+inc $4A : inc $4A
+lda $2A : beq B_829113
+  dec $2A
+lda $4A : clc : adc $2C : sta $4A
+  bpl .CheckNextSound
+and #$7FFF : sta $4A
+inc $4C
+bra .CheckNextSound
+B_829113:    ; org $829113
+ldy $4A : stz $4A
+sep #$20
+lda $30
+bra J_829160
+B_82911D:    ; org $82911d
+lda [$4A],y
+  iny : bpl B_829127
+    ldy #$0000
+    inc $4C
+B_829127:    ; org $829127
+xba
+lda #$00
+bra J_82913E
+B_82912C:    ; org $82912c
+xba
+lda [$4A],y
+  iny : bpl B_829137
+    ldy #$0000
+    inc $4C
+B_829137:    ; org $829137
+xba
+-:
+cmp $2140 : bne -
+inc a
+J_82913E:    ; org $82913e
+rep #$20
+sta $2140
+sep #$20
+dex : bne B_82912C
+-:
+cmp $2140 : bne -
+-:
+adc #$03 : beq -
+sta $30
+J_829153:    ; org $829153
+dec $28 : beq B_82915A
+  jmp .FindFreeMemory
+B_82915A:    ; org $82915a
+stz $2C
+stz $2D
+lda $30
+J_829160:    ; org $829160
+pha
+{
+rep #$20
+lda $2C : tax
+lda $2E : sta $2142
+sep #$20
+cpx #$0001
+lda #$00 : rol : sta $2141
+adc #$7F
+jsl LR_SetNoNmiNoIrqAutoJoypad
+}
+pla : sta $2140
+-:
+cmp $2140 : bne -
+lda $0654 : cmp #$0F : bne +
+  jsl LR_ResetNmi
++:
+bvs B_82911D
+stz $2141
+stz $2142
+ply
+plp
+rtl
+
+;org $82919B
+SR_WaitAndLoadApu:  ; Pushes data blocks until an explicit terminator is read.
+php
+rep #$20
+ldy #$0000
+lda #$BBAA    ; Wait for standard "SPC ready" signal.
+-:
+  cmp $2140 : bne -
+sep #$20
+lda #$cc : bra .BeginOrEndTransaction
+.BeginTransaction:
+lda [$46],y
+iny
+xba : lda #$00
+bra .Append    ; Now A = initial $00 for $2140, B = new data byte for $2141.
+.GetNextByte:
+xba
+lda [$46],y
+iny
+xba    ; Now A = previous value of $2140, B = new data byte for $2141.
+-:
+  cmp $2140 : bne -
+inc
+.Append:
+rep #$20
+sta $2140
+sep #$20
+dex : bne .GetNextByte
+;org $8291D5
+.BeginOrEndTransaction:
+pha
+rep #$20
+lda [$46],y    ; Transfer size for this block.
+  iny : iny
+  tax
+lda [$46],y    ; Target address for this block.
+  iny : iny
+  sta $2142    ; Write "Target address" value.
+sep #$20
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281a2
+cpx #$0001 : lda #$00 : rol : sta $2141    ; Write "Transaction" signal.
+adc #$7F    ; Effect is SEV if beginning, CLV if ending a transaction.
+pla : sta $2140    ; Write "Initialize/Terminate" signal.
+-:
+  cmp $2140 : bne -    ; Wait for ready.
+lda $0654 : cmp #$0F : bne +
+  jsl LR_ResetNmi    ; $828191
++:
+bvs .BeginTransaction
+stz $2142    ; Begin execution at $0000.
+plp
+rts
+SpcInitData:    ; $829210
+incsrc "assets/SpcInitProgram.asr"
+
+;org $829DE2
+LR_PushPalettesAndColdata:
+{
+php
+sep #$20
+stz $2121
+stz $4300
+lda #$22 : sta $4301
+ldx #$0A00 : stx $4302
+lda #$7F : sta $4304
+ldx #$0200 : stx $4305
+lda #$01 : sta $420B
+lda $7F0C00 : sta $2132
+lda $7F0C01 : sta $2132
+lda $7F0C02 : sta $2132
+plp
+rtl
+}
+
+;org $829e1d
+LR_PushOam:
+{
+php
+ldx #$0000 : stx $2102
+stz $4300
+lda #$04 : sta $4301
+ldx #$0422 : stx $4302
+lda #$00 : sta $4304
+ldx #$0220 : stx $4305
+lda #$01 : sta $420b
+plp
+rtl
+}
+
+;org $829E44
+InitRam:
+php
+rep #$20 : lda #$0000
+sep #$20 : sta $2183
+rep #$20 : sta $2181
+ldy #$0100 : jsr WriteZeroesTo2180    ; $9F0F
+lda #$0200 : sta $2181
+ldy #$FF00 : jsr WriteZeroesTo2180    ; $9F0F
+ldy #$FF00 : jsr WriteZeroesTo2180    ; $9F0F
+.LoopOver:
+  lda .Table,x : bmi .Done
+  tay
+  lda 2+.Table,x : sta $0000,y
+  inx : inx : inx : inx
+  bra .LoopOver
+.Done:
+plp
+rtl
+.Table:
+{
+dw $069e : dw $a000
+dw $06a0 : dw $c000
+dw $0080 : dw $c000
+dw $0082 : dw $007f
+dw $06ba : dw $1000
+dw $06bc : dw $1800
+dw $06ae : dw $2000
+dw $06b0 : dw $2800
+dw $06b2 : dw $3100
+dw $06b4 : dw $3288
+dw $06b6 : dw $3184
+dw $06b8 : dw $330c
+dw $06aa : dw $0000
+dw $06ac : dw $0100
+dw $003a : dw $8000
+dw $003c : dw $008d
+dw $0402 : dw $548b
+dw $0406 : dw $60ab
+dw $005e : dw $0000
+dw $0060 : dw $0081
+dw $0062 : dw $0000
+dw $064a : dw $0001
+dw $0648 : dw $0404
+dw $0da8 : dw $0020
+dw $0da6 : dw $0010
+dw $0daa : dw $8000
+dw $0dac : dw $0080
+dw $0dae : dw $4000
+dw $0db0 : dw $0040
+dw $0db4 : dw $2000
+dw $0db2 : dw $1000
+dw $0b14 : dw $003c
+dw $0ac4 : dw $ffff
+dw $0b04 : dw $0000
+dw $ffff
+}
+
+;org $829f0f
+WriteZeroesTo2180:
+php
+sep #$20
+sty $4305
+lda #$08 : sta $4300    ; Fixed-write 1 byte to a 1-byte register,
+lda #$80 : sta $4301    ;   register $2180 (RAM I/O),
+lda #$81 : sta $4304    ;   from $81C455
+ldx #$C455 : sta $4302  ;   (i.e. sin(0) = $00).
+lda #$01 : sta $420b
+plp
+rts
+
+;org $829F31
+InitMmio:
+php
+ldx #$0000
+.LoopOver:
+  rep #$20
+  lda.w .Table,x : bmi .Done
+  tay
+  sep #$20
+  lda.b 2+.Table,x : sta $0000,y
+  inx : inx : inx
+  bra .LoopOver
+.Done:
+plp
+rtl
+dw $0000 : db $00
+dw $0001 : db $00
+dw $0002 : db $00
+dw $0003 : db $00
+.Table:
+{
+dw $420b : db $00
+dw $420c : db $00
+dw $2100 : db $80
+dw $2101 : db $02
+dw $2102 : db $00
+dw $2103 : db $00
+dw $2105 : db $09
+dw $2106 : db $00
+dw $2107 : db $11
+dw $2108 : db $19
+dw $2109 : db $78
+dw $210a : db $00
+dw $210b : db $22
+dw $210c : db $06
+dw $210d : db $00
+dw $210d : db $00
+dw $210e : db $00
+dw $210e : db $00
+dw $210f : db $00
+dw $210f : db $00
+dw $2110 : db $00
+dw $2110 : db $00
+dw $2111 : db $00
+dw $2111 : db $00
+dw $2112 : db $00
+dw $2112 : db $00
+dw $2113 : db $00
+dw $2113 : db $00
+dw $2114 : db $00
+dw $2114 : db $00
+dw $2115 : db $80
+dw $2116 : db $00
+dw $2117 : db $00
+dw $211a : db $80
+dw $211b : db $01
+dw $211b : db $00
+dw $211c : db $00
+dw $211c : db $00
+dw $211d : db $00
+dw $211d : db $00
+dw $211e : db $00
+dw $211e : db $00
+dw $211f : db $00
+dw $211f : db $00
+dw $2120 : db $00
+dw $2120 : db $00
+dw $2121 : db $00
+dw $2123 : db $33
+dw $2124 : db $33
+dw $2125 : db $33
+dw $2126 : db $00
+dw $2127 : db $ff
+dw $2128 : db $00
+dw $2129 : db $00
+dw $212a : db $00
+dw $212b : db $00
+dw $212c : db $04
+dw $212d : db $00
+dw $212e : db $00
+dw $212f : db $00
+dw $2130 : db $82
+dw $2131 : db $00
+dw $2132 : db $e0
+dw $2133 : db $00
+dw $4200 : db $00
+dw $4201 : db $ff
+dw $4202 : db $00
+dw $4203 : db $00
+dw $4204 : db $00
+dw $4205 : db $00
+dw $4206 : db $00
+dw $4207 : db $00
+dw $4208 : db $00
+dw $4209 : db $00
+dw $420a : db $00
+dw $420d : db $00
+dw $ffff
+}
+warnpc $82a040
+
+
+
+org $82a10a
+LR_SecIfAwaitingMusic:
+lda $06FA : bne .SecAndRtl
+lda $09EC : bit #$0080 : bne .SecAndRtl
+.ClcAndRtl:
+clc
+rtl
+.SecAndRtl:    ; org $82a119
+sec
+rtl
+warnpc $82a11b
+
+
+org $82a220
+LR_DoMapRearrange:
+php
+phy
+rep #$20
+lda $06AC : sta $3E
+lda #$007F : sta $40
+stz $A6
+lda $A4 : and #$00FF : beq +
+  lda #$0002 : sta $A6
++:
+lda $9A : sta $18
+lda $9C : sta $1C
+ldx $A6
+jsl LR_GetTileTableIndex82    ; $82B0A3
+stx $00
+stx $1A
+lda $96 : sta $18
+lda $98 : sta $1C
+ldx $A6
+jsl LR_GetTileTableIndex82    ; $82B0A3
+stx $02
+stx $1E
+lda $A6 : bne .Layer2Next
+.Layer1Next:    ; org $82a264
+ldx $02
+sep #$20
+lda $7EA000,x : pha
+  lda $7FC000,x
+    ldx $00
+      sta $7FC000,x
+pla : sta $7EA000,x
+rep #$20
+dec $9E : beq B_82A296
+jsl LR_IncTile02WithCarry
+phx
+lda $00 : sta $02
+jsl LR_IncTile02WithCarry
+stx $00
+plx : stx $02
+bra .Layer1Next
+; warnpc $82a296
+B_82A296:    ; org $82a296
+dec $A0 : beq B_82A2B6
+lda $A2 : sta $9E
+lda $1A : sta $02
+jsl S_82B132 : stx $00 : stx $1A
+lda $1E : sta $02
+jsl S_82B132 : stx $1E : bra .Layer1Next
+; warnpc $82a2b6
+B_82A2B6:    ; org $82a2b6
+ply
+plp
+rtl
+; warnpc $82a2b9
+.Layer2Next:    ; org $82a2b9
+ldx $02
+sep #$20
+lda $7EC000,x
+pha
+ldx $00 : sta $3E
+lda [$3E] : beq B_82A2CE : sta $7FC000,x
+B_82A2CE:    ; org $82a2ce
+pla : sta $7EC000,x
+rep #$20
+dec $9E : beq B_82A2ED
+jsl LR_IncTile02WithCarry
+phx
+lda $00 : sta $02
+jsl LR_IncTile02WithCarry : stx $00
+plx : stx $02 : bra .Layer2Next
+; warnpc $82a2ed
+B_82A2ED:    ; org $82a2ed
+dec $A0 : beq B_82A30D
+lda $A2 : sta $9E
+lda $1A : sta $02
+jsl S_82B14E : stx $00 : stx $1A
+lda $1E : sta $02
+jsl S_82B14E : stx $1E : bra .Layer2Next
+; warnpc $82a30d
+B_82A30D:    ; org $82a30d
+ply
+plp
+rtl
+warnpc $82a310
+
+
+org $82a363
+LR_StageMapRearrange:
+asl : asl : asl : tay
+  sta $00A8
+lda.w Table_MapRearrangementScripts,y : and #$00FF : cmp $0644 : bne .WrongMap    ; $D3CE,y
+phd
+lda #$0000 : tcd
+sep #$20
+lda.w 7+Table_MapRearrangementScripts,y : sta $A4
+lda.w 5+Table_MapRearrangementScripts,y : sta $9A
+lda.w 6+Table_MapRearrangementScripts,y : sta $9C
+lda.w 1+Table_MapRearrangementScripts,y : sta $96
+lda.w 2+Table_MapRearrangementScripts,y : sta $98
+lda.w 3+Table_MapRearrangementScripts,y : sta $A2
+  sta $9E
+lda.w 4+Table_MapRearrangementScripts,y : sta $A0
+pld
+rep #$20
+clc
+rtl
+.WrongMap:
+sec
+rtl
+warnpc $82a3a8
+
+
+
+org $82a5f0
+LR_UpdateTilemapOpenChests:
+php
+rep #$20
+ldy $0646
+ldx $ADA8,y
+J_82A5F9:    ; org $82a5f9
+lda $0000,x : bit #$0080 : bne B_82A65B
+lda $0003,x : and #$007F : jsl LR_SecOnFlag20A : bcc B_82A655
+phx
+sep #$20
+lda $0000,x : sta $18
+lda $0001,x : dec : sta $1C
+stz $19
+stz $1D
+ldx #$0000
+jsl LR_GetTileTableIndex82     ; $82B0A3
+stx $02
+stx $00
+lda #$FE : sta $7EA000,x
+jsl LR_IncTile02WithCarry     ; $82B0F6
+lda #$FF : sta $7EA000,x
+ldx $00
+stx $02
+jsl S_82B132     ; $82B132
+lda #$FC : sta $7EA000,x
+jsl LR_IncTile02WithCarry     ; $82B0F6
+lda #$FD : sta $7EA000,x
+rep #$20
+plx
+B_82A655:    ; org $82a655
+inx : inx : inx : inx
+bra J_82A5F9
+B_82A65B:    ; org $82a65b
+plp
+rtl
+
+;org $82a65d
+SR_CheckChestCollide:
+lda $06ee : bit #$0200 : beq +
+  rts
++:
+ldy $09aa
+lda $0010,y : bit #$0004 : bne +
+  rts
++:
+lda $0656 : bit #$0800 : bne +
+  rts
++:
+jsl $83f0ca : and #$00ff : cmp #$0001 : beq +
+  rts
++:    ;org $82a688
+ldy $09AA
+lda $0014,y : sec : sbc #$0008 : sta $18
+  and #$0008 : asl : clc : adc $18
+    lsr : lsr : lsr : lsr : sta $18
+lda $0016,y : sec : sbc #$0020
+  lsr : lsr : lsr : lsr : sta $1C
+ldx #$0000
+sep #$20
+jsl $82B0A3
+lda $7EA000,x
+  stx $02
+  cmp #$F8 : beq .TouchedLeftTile
+  cmp #$F9 : beq .TouchedRightTile
+rep #$20
+rts
+.TouchedRightTile:    ; org $82A6C8
+jsl S_82B113
+lda $7EA000,x : cmp #$F8 : bne B_82A6C5
+dec $18
+bra .GetChestListForRoom
+.TouchedLeftTile:    ; $82a6d8
+jsl $82b0f6
+lda $7ea000,x : cmp #$f9 : bne B_82A6C5
+.GetChestListForRoom:    ; org $82a6e4
+ldy $0646
+ldx $ADA8,y
+.CheckNextChest:    ; org $82a6ea
+lda $0000,x : bmi .NoMatchedChest
+cmp $18 : bne ..NotMatchedX
+lda $0001,x : cmp $1C : beq .GotMatchedChest
+..NotMatchedX:    ; org $82a6fa
+inx : inx : inx : inx
+bra .CheckNextChest
+.NoMatchedChest:    ; org $82a700
+rep #$20
+ldy #$FF48
+jsl LR_ParseDialogueScriptAtY    ; $82f048
+rts
+.GotMatchedChest:    ; org $82a70a
+rep #$20
+phx
+lda #$0080 : tsb $09EC
+lda #$00FC : sta $06
+jsr S_82A8B2    ; Set chest tiles to "open"
+lda $01,s : tax
+lda $0002,x : and #$00FF : beq .ChestEmpty
+jsl LR_GiveItemAOrSec : bcc .GaveItemSuccess    ; $83ef97
+.CannotGiveItem:
+jsl LR_ParseDialogueScriptAtY    ; $82f048
+lda $01,s : tax
+lda #$00F8 : sta $06
+jsr S_82A8B2    ; Set chest tiles to "closed"
+bra .ReturnControl
+.ChestEmpty:    ; org $82a73d
+ldy #$FF36
+jsl LR_ParseDialogueScriptAtY    ; $82f048
+lda $01,s : tax
+lda $0003,x : and #$007F
+jsl S_80B481
+bra .ReturnControl
+.GaveItemSuccess:    ; org $82a753
+lda $01,s
+phx
+tax
+lda $0003,x : bit #$0080 : bne .PlayFanfare
+.NoFanfare:
+lda #$0080 : trb $09EC
+sep #$20
+lda #$2A : sta $06F9
+rep #$20
+plx
+ldy #$FF2D
+jsl LR_ParseDialogueScriptAtY    ; $82f048
+bra .SetItemFlagAndReturn
+.PlayFanfare:    ; org $82a778
+plx
+phy
+phx
+ldx #$0000
+cop #$A5 : dl C_82A7B8 : dw $0000, $2000
+lda $0012,y : ora #$1000 : sta $0012,y
+lda #$0017 : sta $0026,y
+plx
+pla : sta $0024,y
+lda $0DB8 : sta $0020,y
+.SetItemFlagAndReturn:    ; org $82a7a1
+lda $01,s : tax
+lda $0003,x : and #$007F
+jsl LR_SetFlag20A    ; $80B481
+plx
+rts
+.ReturnControl:    ; org $82a7b0
+lda #$0080 : trb $09EC
+plx
+rts
+
+
+; org $82a7b8
+C_82A7B8:
+lda $06F2 : sta $7F0010,x
+cop #$9C : dl C_83E1D6 : dw $2000
+cpy #$1FC0 : bne +
+  jmp J_82A88B
++:
+txa : tyx : tay
+lda $26 : inc : sta $7F000A,x
+lda $0012,x : ora #$1000 : sta $0012,x
+txa : tyx : tay
+lda #$CFF0 : tsb $065A
+ldy $09AA
+lda $0012,y : ora #$1000 : sta $0012,y
+lda #$0080 : sta $0002,y
+lda #$C432 : jsr S_82A8A8
+lda #$0800 : tsb $09AE
+cop #$C1
+lda $06FA : cmp #$FFFF : beq +
+  rtl
++:
+cop #$9C : dl C_82A893 : dw $2000
+lda $24 : sta $0024,y
+lda $0012,y : ora #$1000 : sta $0012,y
+lda $20 : sta $0020,y
+cop #$C1
+sep #$20
+  lda $2141
+rep #$20
+and #$00FF : cmp #$00FF : beq +
+  rtl
++:
+ldy $09AA
+lda $0012,y : and #$EFFF : sta $0012,y
+lda #$0080 : sta $0002,y
+lda #$C45A : jsr S_82A8A8
+lda #$CFF0 : trb $065A
+cop #$9C : dl C_83E1D6 : dw $2000
+cpy #$1FC0 : beq J_82A88B
+phx
+lda $7F0010,x : tyx : sta $7F000A,x
+lda $0012,x : ora #$1000 : sta $0012,x
+plx
+cop #$C1
+lda $06FA : cmp #$FFFF : beq +
+  rtl
++:
+cop #$DA : db $0B
+J_82A88B:    ; org $82a88b
+lda #$0080 : trb $09EC
+cop #$E0
+
+;org $82a893
+C_82A893:
+cop #$DA : db $48
+lda #$1000 : trb $12
+lda $20 : sta $0DB8
+ldy $24
+jsl LR_ParseDialogueScriptAtY    ; $82f048
+cop #$E0
+
+;org $82a8a8
+S_82A8A8:
+sta $0000,y
+lda #$0000 : sta $0008,y
+rts
+
+; org $82a8b2
+S_82A8B2:
+php
+lda $0000,x : and #$00FF : sta $18
+  asl : asl : asl : asl : sta $1A
+lda $0001,x : and #$00FF : dec : sta $1C
+  asl : asl : asl : asl : sta $1E
+sep #$20
+ldx #$0000
+jsl S_82B0A3
+stx $02
+stx $00
+ldy #$0000
+lda $06 : clc : adc #$02 : sta $7EA000,x
+jsr S_82A50D
+jsl S_82B0F6
+lda $06 : clc : adc #$03 : sta $7EA000,x
+rep #$20
+lda $1A : clc : adc #$0010 : sta $1A
+sep #$20
+jsr S_82A50D
+ldx $00 : stx $02
+jsl S_82B132
+lda $06 : sta $7EA000,x
+rep #$20
+lda $1A : sec : sbc #$0010 : sta $1A
+lda $1E : clc : adc #$0010 : sta $1E : sep #$20
+jsr S_82A50D
+jsl S_82B0F6
+lda $06 : inc : sta $7EA000,x
+rep #$20
+lda $1A : clc : adc #$0010 : sta $1A
+sep #$20
+jsr S_82A50D
+rep #$20
+lda #$0000 : sta $0800,y
+sep #$20
+jsl S_80817D
+plp
+rts
+
+
+
+;org $82a957
+LR_GetStairsAddr:
+rep #$20
+lda $0646 : tax
+lda $8234,x : sta $00D4
+-:
+sep #$20
+tax
+lda $0000,x : bmi +
+rep #$20
+txa : clc : adc #$000C
+bra -
++:
+inx : stx $00D6
+sep #$20
+rtl
+
+;org $82a97b
+SR_CheckExits:
+{
+sep #$20
+ldx $00D4 : beq .TryStairs
+.NextExit:
+lda $0000,x : cmp #$FF : beq .TryStairs
+lda $09A6 : sec : sbc $0000,x : cmp $0002,x : bcs ..NotInArea
+lda $09A8 : sec : sbc $0001,x : cmp $0003,x : bcc ..IsInArea
+..NotInArea:    ; org $82a9a1
+rep #$20
+txa : clc : adc #$000C : tax
+sep #$20
+bra .NextExit
+..IsInArea:
+rep #$20
+jsr .SR_ConvTileBoundsToPxInDp    ; $aa21
+lda $09A2 : sec : sbc $00 : cmp $04 : bcs .TryStairs
+lda $09A4 : sec : sbc $02 : cmp $06 : bcs .TryStairs
+jmp .DoExit
+.TryStairs:    ; org $82a9c9
+sep #$20
+ldx $00D6 : beq .NoMatches
+.NextStair:
+lda $0000,x : cmp #$FF : beq .NoMatches
+lda $09A6 : sec : sbc $0000,x : cmp $0002,x : bcs ..NotInArea
+lda $09A8 : sec : sbc $0001,x : cmp $0003,x : bcc ..IsInArea
+..NotInArea:
+rep #$20
+txa : clc : adc #$000D : tax
+sep #$20
+bra .NextStair
+..IsInArea:
+rep #$20
+jsr .SR_ConvTileBoundsToPxInDp    ; $aa21
+lda $09A2 : sec : sbc $00 : cmp $04 : bcs .NoMatches
+lda $09A4 : sec : sbc $02 : cmp $06 : bcs .NoMatches
+jmp .DoStairs
+.NoMatches:    ; org $82aa17
+rep #$20
+lda #$0100 : trb $09AE : clc
+rts
+
+.SR_ConvTileBoundsToPxInDp:    ; org $82aa21
+lda $0000,x : and #$00FF : asl : asl : asl : asl : sta $00
+lda $0001,x : and #$00FF : asl : asl : asl : asl : sta $02
+lda $0002,x : and #$00FF : asl : asl : asl : asl : sec : sbc #$000F : sta $04
+lda $0003,x : and #$00FF : asl : asl : asl : asl : sec : sbc #$000F : sta $06
+rts
+
+.DoExit:    ; org $82aa5a
+php
+txa : clc : adc #$0004 : sta $0AF4
+sep #$20
+lda #$81 : sta $0AF6
+lda $0004,x : sta $0642
+ldy $0005,x : sty $064C
+ldy $0007,x : sty $064E
+lda $0009,x : sta $0650
+ldy $000A,x : sty $0652
+ldy $0644 : sty $0B12
+lda $0000,x : sta $0B08
+lda $0001,x : sta $0B0C
+lda $0002,x : sta $0B0A
+lda $0003,x : sta $0B0E
+lda $06D7 : and #$0F : sta $0B10
+lda $06D9 : asl : asl : asl : asl : ora $0B10 : sta $0B10
+lda $06DB : and #$0F : sta $0B11
+lda $06DD : asl : asl : asl : asl : ora $0B11 : sta $0B11
+lda $0650 : bit #$80 : bne ..AndSetDeathWarp
+plp
+sec
+rts
+..AndSetDeathWarp:
+  and #$7F : sta $0650
+rep #$20
+txa : clc : adc #$0004 : sta $0AF0
+lda #$0081 : sta $0AF2
+plp
+sec
+rts
+
+.DoStairs:    ; org $82aaf2
+lda $09AE : bit #$0100 : beq +
+  rts
++:
+txa : clc : adc #$0007 : sta $0650
+lda #$0000 : sta $09B2
+  sta $09B4
+sep #$20
+ldy $0004,x : sty $0652
+lda $0006,x : sta $06E0
+jsl LR_BackupCameraData
+jsr .SR_SpawnStairCameraMover
+rep #$20
+sec
+rts
+
+.SR_SpawnStairCameraMover:    ; org $82ab25
+rep #$20
+lda #$0100 : tsb $09AE
+ldy $09AA
+lda $0010,y : ora #$2000 : sta $0010,y
+stz $06E2
+lda $06E0
+pha
+  and #$000F : sta $06E0
+pla
+bit #$0020 : bne ..GoingWest
+bit #$0010 : bne ..GoingEast
+bit #$0080 : bne ..GoingNorth
+..GoingSouth:
+phd
+lda $09AA : tax : tcd
+cop #$99 : dl EStairCameraSouthMover
+pld
+rts
+..GoingWest:    ; org $82ab63
+phd
+lda $09AA : tax : tcd
+cop #$99 : dl EStairCameraWestMover
+pld
+rts
+..GoingEast:    ; org $82ab70
+phd
+lda $09AA : tax : tcd
+cop #$99 : dl EStairCameraEastMover
+pld
+rts
+..GoingNorth:    ; org $82ab7d
+phd
+lda $09AA : tax : tcd
+cop #$99 : dl EStairCameraNorthMover
+pld
+rts
+}
+warnpc $82ab8a
+
+
+org $82b0a3
+LR_GetTileTableIndex82:	; Get table index of tile with coordinates
+{
+PHP		; $0018,$001c and store result in X.
+REP #$20	; Before calling this, we set D=A=X=0
+LDA $1C		; so this is technically zero-page-$1c,
+ASL		; not event-$1c; but in $af8f we 
+ASL		; filled ZP$1C and $18 with event-related
+ASL		; data. So $18/$1C are shifted event
+ASL		; X/Y smalltile coordinates.
+PHA		; Push shiftedY * #$10
+SEP #$20	; Effect is: zero low nibble of ZP$1c,
+LDA $0693,x	; and multiply what's left by $0693
+JSL $8281D1	; Multiplies bytes of A into A
+STA $02,s	; Store as high byte of pushed ZP$1c * #$10
+LDA $18		; [above assumes result is 1-byte]
+AND #$0F	; Grab low nibble of shiftedX
+CLC
+ADC $01,s
+STA $01,s	; Add to low byte of pushed ZP$1c * #$10
+LDA $18
+LSR A
+LSR A
+LSR A
+LSR A		; Shift high nibble of shiftedX into low nibble,
+CLC		;
+ADC $02,s	; and add to high byte of
+STA $02,s	; pushed shiftedY * #$10
+PLX
+PLP
+RTL
+}
+warnpc $82b0cf
+
+org $82b0f6
+LR_IncTile02WithCarry:
+php
+sep #$20
+lda $02 : inc : bit #$0F : beq .DoCarry
+  sta $02
+ldx $02
+plp
+rtl
+.DoCarry:    ; org $82b106
+xba
+lda $03 : inc : xba
+  clc : adc #$F0 : tax
+    stx $02
+plp
+rtl
+warnpc $82b113
+
+org $82b132
+S_82B132:
+php
+rep #$20
+lda $02
+sep #$20
+  clc : adc #$10 : bcs B_82B143
+    tax
+      stx $02
+plp
+rtl
+B_82B143:    ; org $82b143
+  xba
+    clc : adc $0693
+    xba : tax
+      stx $02
+plp
+rtl
+
+;org $82b14e
+S_82B14E:
+php
+lda $02
+sep #$20
+clc : adc #$10 : bcs B_82B15D
+  tax
+    stx $02
+plp
+rtl
+B_82B15D:    ; org $82b15d
+  xba
+    clc : adc $0695
+    xba : tax
+      stx $02
+plp
+rtl
+warnpc $82b168
+
+org $82B20E
+EShadowPaletteManager:
+lda $0AD4 : cmp #$0002 : beq .PlayerIsShadow
+  cop #$E0
+.PlayerIsShadow:
+cop #$A2 : dl EShadowPaletteChanger : dw $2800    ; $82B28D
+; org $82b21f
+.PlayerNotMoving:
+ldy $06
+lda.w #EShadowPaletteChanger_PlayerNotMoving : sta $0000,y   ; #$B28D
+lda #$0000 : sta $0008,y
+cop #$C1
+jsr SR_StopPaletteIfNotLivingShadow     ; $B264
+lda $09B2 : ora $09B4 : bne .PlayerIsMoving
+cop #$D0 : db $00,$01 : dw .PlayerIsMoving    ; $B241
+rtl
+; org $82b241
+.PlayerIsMoving:
+ldy $06
+lda.w #EShadowPaletteChanger_PlayerIsMoving : sta $0000,y    ; #$B294
+lda #$0000 : sta $0008,y
+cop #$C1
+jsr SR_StopPaletteIfNotLivingShadow     ; $B264
+lda $09B2 : ora $09B4 : beq .NotForcedRunning
+  rtl
+.NotForcedRunning:
+cop #$D0 : db $00, $00 : dw .PlayerNotMoving    ; $82B21F
+rtl
+
+; org $82b264
+SR_StopPaletteIfNotLivingShadow:
+lda $0AD4 : cmp #$0002 : bne .PlayerNotShadow    ; Not Shadow anymore. Helper dies.
+ldy $09AA
+lda $0010,y : bit #$0040 : bne .PlayerDying
+  rts
+.PlayerDying:
+pla
+ldy $06
+lda.w EShadowPaletteChanger_PlayerIsDying : sta $0000,y    ; #$B29B
+lda #$0000 : sta $0008,y
+cop #$C1
+rtl
+; org $82b28a
+.PlayerNotShadow:
+pla
+cop #$E0
+
+;org $82b28d
+EShadowPaletteChanger:    ; $82B28D
+.PlayerNotMoving:
+cop #$37 : db $23
+cop #$39
+bra .PlayerNotMoving
+;org $82b294
+.PlayerIsMoving:
+cop #$37 : db $24
+cop #$39
+bra .PlayerIsMoving
+;org $82B29B
+.PlayerIsDying:
+cop #$C1
+rtl
+
+;org $82B29E
+#PlayerHelper3:
+lda $14 : asl : asl : sta $14
+lda $16 : asl : asl : sta $16
+cop #$C1
+phx
+ldx $09AA
+lda $0010,x : bit #$0080 : beq .PlayerNotHurt     ; $08
+lda $7F0028,x : bmi .PlayerNotHurt     ; $02
+plx
+rtl
+.PlayerNotHurt:    ; org $82b2c0
+plx
+lda $09AE : bit #$0A00 : beq .PlayerNotDyingOrSpecialMoving     ; $07
+  stz $0408
+  stz $040A
+  rtl
+.PlayerNotDyingOrSpecialMoving:    ; org $82b2d0
+ldy $09AA
+lda $14 : lsr : lsr : cmp $0014,y : beq .StillAtPlayerX     ; $07
+  lda $0014,y : asl : asl : sta $14
+.StillAtPlayerX:
+lda $16 : lsr : lsr : cmp $0016,y : beq .StillAtPlayerY     ; $07
+  lda $0016,y : asl : asl : sta $16
+.StillAtPlayerY:
+lda $09AE : bit #$3000 : beq .PlayerFree     ; $05
+  lda #$0000 : bra +     ; $03
+.PlayerFree:
+jsr S_82B3C6     ; $B3C6
++:
+pha
+lda $14 : sta $0022 : stz $0020
+lda $09B2 : bne .RunningEW     ; $16
+lda $01,s : and #$00FF
+bit #$0080 : beq +     ; $03
+  ora #$FF00
++:
+clc : adc $0408 : sta $0020
+bra +     ; $0F
+.RunningEW:
+asl : asl : clc : adc $0408 : sta $0020
+lda #$1000 : trb $09AE
++:
+stz $0408
+stz $0024
+lda $16 : sta $0026
+lda $09B4 : bne .RunningNS     ; $1A
+stz $09C6
+lda $01,s : xba
+and #$00FF
+bit #$0080 : beq +     ; $03
+  ora #$FF00
++:
+clc : adc $040A : sta $0024
+bra +     ; $0F
+.RunningNS:
+asl : asl : clc : adc $040A : sta $0024
+lda #$1000 : trb $09AE
+; org $82b36f
++:
+stz $040A
+pla
+ldy $09AA
+lda $0010,y : bit #$0008 : bne .CheckWorldCollide     ; $16
+  lda $0020 : clc : adc $0022 : sta $0022
+  lda $0024 : clc : adc $0026 : sta $0026
+  bra .AfterWorldCollide     ; $08
+.CheckWorldCollide:
+stx $000A
+txy
+jsl S_82CFD0     ; $82CFD0
+.AfterWorldCollide:
+ldy $09AA
+lda $0022 : sta $14 : lsr : lsr : sta $0014,y
+lda $0026 : sta $16 : lsr : lsr : sta $0016,y
+lda $0010,y : and #$FFFB : pha
+  lda $10 : and #$0004 : ora $01,s : sta $0010,y
+pla
+rtl
+
+; org $82b3c6
+#S_82B3C6:
+php
+sep #$20
+lda $0657 : bit #$02 : bne B_82B3E3     ; $13
+bit #$01 : bne B_82B400     ; $2C
+bit #$08 : bne B_82B41D     ; $45
+bit #$04 : bne B_82B424     ; $48
+lda #$00 : xba
+lda #$00 : bra J_82B3FE     ; $1B
+; org $82b3e3
+#B_82B3E3:
+bit #$0C : beq B_82B3F9     ; $12
+bit #$08 : bne B_82B3F2     ; $07
+lda #$06 : xba
+lda #$FA : bra J_82B3FE     ; $0C
+; org $82b3f2
+#B_82B3F2:
+lda #$FA : xba
+lda #$FA : bra J_82B3FE     ; $05
+; org $82b3f9
+#B_82B3F9:
+lda #$00 : xba
+lda #$F8
+; org $82b3fe
+#J_82B3FE:
+plp
+rts
+; org $82b400
+#B_82B400:
+bit #$0C : beq B_82B416     ; $12
+bit #$08 : bne B_82B40F     ; $07
+lda #$06 : xba
+lda #$06 : bra J_82B41B     ; $0C
+; org $82b40f
+#B_82B40F:
+lda #$FA : xba
+lda #$06 : bra J_82B41B     ; $05
+; org $82b416
+#B_82B416:
+lda #$00 : xba
+lda #$08
+; org $82b41b
+#J_82B41B:
+plp
+rts
+; org $82b41d
+#B_82B41D:
+lda #$F8 : xba
+lda #$00 : plp
+rts
+; org $82b424
+#B_82B424:
+lda #$08 : xba
+lda #$00 : plp
+rts
+; org $82b42b
+#C_82B42B:
+cop #$C1
+phx
+ldx $09AA
+lda $0010,x : bit #$00C0 : beq B_82B443     ; $0A
+lda $7F0028,x : bmi B_82B443     ; $04
+plx
+jmp J_82B55B     ; $B55B
+; org $82b443
+#B_82B443:
+plx
+lda $09B2 : ora $09B4
+beq B_82B4C0     ; $74
+phx
+phd
+lda #$0000 : tcd
+ldy $09AA
+lda $0014,y : sta $1A : lda $0016,y : sec : sbc #$0008 : sta $1E
+jsr S_82E2AF     ; $E2AF
+and #$00FF
+asl : tax
+lda $82B57C,x : beq B_82B474     ; $03
+dec
+pha
+rts
+; org $82b474
+#B_82B474:
+txa
+lsr
+cmp #$0006 : beq B_82B483     ; $08
+cmp #$0009 : beq B_82B483     ; $03
+jmp J_82B550     ; $B550
+; org $82b483
+#B_82B483:
+jsr S_82E313     ; $E313
+sep #$20
+jsr SR_GetActiveTypeOfTileX     ; $E2FC
+rep #$20
+and #$00FF
+cmp #$0005 : bne B_82B498     ; $03
+jmp J_82B53D     ; $B53D
+; org $82b498
+#B_82B498:
+cmp #$000A : bne B_82B4A0     ; $03
+jmp J_82B542     ; $B542
+; org $82b4a0
+#B_82B4A0:
+jsr S_82E32B     ; $E32B
+sep #$20
+jsr SR_GetActiveTypeOfTileX     ; $E2FC
+rep #$20
+and #$00FF
+cmp #$0005 : bne B_82B4B5     ; $03
+jmp J_82B53D     ; $B53D
+; org $82b4b5
+#B_82B4B5:
+cmp #$000A : bne B_82B4BD     ; $03
+jmp J_82B542     ; $B542
+; org $82b4bd
+#B_82B4BD:
+jmp J_82B550     ; $B550
+; org $82b4c0
+#B_82B4C0:
+lda $09AE : bit #$1000 : bne B_82B4CB     ; $03
+jmp J_82B55B     ; $B55B
+; org $82b4cb
+#B_82B4CB:
+stz $09B6
+stz $09B8
+phx
+phd
+ldy $09AA
+lda $09A2 : sta $001A : lda $09A4 : sta $001E : lda #$0000 : tcd
+jsr S_82E2AF     ; $E2AF
+and #$00FF
+asl : tax
+lda $82B57C,x : bne B_82B535     ; $41
+jsr S_82E343     ; $E343
+sep #$20
+jsr SR_GetActiveTypeOfTileX     ; $E2FC
+rep #$20
+and #$00FF
+asl : tax
+lda $82B57C,x : bne B_82B535     ; $2C
+jsr S_82E313     ; $E313
+stx $00
+sep #$20
+jsr SR_GetActiveTypeOfTileX     ; $E2FC
+rep #$20
+and #$00FF
+asl : tax
+lda $82B57C,x : bne B_82B535     ; $15
+jsr S_82E343     ; $E343
+sep #$20
+jsr SR_GetActiveTypeOfTileX     ; $E2FC
+rep #$20
+and #$00FF
+asl : tax
+lda $82B57C,x : beq J_82B550     ; $1B
+; org $82b535
+#B_82B535:
+dec
+pha
+rts
+warnpc $82b538
+
+
+org $82b57c
+; Pointers for reactions to solid types?
+dw $0000
+dw $0000
+dw $0000
+dw $b538  ; $03 = South-pushing ramp.
+dw $0000
+dw $b53d  ; $05 = West-pushing ramp.
+dw $0000
+dw $0000
+dw $0000
+dw $0000
+dw $b542  ; $0a = East-pushing ramp.
+dw $0000
+dw $b547  ; $0c = North-pushing ramp.
+dw $0000
+dw $0000
+dw $0000
+warnpc $82b59c
+
+org $82b69e
+jsr SR_82B701 : beq +
+eor #$ffff : inc
+clc : adc $09b2 : sta $09b2
+beq ++
++:
+lda $0656 : bit #$0200 : bne +
+  rts
++:
+jsr SR_82B701 : bne +
+  rts
++:
+eor #$ffff : inc
+clc : adc $09b2 : sta $09b2
+beq +
+  rts
++:
+++:
+stz $09b8
+rts
+warnpc $82b6d1
+
+
+org $82b701
+SR_82B701:
+lda $09b8 : inc $09b8
+and #$000f : asl : clc : adc $09c2 : tay
+lda $0000,y
+rts
+
+
+org $82b7b3
+EPlayerChargeListenerSpawner:
+lda $09ae : bit #$0008 : beq EPlayerChargeListener
+  cop #$E0
+EPlayerChargeListener:
+lda #$0001 : trb $09AE
+cop #$C1
+lda $09AE : bit #$2A00 : beq +
+  rtl
++:
+lda $0AD4 : cmp #$0002 : bcc +
+  rtl
++:
+cop #$40 : dw $8001, .OkayCharge
+  rtl
+.OkayCharge:
+lda #$0001 : tsb $09AE
+lda #$8000 : tsb $0658
+lda $0AD4 : beq .WillCharge
+  jmp .FreedanCharge
+.WillCharge:    ; org $82b7f2
+{
+lda $0AA2 : bit #$0005 : bne +
+  rtl
++:
+cop #$CA : db $28
+  cop #$41 : dw $8001, EPlayerChargeListener    ; Check button held.
+cop #$CB
+jsr .SR_SetPosAtPlayer
+cop #$A5 : dl EWillChargePalette : dw $0000, $2C00
+sty $22
+lda #$0078 : sta $24
+cop #$C1
+jsr .SR_QuitChargeIfForbidden    ; $b946
+cop #$41 : dw $8001, .QuitCharge
+dec $24 : bmi ..Ready
+  rtl
+..Ready:    ; org $82b829
+lda $0AA2 : bit #$0004 : bne ..CanSpinDash
+cop #$C1
+jsr .SR_QuitChargeIfForbidden    ; $b946
+cop #$41 : dw $8001, ..TryPsychoDash
+rtl
+..CanSpinDash:
+cop #$C1
+jsr .SR_QuitChargeIfForbidden    ; $b946
+cop #$41 : dw $8001, ..TryPsychoDash
+jsr .SR_ClcIfStationary : bcc +
+  rtl
++:
+cop #$40 : dw $0030, ..TrySpinDash
+rtl
+..TryPsychoDash:    ; $82B855
+jsr .SR_QuitAbilityIfForbidden
+lda.w #EPlayer_DoPsychoDash : jsr .SR_SetPlayerPointerToA   ; i.e. lda #$bea0
+jmp .QuitCharge
+..TrySpinDash:    ; $82B861
+jsr .SR_QuitAbilityIfForbidden
+lda.w #EPlayer_DoSpinDash : jsr .SR_SetPlayerPointerToA   ; i.e. lda #$c0a9 : jsr $b926
+jmp .QuitCharge
+} ; EPlayerChargeListener_WillCharge
+
+.FreedanCharge:    ; org $82b86d
+{
+lda $0AA2 : bit #$0050 : bne +
+  rtl
++:
+cop #$CA : db $28
+  cop #$41 : dw $8001, EPlayerChargeListener
+cop #$CB
+jsr .SR_SetPosAtPlayer
+cop #$A5 : dl EFreedanChargePalette : dw $0000, $2C00
+sty $22
+lda #$0064 : sta $24
+cop #$C1
+jsr .SR_QuitChargeIfForbidden    ; $b946
+cop #$41 : dw $8001, .QuitCharge
+cop #$40 : dw $40B0, .QuitCharge
+dec $24 : bmi ..Ready
+  rtl
+..Ready:
+lda $0AA2 : bit #$0020 : bne ..CanAuraBarrier
+cop #$C1
+jsr .SR_QuitChargeIfForbidden    ; $b946
+cop #$41 : dw $8001, ..TryFriar
+rtl
+..CanAuraBarrier:
+cop #$C1
+jsr .SR_QuitChargeIfForbidden    ; $b946
+cop #$41 : dw $8001, ..TryFriar
+cop #$40 : dw $0F00, ...NotStationary
+cop #$40 : dw $0030, ..TryAuraBarrier
+...NotStationary:    ; org $82b8d5
+rtl
+..TryFriar:
+lda #$0001 : sta $00EA
+jsr .SR_QuitAbilityIfForbidden
+lda.w EPlayer_DoFriar : jsr .SR_SetPlayerPointerToA    ; i.e. lda #$bb3b
+bra .QuitCharge
+..TryAuraBarrier:
+lda $09B2 : ora $09B4 : beq ...OkayNotRunning
+  rtl
+...OkayNotRunning:
+lda #$0002 : sta $00EA
+jsr .SR_QuitAbilityIfForbidden
+lda #$B97F : jsr .SR_SetPlayerPointerToA
+bra .QuitCharge
+}
+
+.QuitCharge:
+{
+phx
+phd
+lda $22 : beq ..KilledPalette
+  tcd : tax
+  cop #$A7    ; Kill "self" while impersonating palette setter.
+..KilledPalette:    ; org $82b90b
+pld
+plx
+lda $0AD4 : bne ..RestorePaletteFreedan
+..RestorePaletteWill:
+cop #$37 : db $0B
+cop #$39
+cop #$C4 : dl EPlayerChargeListener
+..RestorePaletteFreedan:
+cop #$37 : db $0C
+cop #$39
+cop #$C4 : dl EPlayerChargeListener
+}
+
+.SR_SetPlayerPointerToA:    ; $82B926
+ldy $09AA : sta $0000,y
+lda #$0000 : sta $0008,y
+rts
+
+.SR_QuitAbilityIfForbidden:    ; 82B933
+lda $09AE : bit #$3A00 : bne .SR_QuitCharge
+cop #$48 : cmp #$0004 : bcs .SR_QuitCharge
+rts
+
+.SR_QuitCharge:
+pla : bra EPlayerChargeListener_QuitCharge
+
+.SR_QuitChargeIfForbidden:    ; $b946
+lda $09AE : bit #$2B00 : bne .SR_QuitCharge
+rts
+
+.SR_SetPosAtPlayer:    ; $82B94F
+ldy $09AA
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+rts
+
+.SR_ClcIfStationary:    ; 82B95D
+lda $09AE : bit #$8000 : beq ..NoActiveSpecialAnimation
+..SecAndReturn:    ; org $82b965
+  sec
+  rts
+..NoActiveSpecialAnimation:
+ldy $09AA
+lda $0028,y : bmi ..SecAndReturn
+  cmp #$0004 : bcc ..ClcAndReturn
+  sec : sbc #$0010 : cmp #$0004 : bcs ..SecAndReturn
+..ClcAndReturn:    ; org $82b97d
+clc
+rts
+
+;org $82b97f
+EPlayer_DoAuraBarrier:
+{
+lda #$0200 : tsb $10
+lda #$0800 : tsb $09AE
+cop #$A5 : dl EAuraBarrierPalettePusher : dw $0000, $2600
+cpy #$1FC0 : bne .OkayNotOverloaded
+  jmp .Done
+.OkayNotOverloaded:    ; org $82b99b
+lda $16 : cmp #$0020 : bne .AwaitPaletteTransfer
+.DelayForPaletteTransfer:
+cop #$C2
+cop #$CA : db $08
+  lda $7F0C07 : cmp #$4400 : bne .Ready
+cop #$CB
+bra .Ready
+; org $82b9b4
+.AwaitPaletteTransfer:
+cop #$C1
+lda $7F0C07 : cmp #$4400 : bne .Ready
+rtl
+; org $82b9c0
+.Ready:
+cop #$50 : dl $998090 : db $00, $A9, $07
+cop #$8E : db $06
+cop #$80 : db $02    ; Hoisting sword.
+cop #$89
+cop #$A5 : dl EPaletteFreedanUsingAuraBarrier : dw $0000, $2400
+  tya : sta $7F0012,x
+cop #$84 : db $03, $02  ; Sword hoisted, now ablaze.
+cop #$8A
+lda #$0001 : trb $09AE
+cop #$A5 : dl EAuraBarrierSpawner : dw $F000, $2600
+cop #$84 : db $03, $0A
+cop #$8A
+jsr SR_Kill7F12IfExists
+; org $82b9fc
+.Done:
+lda #$0200 : trb $10
+lda $7F0004,x : beq .ReturnToIdle
+.ReturnToCaller:
+  cop #$C5
+.ReturnToIdle:    ; org $82ba09
+jmp EPlayer_ParseAct
+}
+
+
+EAuraBarrierPalettePusher:    ; org $82ba0c
+cop #$4F : dl $9CC480 : dw $4400, $0600
+cop #$E0
+
+
+EAuraBarrierSpawner:    ; org $82ba17
+{
+stz $24
+stz $26
+lda #$0000 : sta $7F0012,x
+lda $0B1E : beq .UpgradeLevel0
+.UpgradeLevel1:
+cop #$A2 : dl EAuraBarrierShield : dw $0600 : inc $24
+cop #$A2 : dl EAuraBarrierShield : dw $0600 : inc $24
+.UpgradeLevel0:
+cop #$A2 : dl EAuraBarrierShield : dw $0600 : inc $24
+cop #$A2 : dl EAuraBarrierShield : dw $0600
+lda #$00F0 : sta $20
+cop #$C1
+lda $09AE : bit #$0001 : bne .Die    ; Attack button pressed.
+lda $26 : clc : adc #$0002 : and #$00FF : sta $26 : sta $7F0010,x    ; Orbit angle.
+lda $7F0012,x : cmp #$0040 : bcs +    ; Orbit radius.
+  inc a : sta $7F0012,x
++:
+jsr .SR_SpreadOrbitersEvenly
+dec $20 : bmi .Die
+  rtl
+.Die:    ; org $82ba7d
+lda $24 : sta $0000
+ldy $06
+..KillNextShield:    ; org $82ba84
+lda #$BB29 : sta $0000,y
+lda #$0000 : sta $0008,y
+lda $0006,y : tay
+dec $0000 : bpl ..KillNextShield
+cop #$CA : db $1E
+  lda $26 : clc : adc #$0002 : and #$00FF : sta $26
+    sta $7F0010,x    ; Orbit angle.
+  lda $7F0012,x : beq +
+    dec a : sta $7F0012,x    ; Orbit radius.
++:
+  jsr .SR_SpreadOrbitersEvenly
+cop #$CB
+cop #$E0
+
+.SR_SpreadOrbitersEvenly:    ; org $82babd
+phd
+lda #$0080 : sta $0002
+lda $24 : sta $0000
+lda $06
+..NextOrbiter:
+tcd
+ldy $09AA
+jsl LR_OrbitAtY
+lda $7F0010,x : clc : adc $0002 : and #$00FF : sta $7F0010,x
+lda $0002 : cmp #$0040 : bne ...ShiftNextBy90Degrees
+  lda #$0080 : bra +
+...ShiftNextBy90Degrees:
+  lda #$0040
++:
+  sta $0002
+lda $06
+dec $0000 : bpl ..NextOrbiter
+pld
+rts
+}
+
+EAuraBarrierShield:    ; org $82bafe
+{
+lda $0644 : and #$00FF : cmp #$00DD : bne .OkayPriority
+  lda $0E : and #$CFFF : ora #$2000 : sta $0E
+.OkayPriority:    ; org $82bb13
+cop #$88 : dl $979000
+cop #$80 : db $00
+cop #$89
+cop #$80 : db $01
+cop #$89
+; org $82bb22
+.LoopAnimation:
+cop #$80 : db $02
+cop #$89 : bra .LoopAnimation
+;org $82bb29
+.Die:
+cop #$80 : db $01
+cop #$89
+cop #$80 : db $00
+cop #$89
+lda #$2000 : tsb $10
+cop #$C1
+rtl
+}
+
+;org $82bb3b
+EPlayer_DoFriar:
+{
+lda #$2000 : tsb $09AE
+cop #$A5 : dl EFriarVramLoader : dw $0000, $2600    ; $82bc02
+cpy #$1FC0 : bne +
+  jmp .ReturnToAct
++:
+lda $16 : cmp #$0020 : bne .AwaitVramLoad
+cop #$C2
+cop #$CA : db $08
+  lda $7F0C07 : cmp #$4400 : bne .VramLoaded
+cop #$CB
+bra .VramLoaded
+.AwaitVramLoad:
+cop #$C1
+lda $7F0C07 : cmp #$4400 : bne .VramLoaded
+  rtl
+.VramLoaded:
+cop #$50 : dl $998070 : db $00, $A0, $10
+cop #$3B : db $4A : dl TIndexedPaletteBundleOnce    ; $80B519
+cop #$48 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, .DirectionOptions    ; $BB93
+.DirectionOptions:
+  dw .FacingSouth, .FacingNorth    ; B_82BB9B, B_82BBB4
+  dw .FacingWest,  .FacingEast     ; B_82BBCD, B_82BBE6
+.FacingSouth:    ; org $82bb9b
+cop #$A5 : dl EFriarAppearSparkles : dw $1AFE, $2600
+cop #$A5 : dl EFriar_South : dw $1AFE, $2600
+cop #$8F : db $36
+cop #$89
+bra .ReturnToAct
+.FacingNorth:    ; org $82bbb4
+cop #$A5 : dl EFriarAppearSparkles : dw $C000, $2600
+cop #$A5 : dl EFriar_North : dw $C000, $2600
+cop #$8F : db $37
+cop #$89
+bra .ReturnToAct
+.FacingWest:    ; org $82bbcd
+cop #$A5 : dl EFriarAppearSparkles : dw $EACC, $2600
+cop #$A5 : dl EFriar_West : dw $EACC, $2600
+cop #$8F : db $38
+cop #$89
+bra .ReturnToAct
+.FacingEast:    ; org $82bbe6
+cop #$A5 : dl EFriarAppearSparkles : dw $EA34, $2600
+cop #$A5 : dl EFriar_East : dw $EA34, $2600
+cop #$8F : db $39
+cop #$89
+.ReturnToAct:    ; org $82bbfd
+cop #$DA : db $07
+cop #$C5
+}
+
+; org $82bc02
+EFriarVramLoader:
+cop #$4F : dl $9CC000 : dw $4400, $0480
+cop #$E0
+
+; org $82bc0d
+EFriarAppearSparkles:
+cop #$88 : dl $978000
+jsr SR_SaveOffsetFrom24
+cop #$DA : db $07
+jsr SR_RestoreOffsetFrom24
+lda #$2000 : trb $10
+cop #$80 : db $00
+cop #$89
+cop #$E0
+
+; org $82bc27
+EFriar:
+{
+.North:
+lda #$2000 : tsb $12
+.South:    ; org $82bc2c
+lda #$0000
+jsr SR_LoadBonusDamageFreedan
+cop #$88 : dl $978000
+lda $09AE : bit #$0080 : beq +
+  cop #$B6 : db $30
++:    ; org $82bc42
+jsr SR_SaveOffsetFrom24
+cop #$DA : db $07
+jsr SR_RestoreOffsetFrom24
+lda #$2000 : trb $10
+lda $0B1C : beq +
+  cop #$5B : dw $0010
+  cop #$5A : dw EFriar_OnUpgradedCollide
++:
+cop #$86 : db $01, $02, $01
+cop #$8A
+cop #$86 : db $02, $03, $03
+cop #$8A
+cop #$8D : db $03
+cop #$AC : db $00, $05
+bra EFriar_RefreshAnim
+.West:    ; org $82bc74
+lda #$4000 : tsb $12
+.East:    ; org $82bc79
+lda #$0000
+jsr SR_LoadBonusDamageFreedan
+cop #$88 : dl $978000
+lda $09AE : bit #$0080 : beq +
+  cop #$B6 : db $30
++:
+jsr SR_SaveOffsetFrom24
+cop #$DA : db $07
+jsr SR_RestoreOffsetFrom24
+lda #$2000 : trb $10
+lda $0B1C : beq +
+  cop #$5B : dw $0010
+  cop #$5A : dw EFriar_OnUpgradedCollide
++:
+cop #$85 : db $01, $02, $01
+cop #$8A
+cop #$85 : db $02, $03, $03
+cop #$8A
+cop #$8D : db $03
+cop #$AC : db $05, $00
+bra EFriar_RefreshAnim
+; org $82bcc1
+EFriar_CheckOffScreen:
+lda $10 : bit #$4000 : bne EFriar_Die
+cop #$B1
+; org $82bcca
+EFriar_RefreshAnim:
+cop #$8B
+lda $2A : beq EFriar_CheckOffScreen
+lda $08
+  stz $08
+  sta $26
+; org $82bcd6
+EFriar_CheckExplodeTrigger:
+lda $0B1C : cmp #$0002 : bne +
+  cop #$40 : dw $8001, EFriar_MakeExplode
++:
+cop #$C2
+dec $26 : bpl EFriar_CheckExplodeTrigger
+bra EFriar_RefreshAnim
+; org $82bcec
+EFriar_Die:
+cop #$E0
+
+; org $82bcee
+EFriar_MakeExplode:
+cop #$5A : dw $0000
+EFriar_OnUpgradedCollide:    ; org $82bcf2
+cop #$9C : dl .Worm40 : dw $0600
+cop #$9C : dl .Worm80 : dw $0600
+cop #$9C : dl .WormC0 : dw $0600
+.Worm00:
+lda #$0000 : bra EFriarWormPieceA
+.Worm40:
+lda #$0040 : bra EFriarWormPieceA
+.Worm80:
+lda #$0080 : bra EFriarWormPieceA
+.WormC0:
+lda #$00C0
+EFriarWormPieceA:    ; org $82bd19
+sta $7F0010,x
+lda #$0000
+jsr SR_LoadBonusDamageFreedan
+lda #$0000 : sta $7F0012,x
+lda $14 : sta $7F0018,x
+lda $16 : sta $7F001A,x
+cop #$A2 : dl EFriarWormPieceC : dw $0600
+cop #$A2 : dl EFriarWormPieceB : dw $0600
+lda #$0001 : sta $7F100E,x : sta $7F100C,x
+cop #$8D : db $04
+.RefreshOrbitAnim:    ; org $82bd52
+cop #$8B
+lda $2A : beq .RefreshOrbitAnim
+lda $08 : stz $08 : sta $26
+; org $82bd5e
+.DoOrbit:
+cop #$C2
+sep #$20
+  lda $7F0010,x : clc : adc #$02 : sta $7F0010,x
+  lda $7F0012,x : clc : adc #$04 : sta $7F0012,x
+  bcs .ChangeToLinear
+rep #$20
+lda $14 : pha
+lda $16 : pha
+lda $7F0018,x : sta $14
+lda $7F001A,x : sta $16
+jsl LR_Orbit
+pla : sec : sbc $16 : sta $7F100E,x
+pla : sec : sbc $14 : sta $7F100C,x
+dec $26 : bpl .DoOrbit
+bra .RefreshOrbitAnim
+.ChangeToLinear:    ; org $82bda8
+rep #$20
+lda #$6000 : trb $12
+lda $7F100C,x : eor #$FFFF : inc a : sta $7F100C,x
+lda $7F100E,x : eor #$FFFF : inc a : sta $7F100E,x
+bra .DoLinear
+.RefreshLinearAnim:    ; org $82bdc9
+cop #$8B
+lda $2A : beq .RefreshLinearAnim
+lda $08
+  stz $08
+  sta $26
+.ContinueLinear:    ; org $82bdd5
+cop #$C2
+.DoLinear:
+lda $7F100C,x : sta $7F002C,x
+lda $7F100E,x : sta $7F002E,x
+lda $10 : bit #$4000 : bne .Die
+dec $26 : bpl .ContinueLinear
+bra .RefreshLinearAnim
+.Die:    ; org $82bdf4
+cop #$E0
+
+
+EFriarWormPieceB:    ; org $82bdf6
+cop #$8D : db $05
+bra +
+EFriarWormPieceC:    ; org $82bdfb
+cop #$8D : db $06
++:
+jsr SR_SaveSpawnPosition
+.RefreshAnim:    ; org $82be01
+cop #$8B
+lda $2A : beq .RefreshAnim
+lda $08
+  stz $08
+  sta $26
+.ContinueMove:    ; org $82be0d
+cop #$C2
+ldy $04
+jsr SR_UpdatePositionList
+dec $26 : bpl .ContinueMove
+bra .RefreshAnim
+}
+
+SR_UpdatePositionList:    ; org $82be1a
+lda $7F0000,x : sta $14
+lda $7F0002,x : sta $7F0000,x
+lda $7F000E,x : sta $7F0002,x
+lda $0014,y : sta $7F000E,x
+lda $7F0018,x : sta $16
+lda $7F001A,x : sta $7F0018,x
+lda $7F0004,x : sta $7F001A,x
+lda $0016,y : sta $7F0004,x
+rts
+
+SR_SaveSpawnPosition:    ; org $82be55
+lda $14 : sta $7F0000,x : sta $7F0002,x : sta $7F000E,x
+lda $16 : sta $7F0018,x : sta $7F001A,x : sta $7F0004,x
+rts
+
+SR_SaveOffsetFrom24:    ; org $82be72
+ldy $24
+lda $14 : sec : sbc $0014,y : sta $7F100C,x
+lda $16 : sec : sbc $0016,y : sta $7F100E,x
+rts
+
+SR_RestoreOffsetFrom24:    ; org $82be89
+ldy $24
+lda $0014,y : clc : adc $7F100C,x : sta $14
+lda $0016,y : clc : adc $7F100E,x : sta $16
+rts
+
+;org $82bea0
+EPlayer_DoPsychoDash:
+{
+lda #$0000 : jsr SR_LoadBonusDamageWill
+jsr SR_SetFlagsForPsychoDash    ; $CCA5
+cop #$48 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, .FacingDirs    ; $BEB7
+.FacingDirs:
+  dw .FacingSouth, .FacingNorth
+  dw .FacingWest, .FacingEast
+.FacingSouth:    ; org $82bebf
+cop #$9B : dl EPsychoDashPositionFixer_South
+cop #$8E : db $04
+cop #$82 : db $04, $36
+cop #$89
+bra .ReturnControl
+.FacingNorth:    ; org $82becf
+cop #$9B : dl EPsychoDashPositionFixer_North
+cop #$AE : db $01
+cop #$8E : db $04
+cop #$82 : db $05, $36
+cop #$89
+bra .ReturnControl
+.FacingWest:    ; org $82bee2
+cop #$9B : dl EPsychoDashPositionFixer_West
+cop #$AF : db $01
+cop #$8E : db $04
+cop #$81 : db $06, $36
+cop #$89
+bra .ReturnControl
+.FacingEast:    ; org $82bef5
+cop #$9B : dl EPsychoDashPositionFixer_East
+cop #$8E : db $04
+cop #$81 : db $07, $36
+cop #$89
+.ReturnControl:    ; org $82bf03
+jsr SR_ClearFlagsAfterPsychoDash    ; $CCC2
+jmp EPlayer_ParseAct
+}
+
+; EPsychoDashPositionFixer tracks Will's position in the first half
+;   of the dash, to restore it in the second half.
+EPsychoDashPositionFixer_South:    ; org $82bf09
+{
+lda #$0006 : sta $08
+ldy $04
+lda $0016,y : sta $14
+lda #$09D0 : sta $16
+cop #$C2
+cop #$CA : db $08
+  ldy $04
+  lda $14 : sec : sbc $0016,y
+  ldy $16
+  inc $16 : inc $16
+  sta $0000,y
+  ldy $04
+  lda $0016,y : sta $14
+cop #$CB
+lda #$0003 : sta $08
+ldy $04
+lda #$0000 : sta $002E,y
+cop #$C2
+dec $16 : dec $16
+cop #$CA : db $08
+  ldy $16
+  dec $16 : dec $16
+  phx
+  ldx $04
+  lda $0000,y : sta $7F002E,x
+  plx
+cop #$CB
+cop #$C2
+phx
+ldx $04
+lda #$0000 : sta $7F002E,x
+plx
+cop #$E0
+}
+
+EPsychoDashPositionFixer_North:    ; org $82bf71
+{
+lda #$0006 : sta $08
+ldy $04
+lda $0016,y : sta $14
+lda #$09D0 : sta $16
+cop #$C2
+cop #$CA : db $08
+  ldy $04
+  lda $0016,y : sec : sbc $14
+  ldy $16
+  inc $16 : inc $16
+  sta $0000,y
+  ldy $04
+  lda $0016,y : sta $14
+cop #$CB
+lda #$0003 : sta $08
+ldy $04
+lda #$0000 : sta $002E,y
+cop #$C2
+dec $16 : dec $16
+cop #$CA : db $08
+  ldy $16
+  dec $16 : dec $16
+  phx
+  ldx $04
+  lda $0000,y : sta $7F002E,x
+  plx
+cop #$CB
+cop #$C2
+phx
+ldx $04
+lda #$0000 : sta $7F002E,x
+plx
+cop #$E0
+}
+
+EPsychoDashPositionFixer_West:    ; org $82bfd9
+{
+lda #$0006 : sta $08
+ldy $04
+lda $0014,y : sta $14
+lda #$09D0 : sta $16
+cop #$C2
+cop #$CA : db $08
+  ldy $04
+  lda $0014,y : sec : sbc $14
+  ldy $16
+  inc $16 : inc $16
+  sta $0000,y
+  ldy $04
+  lda $0014,y : sta $14
+cop #$CB
+lda #$0003 : sta $08
+ldy $04
+lda #$0000 : sta $002C,y
+cop #$C2
+dec $16 : dec $16
+cop #$CA : db $08
+  ldy $16
+  dec $16 : dec $16
+  phx
+  ldx $04
+  lda $0000,y : sta $7F002C,x
+  plx
+cop #$CB
+cop #$C2
+phx
+ldx $04
+lda #$0000 : sta $7F002C,x
+plx
+cop #$E0
+}
+
+EPsychoDashPositionFixer_East:    ; org $82c041
+{
+lda #$0006 : sta $08
+ldy $04
+lda $0014,y : sta $14
+lda #$09D0 : sta $16
+cop #$C2
+cop #$CA : db $08
+  ldy $04
+  lda $14 : sec : sbc $0014,y
+  ldy $16
+  inc $16 : inc $16
+  sta $0000,y
+  ldy $04
+  lda $0014,y : sta $14
+cop #$CB
+lda #$0003 : sta $08
+ldy $04
+lda #$0000 : sta $002C,y
+cop #$C2
+dec $16 : dec $16
+cop #$CA : db $08
+  ldy $16
+  dec $16 : dec $16
+  phx
+  ldx $04
+  lda $0000,y : sta $7F002C,x
+  plx
+cop #$CB
+cop #$C2
+phx
+ldx $04
+lda #$0000 : sta $7F002C,x
+plx
+cop #$E0
+}
+
+
+;org $82c0a9
+EPlayer_DoSpinDash:
+{
+lda #$8000 : tsb $0658
+lda #$2002 : tsb $09AE
+lda #$000F : sta $26    ; Spin state.
+  sta $7F0010,x
+cop #$8E : db $04
+cop #$8D : db $22
+lda #$0000 : sta $7F102E,x
+.RefreshSpriteA:    ; org $82c0cb
+cop #$C1
+cop #$8B
+lda $2A : beq .RefreshSpriteA
+stz $08
+lda $10 : bit #$0080 : beq .NotHurtContinue
+  jmp .Cancel    ; Cancel due to damage
+.NotHurtContinue:
+lda $26 : bmi .DoneSpinningUp
+  cmp #$000C : bcc .DoneSpinningUp
+  lsr : sta $24
+cop #$C1
+cop #$41 : dw $8001, .Cancel    ; Cancel due to buttons
+jsr SR_ListenForAlternateLR
+dec $24 : bmi .RefreshSpriteA
+rtl
+.DoneSpinningUp:    ; org $82c0fb
+lda #$0002
+jsr SR_LoadBonusDamageWill
+lda #$0100 : trb $10
+lda #$0200 : tsb $10
+cop #$A5 : dl ESpinDashArrows : dw $0000, $0302
+tya : sta $7F0012,x
+cop #$80 : db $1C
+cop #$89
+cop #$84 : db $1D, $04
+cop #$8A
+jsr SR_Kill7F12IfExists
+pea .PerformDirection-1    ; $C17B
+stz $09B2
+stz $09B4
+lda $0656    ; Buttons pressed
+.GetDirection:
+..CheckRight:
+bit #$0100 : beq ..CheckLeft
+lda #$0007 : sta $09B2
+stz $09B6
+stz $09B8
+rts
+..CheckLeft:    ; org $82c145
+bit #$0200 : beq ..CheckUp
+lda #$FFF9 : sta $09B2
+stz $09B6
+stz $09B8
+rts
+..CheckUp:    ; org $82c157
+bit #$0800 : beq ..CheckDown
+lda #$FFF9 : sta $09B4
+stz $09B6
+stz $09B8
+rts
+..CheckDown:    ; org $82c169
+bit #$0400 : beq ..NoDirThisFrame
+lda #$0007 : sta $09B4
+stz $09B6
+stz $09B8
+rts
+..NoDirThisFrame:
+rts
+.PerformDirection:    ; org $82c17c
+lda #$2800 : trb $09AE
+pea ..PostGetTime-1    ; $C198
+lda.w ..AnimationLoop : sta $7F001E,x    ; #$c1a3
+lda $0B1A : bne ..UpgradedTime
+lda #$000C : rts
+..UpgradedTime:
+lda #$0018 : rts
+..PostGetTime:    ; org $82c199
+sta $7F0014,x
+lda #$0001 : jsr SR_LoadBonusDamageWill
+..AnimationLoop:
+cop #$80 : db $1D
+cop #$89
+cop #$CB
+lda #$0002 : trb $09AE
+cop #$40 : dw $0300, ..LeftOrRight
+cop #$40 : dw $0C00, ..UpOrDown
+bra .Cancel
+..LeftOrRight:
+lda $0656 : bit #$0200 : bne ..Left
+cop #$8F : db $03
+bra ..Go
+..Left:
+cop #$8F : db $02
+bra ..Go
+..UpOrDown:
+lda $0656 : bit #$0800 : bne ..Up
+cop #$8F : db $00
+bra ..Go
+..Up:
+cop #$8F : db $01
+..Go:
+cop #$8B
+stz $08
+.Cancel:    ; org $82c1e4
+lda #$0200 : trb $10
+cop #$C5
+}
+
+
+; org $82c1eb
+SR_ListenForAlternateLR:
+lda $26 : lsr a : bcc .ExpectR
+.ExpectL:
+lda $0656 : bit #$0020 : beq .Return
+..GotL:
+lda $26 : sec : sbc #$0001 : sta $26
+bra .Return
+.ExpectR:
+lda $0656 : bit #$0010 : beq .Return
+..GotR:
+lda $26 : sec : sbc #$0001 : sta $26
+.Return:
+lda $0656 : and #$0030 : tsb $0658
+rts
+
+
+;org $82c21c
+SR_Kill7F12IfExists:    ; $82c21c
+phx
+phd
+lda $7F0012,x : beq +
+  tcd : tax
+  lda #$0000 : sta $7F0012,x
+  cop #$A7
++:
+pld
+plx
+rts
+
+
+; org $82c232
+ESpinDashArrows:
+{
+cop #$B6 : db $30
+lda $14 : sec : sbc $09A2 : sta $7F100C,x
+lda $16 : sec : sbc $09A4 : sta $7F100E,x
+cop #$88 : dl $8EE000
+.CheckPress:
+cop #$40 : dw $0100, .PressedUp
+cop #$40 : dw $0200, .PressedDown
+cop #$40 : dw $0800, .PressedLeft
+cop #$40 : dw $0400, .PressedRight
+cop #$C1
+cop #$8D : db $39
+.NoPress:
+..RefreshSprite:
+cop #$8B
+lda $08
+stz $08
+inc : sta $24
+cop #$C1
+lda $2A : beq ..RefreshSprite
+cop #$40 : dw $0F00, .CheckPress
+jsr SR_OffsetSelfFromPlayer
+dec $24 : bmi ..RefreshSprite
+rtl
+.PressedUp:    ; org $82c288
+cop #$8D : db $3D
+..RefreshSprite:    ; org $82c28b
+cop #$8B
+lda $08
+stz $08
+inc a : sta $24
+cop #$C1
+lda $2A : beq ..RefreshSprite
+cop #$41 : dw $0100, .CheckPress
+jsr SR_OffsetSelfFromPlayer
+dec $24 : bmi ..RefreshSprite
+rtl
+.PressedDown:    ; org $82c2a8
+cop #$8D : db $3C
+..RefreshSprite:    ; org $82c2ab
+cop #$8B
+lda $08
+stz $08
+inc a : sta $24
+cop #$C1
+lda $2A : beq ..RefreshSprite
+cop #$41 : dw $0200, .CheckPress
+jsr SR_OffsetSelfFromPlayer
+dec $24 : bmi ..RefreshSprite
+rtl
+.PressedLeft:    ; org $82c2c8
+cop #$8D : db $3B
+..RefreshSprite:    ; org $82c2cb
+cop #$8B
+lda $08
+stz $08
+inc a : sta $24
+cop #$C1
+lda $2A : beq ..RefreshSprite
+cop #$41 : dw $0800, .CheckPress
+jsr SR_OffsetSelfFromPlayer
+dec $24 : bmi ..RefreshSprite
+rtl
+.PressedRight:    ; org $82c2e8
+cop #$8D : db $3A
+..RefreshSprite:    ; org $82c2eb
+cop #$8B
+lda $08
+stz $08
+inc a : sta $24
+cop #$C1
+lda $2A : beq ..RefreshSprite
+cop #$41 : dw $0400, .CheckPress
+jsr SR_OffsetSelfFromPlayer
+dec $24 : bmi ..RefreshSprite
+rtl
+}
+
+
+;org $82c308
+EWillChargePalette:
+cop #$38 : db $2A, $02
+cop #$3A
+-:
+cop #$37 : db $2B
+cop #$39
+bra -
+EFreedanChargePalette:
+cop #$38 : db $4B, $02
+cop #$3A
+-:
+cop #$37 : db $2C
+cop #$39
+bra -
+;org $82c322
+EPaletteFreedanUsingAuraBarrier:
+cop #$37 : db $5B
+cop #$39 : bra EPaletteFreedanUsingAuraBarrier
+
+;org $82c329
+SR_OffsetSelfFromPlayer:
+lda $7F100c,x : clc : adc $09a2 : sta $14
+lda $7f100e,x : clc : adc $09a4 : sta $16
+rts
+
+;org $82c33e
+SR_LoadBonusDamageWill:
+phx
+asl : tax
+lda $81D9A7,x : sec : sbc #$D9A7 : tax
+lda $81D9A9,x : tay
+lda $0000,y
+pha
+  txa : clc : adc $01,s : tax
+pla
+lda $81D9AB,x : and #$00FF : sta $09E0
+plx
+rts
+
+;org $82c365
+SR_LoadBonusDamageFreedan:
+phx
+asl : tax
+lda $81d9bf,x : sec : sbc #$d9bf : tax
+lda $81d9c1,x : tay
+lda $0000,y
+pha
+  txa : clc : adc $01,s : tax
+pla
+lda $81d9c3,x : and #$00ff : sta $09e2
+plx
+rts
+
+;org $82c38c
+db $00,$08,$85
+EPlayer:
+lda #$0100 : tsb $10
+lda #$0001 : tsb $12
+txa : sta $09AA    ; aha...
+lda #$0001 : sta $7F101C,x
+lda $0AF8 : beq .AfterSpawnMessage    ; +$07
+  cop #$9C : dl ERespawnMessage : dw $2000    ; $80D796
+.AfterSpawnMessage:
+cop #$99 : dl EPlayerChargeListenerSpawner    ; $82B7B3
+cop #$9B : dl $82B29E
+cop #$9B : dl $82B42B
+cop #$A5 : dl EShadowPaletteManager : dw $0000,$2800    ; $82B20E
+;org $82C3C8
+EPlayer_ParseAct:
+cop #$C1
+lda $0658 : and #$F0FF : sta $0658
+lda #$2800 : trb $09AE    ; Clear "action in progress" and "special move".
+lda #$0100 : tsb $10    ; Don't hurt self.
+lda #$0020 : trb $10    ; Whatever this means. Acts like a pickup?
+stz $09E0    ; Zero attack damage bonus.
+lda $10 : bit #$2000 : beq +    ; Can't act if we're not being rendered.
+  rtl
++:
+cop #$C6 : dw EPlayer_ParseAct    ; Set Saved Jump Address = $C3C8
+cop #$AF : db $00    ; Clear "negate movement" flag.
+lda $09B2 : beq +
+  jmp EPlayer_ForcedRunX    ; $CA84
++:
+lda $09B4 : beq +
+  jmp EPlayer_ForcedRunY    ; $CB0C
++:
+phx
+cop #$48 : and #$0003 : sta $24    ; Return player facing direction.
+sep #$20
+  xba : lda #$0E : jsl LR_MultiplyBytesOfA
+rep #$20
+tax
+lda $0656 : bit #$8000 : bne .DoParsedAct    ; Attack.
+inx : inx
+  xba
+  lsr : bcs .DoParsedAct    ; PressRight.
+inx : inx
+  lsr : bcs .DoParsedAct    ; PressLeft.
+inx : inx
+  lsr : bcs .DoParsedAct    ; PressDown.
+inx : inx
+  lsr : bcs .DoParsedAct    ; PressUp.
+inx : inx
+  bit #$0300 : bne .DoParsedAct    ; Shield.
+inx : inx    ; Nothing (release).
+.DoParsedAct:
+lda.l EPlayer_ParsedActPointerTable,x
+plx
+dec : pha
+rts
+;org $82C447
+EPlayer_ParsedActPointerTable:
+dw EPlayer_ActFaceSouthAttack   ; $CCDA
+dw EPlayer_ActPressRight        ; $C5B5
+dw EPlayer_ActPressLeft         ; $C56C
+dw EPlayer_ActPressDown         ; $C4DD
+dw EPlayer_ActPressUp           ; $C524
+dw EPlayer_ActFaceSouthShield   ; $CA28
+dw EPlayer_ActFaceSouthRelease  ; $C47F
+dw EPlayer_ActFaceNorthAttack   ; $CD5B
+dw EPlayer_ActPressRight        ; $C5B5
+dw EPlayer_ActPressLeft         ; $C56C
+dw EPlayer_ActPressDown         ; $C4DD
+dw EPlayer_ActPressUp           ; $C524
+dw EPlayer_ActFaceNorthShield   ; $CA36
+dw EPlayer_ActFaceNorthRelease  ; $C48F
+dw EPlayer_ActFaceWestAttack    ; $CDDC
+dw EPlayer_ActPressRight        ; $C5B5
+dw EPlayer_ActPressLeft         ; $C56C
+dw EPlayer_ActPressDown         ; $C4DD
+dw EPlayer_ActPressUp           ; $C524
+dw EPlayer_ActFaceWestShield    ; $CA44
+dw EPlayer_ActFaceWestRelease   ; $C49F
+dw EPlayer_ActFaceEastAttack    ; $CE5A
+dw EPlayer_ActPressRight        ; $C5B5
+dw EPlayer_ActPressLeft         ; $C56C
+dw EPlayer_ActPressDown         ; $C4DD
+dw EPlayer_ActPressUp           ; $C524
+dw EPlayer_ActFaceEastShield    ; $CA52
+dw EPlayer_ActFaceEastRelease   ; $C4AF
+;org $82C47F
+EPlayer_ActFaceSouthRelease:
+cop #$D0 : db $00,$01 : dw .Variant    ; $C48A, probably "windy" or something.
+cop #$8F : db $00
+bra EPlayer_Idle_RefreshAnim
+.Variant:
+cop #$8F : db $10
+bra EPlayer_Idle_RefreshAnim
+;org $82C48F
+EPlayer_ActFaceNorthRelease:
+cop #$D0 : db $00,$01 : dw .Variant    ; $C49A, probably "windy" or something.
+cop #$8F : db $01
+bra EPlayer_Idle_RefreshAnim
+.Variant:
+cop #$8F : db $11
+bra EPlayer_Idle_RefreshAnim
+;org $82C49F
+EPlayer_ActFaceWestRelease:
+cop #$D0 : db $00,$01 : dw .Variant    ; $C4AA, probably "windy" or something.
+cop #$8F : db $02
+bra EPlayer_Idle_RefreshAnim
+.Variant:
+cop #$8F : db $12
+bra EPlayer_Idle_RefreshAnim
+;org $82C4AF
+EPlayer_ActFaceEastRelease:
+cop #$D0 : db $00,$01 : dw .Variant    ; $C4BA, probably "windy" or something.
+cop #$8F : db $03
+bra EPlayer_Idle_RefreshAnim
+.Variant:
+cop #$8F : db $13
+;org $82C4BD
+EPlayer_Idle_RefreshAnim:
+cop #$8B
+lda $08
+  stz $08
+inc : sta $24
+cop #$C1
+EPlayer_Idle:    ; $82C4C8
+lda $09B2 : ora $09B4 : bne EPlayer_TryAct    ; X/Y forced run speeds.
+cop #$40 : dw $8F30 : dw EPlayer_TryAct    ; Atk, dir, LR button mask goto $C4DB.
+dec $24 : bmi EPlayer_Idle_RefreshAnim
+rtl
+EPlayer_TryAct:    ; $C4DB
+cop #$C5    ; Goes to EPlayer_ParseAct under normal operation.
+
+;org $82C4DD
+EPlayer_ActPressDown:
+
+
+
+org $82C524
+EPlayer_ActPressUp:
+
+
+
+org $82C56C
+EPlayer_ActPressLeft:
+
+
+
+org $82C5B5
+EPlayer_ActPressRight:
+
+
+org $82c617
+SR_InitRunCounter:
+lda #$000D : sta $040C
+rts
+
+;org $82c61e
+EPlayer_StartFalling
+lda #$0008 : trb $10
+lda #$0200 : tsb $10
+lda #$4000 : tsb $065A
+cop #$92 : db $18, $00, $18
+cop #$89
+cop #$91 : db $19, $07
+cop #$89
+EPlayer_CheckLandingFirstTry:    ; org $82c63b
+cop #$1A : db $00 : dw EPlayer_LandFromFall
+cop #$8F : db $1A
+cop #$AB : db $07
+.AdvanceAnim:
+cop #$8B
+jsr SR_SecIfFrameZeroElseZeroWait
+bcs EPlayer_CheckLandingSecondTry
+..Delay:
+jsr SR_FallingCheckQuake
+cop #$C2
+dec $24 : bpl ..Delay
+bra .AdvanceAnim
+EPlayer_CheckLandingSecondTry:    ; org $82c658
+cop #$1A : db $00 : dw EPlayer_LandFromFall
+cop #$8F : db $1B
+cop #$AB : db $07
+.AdvanceAnim:
+cop #$8B
+jsr SR_SecIfFrameZeroElseZeroWait
+bcs EPlayer_CheckLandingThirdTry
+..Delay:
+jsr SR_FallingCheckQuake
+cop #$C2
+dec $24 : bpl ..Delay
+bra .AdvanceAnim
+EPlayer_CheckLandingThirdTry:    ; org $82c675
+cop #$1A : db $00 : dw EPlayer_LandFromFall
+cop #$8F : db $19
+cop #$AB : db $07
+.AdvanceAnim:
+cop #$8B
+jsr SR_SecIfFrameZeroElseZeroWait
+bcs EPlayer_CheckLandingFirstTry
+..Delay:
+jsr SR_FallingCheckQuake
+cop #$C2
+dec $24 : bpl ..Delay
+bra .AdvanceAnim
+EPlayer_LandFromFall:    ; org $82c692
+cop #$06 : db $2C
+cop #$91 : db $1C, $00
+cop #$89
+lda #$0200 : trb $10
+lda #$0008 : tsb $10
+lda #$4000 : trb $065A
+jmp EPlayer_ParseAct    ; jmp $82C3C8
+
+SR_SecIfFrameZeroElseZeroWait:    ; org $82c6ae
+lda $2A : beq +
+lda $08
+  stz $08
+  sta $24
+clc
+rts
++:
+sec
+rts
+
+; org $82c6bc
+SR_FallingCheckQuake:
+lda $0AD4 : cmp #$0001 : beq +
+  rts
++:
+lda $0AA2 : bit #$0040 : bne +
+  rts
++:
+cop #$40 : dw $8000, .StartQuake
+  rts
+.StartQuake:    ; org $82c6d5
+pla
+cop #$8E : db $06
+cop #$8D : db $00
+.RefreshAnim:
+cop #$AB : db $07
+.AdvanceAnim:
+cop #$8B
+jsr SR_SecIfFrameZeroElseZeroWait : bcs .RefreshAnim
+.ConsiderLanding:
+lda $16 : bit #$000F : bne ..NotOnGridOrGround
+  cop #$1A : db $00 : dw .DoQuakeLanding
+..NotOnGridOrGround:
+cop #$C2
+dec $24 : bpl .ConsiderLanding
+bra .AdvanceAnim
+.DoQuakeLanding:    ; org $82c6fa
+lda #$0002
+jsr SR_LoadBonusDamageFreedan    ; $82C365
+lda $0644 : and #$00FF : cmp #$00DD : beq +    ; No freezing in Mummy map.
+  cop #$A5 : dl EQuakeFreezeTimer : dw $0000, $2400
++:
+cop #$A5 : dl EQuakeSoundsShakes : dw $0000, $2400
+lda #$003C : sta $0026,y
+cop #$82 : db $01, $00
+cop #$89
+cop #$DA : db $27
+lda #$0200 : trb $10
+lda #$0008 : tsb $10
+lda #$4000 : trb $065A
+jmp EPlayer_ParseAct    ; jmp $82C3C8
+
+; org $82c73f
+EQuakeFreezeTimer:
+lda #$0010 : tsb $09AE
+cop #$DB : dw $01DF
+lda #$0010 : trb $09AE
+cop #$E0
+
+; org $82c751
+EQuakeSoundsShakes:
+cop #$06 : db $15
+jsr SR_QuakeCameraJerk
+dec $26 : bmi +
+  rtl
++:
+cop #$E0
+
+SR_QuakeCameraJerk:
+lda $06EE : bit #$0200 : bne B_82C794
+lda #$0000 : sta $7F100C,x : sta $7F100E,x
+J_82C771:
+cop #$23 : pha
+  and #$0003 : sec : sbc #$0001 : clc : adc $06BE : sta $06BE
+pla
+lsr : lsr : and #$0003 : sec : sbc #$0001 : clc : adc $06C2 : sta $06C2
+rts
+B_82C794:
+lda $7F100C,x : bne B_82C7AA
+lda $06BE : sta $7F100C,x
+lda $06C2 : sta $7F100E,x
+bra J_82C771
+B_82C7AA:
+sta $06BE
+lda $7F100E,x : sta $06C2
+bra J_82C771
+warnpc $82c7b6
+
+
+
+
+org $82CA22
+EPlayer_RunningSouthShield:
+lda #$0400 : tsb $0658
+EPlayer_ActFaceSouthShield:    ; $CA28
+stz $040C    ; Zero running-permitted timer.
+cop #$8F : db $3A
+bra EPlayer_ShieldCommon
+EPlayer_RunningNorthShield:
+lda #$0800 : tsb $0658
+EPlayer_ActFaceNorthShield:    ; $CA36
+stz $040C
+cop #$8F : db $3B
+bra EPlayer_ShieldCommon
+EPlayer_RunningWestShield:
+lda #$0200 : tsb $0658
+EPlayer_ActFaceWestShield:    ; $CA44
+stz $040C
+cop #$8F : db $3C
+bra EPlayer_ShieldCommon
+EPlayer_RunningEastShield:
+lda #$0100 : tsb $0658
+EPlayer_ActFaceEastShield:    ; $CA52
+stz $040C
+cop #$8F : db $3D
+;org $82CA58
+EPlayer_ShieldCommon:
+lda #$2000 : tsb $09AE    ; "Action in progress, can't walk".
+lda #$0020 : tsb $10    ; "Pickup?".
+lda #$0100 : trb $10    ; Enable collisions with self. (?)
+.RefreshAnim:
+cop #$8B
+lda $08
+  stz $08
+inc : sta $24
+cop #$C1
+lda $2A : beq .RefreshAnim
+cop #$41 : dw $0030 : dw .ReleaseShield    ; $CA82 if shoulder buttons not held
+dec $24 : bmi .RefreshAnim
+rtl
+.ReleaseShield:
+cop #$C5
+
+;org $82CA84
+EPlayer_ForcedRunX:
+lda $0656
+  bit #$0300 : beq B_82CA93
+  bit #$0200 : bne B_82CAD4
+bra J_82CA9C
+B_82CA93:    ; org $82ca93
+lda $09B2 : bmi B_82CAD4
+bra J_82CA9C
+B_82CA9A:    ; org $82ca9a
+cop #$C2
+J_82CA9C:    ; org $82ca9c
+cop #$8F : db $0F
+B_82CA9F:    ; org $82ca9f
+cop #$8B
+lda $08
+  stz $08
+  inc : sta $24
+cop #$C1
+lda $2A : beq B_82CA9F
+lda $09B2 : beq B_82CB0A
+cop #$40 : dw $0200, B_82CAD2
+jsr SR_CheckForSlide
+jsr S_82CBD9
+bcs B_82CACD
+cop #$40 : dw $8000, $CE5A
+cop #$40 : dw $0030, EPlayer_RunningEastShield
+B_82CACD:    ; org $82cacd
+dec $24 : bmi B_82CA9F
+rtl
+B_82CAD2:    ; org $82cad2
+cop #$C2
+B_82CAD4:    ; org $82cad4
+cop #$8F : db $0E
+B_82CAD7:    ; org $82cad7
+cop #$8B
+lda $08
+  stz $08
+  inc : sta $24
+cop #$C1
+lda $2A : beq B_82CAD7
+lda $09B2 : beq B_82CB0A
+cop #$40 : dw $0100, B_82CA9A
+jsr SR_CheckForSlide
+jsr S_82CBD9
+bcs B_82CB05
+cop #$40 : dw $8000, $CDDC
+cop #$40 : dw $0030, EPlayer_RunningWestShield
+B_82CB05:    ; org $82cb05
+dec $24 : bmi B_82CAD7
+rtl
+B_82CB0A:    ; org $82cb0a
+cop #$C5
+
+
+;org $82CB0C
+EPlayer_ForcedRunY:
+
+
+
+org $82cb92
+SR_CheckForSlide:
+lda $10 : bit #$0080 : bne .NoSlide
+lda $0AD4 : bne .NoSlide
+lda $0AA2 : bit #$0002 : beq .NoSlide
+lda $09AE : bit #$1000 : bne .NoSlide
+cop #$40 : dw $8000, .TrySlide
+.NoSlide:
+rts
+.TrySlide:    ; org $82cbb5
+lda $09B2 : bpl +
+  eor #$FFFF : inc
++:
+cmp #$0003 : bcc +
+  pla
+  jmp J_82CC52
++:    ; org $82cbc7
+lda $09B4 : bpl +
+  eor #$FFFF : inc
++:
+cmp #$0003 : bcc .NoSlide
+pla
+jmp J_82CBFF
+
+
+org $82cca5
+SR_SetFlagsForPsychoDash:
+lda #$0100 : trb $10
+lda #$0200 : tsb $06EE
+; SR_???: org $82ccb0
+lda #$0200 : tsb $10
+lda #$8000 : tsb $0658
+lda #$0802 : tsb $09AE
+rts
+SR_ClearFlagsAfterPsychoDash:    ;org $82ccc2
+lda #$0200 : trb $06EE
+lda #$0200 : trb $10
+lda #$8000 : tsb $0658
+lda #$0002 : trb $09AE
+rts
+
+;org $82CCDA
+EPlayer_ActFaceSouthAttack:
+{
+jsr SR_PlayerAttackFreezeAndSound
+lda #$0400 : tsb $0658
+lda $0AD4 : cmp #$0001 : bne .LongStep
+cop #$16 : dw .ShortStep
+lda $09A2 : and #$000F : beq .LongStep
+cop #$14 : db $01, $01 : dw .ShortStep
+bra .LongStep
+.ShortStep:
+  cop #$8F : db $48
+  bra +
+.LongStep:
+  cop #$8F : db $36
++:
+lda $0644 : cmp #$00E8 : bne .PostFirebird
+  cop #$A5 : dl EFirebird_South : dw $0000, $0602
+.PostFirebird:
+cop #$C1
+cop #$8B
+cop #$C2
+.RefreshSprite:
+cop #$8B
+lda $08
+  stz $08
+  inc : sta $24
+cop #$C1
+lda $2A : beq B_82CD52
+lda $0AD4 : bne B_82CD45
+cop #$C1
+cop #$40 : dw $0B00, EPlayer_PostAttack
+cop #$40 : dw $0400, EPlayer_JumpAttackSouth
+dec $24 : bmi .RefreshSprite
+rtl
+B_82CD45:
+cop #$C1
+cop #$40 : dw $0B00, EPlayer_PostAttack
+dec $24
+bmi .RefreshSprite
+rtl
+B_82CD52:
+cop #$40 : dw $8000, B_82CCDA
+jmp EPlayer_PostAttack_Return
+}
+
+;org $82CD5B
+EPlayer_ActFaceNorthAttack:
+
+
+
+org $82CDDC
+EPlayer_ActFaceWestAttack:
+
+
+
+org $82CE5A
+EPlayer_ActFaceEastAttack:
+
+
+
+org $82ced8
+EPlayer_PostAttack:
+lda $0656 : bit #$0F00
+beq .Return
+lda #$8000 : trb $0658
+.Return:
+lda #$0F00 : trb $0658
+cop #$C5
+
+; org $82ceee
+SR_PlayerAttackFreezeAndSound:
+lda $0656 : and #$0F00 : sta $0656
+  ora #$8000 : sta $0658
+lda #$0100 : trb $10
+lda $0AD4 : beq .AsWill
+cop #$06 : db $02
+rts
+.AsWill:
+cop #$06 : db $01
+rts
+
+; org $82cf0f
+EPlayer_JumpAttackSouth:
+jsr SR_StageJumpMoveY
+cop #$8F : db $44
+cop #$89
+bra EPlayer_JumpAttackCommon
+EPlayer_JumpAttackNorth:    ; org $82cf19
+jsr SR_StageJumpMoveY
+lda #$2000 : tsb $12
+cop #$8F : db $45
+cop #$89
+bra EPlayer_JumpAttackCommon
+EPlayer_JumpAttackWest:    ; org $82cf28
+jsr SR_StageJumpMoveX
+lda #$4000 : tsb $12
+cop #$8F : db $46
+cop #$89
+bra EPlayer_JumpAttackCommon
+EPlayer_JumpAttackEast:    ; org $82cf37
+jsr SR_StageJumpMoveX
+cop #$8F : db $47
+cop #$89
+EPlayer_JumpAttackCommon:    ; org $82cf3f
+lda #$0200 : trb $10
+cop #$5C : dw $FFBF
+cop #$C5
+
+SR_StageJumpMoveX:    ; org $82cf4a
+cop #$AA : db $46
+bra +
+SR_StageJumpMoveY:    ; org $82cf4f
+cop #$AB : db $46
++:
+lda #$0800 : tsb $09AE
+lda #$0001 : sta $09E0
+lda #$0200 : tsb $10
+cop #$5B : dw $0040
+rts
+
+; org $82cf68
+EFirebird_South:
+cop #$88 : dl $97D000
+cop #$82 : db $00, $09
+cop #$89
+.KeepGoing:
+cop #$82 : db $04, $0F
+cop #$89
+lda $10 : bit #$4000 : beq .KeepGoing
+cop #$E0
+
+;org $82cf82
+EFirebird_North:
+cop #$88 : dl $97D000
+cop #$82 : db $01, $0A
+cop #$89
+.KeepGoing:
+cop #$82 : db $05, $10
+cop #$89
+lda $10 : bit #$4000 : beq .KeepGoing
+cop #$E0
+
+;org $82cf9c
+EFirebird_East:
+cop #$88 : dl $97D000
+cop #$81 : db $02, $0A
+cop #$89
+.KeepGoing:
+cop #$81 : db $06, $10
+cop #$89
+lda $10 : bit #$4000 : beq .KeepGoing
+cop #$E0
+
+; org $82cfb6
+EFirebird_West:
+cop #$88 : dl $97D000
+cop #$81 : db $03, $09
+cop #$89
+.KeepGoing:
+cop #$81 : db $07, $0F
+cop #$89
+lda $10 : bit #$4000 : beq .KeepGoing
+cop #$E0
+
+;org $82cfd0
+php
+phd
+phx
+stx $000A
+lda #$0000 : tcd
+lda $24
+stz $24
+stz $AA
+pha
+lda $0010,x : and #$FFFB : sta $0010,x
+lda $20 : beq J_82D002
+  bpl B_82CFFA
+lda #$0040 : tsb $AA
+jsr S_82DB80
+bra J_82D002
+B_82CFFA:    ; org $82cffa
+lda #$0040 : tsb $AA
+jsr S_82D6DC
+J_82D002:    ; org $82d002
+rep #$20
+ldx $09AA
+lda $22 : lsr : lsr : sta $0014,x
+lda $26 : lsr : lsr : sta $0016,x
+stz $20
+pla : sta $24
+  beq J_82D034
+  bpl B_82D02A
+lda $AA : bit #$0800 : bne J_82D034
+jsr S_82D038
+bra J_82D034
+B_82D02A:    ; org $82d02a
+lda $AA : bit #$0400 : bne J_82D034
+jsr S_82D376
+J_82D034:    ; org $82d034
+plx
+pld
+plp
+rtl
+
+S_82D038:    ; org $82d038
+sep #$20
+jsr S_82E1F1 : bcc B_82D054
+  cmp #$06 : bne B_82D046
+jmp J_82D188
+B_82D046:    ; org $82d046
+cmp #$03 : bne B_82D04D
+jmp J_82D0EE
+B_82D04D:    ; org $82d04d
+cmp #$0C : bne B_82D054
+jmp J_82D122
+B_82D054:    ; org $82d054
+jsr S_82E1A9 : cmp #$09 : bne B_82D05E
+jmp J_82D1F2
+B_82D05E:    ; org $82d05e
+jsr S_82E263 : cmp #$0E : bcs B_82D0AF
+  cmp #$08 : beq B_82D0AF
+  cmp #$02 : beq B_82D0D4
+  cmp #$06 : bne B_82D074
+jmp J_82D1CE
+B_82D074:    ; org $82d074
+jsr S_82E37C : bcs B_82D082
+  cmp #$09 : bne B_82D080
+jmp J_82D238
+B_82D080:    ; org $82d080
+bra J_82D0A5
+B_82D082:    ; org $82d082
+cmp #$09 : beq B_82D0AF
+jsr S_82E343 : stx $00
+jsr SR_GetActiveTypeOfTileX : cmp #$0E : bcs B_82D0AF
+  cmp #$08 : beq B_82D0AF
+  cmp #$02 : beq B_82D0AF
+  cmp #$09 : bne B_82D0A1
+jmp J_82D238
+B_82D0A1:    ; org $82d0a1
+cmp #$06 : beq B_82D0AF
+J_82D0A5:    ; org $82d0a5
+rep #$20
+lda $26 : clc : adc $24 : sta $26
+rts
+B_82D0AF:    ; org $82d0af
+jsr SR_SetIsWCollidingOn000a
+jsr S_82D2BF : bcs B_82D0BC
+php
+rep #$20
+bra J_82D0C2
+B_82D0BC:    ; org $82d0bc
+php
+rep #$20
+stz $09B4
+J_82D0C2:    ; org $82d0c2
+lda $24
+  clc : adc $26 : and #$FFC0
+  clc : adc #$0040
+  sta $26
+stz $24
+plp
+rts
+B_82D0D4:    ; org $82d0d4
+jsr S_82E37C : bcs B_82D0AF
+phy
+ldy $09AA
+rep #$20
+lda #$C7B6 : sta $0000,y
+lda #$0000 : sta $0008,y
+ply
+bra B_82D0AF
+J_82D0EE:    ; org $82d0ee
+jsr S_82E1A9 : cmp #$03 : bne B_82D0AF
+jsr S_82E389 : bcc B_82D11A
+jsr S_82E313
+jsr SR_GetActiveTypeOfTileX : cmp #$03 : beq B_82D11A
+lda $26 : clc : adc $24 : lsr : lsr : and #$0F : sec : sbc #$10 : eor #$FF : inc : cmp #$08 : bpl B_82D11A
+jmp J_82E16E
+B_82D11A:    ; org $82d11a
+lda #$10 : tsb $09AF
+jmp J_82E16E
+J_82D122:    ; org $82d122
+jsr S_82E1A9 : cmp #$0C : bne B_82D0AF
+jsr S_82E389 : bcc B_82D14E
+jsr S_82E313
+jsr SR_GetActiveTypeOfTileX : cmp #$0C : beq B_82D14E
+lda $24 : clc : adc $26 : lsr : lsr : and #$0F : sec : sbc #$10 : eor #$FF : inc : cmp #$08 : bpl B_82D14E
+jmp J_82E16E
+B_82D14E:    ; org $82d14e
+lda #$10 : tsb $09AF
+rep #$20
+lda $09C6 : bmi B_82D15D
+stz $09C6
+B_82D15D:    ; org $82d15d
+lda $24 : clc : adc $09C6 : sta $09C6 : eor #$FFFF : inc : lsr : lsr : lsr : lsr : beq B_82D185 : sta $24 : asl : asl : asl : asl : clc : adc $09C6 : sta $09C6
+lda $24 : eor #$FFFF : inc : sta $24
+B_82D185:    ; org $82d185
+jmp J_82E16E
+J_82D188:    ; org $82d188
+jsr S_82E183 : cmp #$06 : bne B_82D192
+jmp J_82E154
+B_82D192:    ; org $82d192
+jsr S_82E263
+jsr S_82E389 : bcc B_82D1B2
+  cmp #$06 : bne B_82D1B2
+J_82D19E:    ; org $82d19e
+jsr S_82E343 : stx $00
+jsr SR_GetActiveTypeOfTileX : bne B_82D1EC
+jsr S_82E313
+jsr SR_GetActiveTypeOfTileX : bne B_82D1EC
+bra J_82D1C6
+B_82D1B2:    ; org $82d1b2
+jsr S_82DC10
+jsr S_82E263 : cmp #$06 : beq J_82D1C6
+B_82D1BC:    ; org $82d1bc
+rep #$20
+stz $24
+jsr S_82D3F7
+jmp J_82E16E
+J_82D1C6:    ; org $82d1c6
+rep #$20
+jsr S_82D246
+jmp J_82D69A
+J_82D1CE:    ; org $82d1ce
+lda $AB : bit #$02 : beq B_82D1E0
+jsr S_82E37C : bcs B_82D1E0
+rep #$20
+stz $24
+jmp J_82E16E
+B_82D1E0:    ; org $82d1e0
+jsr S_82E343
+jsr SR_GetActiveTypeOfTileX : cmp #$0E : bcs B_82D1BC
+bra J_82D19E
+B_82D1EC:    ; org $82d1ec
+rep #$20
+stz $09B4
+rts
+J_82D1F2:    ; org $82d1f2
+jsr S_82E1CD : cmp #$09 : bne B_82D1FC
+jmp J_82E154
+B_82D1FC:    ; org $82d1fc
+jsr S_82E20D
+jsr S_82E389 : bcc B_82D21C
+  cmp #$09 : bne B_82D21C
+J_82D208:    ; org $82d208
+jsr S_82E35D : stx $00
+jsr SR_GetActiveTypeOfTileX : bne B_82D240
+jsr S_82E313
+jsr SR_GetActiveTypeOfTileX : bne B_82D240
+bra J_82D230
+B_82D21C:    ; org $82d21c
+jsr S_82D760
+jsr S_82E20D : cmp #$09 : beq J_82D230
+rep #$20
+stz $24
+jsr S_82D3F7
+jmp J_82E16E
+J_82D230:    ; org $82d230
+rep #$20
+jsr S_82D246
+jmp J_82D655
+J_82D238:    ; org $82d238
+jsr S_82E313
+jsr SR_GetActiveTypeOfTileX
+bra J_82D208
+B_82D240:    ; org $82d240
+rep #$20
+stz $09B4
+rts
+S_82D246:    ; org $82d246
+rep #$20
+lda $1E : and #$000F : ora #$FFF0 : eor #$FFFF : inc : sta $02
+rts
+warnpc $82d257
+
+org $82d2bf
+S_82D2BF:
+rep #$20
+lda $AA : bit #$0040 : bne B_82D339
+lda $7FC000,x : and #$00FF : bit #$00F0 : bne B_82D339
+lda $22 : lsr : lsr
+  sec : sbc #$0008 : and #$000F
+  sta $04
+  beq B_82D339
+  cmp #$0006 : bcc B_82D30D
+jsr S_82E20D
+  cmp #$000E : bcs B_82D30D
+  cmp #$0006 : beq B_82D30D
+ldx #$0022
+lda $00,x : sec : sbc #$0020 : sta $00,x
+jsr S_82D33B
+lda $00,x : clc : adc #$0020 : sta $00,x
+clc
+rts
+B_82D30D:    ; org $82d30d
+lda $04 : cmp #$0009 : bcs B_82D339
+jsr S_82E263 : cmp #$000E : bcs B_82D339
+  cmp #$0009 : beq B_82D339
+ldx #$0022
+lda $00,x : sec : sbc #$0020 : sta $00,x
+jsr S_82D354
+lda $00,x : clc : adc #$0020 : sta $00,x
+clc
+rts
+B_82D339:    ; org $82d339
+sec
+rts
+
+S_82D33B:    ; org $82d33b
+lda $00,x
+pha
+clc : adc #$0008 : sta $00,x
+eor $01,s : bit #$0040 : beq B_82D352
+lda $00,x : and #$FFC0 : sta $00,x
+B_82D352:    ; org $82d352
+pla
+rts
+S_82D354:    ; org $82d354
+lda $00,x
+pha
+sec : sbc #$0008 : sta $00,x
+eor $01,s : bit #$0040 : beq B_82D374
+lda $00,x : bit #$003F : beq B_82D374
+and #$FFC0 : clc : adc #$0040 : sta $00,x
+B_82D374:    ; org $82d374
+pla
+rts
+
+S_82D376:    ; org $82d376
+sep #$20
+jsr S_82E1CD : cmp #$09 : bne B_82D382
+jmp J_82D4DA
+B_82D382:    ; org $82d382
+cmp #$03 : bne B_82D389
+jmp J_82D44E
+B_82D389:    ; org $82d389
+cmp #$0C : bne B_82D390
+jmp J_82D47F
+B_82D390:    ; org $82d390
+jsr S_82E183 : cmp #$06 : bne B_82D39A
+jmp J_82D536
+B_82D39A:    ; org $82d39a
+jsr S_82E285 : cmp #$0E : bcc B_82D3A4
+jmp J_82D3EA
+B_82D3A4:    ; org $82d3a4
+cmp #$02 : beq B_82D40B
+  cmp #$08 : beq B_82D425
+  cmp #$09 : bne B_82D3B3
+jmp J_82D524
+B_82D3B3:    ; org $82d3b3
+jsr S_82E37C : bcs B_82D3C1
+  cmp #$06 : bne B_82D3BF
+jmp J_82D57C
+B_82D3BF:    ; org $82d3bf
+bra J_82D3E0
+B_82D3C1:    ; org $82d3c1
+cmp #$06 : beq J_82D3EA
+jsr S_82E343 : stx $00
+jsr SR_GetActiveTypeOfTileX
+  cmp #$0E : bcs J_82D3EA
+  cmp #$02 : beq J_82D3EA
+  cmp #$06 : bne B_82D3DC
+jmp J_82D57C
+B_82D3DC:    ; org $82d3dc
+cmp #$09 : beq J_82D3EA
+J_82D3E0:    ; org $82d3e0
+rep #$20
+lda $26 : clc : adc $24 : sta $26
+rts
+J_82D3EA:    ; org $82d3ea
+jsr SR_SetIsWCollidingOn000a
+jsr S_82D584 : bcs S_82D3F7
+php
+rep #$20
+bra J_82D3FD
+S_82D3F7:    ; org $82d3f7
+php
+rep #$20
+stz $09B4
+J_82D3FD:    ; org $82d3fd
+lda $24 : clc : adc $26 : and #$FFC0 : sta $26
+stz $24
+plp
+rts
+B_82D40B:    ; org $82d40b
+jsr S_82E37C : bcs J_82D3EA
+phy
+rep #$20
+ldy $09AA
+lda #$C7E2 : sta $0000,y
+lda #$0000 : sta $0008,y
+ply
+bra J_82D3EA
+B_82D425:    ; org $82d425
+jsr S_82E37C : bcc B_82D434
+jsr S_82E343
+jsr SR_GetActiveTypeOfTileX : cmp #$08 : bne J_82D3EA
+B_82D434:    ; org $82d434
+lda #$08 : tsb $09AF
+phy
+ldy $09AA
+rep #$20
+lda #$C61E : sta $0000,y
+lda #$0000 : sta $0008,y
+ply
+bra S_82D3F7
+J_82D44E:    ; org $82d44e
+jsr S_82E183 : cmp #$03 : beq B_82D458
+jmp J_82D3EA
+B_82D458:    ; org $82d458
+jsr S_82E389 : bcc B_82D477
+jsr S_82E32B
+jsr SR_GetActiveTypeOfTileX : cmp #$03 : beq B_82D477
+lda $24 : clc : adc $26 : lsr : lsr : and #$0F : cmp #$08 : bpl B_82D477
+jmp J_82E16E
+B_82D477:    ; org $82d477
+lda #$10 : tsb $09AF
+jmp J_82E16E
+J_82D47F:    ; org $82d47f
+jsr S_82E183 : cmp #$0C : beq B_82D489
+jmp J_82D3EA
+B_82D489:    ; org $82d489
+jsr S_82E389 : bcc B_82D4A8
+jsr S_82E32B
+jsr SR_GetActiveTypeOfTileX : cmp #$0C : beq B_82D4A8
+lda $24 : clc : adc $26 : lsr : lsr : and #$0F : cmp #$08 : bpl B_82D4A8
+jmp J_82E16E
+B_82D4A8:    ; org $82d4a8
+lda #$10 : tsb $09AF
+rep #$20
+lda $09C6 : bpl B_82D4B7
+stz $09C6
+B_82D4B7:    ; org $82d4b7
+lda $24 : clc : adc $09C6 : sta $09C6 : lsr : lsr : lsr : lsr : beq B_82D4D7 : sta $24 : asl : asl : asl : asl : eor #$FFFF : inc : clc : adc $09C6 : sta $09C6
+B_82D4D7:    ; org $82d4d7
+jmp J_82E16E
+J_82D4DA:    ; org $82d4da
+jsr S_82E1A9 : cmp #$09 : bne B_82D4E4
+jmp J_82E154
+B_82D4E4:    ; org $82d4e4
+jsr S_82E285
+jsr S_82E389 : bcc B_82D504
+  cmp #$09 : bne B_82D504
+J_82D4F0:    ; org $82d4f0
+jsr S_82E343 : stx $00
+jsr SR_GetActiveTypeOfTileX : bne B_82D530
+jsr S_82E32B
+jsr SR_GetActiveTypeOfTileX : bne B_82D530
+bra J_82D51C
+B_82D504:    ; org $82d504
+jsr S_82DC10
+jsr S_82E285 : bcc J_82D51C
+  cmp #$01 : beq J_82D51C
+  cmp #$09 : beq J_82D51C
+rep #$20
+B_82D516:    ; org $82d516
+jsr S_82D3F7
+jmp J_82E16E
+J_82D51C:    ; org $82d51c
+rep #$20
+jsr S_82D5F9
+jmp J_82D69A
+J_82D524:    ; org $82d524
+jsr S_82E343
+jsr SR_GetActiveTypeOfTileX : cmp #$0E : bcs B_82D516
+bra J_82D4F0
+B_82D530:    ; org $82d530
+rep #$20
+stz $09B4
+rts
+J_82D536:    ; org $82d536
+jsr S_82E1F1 : cmp #$06 : bne B_82D540
+jmp J_82E154
+B_82D540:    ; org $82d540
+jsr S_82E237
+jsr S_82E389 : bcc B_82D560
+  cmp #$06 : bne B_82D560
+J_82D54C:    ; org $82d54c
+jsr S_82E35D : stx $00
+jsr SR_GetActiveTypeOfTileX : bne B_82D57E
+jsr S_82E32B
+jsr SR_GetActiveTypeOfTileX : bne B_82D57E
+bra J_82D574
+B_82D560:    ; org $82d560
+jsr S_82D760
+jsr S_82E237 : cmp #$06 : beq J_82D574
+rep #$20
+stz $24
+jsr B_82D0BC
+jmp J_82E16E
+J_82D574:    ; org $82d574
+rep #$20
+jsr S_82D5F9
+jmp J_82D655
+J_82D57C:    ; org $82d57c
+bra J_82D54C
+B_82D57E:    ; org $82d57e
+rep #$20
+stz $09B4
+rts
+
+S_82D584:    ; org $82d584
+rep #$20
+lda $AA : bit #$0040 : bne B_82D5F7
+lda $7FC000,x : and #$00FF : bit #$00F0 : bne B_82D5F7
+lda $22 : lsr : lsr : and #$000F : sec : sbc #$0008 : and #$000F : sta $04
+  beq B_82D5F7
+  cmp #$0006 : bcc B_82D5D0
+jsr S_82E237 : cmp #$000E : bcs B_82D5D0
+ldx #$0022
+lda $00,x : sec : sbc #$0020 : sta $00,x
+jsr S_82D33B
+lda $00,x : clc : adc #$0020 : sta $00,x
+clc
+rts
+B_82D5D0:    ; org $82d5d0
+lda $04 : cmp #$0009 : bcs B_82D5F7
+jsr S_82E285 : cmp #$000E : bcs B_82D5F7
+ldx #$0022
+lda $00,x : sec : sbc #$0020 : sta $00,x
+jsr S_82D354
+lda $00,x : clc : adc #$0020 : sta $00,x : clc
+rts
+B_82D5F7:    ; org $82d5f7
+sec
+rts
+S_82D5F9:    ; org $82d5f9
+rep #$20
+lda $1A
+pha
+lda $1E
+pha
+sep #$20
+jsr S_82E1CD : cmp #$09 : beq B_82D619
+jsr S_82E37C : bcc B_82D640
+jsr S_82E343
+jsr SR_GetActiveTypeOfTileX : cmp #$06 : bne B_82D640
+B_82D619:    ; org $82d619
+rep #$20
+pla : sta $1E
+pla : sta $1A
+stz $02
+lda $1E
+pha
+lda $24 : lsr : lsr : sec : sbc $01,s : eor #$FFFF : inc : eor $01,s : bit #$0010 : beq B_82D63D
+lda #$0010 : sta $02
+B_82D63D:    ; org $82d63d
+pla
+bra J_82D64A
+B_82D640:    ; org $82d640
+rep #$20
+pla : sta $1E
+pla : sta $1A
+stz $02
+J_82D64A:    ; org $82d64a
+lda $1E : and #$000F : clc : adc $02 : sta $02
+rts
+J_82D655:    ; org $82d655
+ldx $09AA
+lda $0014,x : sec : sbc #$0008 : and #$000F : bne B_82D667
+lda #$0010
+B_82D667:    ; org $82d667
+clc : adc $02 : cmp #$0011 : bcs B_82D672
+jmp J_82E16E
+B_82D672:    ; org $82d672
+lda #$0010 : sec : sbc $02 : sta $02
+lda $0014,x : sec : sbc #$0008 : bit #$000F : bne B_82D68A : sec : sbc #$0010
+B_82D68A:    ; org $82d68a
+and #$FFF0 : ora $02 : clc : adc #$0008 : asl : asl : sta $22
+jmp J_82E16E
+J_82D69A:    ; org $82d69a
+ldx $09AA
+lda $0014,x : sec : sbc #$0008 : ora #$FFF0 : eor #$FFFF : inc : clc : adc $02 : cmp #$0011 : bcs B_82D6B6
+jmp J_82E16E
+B_82D6B6:    ; org $82d6b6
+lda #$0010 : sec : sbc $02 : ora #$FFF0 : eor #$FFFF : inc : sta $02
+lda $0014,x : sec : sbc #$0008 : and #$FFF0 : ora $02 : clc : adc #$0008 : asl : asl : sta $22
+jmp J_82E16E
+S_82D6DC:    ; org $82d6dc
+sep #$20
+jsr S_82B1BB : bne B_82D6EB : bcs B_82D6E8
+jmp J_82D843
+B_82D6E8:    ; org $82d6e8
+jmp J_82D986
+B_82D6EB:    ; org $82d6eb
+jsr S_82E1A9 : cmp #$09 : bne B_82D6F5
+jmp J_82D79B
+B_82D6F5:    ; org $82d6f5
+jsr S_82E183 : cmp #$06 : bne B_82D6FF
+jmp J_82D7EF
+B_82D6FF:    ; org $82d6ff
+jsr S_82E20D : cmp #$0E : bcs J_82D753
+  cmp #$09 : bne B_82D70D
+jmp J_82D7E1
+B_82D70D:    ; org $82d70d
+jsr S_82E389 : bcs B_82D71B
+  cmp #$06 : bne B_82D719
+jmp J_82D81B
+B_82D719:    ; org $82d719
+bra J_82D734
+B_82D71B:    ; org $82d71b
+cmp #$06 : beq J_82D753
+jsr S_82E313
+jsr SR_GetActiveTypeOfTileX : cmp #$0E : bcs J_82D753
+  cmp #$06 : bne B_82D730
+jmp J_82D81B
+B_82D730:    ; org $82d730
+cmp #$09 : beq J_82D753
+J_82D734:    ; org $82d734
+cmp #$07 : beq B_82D77C
+jsr S_82E1CD : cmp #$05 : bne B_82D742
+jmp J_82DA8A
+B_82D742:    ; org $82d742
+cmp #$0A : bne B_82D749
+jmp J_82D93F
+B_82D749:    ; org $82d749
+rep #$20
+lda $22 : clc : adc $20 : sta $22
+rts
+J_82D753:    ; org $82d753
+jsr SR_SetIsWCollidingOn000a
+jsr S_82DACD : bcs S_82D760
+php
+rep #$20
+bra J_82D766
+S_82D760:    ; org $82d760
+php
+rep #$20
+stz $09B2
+J_82D766:    ; org $82d766
+lda $20 : clc : adc $22 : sec : sbc #$0020 : and #$FFC0 : clc : adc #$0020 : sta $22
+stz $20
+plp
+rts
+B_82D77C:    ; org $82d77c
+jsr S_82E389 : bcs J_82D753
+jsr S_82E0FA
+phy
+rep #$20
+ldy $09AA
+lda #$C8BD : sta $0000,y
+lda #$0000 : sta $0008,y
+ply
+bra J_82D753
+warnpc $82d799
+
+org $82d79b
+J_82D79B:
+lda #$80 : tsb $AB
+jsr S_82E20D
+jsr S_82E37C : bcc B_82D7C7
+  cmp #$09 : bne B_82D7C7
+J_82D7AB:    ; org $82d7ab
+jsr S_82E313 : stx $00
+jsr SR_GetActiveTypeOfTileX : beq B_82D7B9
+  cmp #$0A : bne B_82D7E7
+B_82D7B9:    ; org $82d7b9
+jsr S_82E35D
+jsr SR_GetActiveTypeOfTileX : beq J_82D7D9
+  cmp #$09 : bne B_82D7E7
+bra J_82D7D9
+B_82D7C7:    ; org $82d7c7
+jsr B_82D0BC
+jsr S_82E20D : bcc J_82D7D9
+  cmp #$09 : beq J_82D7D9
+jsr S_82D760
+jmp J_82E16E
+J_82D7D9:    ; org $82d7d9
+rep #$20
+jsr S_82DB22
+jmp J_82E0AB
+J_82D7E1:    ; org $82d7e1
+lda #$04 : tsb $AB
+bra J_82D7AB
+B_82D7E7:    ; org $82d7e7
+rep #$20
+stz $09B2
+rts
+warnpc $82d7ed
+
+org $82d7ef
+J_82D7EF:
+lda #$80 : tsb $AB
+jsr S_82E237
+jsr S_82E37C : bcc B_82D823
+  cmp #$06 : bne B_82D823
+J_82D7FF:    ; org $82d7ff
+jsr S_82E32B : stx $00
+jsr SR_GetActiveTypeOfTileX : beq B_82D80D
+  cmp #$05 : bne B_82D83D
+B_82D80D:    ; org $82d80d
+jsr S_82E35D
+jsr SR_GetActiveTypeOfTileX : beq J_82D835
+  cmp #$06 : bne B_82D83D
+bra J_82D835
+J_82D81B:    ; org $82d81b
+stx $00
+lda #$08 : tsb $AB
+bra J_82D7FF
+B_82D823:    ; org $82d823
+jsr S_82D3F7
+jsr S_82E237 : bcc J_82D835
+  cmp #$06 : beq J_82D835
+jsr S_82D760
+jmp J_82E16E
+J_82D835:    ; org $82d835
+rep #$20
+jsr S_82DB22
+jmp J_82E060
+B_82D83D:    ; org $82d83d
+rep #$20
+stz $09B2
+rts
+J_82D843:    ; org $82d843
+jsr S_82E0FA
+jsr S_82E1A9
+lda $1A : sec : sbc #$08 : brk #$85
+warnpc $82d850
+
+org $82d93f
+J_82D93F:
+jsr S_82E0FA
+lda $1A : clc : adc #$08 : brk #$85
+warnpc $82d949
+
+org $82d986
+J_82D986:
+jsr S_82E0FA
+jsr S_82E183
+lda $1A : sec : sbc #$08 : brk #$85
+warnpc $82d993
+
+org $82da8a
+J_82DA8A:
+jsr S_82E0FA
+lda $1A : clc : adc #$08 : brk #$85
+warnpc $82da94
+
+org $82dacd
+S_82DACD:
+php
+rep #$20
+lda $06,s : bne B_82DB1F
+lda $7FC000,x : and #$00FF : bit #$00F0 : bne B_82DB1F
+lda $26 : lsr : lsr : and #$000F : beq B_82DB1F : sta $04 : cmp #$0004 : bcc B_82DB04
+jsr S_82E237 : and #$00FF : cmp #$000E : bcs B_82DB04
+ldx #$0026
+jsr S_82D33B
+plp : clc
+rts
+B_82DB04:    ; org $82db04
+lda $04 : cmp #$000B : bcs B_82DB1F
+jsr S_82E20D : and #$00FF : cmp #$000E : bcs B_82DB1F
+ldx #$0026
+jsr S_82D354
+plp : clc
+rts
+B_82DB1F:    ; org $82db1f
+plp : sec
+rts
+S_82DB22:    ; org $82db22
+rep #$20
+stz $02
+lda $1A
+pha
+lda $1E
+pha
+sep #$20
+jsr S_82E1A9 : cmp #$09 : beq B_82DB44
+jsr S_82E389 : bcc B_82DB6B
+jsr S_82E313
+jsr SR_GetActiveTypeOfTileX : cmp #$06 : bne B_82DB6B
+B_82DB44:    ; org $82db44
+rep #$20
+pla : sta $1E
+pla : sta $1A
+stz $02
+lda $1A
+pha
+lda $20 : lsr : lsr : sec : sbc $01,s : eor #$FFFF : inc : eor $01,s : bit #$0010 : beq B_82DB68
+lda #$0010 : sta $02
+B_82DB68:    ; org $82db68
+pla
+bra J_82DB75
+B_82DB6B:    ; org $82db6b
+rep #$20
+pla : sta $1E
+pla : sta $1A
+stz $02
+J_82DB75:    ; org $82db75
+lda $1A : and #$000F : clc : adc $02 : sta $02
+rts
+S_82DB80:    ; org $82db80
+sep #$20
+lda #$02 : tsb $AB
+jsr S_82B168 : bne B_82DB93 : bcs B_82DB90
+jmp J_82DE51
+B_82DB90:    ; org $82db90
+jmp J_82DCF3
+B_82DB93:    ; org $82db93
+jsr S_82E1F1 : bcc B_82DB9F
+  cmp #$06 : bne B_82DB9F
+jmp J_82DC4B
+B_82DB9F:    ; org $82db9f
+jsr S_82E1CD : bcc B_82DBAB
+  cmp #$09 : bne B_82DBAB
+jmp J_82DC9F
+B_82DBAB:    ; org $82dbab
+jsr S_82E263 : bcc B_82DBBB
+  cmp #$0E : bcs J_82DC03
+  cmp #$06 : bne B_82DBBB
+jmp J_82DC77
+B_82DBBB:    ; org $82dbbb
+jsr S_82E389 : bcs B_82DBC9
+  cmp #$09 : bne B_82DBC7
+jmp J_82DCCB
+B_82DBC7:    ; org $82dbc7
+bra J_82DBE2
+B_82DBC9:    ; org $82dbc9
+cmp #$09 : beq J_82DC03
+jsr S_82E313
+jsr SR_GetActiveTypeOfTileX : cmp #$0E : bcs J_82DC03
+  cmp #$09 : bne B_82DBDE
+jmp J_82DCCB
+B_82DBDE:    ; org $82dbde
+cmp #$06 : beq J_82DC03
+J_82DBE2:    ; org $82dbe2
+cmp #$07 : beq B_82DC2C
+jsr S_82E1A9 : bcc B_82DBF9
+  cmp #$05 : bne B_82DBF2
+jmp J_82DE02
+B_82DBF2:    ; org $82dbf2
+cmp #$0A : bne B_82DBF9
+jmp J_82DF5C
+B_82DBF9:    ; org $82dbf9
+rep #$20
+lda $22 : clc : adc $20 : sta $22
+rts
+J_82DC03:    ; org $82dc03
+jsr SR_SetIsWCollidingOn000a
+jsr S_82DFA7 : bcs S_82DC10
+php
+rep #$20
+bra J_82DC16
+S_82DC10:    ; org $82dc10
+php
+rep #$20
+stz $09B2
+J_82DC16:    ; org $82dc16
+lda $20 : clc : adc $22 : sec : sbc #$0020 : and #$FFC0 : clc : adc #$0060 : sta $22
+stz $20
+plp
+rts
+B_82DC2C:    ; org $82dc2c
+jsr S_82E389 : bcs J_82DC03
+jsr S_82E0FA
+phy
+rep #$20
+ldy $09AA
+lda #$C93B : sta $0000,y
+lda #$0000 : sta $0008,y
+ply
+bra J_82DC03
+warnpc $82dc49
+
+org $82dc4b
+J_82DC4B:
+lda #$80 : tsb $AB
+jsr S_82E263
+jsr S_82E37C : bcc B_82DC7D
+  cmp #$06 : bne B_82DC7D
+J_82DC5B:    ; org $82dc5b
+jsr S_82E313 : stx $00
+jsr SR_GetActiveTypeOfTileX : beq B_82DC69
+  cmp #$05 : bne B_82DC97
+B_82DC69:    ; org $82dc69
+jsr S_82E343
+jsr SR_GetActiveTypeOfTileX : beq J_82DC8F
+  cmp #$06 : bne B_82DC97
+bra J_82DC8F
+J_82DC77:    ; org $82dc77
+lda #$04 : tsb $AB
+bra J_82DC5B
+B_82DC7D:    ; org $82dc7d
+jsr B_82D0BC
+jsr S_82E263 : bcc J_82DC8F
+  cmp #$06 : beq J_82DC8F
+jsr S_82DC10
+jmp J_82E16E
+J_82DC8F:    ; org $82dc8f
+rep #$20
+jsr S_82DFF6
+jmp J_82E0AB
+B_82DC97:    ; org $82dc97
+rep #$20
+stz $09B2
+rts
+warnpc $82dc9d
+
+org $82dc9f
+J_82DC9F:
+lda #$80 : tsb $AB
+jsr S_82E285
+jsr S_82E37C : bcc B_82DCD3
+  cmp #$09 : bne B_82DCD3
+J_82DCAF:    ; org $82dcaf
+jsr S_82E32B : stx $00
+jsr SR_GetActiveTypeOfTileX : beq B_82DCBD
+  cmp #$0A : bne B_82DCED
+B_82DCBD:    ; org $82dcbd
+jsr S_82E343
+jsr SR_GetActiveTypeOfTileX : beq J_82DCE5
+  cmp #$09 : bne B_82DCED
+bra J_82DCE5
+J_82DCCB:    ; org $82dccb
+stx $00
+lda #$08 : tsb $AB
+bra J_82DCAF
+B_82DCD3:    ; org $82dcd3
+jsr S_82D3F7
+jsr S_82E285 : bcc J_82DCE5
+  cmp #$09 : beq J_82DCE5
+jsr S_82DC10
+jmp J_82E16E
+J_82DCE5:    ; org $82dce5
+rep #$20
+jsr S_82DFF6
+jmp J_82E060
+B_82DCED:    ; org $82dced
+rep #$20
+stz $09B2
+rts
+J_82DCF3:    ; org $82dcf3
+jsr S_82E0FA
+jsr S_82E1F1
+lda $1A : clc : adc #$08 : brk #$85
+warnpc $82dd00
+
+org $82de02
+J_82DE02:
+jsr S_82E0FA
+lda $1A : sec : sbc #$09 : brk #$85
+warnpc $82de0c
+
+org $82de51
+J_82DE51:
+jsr S_82E0FA
+jsr S_82E1CD
+lda $1A : clc : adc #$08 : brk #$85
+warnpc $82de5e
+
+org $82df5c
+J_82DF5C:
+jsr S_82E0FA
+lda $1A : sec : sbc #$09 : brk #$85
+warnpc $82df66
+
+org $82dfa7
+S_82DFA7:
+php
+rep #$20
+lda $06,s : bne B_82DFF3
+lda $7FC000,x : and #$00FF : bit #$00F0 : bne B_82DFF3
+lda $26 : lsr : lsr : and #$000F : beq B_82DFF3 : sta $04 : cmp #$0004 : bcc B_82DFDB
+jsr S_82E285 : cmp #$000E : bcs B_82DFDB
+ldx #$0026
+jsr S_82D33B
+plp : clc
+rts
+B_82DFDB:    ; org $82dfdb
+lda $04 : cmp #$000B : bcs B_82DFF3
+jsr S_82E263 : cmp #$000E : bcs B_82DFF3
+ldx #$0026
+jsr S_82D354
+plp : clc
+rts
+B_82DFF3:    ; org $82dff3
+plp : sec
+rts
+S_82DFF6:    ; org $82dff6
+rep #$20
+stz $02
+lda $1A
+pha
+lda $1E
+pha
+sep #$20
+jsr S_82E1F1 : cmp #$09 : beq B_82E018
+jsr S_82E389 : bcc B_82E044
+jsr S_82E313
+jsr SR_GetActiveTypeOfTileX : cmp #$06 : bne B_82E044
+B_82E018:    ; org $82e018
+rep #$20
+pla : sta $1E
+pla : sta $1A
+stz $02
+lda $1A
+pha
+lda $20 : beq B_82E02E : lsr : lsr : ora #$0C00
+B_82E02E:    ; org $82e02e
+sec : sbc $01,s : eor #$FFFF : inc : eor $01,s : bit #$0010 : beq B_82E041
+lda #$0010 : sta $02
+B_82E041:    ; org $82e041
+pla
+bra J_82E04E
+B_82E044:    ; org $82e044
+rep #$20
+pla : sta $1E
+pla : sta $1A
+stz $02
+J_82E04E:    ; org $82e04e
+lda $1A : and #$000F : ora #$FFF0 : eor #$FFFF : inc : clc : adc $02 : sta $02
+rts
+J_82E060:    ; org $82e060
+lda $26 : lsr : lsr : and #$000F : bne B_82E06C
+lda #$0010
+B_82E06C:    ; org $82e06c
+clc : adc $02 : cmp #$0011 : bcs B_82E077
+jmp J_82E16E
+B_82E077:    ; org $82e077
+and #$000F : sta $02
+lda $03,s : beq B_82E096
+lda $20 : bpl B_82E088 : eor #$FFFF : inc
+B_82E088:    ; org $82e088
+cmp $03,s : beq B_82E0A3 : bpl B_82E096
+stz $20
+lda #$0840 : trb $AA
+rts
+B_82E096:    ; org $82e096
+lda $02 : asl : asl : eor #$FFFF : inc : sta $24
+jmp J_82E16E
+B_82E0A3:    ; org $82e0a3
+lda #$0000 : sta $03,s : sta $20
+rts
+J_82E0AB:    ; org $82e0ab
+lda $26 : lsr : lsr : ora #$FFF0 : eor #$FFFF : inc : bne B_82E0BB
+lda #$0010
+B_82E0BB:    ; org $82e0bb
+clc : adc $02 : cmp #$0011 : bcs B_82E0C6
+jmp J_82E16E
+B_82E0C6:    ; org $82e0c6
+and #$000F : sta $02
+lda $03,s : beq B_82E0E9
+lda $20 : bpl B_82E0D7 : eor #$FFFF : inc
+B_82E0D7:    ; org $82e0d7
+eor #$FFFF : inc : cmp $03,s : beq B_82E0F2 : bmi B_82E0E9
+stz $20
+lda #$0440 : trb $AA
+rts
+B_82E0E9:    ; org $82e0e9
+lda $02 : asl : asl : sta $24
+jmp J_82E16E
+B_82E0F2:    ; org $82e0f2
+lda #$0000 : sta $03,s : sta $20
+rts
+S_82E0FA:    ; org $82e0fa
+rep #$20
+lda #$0000 : sta $05,s
+rts
+warnpc $82e102
+
+org $82e154
+J_82E154:
+rep #$20
+stz $24
+stz $20
+rts
+
+SR_SetIsWCollidingOn000a:    ; org $82e15b
+php
+rep #$20
+phy
+ldy $000A
+lda $0010,y : ora #$0004 : sta $0010,y
+ply
+plp
+rts
+
+J_82E16E:    ; org $82e16e
+rep #$20
+lda $22 : clc : adc $20 : sta $22
+lda $26 : clc : adc $24 : sta $26
+stz $20
+stz $24
+rts
+S_82E183:    ; org $82e183
+php
+rep #$20
+lda $22 : lsr : lsr : clc : adc #$0007 : sta $1A
+lda $26 : lsr : lsr : clc : adc #$FFFF : sta $1E
+jsr S_82E2AF : inc $1A : inc $1E : bcc B_82E1A6
+plp : sec
+rts
+B_82E1A6:    ; org $82e1a6
+plp : clc
+rts
+S_82E1A9:    ; org $82e1a9
+php
+rep #$20
+lda $22 : lsr : lsr : clc : adc #$0007 : sta $1A
+lda $26 : lsr : lsr : clc : adc #$FFF0 : sta $1E
+jsr S_82E2AF : inc $1A : bcc B_82E1CA
+plp : sec
+rts
+B_82E1CA:    ; org $82e1ca
+plp : clc
+rts
+S_82E1CD:    ; org $82e1cd
+php
+rep #$20
+lda $22 : lsr : lsr : clc : adc #$FFF8 : sta $1A
+lda $26 : lsr : lsr : clc : adc #$FFFF : sta $1E
+jsr S_82E2AF : inc $1E : bcc B_82E1EE
+plp : sec
+rts
+B_82E1EE:    ; org $82e1ee
+plp : clc
+rts
+S_82E1F1:    ; org $82e1f1
+php
+rep #$20
+lda $22 : lsr : lsr : clc : adc #$FFF8 : sta $1A
+lda $26 : lsr : lsr : clc : adc #$FFF0 : sta $1E
+plp
+jsr S_82E2AF
+rts
+S_82E20D:    ; org $82e20d
+php
+rep #$20
+lda $20 : clc : adc $22 : lsr : lsr : clc : adc #$0007 : sta $1A
+lda $26 : clc : adc $24 : lsr : lsr : clc : adc #$FFF0 : sta $1E
+jsr S_82E2AF : inc $1A : bcc B_82E234
+plp : sec
+rts
+B_82E234:    ; org $82e234
+plp : clc
+rts
+S_82E237:    ; org $82e237
+php
+rep #$20
+lda $20 : clc : adc $22 : lsr : lsr : clc : adc #$0007 : sta $1A
+lda $26 : clc : adc $24 : lsr : lsr : clc : adc #$FFFF : sta $1E
+jsr S_82E2AF : inc $1A : inc $1E : bcc B_82E260
+plp : sec
+rts
+B_82E260:    ; org $82e260
+plp : clc
+rts
+S_82E263:    ; org $82e263
+php
+rep #$20
+lda $20 : clc : adc $22 : lsr : lsr : clc : adc #$FFF8 : sta $1A
+lda $26 : clc : adc $24 : lsr : lsr : clc : adc #$FFF0 : sta $1E
+plp
+jsr S_82E2AF
+rts
+S_82E285:    ; org $82e285
+php
+rep #$20
+lda $20 : clc : adc $22 : lsr : lsr : clc : adc #$FFF8 : sta $1A
+lda $26 : clc : adc $24 : lsr : lsr : clc : adc #$FFFF : sta $1E
+jsr S_82E2AF : inc $1E : bcc B_82E2AC
+plp : sec
+rts
+B_82E2AC:    ; org $82e2ac
+plp : clc
+rts
+S_82E2AF:    ; org $82e2af
+php
+rep #$20
+lda $1A : bmi B_82E2F0
+  cmp $06D6 : bcc B_82E2F0
+  cmp $06DA : bcs B_82E2F0
+  lsr : lsr : lsr : lsr : sta $18
+lda $1E : bmi B_82E2F0
+  cmp $06D8 : bcc B_82E2F0
+  cmp $06DE : bcs B_82E2F0
+  lsr : lsr : lsr : lsr : sta $1C
+phy
+jsl S_83D78A : sty $00
+  tyx
+ply
+sep #$20
+jsr SR_GetActiveTypeOfTileX : bne B_82E2ED
+plp : clc
+rts
+B_82E2ED:    ; org $82e2ed
+plp : sec
+rts
+B_82E2F0:    ; org $82e2f0
+sep #$20
+ldx #$4001 : stx $00
+lda #$0F
+plp : sec
+rts
+
+; org $82e2fc
+; Assumes sep #$20.
+SR_GetActiveTypeOfTileX:
+cpx #$4000 : bcs .OutOfRangeSolid
+lda $7FC000,x : bit #$F0 : beq +
+.UseTempTileType:
+  lsr : lsr : lsr : lsr
++:
+bit #$FF
+rts
+.OutOfRangeSolid:    ; org $82e310
+lda #$0F
+rts
+
+S_82E313:    ; org $82e313
+php
+rep #$20
+lda $00
+sep #$20
+  clc : adc #$10 : bcs B_82E322
+  tax
+plp
+rts
+B_82E322:    ; org $82e322
+xba : clc : adc $0693
+xba : tax
+plp
+rts
+S_82E32B:    ; org $82e32b
+php
+rep #$20
+lda $00
+sep #$20 : sec : sbc #$10 : bcc B_82E33A : tax
+plp
+rts
+B_82E33A:    ; org $82e33a
+xba : sec : sbc $0693
+xba : tax
+plp
+rts
+S_82E343:    ; org $82e343
+php
+rep #$20
+lda $00
+sep #$20 : inc : bit #$0F : beq B_82E352 : tax
+plp
+rts
+B_82E352:    ; org $82e352
+xba
+lda $01 : inc
+xba : clc : adc #$F0 : tax
+plp
+rts
+S_82E35D:    ; org $82e35d
+php
+rep #$20
+lda $00
+sep #$20
+dec
+pha : and #$0F : cmp #$0F : beq B_82E370
+pla : tax
+plp
+rts
+B_82E370:    ; org $82e370
+pla
+xba
+lda $01
+dec
+xba : sec : sbc #$F0 : tax
+plp
+rts
+S_82E37C:    ; org $82e37c
+pha
+lda $1A : bit #$0F : bne B_82E386
+pla : clc
+rts
+B_82E386:    ; org $82e386
+pla : sec
+rts
+S_82E389:    ; org $82e389
+pha
+lda $1E : bit #$0F : bne B_82E393
+pla : clc
+rts
+B_82E393:    ; org $82e393
+pla : sec
+rts
+
+
+;org $82e396
+db $00 : dw $2800
+EInventoryScreenManager:
+.Init:
+cop #$88 : dl $908000
+cop #$BD : dl $81E869
+stz $0AFA
+lda #$000F : sta $24
+B_82E3AB:    ; org $82e3ab
+cop #$9C : dl C_82E8C7 : dw $1800
+phy
+  ldy $24
+  lda $0AB4,y : and #$00FF
+ply
+  sta $0028,y
+  dec $24 : bpl B_82E3AB
+tya : sta $7F0010,x
+cop #$9C : dl C_82E8E7 : dw $0802
+tya : sta $7F0012,x
+lda $0AC4 : sta $1A
+jsr S_82EA73
+cop #$9C : dl C_82E8FF : dw $0800
+  tya : sta $7F0018,x
+cop #$9C : dl C_82E953 : dw $0800
+cop #$9C : dl C_82E934 : dw $0800
+cop #$9C : dl C_82E915 : dw $0800
+  tya : sta $7F001A,x
+cop #$C2
+stz $0AFA
+lda #$1000 : tsb $10
+.MainMenu:    ; org $82e40c
+cop #$BD : dl $81E90B
+cop #$BD : dl $81E8E9
+stz $1C
+lda #$FFFF : sta $18
+lda #$8000 : tsb $0658
+cop #$C2
+jsr S_82EC58 : bcs B_82E445
+lda $0AFA : cmp $18 : bne +
+  rtl
++:
+sta $18
+  sta $0000
+cop #$D9 : dw $0000, $E43D : dw B_82E7C7, B_82E7E6 : dw B_82E7F7, B_82E816
+B_82E445:    ; org $82e445
+cop #$06 : db $0D
+lda $0AFA : sta $18
+  sta $0000
+cop #$D9 : dw $0000, $E456 : dw B_82E45E, B_82E536 : dw B_82E657, B_82E719
+B_82E45E:    ; org $82e45e
+lda #$0004 : sta $0AE6
+cop #$BD : dl $81E90B
+cop #$BD : dl $81EA02
+cop #$BD : dl $81E975
+stz $0AC4
+jsr S_82EAF7
+lda $1A : bpl .ItemPickHand
+  stz $1A
+.ItemPickHand:    ; org $82e47f
+jsr S_82EA73
+cop #$BD : dl $81E912
+ldy $1A
+lda $0AB4,y : and #$00FF : sta $0AE8
+cop #$BD : dl $81E9D0
+cop #$C2
+cop #$40 : dw $C040, ..PressedCancel
+cop #$40 : dw $0800, ..PressedUp
+cop #$40 : dw $0400, ..PressedDown
+cop #$40 : dw $0200, ..PressedLeft
+cop #$40 : dw $0100, ..PressedRight
+rtl
+..PressedUp:    ; org $82e4b8
+lda #$0B00 : tsb $0658
+cop #$06 : db $10
+lda $1A : sec : sbc #$0004 : and #$000F : sta $1A
+bra .ItemPickHand
+..PressedDown:    ; org $82e4ce
+lda #$0700 : tsb $0658
+cop #$06 : db $10
+lda $1A : clc : adc #$0004 : and #$000F : sta $1A
+bra .ItemPickHand
+..PressedLeft:    ; org $82e4e4
+lda #$0200 : tsb $0658
+cop #$06 : db $10
+lda $1A : dec : and #$000F : sta $1A
+bra .ItemPickHand
+..PressedRight:    ; org $82e4f7
+lda #$0100 : tsb $0658
+cop #$06 : db $10
+lda $1A : inc : and #$000F : sta $1A
+jmp .ItemPickHand
+..PressedCancel:    ; org $82e50b
+lda #$C040 : tsb $0658
+cop #$06 : db $11
+lda $1A : sta $0AC4
+tay
+lda $0AB4,y : and #$00FF : bne +
+  lda #$FFFF : sta $0AC4 : sta $1A : stz $0AC6
+jmp .MainMenu
++:
+  sta $0AC6
+jmp .MainMenu
+
+B_82E536:    ; org $82e536
+jsr B_82EB0B
+cop #$9C : dl C_82E8F1 : dw $0802
+sty $20
+stz $22
+J_82E544:    ; org $82e544
+stz $1C
+cop #$BD : dl $81E90B
+cop #$BD : dl $81EA14
+cop #$BD : dl $81E98C
+Q_82E555:    ; org $82e555
+jsr S_82EA3D
+cop #$C2
+cop #$40 : dw $4040, B_82E64C
+cop #$40 : dw $8000, B_82E583
+pea Q_82E555-1    ; $E554
+cop #$40 : dw $0800, B_82E981
+cop #$40 : dw $0400, B_82E996
+cop #$40 : dw $0200, B_82E9AB
+cop #$40 : dw $0100, B_82E9BD
+pla
+rtl
+B_82E583:    ; org $82e583
+cop #$06 : db $11
+lda #$8000 : tsb $0658
+lda $20 : sta $2C
+lda $22 : sta $2E
+cop #$9C : dl C_82E8F1 : dw $0802
+sty $20
+cop #$BD : dl $81E90B
+cop #$BD : dl $81EA14
+cop #$BD : dl $81E9A6
+B_82E5AC:    ; org $82e5ac
+jsr S_82EA3D
+cop #$C2
+cop #$40 : dw $4040, B_82E64A
+cop #$40 : dw $8000, B_82E5DA
+pea B_82E5AC-1    ; $E5AB
+cop #$40 : dw $0800, B_82E981
+cop #$40 : dw $0400, B_82E996
+cop #$40 : dw $0200, B_82E9AB
+cop #$40 : dw $0100, B_82E9BD
+pla
+rtl
+B_82E5DA:    ; org $82e5da
+lda #$8000 : tsb $0658
+lda $22 : cmp $2E : beq B_82E5AC
+cop #$06 : db $11
+ldy $22
+sep #$20
+lda $0AB4,y : xba
+ldy $2E
+lda $0AB4,y : xba : sta $0AB4,y
+xba
+ldy $22
+sta $0AB4,y
+rep #$20
+ldy $2E
+lda $0AB4,y : and #$00FF : pha
+  tya : jsr S_82E9ED
+pla : sta $0028,y
+ldy $22
+lda $0AB4,y : and #$00FF : pha
+tya : jsr S_82E9ED
+pla : sta $0028,y
+tya : cmp $0AC4 : bne +
+  lda $2E : sta $0AC4
+  bra J_82E63D
++:    ; org $82e631
+lda $2E : cmp $0AC4 : bne J_82E63D
+lda $22 : sta $0AC4
+J_82E63D:    ; org $82e63d
+phx
+phd
+lda $2C : tax : tcd
+cop #$A7
+pld
+plx
+jmp J_82E544
+B_82E64A:    ; org $82e64a
+cop #$A9
+B_82E64C:    ; org $82e64c
+cop #$A9
+lda #$4040 : tsb $0658
+jmp .MainMenu
+
+B_82E657:    ; org $82e657
+lda #$0004 : sta $0AE6
+jsr B_82EB0B
+cop #$9C : dl C_82E8F1 : dw $0802
+sty $20
+stz $22
+J_82E66B:    ; org $82e66b
+stz $1C
+cop #$BD : dl $81E90B
+cop #$BD : dl $81EA27
+cop #$BD : dl $81E9B7
+jsr S_82EA3D
+cop #$C2
+cop #$40 : dw $4040, B_82E70B
+cop #$40 : dw $8000, B_82E6AA
+pea $E67B
+cop #$40 : dw $0800, B_82E981
+cop #$40 : dw $0400, B_82E996
+cop #$40 : dw $0200, B_82E9AB
+cop #$40 : dw $0100, B_82E9BD
+pla
+rtl
+B_82E6AA:    ; org $82e6aa
+lda #$8000 : tsb $0658
+ldy $22
+lda $0AB4,y : and #$00FF : beq B_82E705
+  sta $0AE8
+jsr S_82EA13 : bcs B_82E705
+cop #$BD : dl $81E912
+cop #$BD : dl $81E9E2
+stz $28
+cop #$C2
+jsr S_82EBC6 : bcs B_82E6D6
+rtl
+B_82E6D6:    ; org $82e6d6
+lda $28 : beq B_82E702
+ldy $22
+lda $0AB4,y : and #$FF00 : sta $0AB4,y
+lda $22
+jsr S_82E9ED
+lda $22 : cmp $0AC4 : bne B_82E6FC
+stz $0AC6
+lda #$FFFF : sta $0AC4 : sta $1A
+B_82E6FC:    ; org $82e6fc
+cop #$06 : db $13
+jmp J_82E66B
+B_82E702:    ; org $82e702
+jmp J_82E66B
+B_82E705:    ; org $82e705
+cop #$06 : db $12
+jmp J_82E66B
+B_82E70B:    ; org $82e70b
+lda #$4040 : tsb $0658
+cop #$A9
+jsr S_82EAF7
+jmp .MainMenu
+B_82E719:    ; org $82e719
+lda #$0000 : sta $0AE6
+cop #$BD : dl $81E90B
+cop #$BD : dl $81EA39
+cop #$9C : dl C_82E8F1 : dw $0802
+sty $20
+stz $22
+J_82E734:    ; org $82e734
+jsr S_82E7A3
+cop #$BD : dl $81E912
+lda $0AD4 : sta $0004
+lda $22 : jsr SR_SecOnAbilityForBody : bcc B_82E753
+lda $22
+jsr S_82E972
+cop #$BD : dl $81EAB4
+B_82E753:    ; org $82e753
+cop #$C2
+cop #$40 : dw $0800, B_82E768
+cop #$40 : dw $0400, B_82E77D
+cop #$40 : dw $C040, B_82E795
+rtl
+B_82E768:    ; org $82e768
+lda #$0800 : tsb $0658
+cop #$06 : db $10
+lda $22 : dec : bpl B_82E779
+lda #$0002
+B_82E779:    ; org $82e779
+sta $22
+bra J_82E734
+B_82E77D:    ; org $82e77d
+lda #$0400 : tsb $0658
+cop #$06 : db $10
+lda $22 : inc : cmp #$0003 : bcc B_82E791
+lda #$0000
+B_82E791:    ; org $82e791
+sta $22
+bra J_82E734
+B_82E795:    ; org $82e795
+cop #$06 : db $11
+lda #$C040 : tsb $0658
+cop #$A9
+jmp .MainMenu
+S_82E7A3:    ; org $82e7a3
+phx
+ldy $20
+lda $22 : asl : asl : tax
+lda $82E7BB,x : sta $0014,y
+lda $82E7BD,x : sta $0016,y
+plx
+rts
+;org $82e7bb
+dw $0098, $0048, $0098, $0060, $0098, $0078
+
+;org $82e7c7
+B_82E7C7:
+jsr S_82EB1A
+jsr S_82EAF7
+jsr S_82EAC0
+cop #$BD : dl $81E8E2
+cop #$BD : dl $81E912
+cop #$BD : dl $81E919
+lda #$0004 : sta $0AE6
+rtl
+B_82E7E6:    ; org $82e7e6
+jsr S_82EB1A
+jsr S_82EAF7
+cop #$BD : dl $81E912
+cop #$BD : dl $81E954
+rtl
+B_82E7F7:    ; org $82e7f7
+jsr S_82EB1A
+jsr S_82EAF7
+jsr S_82EAC0
+cop #$BD : dl $81E912
+cop #$BD : dl $81E8E2
+cop #$BD : dl $81E962
+lda #$0004 : sta $0AE6
+rtl
+B_82E816:    ; org $82e816
+jsr S_82EB45
+jsr B_82EB0B
+cop #$BD : dl $81E912
+cop #$BD : dl $81E870
+cop #$BD : dl $81EA70
+lda #$0000 : sta $0AE6
+lda $7F0018,x : tay
+lda $0AC4 : bmi B_82E84A
+lda $0AC6
+jsr S_82E9CF
+lda $0010,y : and #$DFFF : sta $0010,y
+B_82E84A:    ; org $82e84a
+lda $7F001A,x : sta $0002
+lda $0AD4 : sta $0004
+lda #$0000 : jsr SR_SecOnAbilityForBody : bcc B_82E876
+ldy $0002
+lda $0010,y : and #$DFFF : sta $0010,y
+lda #$0000
+jsr S_82E972
+cop #$BD : dl $81EA49
+B_82E876:    ; org $82e876
+ldy $0002
+lda $0006,y : sta $0002
+lda #$0001 : jsr SR_SecOnAbilityForBody : bcc B_82E89E
+ldy $0002
+lda $0010,y : and #$DFFF : sta $0010,y
+lda #$0001
+jsr S_82E972
+cop #$BD : dl $81EA56
+B_82E89E:    ; org $82e89e
+ldy $0002
+lda $0006,y : sta $0002
+lda #$0002 : jsr SR_SecOnAbilityForBody : bcc B_82E8C6
+ldy $0002
+lda $0010,y : and #$DFFF : sta $0010,y
+lda #$0002
+jsr S_82E972
+cop #$BD : dl $81EA63
+B_82E8C6:    ; org $82e8c6
+rtl
+
+C_82E8C7:    ; org $82e8c7
+inc $0AFA
+jsr S_82EB70
+cop #$C1
+lda $28 : bne B_82E8D9
+lda #$2000 : tsb $10
+rtl
+B_82E8D9:    ; org $82e8d9
+lda #$2000 : trb $10
+B_82E8DE:    ; org $82e8de
+cop #$C1
+cop #$8B
+lda $2A : beq B_82E8DE
+rtl
+
+C_82E8E7:    ; org $82e8e7
+lda $0AC4 : bpl C_82E8F1
+lda #$2000 : tsb $10
+C_82E8F1:    ; org $82e8f1
+cop #$8D : db $40
+cop #$C2
+B_82E8F6:    ; org $82e8f6
+cop #$C1
+cop #$8B
+lda $2A : beq B_82E8F6
+rtl
+
+C_82E8FF:    ; org $82e8ff
+lda #$0028 : sta $14
+lda #$0078 : sta $16
+lda $0AC6 : sta $28
+stz $2A
+cop #$C1
+cop #$8B
+rtl
+
+C_82E915:    ; org $82e915
+lda #$0098 : sta $14
+lda #$0048 : sta $16
+lda $0AD4 : asl : clc : adc $0AD4 : clc : adc #$0044 : sta $28
+stz $2A
+cop #$C1
+cop #$8B
+rtl
+
+C_82E934:    ; org $82e934
+lda #$0098 : sta $14
+lda #$0060 : sta $16
+lda $0AD4 : asl : clc : adc $0AD4 : clc : adc #$0045 : sta $28
+stz $2A
+cop #$C1
+cop #$8B
+rtl
+
+C_82E953:    ; org $82e953
+lda #$0098 : sta $14
+lda #$0078 : sta $16
+lda $0AD4 : asl : clc : adc $0AD4 : clc : adc #$0046 : sta $28
+stz $2A
+cop #$C1
+cop #$8B
+rtl
+
+S_82E972:    ; org $82e972
+pha
+lda $0AD4 : asl : asl : clc : adc $01,s : inc : sta $0AE8
+pla
+rts
+
+B_82E981:    ; org $82e981
+lda #$0B00 : tsb $0658
+cop #$06 : db $10
+lda $22 : sec : sbc #$0004 : and #$000F : sta $22
+rts
+B_82E996:    ; org $82e996
+lda #$0700 : tsb $0658
+cop #$06 : db $10
+lda $22 : clc : adc #$0004 : and #$000F : sta $22
+rts
+B_82E9AB:    ; org $82e9ab
+lda #$0200 : tsb $0658
+cop #$06 : db $10
+lda $22 : dec : and #$000F : sta $22
+rts
+B_82E9BD:    ; org $82e9bd
+lda #$0100 : tsb $0658
+cop #$06 : db $10
+lda $22 : inc : and #$000F : sta $22
+rts
+
+S_82E9CF:    ; org $82e9cf
+sta $0028,y
+lda #$0000 : sta $002A,y : sta $0008,y
+rts
+
+SR_SecOnAbilityForBody:    ; org $82e9dc
+pha
+lda $0004 : asl : asl : clc : adc $01,s : sta $01,s
+pla
+jsl LR_SecOnFlag51A
+rts
+
+S_82E9ED:    ; org $82e9ed
+sta $000E
+lda $7F0010,x : tay
+J_82E9F5:    ; org $82e9f5
+dec $000E : bmi B_82EA00
+lda $0006,y : tay
+bra J_82E9F5
+B_82EA00:    ; org $82ea00
+lda #$E8CD : sta $0000,y
+lda #$0000 : sta $0028,y : sta $0008,y : sta $002A,y
+rts
+
+S_82EA13:    ; org $82ea13
+phx : sta $0000
+lsr : lsr : lsr : tay
+lda #$0000
+sep #$20
+lda $0000 : and #$07 : tax
+lda $82EA35,x : and $E12A,y : sec : bne +
+  clc
++:
+rep #$20
+plx
+rts
+;org $82ea35
+db $01,$02,$04,$08,$10,$20,$40,$80
+
+;org $82ea3d
+S_82EA3D:
+lda $22 : sta $0000
+ldy $20
+bra +
+;org $82ea46
+lda $2e : sta $0000
+ldy $2c
+;org $82ea4d
++:
+phx
+lda $0000 : asl : asl
+pha : and #$000C : tax
+lda #$0030 : and $01,s : sta $01,s
+lda $82EAB0,x : sta $0014,y
+lda $82EAB2,x : clc : adc $01,s : sta $0016,y
+pla
+plx
+rts
+S_82EA73:    ; org $82ea73
+lda $1A : bmi B_82EAA1
+phx
+lda $7F0012,x : tay
+lda $1A : asl : asl
+pha : and #$000C : tax
+lda #$0030 : and $01,s : sta $01,s
+lda $82EAB0,x : sta $0014,y
+lda $82EAB2,x : clc : adc $01,s : sta $0016,y
+pla
+plx
+rts
+B_82EAA1:    ; org $82eaa1
+lda $7F0012,x : tay
+lda $0010,y : ora #$2000 : sta $0010,y
+rts
+;org $82eab0
+dw $005c, $0030
+dw $0074, $0030
+dw $008c, $0030
+dw $00a4, $0030
+
+;org $82eac0
+S_82EAC0:
+lda $7F0018,x : tay
+lda $0010,y : ora #$2000 : sta $0010,y
+lda $7F001A,x : tay
+lda $0010,y : ora #$2000 : sta $0010,y
+lda $0006,y : tay
+lda $0010,y : ora #$2000 : sta $0010,y
+lda $0006,y : tay
+lda $0010,y : ora #$2000 : sta $0010,y
+rts
+
+S_82EAF7:    ; org $82eaf7
+lda $0AC4 : bmi B_82EB0B
+lda $7F0012,x : tay
+lda $0010,y : and #$DFFF : sta $0010,y
+rts
+B_82EB0B:    ; org $82eb0b
+lda $7F0012,x : tay
+lda $0010,y : ora #$2000 : sta $0010,y
+rts
+
+S_82EB1A:    ; org $82eb1a
+lda $10 : bit #$1000 : beq B_82EB22
+rts
+B_82EB22:    ; org $82eb22
+lda #$1000 : tsb $10
+lda #$000F : sta $0000
+lda $7F0010,x : tay
+B_82EB32:    ; org $82eb32
+lda $0010,y : and #$DFFF : sta $0010,y
+lda $0006,y : tay
+dec $0000 : bpl B_82EB32
+rts
+
+S_82EB45:    ; org $82eb45
+lda $10 : bit #$1000 : bne B_82EB4D
+rts
+B_82EB4D:    ; org $82eb4d
+lda #$1000 : trb $10
+lda #$000F : sta $0000
+lda $7F0010,x : tay
+B_82EB5D:    ; org $82eb5d
+lda $0010,y : ora #$2000 : sta $0010,y
+lda $0006,y : tay
+dec $0000 : bpl B_82EB5D
+rts
+
+S_82EB70:    ; org $82eb70
+phx
+lda $0AFA : dec : asl : asl : tax
+lda $82EB86,x : sta $14
+lda $82EB88,x : sta $16
+plx
+rts
+;org $82eb86
+dw $005c, $0031
+dw $0074, $0031
+dw $008c, $0031
+dw $00a4, $0031
+dw $005c, $0041
+dw $0074, $0041
+dw $008c, $0041
+dw $00a4, $0041
+dw $005c, $0051
+dw $0074, $0051
+dw $008c, $0051
+dw $00a4, $0051
+dw $005c, $0061
+dw $0074, $0061
+dw $008c, $0061
+dw $00a4, $0061
+
+;org $82ebc6
+S_82EBC6:
+cop #$40 : dw $8000, B_82EC22
+cop #$40 : dw $0800, B_82EBF2
+cop #$40 : dw $0400, B_82EC0A
+lda $1C : inc $1C : bit #$000F : beq B_82EBE3
+  clc
+  rts
+B_82EBE3:    ; org $82ebe3
+bit #$0010 : bne B_82EBED
+jsr S_82EC2D : clc
+rts
+B_82EBED:    ; org $82ebed
+jsr S_82EC46 : clc
+rts
+B_82EBF2:    ; org $82ebf2
+cop #$06 : db $10
+lda #$0800 : tsb $0658
+lda $28 : dec : and #$0001 : sta $28
+stz $1C
+jsr S_82EC2D : clc
+rts
+B_82EC0A:    ; org $82ec0a
+cop #$06 : db $10
+lda #$0400 : tsb $0658
+lda $28 : inc : and #$0001 : sta $28
+stz $1C
+jsr S_82EC2D : clc
+rts
+B_82EC22:    ; org $82ec22
+lda #$8000 : tsb $0658
+jsr S_82EC2D : sec
+rts
+S_82EC2D:    ; org $82ec2d
+jsr S_82EC46
+phx
+lda $28 : and #$00FF
+xba
+lsr : clc : adc #$0696 : tax
+lda #$202B : sta $7F0200,x
+plx
+rts
+S_82EC46:    ; org $82ec46
+lda #$0001 : tsb $09EC
+lda #$2040 : sta $7F0896 : sta $7F0916
+rts
+S_82EC58:    ; org $82ec58
+cop #$40 : dw $8000, B_82ECC3
+cop #$40 : dw $0800, B_82EC8A
+cop #$40 : dw $0400, B_82ECA4
+cop #$40 : dw $6040, B_82ECBE
+lda $1C : inc $1C : bit #$000F : beq B_82EC7B
+  clc
+  rts
+B_82EC7B:    ; org $82ec7b
+bit #$0010 : bne B_82EC85
+jsr S_82ECCE
+clc
+rts
+B_82EC85:    ; org $82ec85
+jsr S_82ECE8
+clc
+rts
+B_82EC8A:    ; org $82ec8a
+cop #$06 : db $10
+lda #$0800 : tsb $0658
+stz $1C
+lda $0AFA : dec : and #$0003 : sta $0AFA
+jsr S_82ECCE
+clc
+rts
+B_82ECA4:    ; org $82eca4
+cop #$06 : db $10
+lda #$0400 : tsb $0658
+stz $1C
+lda $0AFA : inc : and #$0003 : sta $0AFA
+jsr S_82ECCE
+clc
+rts
+B_82ECBE:    ; org $82ecbe
+cop #$CC : db $00
+clc
+rts
+B_82ECC3:    ; org $82ecc3
+lda #$8000 : tsb $0658
+jsr S_82ECCE
+sec
+rts
+S_82ECCE:    ; org $82ecce
+jsr S_82ECE8
+phx
+lda $0AFA : and #$00FF : xba : lsr : clc : adc #$0584 : tax
+lda #$202B : sta $7F0200,x
+plx
+rts
+S_82ECE8:    ; org $82ece8
+lda #$0001 : tsb $09EC
+lda #$2040 : sta $7F0784 : sta $7F0804 : sta $7F0884 : sta $7F0904
+rts
+
+
+
+
+
+;org $82ed02
+LR_OpenInventoryScreen:
+php
+sep #$20
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
+jsl LR_SetScreenBlackForceBlank    ; $8281BC
+stz $420C    ; Disable HDMA.
+jsr S_82EF1D
+rep #$20
+lda #$0F00 : sta $065C
+lda $06E4 : pha
+  stz $06E4
+lda $09EC : pha
+lda #$4000 : sta $09EC
+lda $0A00 : pha
+  stz $0A00
+lda $0644 : and #$00FF : pha
+lda #$00FF : sta $0644
+  asl : sta $0646
+sep #$20
+lda $0A1F : and #$7F : sta $0A1F
+stz $2123 : stz $2124 : stz $2125 ; Disable windows.
+stz $212A : stz $212B   ; Disable window masks.
+stz $2126
+stz $2128 : stz $2129   ; W1L, W2L/R = 0.
+lda #$FF : sta $2127   ; W1R = $FF.
+lda #$78 : sta $2109   ; BG3 tilemap addr and size.
+stz $2111 : stz $2111   ; Zero BG3 H-scroll.
+stz $2112 : stz $2112   ; Zero BG3 V-scroll.
+jsl S_8283E7
+lda #$0C : sta $2108   ; BG2 tilemap addr and size.
+lda #$04 : sta $2107   ; BG1 tilemap addr and size.
+  sta $0AE6
+jsl S_83DFA0
+lda #$1B : sta $7F0A04   ; Palette byte.
+lda #$5B : sta $7F0A05   ; Palette byte.
+jsl LR_PushPalettesAndColdata    ; $829DE2
+ldx #$0000 : stx $0673
+  stx $0676
+ldx #$0000 : stx $06BE
+stx $06C2 : stx $06C0 : stx $06C4
+stx $068A : stx $068E : stx $068C
+stx $0690
+stx $06C6 : stx $06C8 : stx $06CA : stx $06CC
+stx $00B2
+jsl LR_ClearBg3All    ; $82F076
+jsl S_83CDDC
+jsl S_83CEA1
+jsl S_83D7E7
+jsl S_83D86A
+jsl LR_ActActors    ; $83CAF5
+jsl LR_ActActors    ; $83CAF5
+jsl LR_SetSpriteOrder    ; 83C5FF
+lda #$FF : sta $7F3100
+  sta $7F3101
+jsl LR_RenderActors    ; $83C714
+jsl S_80811E
+jsl LR_ResetNmi    ; $828191
+jsl LR_WaitForNmi    ; $828043
+lda #$0F : sta $2100   ; Max bright.
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
+
+B_82EE17:    ; org $82ee17
+jsl S_80811E
+lda $0AE6 : sta $2107   ; BG1 tilemap addr, size.
+cop #$D0: db $00, $00 : dw B_82EE17
+stz $2112 : stz $2112   ; Zero BG3 V-scroll.
+jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
+jsl LR_SetScreenBlackForceBlank    ; $8281BC
+stz $420C
+jsr S_82EFB2
+ldx $06BE : stx $068A
+ldx $06C2 : stx $068E
+ldx $06C0 : stx $068C
+ldx $06C4 : stx $0690
+rep #$20
+pla : sta $0644
+  asl : sta $0646
+pla : sta $0A00
+pla : sta $09EC
+pla : sta $06E4
+sep #$20
+jsl LR_LoadMapCardsAndAssets_ForInv    ; $8283E7
+jsl S_82A1E9
+jsl S_82A5F0
+jsr SR_RestoreSaveStateAfterInv    ; $82F035
+jsl S_83DFA0
+jsl S_83DFF8
+jsr S_82EECC
+jsl S_83D86A
+jsl S_82F076
+lda #$41 : tsb $09EC
+jsl S_83DECD
+ldx #$0000 : stx $09CC
+  stx $09CE
+stx $0AD0 : stx $0ACC
+stx $065C
+stx $00F4 : stx $00F8
+cop #$BD : dl Bg3_StatusEnemyHp    ; $81E818
+jsr S_82EF0B
+jsl S_83E146
+jsl S_80817D
+cop #$CC : db $FF
+jsl S_80817D
+lda #$0F : sta $2100   ; Max bright.
+plp
+rtl
+;org $82eecc
+
+org $82f035
+SR_RestoreSaveStateAfterInv:
+php
+phb
+rep #$20
+ldx #$38B4
+ldy #$0A00
+lda #$0202
+mvn $7E,$7F
+plb
+plp
+rts
+
+;org $82f048
+LR_ParseDialogueScriptAtY:
+php
+phb
+rep #$20
+lda $065A
+stz $065A
+pha
+sep #$20
+  lda #$81 : pha : plb
+  jsl LR_RefreshScreen    ; $80817D
+rep #$20
+jsl LR_ParseDialogueScript    ; $83E255
+pla : sta $065A
+plb
+plp
+rtl
+
+;org $82f06a
+LR_ClearBg3BelowStatus:
+phx
+php
+rep #$20
+lda #$0000
+ldx #$0140
+bra LR_ClearBg3All_NextTile
+;org $82f076
+LR_ClearBg3All:
+phx
+php
+rep #$20
+lda #$0000 : tax
+.NextTile:
+sta $7f0200,x
+inx : inx
+cpx #$0800 : bne .NextTile
+plp
+plx
+rtl
+
+
+
+;org $82F08C
+Bank82Free:
+fill $830000-Bank82Free

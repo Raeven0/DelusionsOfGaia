@@ -1,0 +1,229 @@
+arch 65816
+hirom
+fillbyte $FF
+padbyte $FF
+
+
+
+
+org $968000
+PaletteBundles:
+.Pointers:
+{
+dw .Index00:    ; $8100
+dw .Index01:    ; $818D
+dw .Index02:    ; $8204
+dw .Index03:    ; $82AB
+dw .Index04:    ; $82D2
+dw .Index05:    ; $8319
+dw .Index06:    ; $83F0
+dw .Index07:    ; $8467
+dw .Index08:    ; $849E
+dw .Index09:    ; $84D5
+dw .Index0A:    ; $85D2
+dw .Index0B:    ; $85F7 Will
+dw .Index0C:    ; $861C Freedan
+dw .Index0D:    ; $8641
+dw .Index0E:    ; $8666
+dw .Index0F:    ; $868B
+dw .Index10:    ; $8792 Player dying (any form)
+dw .Index11:    ; $8899
+dw .Index12:    ; $88E0
+dw .Index13:    ; $8927
+dw .Index14:    ; $89AE
+dw .Index15:    ; $8A3F
+dw .Index16:    ; $8B46
+dw .Index17:    ; $8B95
+dw .Index18:    ; $8BDC CMath Fade Normal to White
+dw .Index19:    ; $8C43 CMath Fade White to Normal
+dw .Index1A:    ; $8CAA
+dw .Index1B:    ; $8D21
+dw .Index1C:    ; $8D88
+dw .Index1D:    ; $8DEF
+dw .Index1E:    ; $8E0E
+dw .Index1F:    ; $8E55
+dw .Index20:    ; $8F5C
+dw .Index21:    ; $90B7
+dw .Index22:    ; $9190
+dw .Index23:    ; $91B7 Shadow, standing/walking
+dw .Index24:    ; $92D8 Shadow, running/flying
+dw .Index25:    ; $93F9
+dw .Index26:    ; $9470
+dw .Index27:    ; $9957
+dw .Index28:    ; $9A60
+dw .Index29:    ; $9A93
+dw .Index2A:    ; $9BEE Will charge, slow
+dw .Index2B:    ; $9D33 Will charge, fast
+dw .Index2C:    ; $9E78 Freedan charge, fast
+dw .Index2D:    ; $9FBD
+dw .Index2E:    ; $A0C4
+dw .Index2F:    ; $A19D
+dw .Index30:    ; $A204
+dw .Index31:    ; $A271
+dw .Index32:    ; $A2DE
+dw .Index33:    ; $A325
+dw .Index34:    ; $A39C
+dw .Index35:    ; $A3CB
+dw .Index36:    ; $A492
+dw .Index37:    ; $A4E1
+dw .Index38:    ; $A5F0
+dw .Index39:    ; $A669
+dw .Index3A:    ; $A75A
+dw .Index3B:    ; $A7D1
+dw .Index3C:    ; $A802
+dw .Index3D:    ; $A847
+dw .Index3E:    ; $A878
+dw .Index3F:    ; $A8BD
+dw .Index40:    ; $A8DA
+dw .Index41:    ; $A911
+dw .Index42:    ; $ADF8
+dw .Index43:    ; $AE6F
+dw .Index44:    ; $AF10
+dw .Index45:    ; $AF3F
+dw .Index46:    ; $AF8E
+dw .Index47:    ; $AFCF
+dw .Index48:    ; $AFF6
+dw .Index49:    ; $B06D
+dw .Index4A:    ; $B08A Freedan using Friar
+dw .Index4B:    ; $B1AB Freedan charge, slow
+dw .Index4C:    ; $B2F0
+dw .Index4D:    ; $B305
+dw .Index4E:    ; $B3F2
+dw .Index4F:    ; $B4DF
+dw .Index50:    ; $B52E
+dw .Index51:    ; $B64F
+dw .Index52:    ; $B770
+dw .Index53:    ; $B891
+dw .Index54:    ; $B9B2
+dw .Index55:    ; $BAD3
+dw .Index56:    ; $BBF4
+dw .Index57:    ; $BD15
+dw .Index58:    ; $BE36
+dw .Index59:    ; $BF57
+dw .Index5A:    ; $C078
+dw .Index5B:    ; $C1BD Freedan using Aura Barrier (*Friar is raw at $998070)
+dw .Index5C:    ; $C26E
+dw .Index5D:    ; $C293
+dw .Index5E:    ; $C2B8
+dw .Index5F:    ; $C2E7
+dw .Index60:    ; $C30E
+dw .Index61:    ; $C317
+dw .Index62:    ; $C34E CMath ApoGaia BG flash
+dw .Index63:    ; $C46F ApoGaia psycho bubbles
+dw .Index64:    ; $C4A4
+dw .Index65:    ; $C4DB
+dw .Index66:    ; $C588 CMath ApoGaia BG flash
+dw .Index67:    ; $C5BC
+dw .Index68:    ; $C5F0
+dw .Index69:    ; $C621 CMath A/DG fire/MouthLaser
+dw .Index6A:    ; $C65E CMath ApoGaia BG flash
+dw .Index6B:    ; $C78F
+dw .Index6C:    ; $C7A4 Shadow's transformations
+dw .Index6D:    ; $C7C9
+dw .Index6E:    ; $CAF8
+dw .Index6F:    ; $CDF7
+dw .Index70:    ; $CE6A
+dw .Index71:    ; $CE8F Firebird
+dw .Index72:    ; $CF40
+dw .Index73:    ; $CFCF
+dw .Index74:    ; $D046
+dw .Index75:    ; $D17B
+dw .Index76:    ; $D1C2
+dw .Index77:    ; $D209
+dw .Index78:    ; $D310
+dw .Index79:    ; $D417
+dw .Index7A:    ; $D466
+dw .Index7B:    ; $D48B
+dw .Index7C:    ; $D4B0
+dw .Index7D:    ; $D591
+dw .Index7E:    ; $D6C2
+dw .Index7F:    ; $D6FB
+}
+.Index00:    ; $8100
+
+
+
+
+org $969bee
+.Index2A:    ; $9bee, Will charge flash, slow
+db $01 : dw $9C61 : db $81, $1D, $00 
+db $01 : dw $9C7F : db $81, $1D, $02 
+db $01 : dw $9C9D : db $81, $1D, $03 
+db $01 : dw $9CBB : db $81, $1D, $04 
+db $01 : dw $9CD9 : db $81, $1D, $05 
+db $01 : dw $9CF7 : db $81, $1D, $06 
+db $01 : dw $9D15 : db $81, $1D, $07 
+db $01 : dw $9CF7 : db $81, $1D, $06 
+db $01 : dw $9CD9 : db $81, $1D, $05 
+db $01 : dw $9CBB : db $81, $1D, $04 
+db $01 : dw $9C9D : db $81, $1D, $03 
+db $01 : dw $9C7F : db $81, $1D, $02 
+db $01 : dw $9C61 : db $81, $1D, $01 
+db $01 : dw $9C43 : db $81, $1D, $00 
+db $00 
+dw $0842,$004A,$0054,$005E,$4880,$6185,$730C,$008C,$0154,$029A,$4050,$7918,$3216,$4B1C,$7BDE
+dw $0862,$0089,$04D2,$0CDC,$44C0,$59C5,$732C,$00CB,$05B2,$0EB9,$3C8E,$6D75,$3253,$4B3B,$7BDE
+dw $0C82,$04E8,$094F,$195A,$3D00,$5224,$6F4D,$0509,$0A0F,$1AF8,$34EC,$61D2,$3290,$4F59,$7BDE
+dw $10A2,$0946,$0DCC,$29D8,$3560,$4A83,$6F6D,$0967,$0E6C,$2B16,$314A,$562E,$2ECD,$5377,$7BDE
+dw $10C1,$0985,$1649,$3656,$2DA0,$42C3,$6B8E,$09A6,$16C9,$3755,$2987,$4AAB,$2F0A,$5796,$7BDE
+dw $14E1,$0DE3,$1AC6,$46D4,$2600,$3B22,$6BAE,$0E04,$1B26,$4773,$25E5,$3F07,$2B47,$5BB4,$7BDE
+dw $1901,$1242,$1F43,$5352,$1E40,$3381,$67CF,$1242,$1F83,$53B2,$1E43,$3364,$2B84,$5FD2,$7BDE
+dw $1D20,$16A0,$27E0,$63F0,$16A0,$27E0,$63F0,$16A0,$27E0,$63F0,$16A0,$27E0,$27E0,$63F0,$7FFF
+
+
+org $96b1ab
+.Index4B:    ; Freedan charge, slow
+db $01 : dw $b21e : db $81, $1d, $00
+db $01 : dw $b23c : db $81, $1d, $01
+db $01 : dw $b25a : db $81, $1d, $02
+db $01 : dw $b278 : db $81, $1d, $03
+db $01 : dw $b296 : db $81, $1d, $04
+db $01 : dw $b2b4 : db $81, $1d, $05
+db $01 : dw $b2d2 : db $81, $1d, $06
+db $01 : dw $b2b4 : db $81, $1d, $05
+db $01 : dw $b296 : db $81, $1d, $04
+db $01 : dw $b278 : db $81, $1d, $03
+db $01 : dw $b25a : db $81, $1d, $02
+db $01 : dw $b23c : db $81, $1d, $01
+db $01 : dw $b21e : db $81, $1d, $00
+db $01 : dw $b200 : db $81, $1d, $00
+db $00
+dw $0c22, $1c83, $2ce6, $3d68, $6e0b, $7aee, $084a, $1034, $14be, $08a9, $0110, $21d4, $029a, $4ada, $7bde
+dw $0c26, $1c86, $2ce9, $3d8b, $6e2d, $7b10, $084c, $1475, $211e, $0cac, $0932, $25d5, $0e9a, $4eda, $7bde
+dw $0c2a, $1c8a, $2d0c, $3dae, $6e50, $7b32, $084f, $1cb6, $319e, $10cf, $1154, $2df7, $1a9b, $52fb, $7bde
+dw $082e, $1c8e, $2d30, $41d1, $6a73, $7b54, $0852, $20f8, $3dfe, $14f2, $1976, $3218, $26bc, $571c, $7bde
+dw $0832, $1cb2, $2d33, $41f4, $6a95, $7b77, $0435, $2939, $4e7e, $1d15, $2198, $3a1a, $36bc, $5f1c, $7bde
+dw $0436, $1cb6, $2d57, $4617, $66b8, $7b99, $0438, $2d7b, $5ade, $2138, $29ba, $3e3b, $42dd, $633d, $7bde
+dw $043a, $1cba, $2d7a, $463a, $66db, $7bbb, $043b, $35bc, $6b5e, $255b, $31dc, $465d, $4ede, $675e, $7bde
+dw $001e, $18de, $319e, $4a5e, $631e, $7bde, $001e, $3dfe, $7bde, $2d7f, $3dff, $4e7f, $5eff, $6f7f, $7fff
+
+
+
+org $96c1bd
+.Index5B:    ; Aura Barrier sword flame
+db $01 : dw $c1ee : db $a1, $0f, $01 
+db $01 : dw $c1fe : db $a1, $0f, $01
+db $01 : dw $c20e : db $a1, $0f, $01
+db $01 : dw $c21e : db $a1, $0f, $01
+db $01 : dw $c22e : db $a1, $0f, $01
+db $01 : dw $c23e : db $a1, $0f, $01
+db $01 : dw $c24e : db $a1, $0f, $01
+db $01 : dw $c25e : db $a1, $0f, $01
+db $00
+dw $7c00,$7c84,$7d08,$7dad,$7e31,$7ed6,$7f5a,$7fff
+dw $7fff,$7c00,$7c84,$7d08,$7dad,$7e31,$7ed6,$7f5a
+dw $7f5a,$7fff,$7c00,$7c84,$7d08,$7dad,$7e31,$7ed6
+dw $7ed6,$7f5a,$7fff,$7c00,$7c84,$7d08,$7dad,$7e31
+dw $7e31,$7ed6,$7f5a,$7fff,$7c00,$7c84,$7d08,$7dad
+dw $7dad,$7e31,$7ed6,$7f5a,$7fff,$7c00,$7c84,$7d08
+dw $7d08,$7dad,$7e31,$7ed6,$7f5a,$7fff,$7c00,$7c84
+dw $7c84,$7d08,$7dad,$7e31,$7ed6,$7f5a,$7fff,$7c00
+
+
+
+
+
+
+
+
+
