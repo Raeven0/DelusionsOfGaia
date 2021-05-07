@@ -2421,6 +2421,23 @@ rtl
 warnpc $80b5c0
 
 
+org $80b7e0
+db $00, $08
+TMuHopeRoomFadeToBlack:
+cop #$37 : db $1B
+cop #$39
+cop #$3D
+rtl
+
+;org $80b7ea
+db $00, $08
+TMuHopeRoomFadeToNormal:
+cop #$37 : db $1C
+cop #$39
+cop #$3D
+rtl
+warnpc $80b7f4
+
 
 org $80b88b
 db $04,$08
@@ -2867,16 +2884,14 @@ cop #$8F : db $11
 cop #$C1
 cop #$89
 bra .Sleep
-
-;org $80c446
+.SpriteFlute:    ;org $80c446
 lda #$0200 : tsb $10
 cop #$8E : db $04
 .Animate:
 cop #$80 : db $1F
 cop #$89
 bra .Animate
-
-;org $80c455
+.FromFlute:    ;org $80c455
 lda #$0200 : trb $10
 PlayerUnfreezePointer:
 jml EPlayer_FromCastothFreeze    ; $82C3C8
@@ -3158,6 +3173,23 @@ org $80D090
 sta $7f0020,x
 
 
+org $80d0d1
+db $00 : dw $2000
+ESliderHoleToWest:
+
+org $80d119
+db $00 : dw $2000
+ESliderHoleToEast:
+
+org $80d16a
+db $00 : dw $2000
+ESliderHoleToNorth:
+
+org $80d1b5
+db $00 : dw $2000
+ESliderHoleToSouth:
+
+
 org $80d2d0
 db $00 : dw $2000
 ERampLauncherToWest:
@@ -3203,6 +3235,16 @@ cop #$C4 : dl .Listen
 ;org $80d348
 db $00 : dw $2000
 ERampLauncherToEast:
+
+
+org $80d3ba
+db $00 : dw $2000
+ERampLauncherToNorth:
+
+
+org $80d428
+db $00 : dw $2000
+ERampLauncherToSouth:
 
 
 org $80d496
@@ -3260,6 +3302,7 @@ lda #$0F00 : trb $065A
 lda #$0800 : trb $09AE
 plx
 rts
+
 ;org $80D5C0
 ESoaringPlayerMover:
 phx
@@ -4014,6 +4057,7 @@ cop #$C5
 
 
 ; org $80e256
+EPullableListener:
 B_80E256:
 cop #$C6 : dw B_80E256
 cop #$C2

@@ -921,7 +921,25 @@ rtl
 .NextSpeed:    ; org $85f8b3
 lda $7F000A,x : inc a : inc a : sta $7F000A,x
 jmp .GetSpeedAndTime
-warnpc $85f8c0
+
+
+;org $85f8c0
+db $3d : dw $0100
+ESGPullableStatue:
+lda #$abf0 : sta $7f0020,x
+lda #$0031 : tsb $12
+cop #$5B : dw $0008
+cop #$0B
+cop #$A2 : dl EPullableListener : dw $2300    ; $80e256
+.Idle:
+cop #$58 : dw .OnHit
+cop #$C1
+lda #$00ff : sta $7f0026,x
+rtl
+.OnHit:
+lda $09ae : bit #$0002 : beq .Idle
+cop #$C7 : dl EBasicMonsterDeath   ; $80db8a
+warnpc $85f8f7
 
 
 org $85F9DE
@@ -942,14 +960,69 @@ cop #$01 : dl $7E7100 : db $26
 rtl
 
 ;org $85fb32
-; Credits helper thinker that uses $00f4-$00ff.
+; HDMA spotlight effect. Vamps and credits use this.
+; Inputs seem to be $F6,$FA,$FE = X,Y,Radius.
+; The code internally uess $F4,$F8,$FC for scratch X,Y,Radius calculation.
 db $04,$08
+jsr S_85FE9A
+cop #$C1
+jsr S_85FEA4 : bcs B_85FB44
+jsr S_85FC92
+jsr S_85FEBF
+B_85FB44:    ; org $85fb44
+lda $7F000A,x : lsr : bcc B_85FB52
+cop #$01 : dl $7E7000 : db $26
+rtl
+B_85FB52:    ; org $85fb52
+cop #$01 : dl $7E7100 : db $26
+rtl
+warnpc $85fb59
 
-
-
-
-org $85fd20
-; Not the start of anything, but uses $00f4-$00ff.
+org $85fc92
+#S_85FC92:
+phx
+phd
+phb
+lda #$0000 : tcd
+sep #$20
+  lda #$7E : pha : plb
+rep #$20
+jsr S_85FE2C : bcc B_85FCA9
+jmp J_85FDB7
+B_85FCA9:    ; org $85fca9
+ldy $02
+lda #$0001 : sta $0000,y
+lda $04 : sta $0001,y
+lda #$0000 : sta $0003,y
+lda $FE : bpl B_85FCC3
+jmp J_85FDB7
+B_85FCC3:    ; org $85fcc3
+and #$FFFE
+  sta $FC
+  sta $18
+  sta $1A
+  bit #$FF00 : beq B_85FCD6
+lda #$00FE : sta $1A
+B_85FCD6:    ; org $85fcd6
+lda $F8 : bmi B_85FCF3
+  sec : sbc $18 : bcc B_85FCF3
+jsr J_85FDD7
+lda $18 : asl : eor #$FFFF : inc a : clc : adc $00 : sta $02
+lda $18 : asl
+bra J_85FD0B
+B_85FCF3:    ; org $85fcf3
+lda $F8 : clc : adc $FC : bmi B_85FD0F
+lda $F8
+pha
+  asl : eor #$FFFF : inc a : clc : adc $00 : sta $02
+pla : clc : adc $18
+J_85FD0B:    ; org $85fd0b
+inc a
+jsr J_85FDFA
+B_85FD0F:    ; org $85fd0f
+lda #$0001 : sta $0000,y
+lda $04 : sta $0001,y
+lda #$0000 : sta $0003,y
 lda #$0000 : clc
 bra J_85FD29
 J_85FD26:
@@ -1050,7 +1123,7 @@ B_85FE06:
 pla
 bra J_85FDFA
 
-;org $85fe2c
+S_85FE2C:    ; org $85fe2c
 lda $00FE : cmp $00FC : bne B_85FE49
 lda $00F6 : cmp $00F4 : bne B_85FE4F
 lda $00FA : cmp $00F8 : bne B_85FE47
@@ -1081,12 +1154,12 @@ rts
 J_85FE98:    ; org $85fe98
 sec
 rts
-;org $85fe9a
+S_85FE9A:    ; org $85fe9a
 stz $00f4
 stz $00f8
 stz $00fc
 rts
-;org $85fea4
+S_85FEA4:    ; org $85fea4
 lda $00F4 : cmp $00F6 : bne B_85FEBD
 lda $00F8 : cmp $00FA : bne B_85FEBD
 lda $00FC : cmp $00FE : bne B_85FEBD
@@ -1094,7 +1167,7 @@ rts
 B_85FEBD:
 clc
 rts
-;org $85febf
+S_85FEBF:    ; org $85febf
 lda $00F6 : sta $00F4
 lda $00FA : sta $00F8
 lda $00FE : sta $00FC

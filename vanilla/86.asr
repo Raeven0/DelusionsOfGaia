@@ -244,15 +244,171 @@ db $D3,$D6,$67,$D6,$8F,$A4,$87,$84,$AC,$D6,$48,$CB,$8E,$85,$AC,$47,$8E,$A0,$84,$
 
 ;org $86994D
 
-org $869BAA
+org $8699c7
+db $0e : dw $3000
+EMuHopeRoomListener:
+cop #$45 : db $10, $00, $20, $10 : dw B_869AC1
+cop #$D0 : db $7B, $01 : dw B_869AAE
+cop #$D2 : db $7B, $01
+cop #$A0 : dl EMuHopeRoomStatueSprite : dw $0080, $0058, $1000
+lda #$CFF0 : tsb $065A
+cop #$DA : db $0F
+cop #$04 : db $1B
+cop #$DA : db $3B
+cop #$3C : dl $80B7E2
+cop #$DA : db $BF
+cop #$A0 : dl EMuHopeRoomFlame : dw $0020, $00C0, $1800
+cop #$DA : db $27
+cop #$A0 : dl EMuHopeRoomFlame : dw $00E0, $00C0, $1800
+cop #$DA : db $27
+cop #$A0 : dl EMuHopeRoomFlame : dw $0040, $0090, $1800
+cop #$DA : db $27
+cop #$A0 : dl EMuHopeRoomFlame : dw $00C0, $0090, $1800
+cop #$DA : db $27
+cop #$A0 : dl EMuHopeRoomFlame : dw $0070, $0070, $1800
+cop #$DA : db $27
+cop #$A0 : dl EMuHopeRoomFlame : dw $0090, $0070, $1800
+cop #$DA : db $3B
+cop #$A0 : dl EMuHopeRoomWizard : dw $0050, $00C8, $1800
+cop #$DA : db $77
+cop #$A0 : dl EMuHopeRoomWizard : dw $0070, $00C8, $1800
+cop #$DA : db $77
+cop #$A0 : dl EMuHopeRoomWizard : dw $0090, $00C8, $1800
+cop #$DA : db $77
+cop #$A0 : dl EMuHopeRoomWizard : dw $00B0, $00C8, $1800
+cop #$DA : db $77
+cop #$BF : dw $9BAA
+cop #$08 : db $25, $25
+cop #$DA : db $3B
+cop #$CC : db $02
+cop #$DA : db $77
+cop #$3C : dl $80B7EC
+cop #$DA : db $7F
+stz $0688
+lda #$CFF0 : trb $065A
+cop #$E0
+
+B_869AAE:    ; org $869aae
+cop #$A0 : dl EMuHopeRoomStatueSprite : dw $0080, $0058, $1000
+cop #$E0
+
+EMuHopeRoomStatueSprite:    ; org $869abb
+cop #$80 : db $30
+cop #$89
+rtl
+
+B_869AC1:    ; org $869ac1
+cop #$D0 : db $7E, $01 : dw B_869B9D
+cop #$D2 : db $7E, $01
+cop #$A0 : dl EMuHopeRoomStatueSprite : dw $0180, $0058, $1000
+lda #$CFF0 : tsb $065A
+cop #$DA : db $0F
+cop #$04 : db $1B
+cop #$DA : db $3B
+cop #$3C : dl $80B7E2
+cop #$DA : db $BF
+cop #$A0 : dl EMuHopeRoomFlame : dw $0120, $00C0, $1800
+cop #$DA : db $27
+cop #$A0 : dl EMuHopeRoomFlame : dw $01E0, $00C0, $1800
+cop #$DA : db $27
+cop #$A0 : dl EMuHopeRoomFlame : dw $0140, $0090, $1800
+cop #$DA : db $27
+cop #$A0 : dl EMuHopeRoomFlame : dw $01C0, $0090, $1800
+cop #$DA : db $27
+cop #$A0 : dl EMuHopeRoomFlame : dw $0170, $0070, $1800
+cop #$DA : db $27
+cop #$A0 : dl EMuHopeRoomFlame : dw $0190, $0070, $1800
+cop #$DA : db $3B
+cop #$A0 : dl EMuHopeRoomWizard : dw $0150, $00C8, $1800
+cop #$DA : db $77
+cop #$A0 : dl EMuHopeRoomWizard : dw $0170, $00C8, $1800
+cop #$DA : db $77
+cop #$A0 : dl EMuHopeRoomWizard : dw $0190, $00C8, $1800
+cop #$DA : db $77
+cop #$A0 : dl EMuHopeRoomWizard : dw $01B0, $00C8, $1800
+cop #$DA : db $77
+cop #$BF : dw $9BAA
+cop #$08 : db $25, $25
+cop #$DA : db $3B
+cop #$CC : db $02
+cop #$DA : db $77
+cop #$3C : dl $80B7EC
+cop #$DA : db $7F
+stz $0688
+lda #$CFF0 : trb $065A
+cop #$E0
+
+B_869B9D:    ; org $869b9d
+cop #$A0 : dl EMuHopeRoomStatueSprite : dw $0180, $0058, $1000
+cop #$E0
+
+;org $869BAA
 db $C2,$0A,$64,$87,$84,$AC,$63,$A5,$8D,$AC,$86,$8E,$83,$2A,$2A,$2A,$CB,$62,$80,$8C,$80,$2A,$2A,$2A,$CF,$64,$87,$84,$AC,$D7,$8A,$87,$8E,$8B,$83,$A3,$CB,$80,$AC,$A0,$8E,$A7,$84,$A2,$2A,$2A,$2A,$C0
 
 ;org $869BDA
+EMuHopeRoomWizard:
+cop #$B6 : db $30
+cop #$8D : db $0E
+cop #$08 : db $26, $26
+cop #$CA : db $1E
+lda #$2000 : tsb $10
+cop #$C2
+lda #$2000 : trb $10
+cop #$CB
+B_869BF5:    ; org $869bf5
+cop #$C2
+cop #$C1
+cop #$8B
+cop #$D0 : db $02, $00 : dw B_869BF5
+cop #$CA : db $1E
+lda #$2000 : tsb $10
+cop #$C2
+lda #$2000 : trb $10
+cop #$CB
+cop #$E0
+
+EMuHopeRoomFlame:    ; org $869c14
+cop #$88 : dl $8EDA00
+cop #$08 : db $25, $25
+B_869C1D:    ; org $869c1d
+cop #$80 : db $06
+cop #$89
+cop #$D0 : db $02, $00 : dw B_869C1D
+cop #$E0
+warnpc $869c2a
 
 org $869CB7
 db $C2,$0B,$C2,$00,$64,$87,$88,$A3,$AC,$D6,$AA,$D6,$A5,$80,$8D,$AC,$CB,$D6,$6F,$81,$A5,$A2,$88,$80,$8B,$AC,$D6,$96,$CB,$85,$8E,$A2,$AC,$A4,$87,$84,$AC,$D6,$C1,$8E,$85,$AC,$4C,$A5,$2A,$AC,$CB,$C3,$00,$C0
 
-;org $869CE9
+;org $869ce9
+db $28 : dw $0301
+EMuFloorSpike:
+cop #$13 : dw .Die
+lda #$ABF0 : sta $7F0020,x
+-:
+cop #$80 : db $28
+cop #$89
+cop #$DA : db $27
+cop #$80 : db $29
+cop #$89
+lda #$0101 : trb $10
+cop #$80 : db $2A
+cop #$89
+cop #$DA : db $3B
+lda #$0101 : tsb $10
+cop #$80 : db $2B
+cop #$89
+bra -
+.Die:
+cop #$E0
+warnpc $869d1f
+
+
+org $869d4d
+db $25 : dw $0100
+EMuBouncer:
+
+
 
 org $869F45
 db $D3,$48,$AC,$80,$8C,$AC,$62,$80,$8C,$80,$2B,$AC,$D6,$27,$8E,$85,$AC,$4C,$A5,$2A,$CB,$4C,$A9,$AC,$D6,$72,$A0,$80,$A3,$A3,$84,$83,$AC,$8E,$8D,$CB,$D6,$A6,$80,$86,$8E,$2B,$AC,$81,$A5,$A4,$AC,$8C,$A9,$CB,$A3,$A0,$88,$A2,$88,$A4,$AC,$8B,$88,$A6,$84,$A3,$AC,$8E,$8D,$2A,$CF,$48,$85,$AC,$A9,$8E,$A5,$AC,$D6,$A9,$82,$8B,$8E,$A3,$84,$8B,$A9,$2B,$AC,$CB,$69,$8E,$A5,$AC,$82,$80,$8D,$AC,$D7,$8F,$A3,$84,$84,$AC,$CB,$A7,$80,$8D,$83,$84,$A2,$88,$8D,$86,$AC,$A3,$A0,$88,$A2,$88,$A4,$A3,$2A,$AC,$C0
@@ -534,13 +690,56 @@ db $C2,$0B,$67,$84,$AC,$80,$A2,$84,$AC,$84,$A8,$A0,$A2,$84,$A3,$A3,$88,$8E,$8D,$
 db $C2,$0A,$48,$AC,$D7,$BB,$A4,$8E,$AC,$83,$80,$8D,$82,$84,$AC,$D6,$F0,$A4,$87,$84,$AC,$CB,$A0,$84,$A2,$A3,$8E,$8D,$AC,$88,$8D,$AC,$D6,$D7,$A0,$88,$82,$A4,$A5,$A2,$84,$2A,$AC,$C0
 
 ;org $86CE82
+db $12 : dw $1000
+EAVIshtar:
+{
+cop #$BC : db $00, $FC
+lda #$0200 : tsb $12
+cop #$9E : dl .PortraitActor : dw $0000, $FFF0, $0300
+cop #$C0 : dw .OnInteractHuman   ; $CEDA
+cop #$D0 : db $89, $00 : dw .HumanAwaitInteract
+cop #$E0
+.HumanAwaitInteract:    ; org $86cea5
+cop #$C1
+cop #$80 : db $12
+cop #$89
+rtl
+;org $86cead    ; Apparently, unused separate portrait actor
+db $13 : dw $1000
+cop #$0F : db $25,$08
+cop #$BC : db $08,$00
+.PortraitActor:   ;org $86ceb8
+cop #$D0 : db $89, $00 : dw ..IshtarStillHuman
+lda #$1000 : tsb $10
+cop #$C0 : dw .OnInteractPortrait   ; $CEDF
+cop #$80 : db $15
+cop #$89
+bra +
+..IshtarStillHuman:    ; org $86cece
+cop #$80 : db $13
+cop #$89
++:    ; org $86ced3
+cop #$0F : db $25, $08
+cop #$C1
+rtl
+.OnInteractHuman:    ;org $86ceda
+cop #$BF : dw $cef2
+rtl
+.OnInteractPortrait:   ;org $86cedf
+cop #$D0 : db $8B, $01 : dw ..AndDead
+cop #$CC : db $8B
+cop #$BF : dw $CF5E
+rtl
+..AndDead:    ; org $86ceed
+cop #$BF : dw $D039
+rtl
+}
 
-org $86CEF2
+;org $86CEF2
 db $C2,$0A,$C2,$03,$48,$A3,$87,$A4,$80,$A2,$2F,$AC,$48,$AC,$D6,$F9,$88,$85,$AC,$A9,$8E,$A5,$0E,$A2,$84,$CB,$D7,$73,$A4,$8E,$AC,$86,$84,$A4,$AC,$4A,$80,$A2,$80,$2A,$AC,$CF,$46,$8E,$AC,$D6,$A1,$D6,$D6,$A2,$8E,$8E,$8C,$2A,$CF,$48,$85,$AC,$A9,$8E,$A5,$AC,$A3,$8E,$8B,$A6,$84,$AC,$80,$8B,$8B,$AC,$A4,$87,$84,$CB,$A2,$88,$83,$83,$8B,$84,$A3,$2B,$AC,$D6,$1F,$D6,$97,$81,$80,$82,$8A,$CB,$A4,$87,$84,$AC,$86,$88,$A2,$8B,$2A,$AC,$C0
-
 ;org $86CF5B
-
-org $86CF5E
+db $c3,$00,$c0
+;org $86CF5E
 db $C2,$0A,$C2,$03,$48,$A3,$87,$A4,$80,$A2,$2F,$CB,$48,$AC,$D6,$98,$81,$84,$84,$8D,$CB,$D6,$FD,$85,$8E,$A2,$AC,$A9,$8E,$A5,$2A,$CF,$63,$A0,$A2,$88,$8D,$8A,$8B,$84,$AC,$8C,$80,$86,$88,$82,$AC,$A0,$8E,$A7,$83,$84,$A2,$CB,$8E,$8D,$AC,$A4,$87,$84,$AC,$A0,$80,$88,$8D,$A4,$88,$8D,$86,$2B,$AC,$80,$8D,$83,$CB,$D6,$97,$88,$A4,$AC,$80,$AC,$8A,$88,$A3,$A3,$2A,$CF,$48,$85,$AC,$A9,$8E,$A5,$AC,$D7,$57,$D6,$6B,$87,$84,$A2,$AC,$CB,$83,$84,$84,$A0,$8B,$A9,$2B,$AC,$D6,$C8,$D6,$EF,$CB,$87,$80,$A0,$A0,$84,$8D,$2A,$AC,$69,$8E,$A5,$0E,$8B,$8B,$AC,$A3,$84,$84,$2A,$AC,$CF,$48,$AC,$A0,$80,$88,$8D,$A4,$84,$83,$AC,$80,$CB,$A3,$84,$8B,$85,$6D,$A0,$8E,$A2,$A4,$A2,$80,$88,$A4,$2A,$CF,$D7,$38,$48,$AC,$D6,$EF,$81,$84,$82,$8E,$8C,$84,$CB,$A4,$87,$84,$AC,$A0,$80,$88,$8D,$A4,$88,$8D,$86,$2A,$2A,$2A,$CF,$69,$8E,$A5,$AC,$D6,$B2,$D6,$E7,$82,$80,$A2,$84,$CB,$8E,$85,$AC,$87,$84,$A2,$2A,$2A,$2A,$C3,$00,$C0
 ;org $86D039
 db $C2,$0A,$C2,$03,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$C3,$00,$C0
@@ -556,6 +755,22 @@ org $86D0C6
 db $C2,$0A,$67,$8E,$8C,$80,$8D,$AC,$60,$8B,$80,$A9,$88,$8D,$86,$AC,$47,$80,$A2,$A0,$2F,$CB,$4C,$A5,$A3,$88,$82,$AC,$88,$A3,$AC,$A4,$87,$84,$AC,$81,$84,$A3,$A4,$CB,$8C,$84,$83,$88,$82,$88,$8D,$84,$AC,$85,$8E,$A2,$AC,$A4,$87,$84,$AC,$A3,$8E,$A5,$8B,$2A,$CF,$64,$87,$84,$AC,$D7,$94,$A3,$8E,$8D,$86,$AC,$D6,$EF,$82,$A5,$A2,$84,$CB,$80,$8D,$A9,$AC,$83,$88,$A3,$84,$80,$A3,$84,$2A,$C0
 
 ;org $86D124
+
+
+org $86d139
+db $17 : dw $1000
+EAVPortraitGreen:
+cop #$B7 : db $0c
+bra +
+; org $86d141
+db $17 : dw $1000
++:
+EAVPortraitDefault:
+cop #$BC : db $08,$fd
+cop #$B6 : db $10
+cop #$C1
+rtl
+
 
 org $86D278
 db $C2,$0A,$C2,$00,$D2,$10,$67,$88,$8B,$8B,$2F,$AC,$CB,$48,$85,$AC,$48,$AC,$D6,$82,$A3,$A0,$A2,$84,$80,$83,$AC,$CB,$8C,$80,$86,$88,$82,$AC,$83,$A5,$A3,$A4,$2A,$2A,$2A,$C3,$00,$C0
@@ -585,14 +800,174 @@ db $C2,$0A,$C2,$00,$64,$87,$84,$AC,$84,$8D,$A4,$A2,$80,$8D,$82,$84,$AC,$88,$A3,$
 
 ;org $86D68D
 
-org $86D83E
+org $86D784
+db $00 : dw $1000
+EAVIshtarDoorManager:
+{
+lda #$0200 : tsb $12
+cop #$D0 : db $89, $01 : dw .Die
+stz $067f  ; clear BG1 tilemap cache
+cop #$88 : dl $8ee000
+cop #$89
+lda $09a4 : cmp #$00f0 : bcc .Die
+cop #$BC : db $08,$02
+lda $0e : and #$000f : sta $24
+stz $0e
+cop #$C0 : dw .OnInteract
+cop #$C1
+rtl
+.Die:
+cop #$E0
+.OnInteract:    ; $86d7bd
+lda $0aa6 : cmp $24 : bcc ..TooEarly
+  bne ..AlreadyOpen
+cop #$07 : db $0e
+lda $24 : sta $0000
+cop #$D0 : dw $0000, ..Options
+..Options:   ; $86d7d4
+  dw ..Door0, ..Door1, ..Door2, ..Door3
+  dw ..Door4, ..Door5, ..Door6, ..Door7
+..Door0:
+cop #$32 : db $49 : cop #$33
+cop #$CD : dw $0149
+rtl
+..Door1:
+cop #$32 : db $4a : cop #$33
+cop #$CD : dw $014a
+rtl
+..Door2:
+cop #$32 : db $4b : cop #$33
+cop #$CD : dw $014b
+rtl
+..Door3:
+cop #$32 : db $4c : cop #$33
+cop #$CD : dw $014c
+rtl
+..Door4:
+cop #$32 : db $4d : cop #$33
+cop #$CD : dw $014d
+rtl
+..Door5:
+cop #$32 : db $4e : cop #$33
+cop #$CD : dw $014e
+rtl
+..Door6:
+cop #$32 : db $4f : cop #$33
+cop #$CD : dw $014f
+rtl
+..Door7:
+cop #$32 : db $50 : cop #$33
+cop #$CD : dw $0150
+rtl
+..TooEarly:    ; $d834
+cop #$BF : dw $d83e
+rtl
+..AlreadyOpen:
+cop #$BF : dw $d87b
+rtl
+}
+
+;org $86D83E
 db $C2,$0A,$D7,$16,$D6,$EE,$A2,$84,$A3,$8E,$A5,$8D,$83,$A3,$2A,$CF,$D6,$0D,$87,$A5,$A2,$A2,$A9,$2A,$CB,$4E,$A0,$84,$8D,$AC,$A4,$87,$84,$AC,$83,$8E,$8E,$A2,$A3,$AC,$88,$8D,$AC,$8E,$A2,$83,$84,$A2,$CB,$D6,$8E,$A4,$87,$84,$AC,$8B,$84,$85,$A4,$2A,$C0
 ;org $86D87B
 db $C2,$0A,$D7,$16,$D6,$EE,$A2,$84,$A3,$8E,$A5,$8D,$83,$A3,$2A,$CF,$64,$87,$80,$A4,$AC,$D7,$58,$88,$A3,$AC,$80,$8B,$A2,$84,$80,$83,$A9,$CB,$8E,$A0,$84,$8D,$2A,$AC,$64,$87,$84,$A2,$84,$0E,$A3,$AC,$8D,$8E,$CB,$D6,$BA,$A4,$8E,$AC,$8E,$A0,$84,$8D,$AC,$88,$A4,$2A,$C0
 
 ;org $86D8BC
+db $00 : dw $3000
+EAVIshtarPuzzleManager:
+{
+lda $09A4 : cmp #$00F0 : bcc B_86D8CA
+jmp .Die
+B_86D8CA:    ; org $86d8ca
+cop #$CF : dw $0149
+cop #$CF : dw $014A
+cop #$CF : dw $014B
+cop #$CF : dw $014C
+cop #$CF : dw $014D
+cop #$CF : dw $014E
+cop #$CF : dw $014F
+cop #$CF : dw $0150
+lda $09A6 : and #$0010 : bne B_86D90B
+inc $0AA6
+lda #$CFF0 : tsb $065A
+cop #$DA : db $1D
+cop #$BF : dw $DA14
+lda #$CFF0 : trb $065A
+cop #$C1
+rtl
+B_86D90B:    ; org $86d90b
+lda #$CFF0 : tsb $065A
+cop #$DA : db $1D
+cop #$BF : dw $DA6B
+cop #$DA : db $1D
+cop #$9C : dl C_86DBF3 : dw $1002
+lda $09A2 : sta $0014,y
+lda $09A4 : sta $0016,y
+cop #$C1
+cop #$40 : dw $8001, B_86D937
+rtl
+B_86D937:    ; org $86d937
+ldy $06
+lda $0014,y : sta $24
+lda $0016,y : sta $26
+cop #$A9
+lda $09A6 : lsr : lsr : lsr : lsr : lsr : sta $0000
+cop #$D9 : dw $0000, $D956 : dw B_86D95E, B_86D98A : dw B_86D9B4, B_86D9DE
+B_86D95E:    ; org $86d95e
+lda $24 : cmp #$01B0 : bcc B_86D980
+  cmp #$01C0 : bcs B_86D980
+lda $26 : cmp #$0070 : bcc B_86D980
+  cmp #$0090 : bcs B_86D980
+cop #$BF : dw $DAF0
+inc $0AA6
+jmp .Die
+B_86D980:    ; org $86d980
+cop #$BF : dw $DAA0
+dec $0AA6
+jmp .Die
+B_86D98A:    ; org $86d98a
+lda $24 : cmp #$0330 : bcc B_86D9AB
+  cmp #$0350 : bcs B_86D9AB
+lda $26 : cmp #$00A0 : bcc B_86D9AB
+  cmp #$00C0 : bcs B_86D9AB
+cop #$BF : dw $DB2C
+inc $0AA6
+bra .Die
+B_86D9AB:    ; org $86d9ab
+cop #$BF : dw $DAA0
+dec $0AA6
+bra .Die
+B_86D9B4:    ; org $86d9b4
+lda $24 : cmp #$0570 : bcc B_86D9D5
+  cmp #$0590 : bcs B_86D9D5
+lda $26 : cmp #$0070 : bcc B_86D9D5
+  cmp #$0090 : bcs B_86D9D5
+cop #$BF : dw $DB4F
+inc $0AA6
+bra .Die
+B_86D9D5:    ; org $86d9d5
+cop #$BF : dw $DAA0
+dec $0AA6
+bra .Die
+B_86D9DE:    ; org $86d9de
+lda $24 : cmp #$0790 : bcc B_86DA03
+  cmp #$07B0 : bcs B_86DA03
+lda $26 : cmp #$00A0 : bcc B_86DA03
+  cmp #$00C0 : bcs B_86DA03
+cop #$BF : dw $DB9F
+cop #$CC : db $89
+cop #$CD : dw $0151
+bra .Die
+B_86DA03:    ; org $86da03
+cop #$BF : dw $DAA0
+dec $0AA6
+bra .Die
+.Die:    ; org $86da0c
+lda #$CFF0 : trb $065A
+cop #$E0
+}
 
-org $86DA14
+;org $86DA14
 db $C2,$09,$D7,$16,$D6,$EE,$A2,$84,$A3,$8E,$A5,$8D,$83,$A3,$2A,$CF,$4B,$84,$80,$A2,$8D,$AC,$A7,$84,$8B,$8B,$AC,$A4,$87,$84,$AC,$82,$8E,$8D,$83,$88,$A4,$88,$8E,$8D,$CB,$8E,$85,$AC,$D6,$D7,$A2,$8E,$8E,$8C,$2A,$CF,$D6,$61,$A9,$8E,$A5,$0E,$A6,$84,$AC,$8B,$84,$80,$A2,$8D,$84,$83,$AC,$88,$A4,$2B,$AC,$CB,$D6,$AC,$A4,$87,$84,$AC,$A2,$8E,$8E,$8C,$2A,$AC,$C0
 ;org $86DA6B
 db $C2,$09,$D7,$16,$D6,$EE,$A2,$84,$A3,$8E,$A5,$8D,$83,$A3,$2A,$CF,$D7,$37,$87,$8E,$A7,$AC,$D6,$9F,$83,$88,$85,$85,$84,$A2,$84,$8D,$A4,$CB,$D6,$8E,$A4,$87,$84,$AC,$A2,$8E,$8E,$8C,$AC,$81,$84,$85,$8E,$A2,$84,$2A,$C0
@@ -608,6 +983,41 @@ db $C2,$0A,$D7,$2C,$80,$8D,$A3,$A7,$84,$A2,$4F,$CB,$47,$8E,$A7,$AC,$D6,$98,$A4,$
 db $C2,$0A,$D7,$2C,$80,$8D,$A3,$A7,$84,$A2,$4F,$CB,$64,$87,$84,$AC,$D7,$C5,$81,$8B,$84,$A7,$AC,$A9,$8E,$A5,$A2,$CB,$87,$80,$88,$A2,$AC,$80,$A2,$8E,$A5,$8D,$83,$2A,$CF,$69,$8E,$A5,$AC,$D6,$98,$A0,$80,$A3,$A3,$84,$83,$AC,$8C,$A9,$CB,$A4,$84,$A3,$A4,$AC,$A7,$84,$8B,$8B,$2A,$CB,$69,$8E,$A5,$AC,$8C,$80,$A9,$AC,$A2,$84,$A4,$A5,$A2,$8D,$2A,$C0
 
 ;org $86DBF3
+C_86DBF3:
+cop #$B6 : db $30
+cop #$80 : db $19
+cop #$89
+cop #$C1
+cop #$40 : dw $0801, B_86DC16
+J_86DC03:    ; org $86dc03
+cop #$40 : dw $0401, B_86DC23
+J_86DC09:    ; org $86dc09
+cop #$40 : dw $0201, B_86DC30
+J_86DC0F:    ; org $86dc0f
+cop #$40 : dw $0101, B_86DC40
+J_86DC15:    ; org $86dc15
+rtl
+B_86DC16:    ; org $86dc16
+lda $16 : cmp #$0008 : bcc J_86DC03
+dec $16 : dec $16
+bra J_86DC03
+B_86DC23:    ; org $86dc23
+lda $16 : cmp #$00D0 : bcs J_86DC09
+inc $16 : inc $16
+bra J_86DC09
+B_86DC30:    ; org $86dc30
+lda $14 : and #$00FF : cmp #$0008 : bcc J_86DC0F
+dec $14 : dec $14
+bra J_86DC0F
+B_86DC40:    ; org $86dc40
+lda $14 : and #$00FF : cmp #$00F8 : bcs J_86DC15
+inc $14 : inc $14
+bra J_86DC15
+
+;org $86dc50
+db $04 : dw $1000
+EAVIshtarsApprentice:
+
 
 org $86DC97
 db $C2,$0B,$D7,$17,$80,$A0,$A0,$A2,$84,$8D,$A4,$88,$82,$84,$2F,$CB,$D6,$61,$A9,$8E,$A5,$AC,$A3,$8E,$8B,$A6,$84,$AC,$A4,$87,$84,$CB,$A0,$A5,$AA,$AA,$8B,$84,$AC,$8E,$85,$AC,$A4,$87,$84,$AC,$A2,$8E,$8E,$8C,$CB,$A9,$8E,$A5,$AC,$8C,$80,$A9,$AC,$A0,$80,$A3,$A3,$2A,$C0

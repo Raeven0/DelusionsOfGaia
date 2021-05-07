@@ -3761,7 +3761,7 @@ dec $24
 bmi .RefreshSprite
 rtl
 B_82CD52:
-cop #$40 : dw $8000, B_82CCDA
+cop #$40 : dw $8000, EPlayer_ActFaceSouthAttack
 jmp EPlayer_PostAttack_Return
 }
 
@@ -3782,8 +3782,7 @@ EPlayer_ActFaceEastAttack:
 
 org $82ced8
 EPlayer_PostAttack:
-lda $0656 : bit #$0F00
-beq .Return
+lda $0656 : bit #$0F00 : beq .Return
 lda #$8000 : trb $0658
 .Return:
 lda #$0F00 : trb $0658

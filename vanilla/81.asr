@@ -5104,7 +5104,7 @@ db $D4,$11,$F7,$73,$D4,$12,$22,$23,$C3,$04,$CA
 }
 
 ;org $81CBA6
-Table_MusicAddresses:   ; Caller offsets indexes, so first index here is 1.
+Table_MusicAddresses:   ; Some callers use index 1, some use 0.
 {
 dl $97C443    ; City
 dl $97C443    ; City (dupe)

@@ -873,7 +873,7 @@ db $24,$00,$0B
 EDarkSpace:
 lda $0E : sta $24
 lda #$2000 : sta $0E
-_Spawned:    ; $88D6B5
+.Spawned:    ; $88D6B5
 lda #$0004 : tsb $12
 
 

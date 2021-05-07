@@ -2107,14 +2107,71 @@ db $D3,$C2,$02,$67,$80,$88,$A4,$4F,$AC,$48,$AC,$A4,$8E,$8B,$83,$AC,$A9,$8E,$A5,$
 ;org $89BDB5
 db $00,$00,$23
 ECSongPuzzleListener:
+cop #$D1 : dw $0113 : db $01 : dw B_89BE6D
+cop #$D2 : db $02, $01
+cop #$C1
+cop #$21 : db $03 : dw B_89BDCB
+rtl
+B_89BDCB:    ; org $89bdcb
+lda #$CFF0 : tsb $065A
+cop #$DA : db $1D
+cop #$BF : dw $BE70
+cop #$04 : db $1B
+cop #$DA : db $3B
+lda #$CFF0 : trb $065A
+J_89BDE4:    ; org $89bde4
+cop #$C1
+lda #$2200 : sta $0E
+cop #$CA : db $78
+cop #$D0 : db $03, $01 : dw B_89BE67
+cop #$CB
+cop #$07 : db $10
+cop #$CA : db $3C
+cop #$D0 : db $03, $01 : dw B_89BE67
+jsr S_89BEFC
+lda #$0001 : sta $0000
+jsl LR_StageBcdInManualOam
+cop #$CB
+cop #$CA : db $78
+cop #$D0 : db $03, $01 : dw B_89BE67
+cop #$CB
+cop #$07 : db $10
+cop #$CA : db $3C
+cop #$D0 : db $03, $01 : dw B_89BE67
+jsr S_89BEFC
+lda #$0002 : sta $0000
+jsl LR_StageBcdInManualOam
+cop #$CB
+cop #$CA : db $63
+cop #$D0 : db $03, $01 : dw B_89BE67
+cop #$CB
+cop #$CC : db $01
+cop #$07 : db $11
+cop #$CA : db $28
+cop #$D0 : db $02, $00 : dw B_89BE6D
+jsr S_89BEFC
+lda #$0003 : sta $0000
+jsl LR_StageBcdInManualOam
+cop #$CB
+cop #$CE : db $01
+cop #$BF : dw $BD58
+B_89BE67:    ; org $89be67
+cop #$CE : db $03
+jmp J_89BDE4
+B_89BE6D:    ; org $89be6d
+cop #$C1
+rtl
 
-
-org $89BE70
+;org $89BE70
 db $C2,$0B,$C2,$02,$D6,$46,$66,$8E,$88,$82,$84,$2F,$AC,$64,$87,$84,$AC,$D7,$58,$CB,$D6,$FA,$8E,$A0,$84,$8D,$AC,$A5,$8D,$8B,$84,$A3,$A3,$AC,$A9,$8E,$A5,$AC,$CB,$A0,$A5,$A3,$87,$AC,$D6,$D6,$A3,$A7,$88,$A4,$82,$87,$AC,$8E,$8D,$AC,$CB,$A4,$87,$84,$AC,$82,$8E,$A5,$8D,$A4,$AC,$8E,$85,$AC,$A4,$87,$A2,$84,$84,$2A,$AC,$CF,$D6,$61,$48,$AC,$A3,$87,$8E,$A5,$A4,$2B,$AC,$A0,$A5,$A3,$87,$AC,$CB,$A4,$87,$84,$AC,$A3,$A7,$88,$A4,$82,$87,$2A,$AC,$CF,$D6,$1F,$82,$8E,$A5,$8D,$A4,$AC,$21,$2B,$AC,$22,$2B,$AC,$23,$2A,$CB,$D6,$0D,$D7,$84,$80,$AC,$8C,$88,$A3,$A4,$80,$8A,$84,$2A,$C0
 
 ;org $89BEFC
+S_89BEFC:
+lda $09A2 : clc : adc #$0007 : sta $14
+lda $09A4 : sec : sbc #$0020 : sta $16
+rts
 
-org $89BF0F
+;org $89BF0F
 db $0F,$01,$01
 ECBridgeButton:
 lda $0AD4 : bne +
@@ -2180,11 +2237,105 @@ org $89C285
 db $D3,$C2,$00,$64,$87,$84,$A2,$84,$0E,$A3,$AC,$D6,$C8,$8E,$8D,$AC,$A4,$87,$84,$CB,$D6,$96,$A4,$87,$84,$A2,$84,$2A,$2A,$2A,$CF,$C3,$00,$48,$85,$AC,$48,$AC,$82,$80,$8D,$AC,$D6,$B5,$D6,$D7,$86,$8E,$8B,$83,$AC,$CB,$A3,$A4,$80,$A4,$A5,$84,$2B,$AC,$48,$AC,$82,$80,$8D,$AC,$A0,$80,$A3,$A3,$2A,$2A,$2A,$AC,$C0
 
 ;org $89C2D0
+; Unused, would have been a proximity-triggered falling wall block.
+db $18 : dw $2300
+cop #$C1
+cop #$21 : db $02 : dw EMPFallingBlockWall   ; $c2db
+rtl
+
+;org $89c2db
+EMPFallingBlockWall:
+lda #$0000 : sta $7F0010,x
+bra +
+EMPFallingBlockFloor:    ; org $89c2e4
+lda #$0001 : sta $7F0010,x
++:
+cop #$BC : db $08, $00
+cop #$9C : dl EMPFallingBlockShadow : dw $0301
+lda $16 : sec : sbc #$0100 : sta $16
+lda #$2000 : trb $10
+cop #$B2
+cop #$86 : db $18, $02, $0F
+cop #$8A
+cop #$08 : db $15, $15
+cop #$B4
+lda #$0100 : trb $10
+cop #$82 : db $18, $35
+cop #$89
+lda #$0100 : tsb $10
+cop #$B3
+lda $7F0010,x : bne +   ; Is 1 if new floor, 0 if new wall.
+cop #$0B
+bra ++
++:    ; org $89c32e
+cop #$11
+++:    ; org $89c330
+cop #$C1
+rtl
+EMPFallingBlockShadow:    ; org $89c333
+cop #$84 : db $1F, $03
+cop #$8A
+cop #$E0
+warnpc $89c33b
 
 org $89C410
 db $D3,$63,$A4,$84,$A0,$A0,$88,$8D,$86,$AC,$8E,$8D,$AC,$80,$AC,$86,$8E,$8B,$83,$AC,$CB,$A4,$88,$8B,$84,$AC,$84,$8C,$88,$A4,$A3,$AC,$80,$AC,$A3,$8E,$A5,$8D,$83,$2A,$AC,$CF,$64,$87,$84,$A2,$84,$AC,$80,$A2,$84,$CB,$85,$8E,$A5,$A2,$AC,$86,$8E,$8B,$83,$AC,$A4,$88,$8B,$84,$A3,$2A,$AC,$CF,$63,$A4,$80,$8D,$83,$AC,$8E,$8D,$AC,$84,$80,$82,$87,$AC,$8E,$85,$AC,$A4,$87,$84,$CB,$85,$8E,$A5,$A2,$AC,$A4,$88,$8B,$84,$A3,$AC,$80,$A4,$AC,$A4,$87,$84,$AC,$A3,$80,$8C,$84,$CB,$A4,$88,$8C,$84,$2A,$AC,$C0
 
 ;org $89C489
+
+org $89c4b2
+db $00 : dw $3000
+EMPBossExteriorWindListener:
+cop #$C2
+lda $09A4 : cmp #$0110 : bcs .StopBreeze
+.StartBreeze:   ; Ambient hair tossing.
+cop #$CC : db $00
+bra +
+.StopBreeze:
+cop #$CE : db $00
++:
+cop #$D0 : db $30, $00 : dw EMPBossExteriorWindListener
+cop #$D0 : db $31, $00 : dw EMPBossExteriorWindListener
+cop #$CC : db $00
+cop #$08 : db $16, $16
+.StatuesPlacedAwaitPlayerPos:    ; org $89c4da
+cop #$C1
+cop #$28 : db $E8, $01, $20, $01 : dw .SpawnWind
+cop #$28 : db $E7, $01, $20, $01 : dw .SpawnWind
+rtl
+.SpawnWind:    ; org $89c4ed
+lda #$EFF0 : tsb $065A
+cop #$08 : db $16, $16
+cop #$CA : db $28
+cop #$9C : dl EMPBossExteriorWindParticle : dw $1000
+cop #$C3 : dl .PostParticle : dw $0008
+.PostParticle:    ; org $89c508
+cop #$CB
+.PushPlayerAndReturn:
+lda #$FFF8 : sta $09B2
+lda #$EFF0 : trb $065A
+cop #$DA : db $3B
+bra .StatuesPlacedAwaitPlayerPos
+
+EMPBossExteriorWindParticle:    ; org $89c51b
+lda #$02A0 : sta $14
+cop #$23 : clc : adc #$0090 : sta $16
+cop #$23 : and #$0003 : beq .Sprite1B
+dec : beq .Sprite1C
+.Sprite1A:
+cop #$85 : db $1A, $40, $0C
+cop #$8A
+cop #$E0
+.Sprite1B:    ; org $89c53b
+cop #$85 : db $1B, $40, $0E
+cop #$8A
+cop #$E0
+.Sprite1C:    ; org $89c544
+cop #$85 : db $1C, $40, $10
+cop #$8A
+cop #$E0
+warnpc $89c54d
+
 
 org $89C5D5
 db $C2,$10,$64,$87,$84,$AC,$D7,$C5,$88,$8D,$AC,$A4,$87,$84,$AC,$A6,$80,$8B,$8B,$84,$A9,$CB,$A0,$8B,$80,$A9,$A3,$AC,$80,$AC,$8C,$84,$8B,$8E,$83,$A9,$2A,$CB,$64,$87,$84,$AC,$D6,$C9,$D6,$CC,$A4,$8E,$CB,$81,$84,$AC,$A3,$88,$8D,$86,$88,$8D,$86,$2A,$2A,$2A,$C0
@@ -2196,6 +2347,60 @@ db $C1,$03,$11,$C7,$0D,$03,$69,$8E,$A5,$AC,$82,$80,$8D,$AC,$D6,$9B,$A4,$87,$84,$
 ;org $89C66E
 db $00,$00,$23
 EGoldenTileListener:
+
+
+org $89c6a9
+db $00 : dw $2000
+EMP28TileListener:
+cop #$C1
+.Main:    ; org $89c6ae
+cop #$45 : db $1A, $0C, $1C, $0E : dw .Tile1
+cop #$45 : db $1A, $16, $1C, $18 : dw .Tile2
+cop #$45 : db $12, $24, $14, $26 : dw .Tile3
+cop #$45 : db $08, $24, $0A, $26 : dw .Tile4
+cop #$45 : db $10, $1C, $12, $1E : dw .Tile5
+cop #$45 : db $12, $16, $14, $18 : dw .Tile6
+.DoNothing:
+rtl
+.SoundAndReturn:    ; org $89c6df
+cop #$08 : db $2C, $2C
+cop #$C4 : dl .Main
+.Tile1:    ; org $89c6e8
+cop #$D0 : db $01, $01 : dw .DoNothing
+cop #$CC : db $01
+cop #$A0 : dl EMPFallingBlockWall : dw $01A8, $0130, $2300
+bra .SoundAndReturn
+.Tile2:    ; org $89c6fe
+cop #$D0 : db $02, $01 : dw .DoNothing
+cop #$CC : db $02
+cop #$A0 : dl EMPFallingBlockWall : dw $01C8, $01C0, $2300
+bra .SoundAndReturn
+.Tile3:    ; org $89c714
+cop #$D0 : db $03, $01 : dw .DoNothing
+cop #$CC : db $03
+cop #$A0 : dl EMPFallingBlockWall : dw $00E8, $0260, $2300
+bra .SoundAndReturn
+.Tile4:    ; org $89c72a
+cop #$D0 : db $04, $01 : dw .DoNothing
+cop #$CC : db $04
+cop #$A0 : dl EMPFallingBlockFloor : dw $0088, $0220, $2300
+cop #$DA : db $0E
+cop #$A0 : dl EMPFallingBlockFloor : dw $0088, $0200, $2300
+bra .SoundAndReturn
+.Tile5:    ; org $89c74e
+cop #$D0 : db $05, $01 : dw .DoNothing
+cop #$CC : db $05
+cop #$A0 : dl EMPFallingBlockFloor : dw $0088, $01C0, $2300
+cop #$DA : db $0E
+cop #$A0 : dl EMPFallingBlockFloor : dw $0088, $01A0, $2300
+jmp .SoundAndReturn
+.Tile6:    ; org $89c773
+cop #$D0 : db $06, $01 : dw .DoNothing
+cop #$CC : db $06
+cop #$A0 : dl EMPFallingBlockFloor : dw $0128, $0160, $2300
+cop #$DA : db $0E
+cop #$A0 : dl EMPFallingBlockFloor : dw $0128, $0140, $2300
+jmp .SoundAndReturn
 
 
 

@@ -7,10 +7,211 @@ padbyte $FF
 org $8A8000
 db $22,$08,$20
 ECWaterWorm:
+lda #$0011 : tsb $12
+J_8A8008:    ; org $8a8008
+cop #$27 : db $18
+lda #$2000 : tsb $10
+cop #$DA : db $77
+lda #$2000 : trb $10
+cop #$A2 : dl C_8A8264 : dw $0301
+lda #$2000 : tsb $10
+cop #$DA : db $3F
+lda #$2000 : trb $10
+cop #$80 : db $22
+cop #$89
+cop #$A2 : dl C_8A825C : dw $0301
+cop #$30 : db $00, $F0, $04 : dw B_8A80D1
+cop #$80 : db $23
+cop #$89
+cop #$30 : db $00, $F0, $05 : dw B_8A80EC
+cop #$80 : db $24
+cop #$89
+cop #$30 : db $00, $F0, $06 : dw B_8A8107
+cop #$80 : db $25
+cop #$89
+cop #$30 : db $00, $F0, $07 : dw B_8A8122
+cop #$80 : db $26
+cop #$89
+cop #$30 : db $00, $F0, $00 : dw B_8A813D
+cop #$80 : db $27
+cop #$89
+cop #$30 : db $00, $F0, $01 : dw B_8A8158
+cop #$80 : db $28
+cop #$89
+cop #$30 : db $00, $F0, $02 : dw B_8A8173
+cop #$80 : db $29
+cop #$89
+cop #$30 : db $00, $F0, $03 : dw B_8A818E
+cop #$80 : db $2A
+cop #$89
+jmp J_8A80C3
+
+; No way to get here?
+cop #$80 : db $23
+cop #$89
+
+;org $8a80a0
+J_8A80A0:
+cop #$80 : db $24
+cop #$89
+J_8A80A5:    ; org $8a80a5
+cop #$80 : db $25
+cop #$89
+J_8A80AA:    ; org $8a80aa
+cop #$80 : db $26
+cop #$89
+J_8A80AF:    ; org $8a80af
+cop #$80 : db $27
+cop #$89
+J_8A80B4:    ; org $8a80b4
+cop #$80 : db $A8
+cop #$89
+J_8A80B9:    ; org $8a80b9
+cop #$80 : db $A9
+cop #$89
+J_8A80BE:    ; org $8a80be
+cop #$80 : db $AA
+cop #$89
+J_8A80C3:    ; org $8a80c3
+cop #$84 : db $2B, $04
+cop #$8A
+cop #$80 : db $35
+cop #$89
+jmp J_8A8008
+B_8A80D1:    ; org $8a80d1
+cop #$80 : db $2B
+cop #$89
+cop #$A5 : dl C_8A81A9 : dw $D800, $0202
+cop #$B0 : db $00, $03
+cop #$84 : db $2B, $02
+cop #$8A
+jmp J_8A80A0
+B_8A80EC:    ; org $8a80ec
+cop #$80 : db $2C
+cop #$89
+cop #$A5 : dl C_8A81A9 : dw $D8FC, $0202
+cop #$B0 : db $04, $03
+cop #$84 : db $2C, $02
+cop #$8A
+jmp J_8A80A5
+B_8A8107:    ; org $8a8107
+cop #$80 : db $2D
+cop #$89
+cop #$A5 : dl C_8A81A9 : dw $D8F8, $0202
+cop #$B0 : db $04, $00
+cop #$84 : db $2D, $02
+cop #$8A
+jmp J_8A80AA
+B_8A8122:    ; org $8a8122
+cop #$80 : db $2E
+cop #$89
+cop #$A5 : dl C_8A81A9 : dw $D8FC, $0200
+cop #$B0 : db $04, $04
+cop #$84 : db $2E, $02
+cop #$8A
+jmp J_8A80AF
+B_8A813D:    ; org $8a813d
+cop #$80 : db $2F
+cop #$89
+cop #$A5 : dl C_8A81A9 : dw $D800, $0200
+cop #$B0 : db $00, $04
+cop #$84 : db $2F, $02
+cop #$8A
+jmp J_8A80B4
+B_8A8158:    ; org $8a8158
+cop #$80 : db $B0
+cop #$89
+cop #$A5 : dl C_8A81A9 : dw $D804, $0200
+cop #$B0 : db $03, $04
+cop #$84 : db $B0, $02
+cop #$8A
+jmp J_8A80B9
+B_8A8173:    ; org $8a8173
+cop #$80 : db $B1
+cop #$89
+cop #$A5 : dl C_8A81A9 : dw $D808, $0202
+cop #$B0 : db $03, $00
+cop #$84 : db $B1, $02
+cop #$8A
+jmp J_8A80BE
+B_8A818E:    ; org $8a818e
+cop #$80 : db $B2
+cop #$89
+cop #$A5 : dl C_8A81A9 : dw $D804, $0202
+cop #$B0 : db $03, $03
+cop #$84 : db $B2, $02
+cop #$8A
+jmp J_8A80C3
+
+C_8A81A9:    ; org $8a81a9
+lda #$0080 : tsb $12
+cop #$A5 : dl C_8A8250 : dw $0000, $0300
+lda $0010,y : ora $10 : sta $0010,y
+cop #$5B : dw $0010
+cop #$A2 : dl C_8A822B : dw $2200
+lda #$0002 : jsr S_8A8200
+cop #$A2 : dl C_8A822B : dw $2200
+lda #$0003 : jsr S_8A8200
+cop #$88 : dl $8EE000
+cop #$B6 : db $30
+cop #$07 : db $1E
+cop #$84 : db $08, $02
+cop #$8A
+cop #$B4
+B_8A81F0:    ; org $8a81f0
+cop #$B1
+cop #$80 : db $08
+cop #$89
+lda $10 : bit #$4000 : beq B_8A81F0
+cop #$E0
+
+S_8A8200:    ; org $8a8200
+sta $0008,y
+lda $0010,y : ora $10 : sta $0010,y
+lda $2C : sta $002C,y
+lda $2E : sta $002E,y
+phx
+lda $7F0018,x
+pha
+  lda $7F001A,x
+  tyx
+  sta $7F001A,x
+pla : sta $7F0018,x
+plx
+rts
+
+C_8A822B:    ; org $8a822b
+lda #$2000 : trb $10
+cop #$B6 : db $30
+cop #$88 : dl $8EE000
+cop #$84 : db $26, $02
+cop #$8A
+cop #$B4
+B_8A8240:    ; org $8a8240
+cop #$B1
+cop #$80 : db $26
+cop #$89
+lda $10 : bit #$4000 : beq B_8A8240
+cop #$E0
+
+C_8A8250:    ; org $8a8250
+cop #$88 : dl $8EE000
+cop #$80 : db $07
+cop #$89
+cop #$E0
+
+C_8A825C:    ; org $8a825c
+cop #$84 : db $34, $09
+cop #$8A
+cop #$E0
+
+C_8A8264:    ; org $8a8264
+cop #$84 : db $33, $06
+cop #$8A
+cop #$E0
 
 
-
-org $8A826C
+;org $8A826C
 db $00,$00,$00
 ECSkeleton:
 
@@ -50,11 +251,46 @@ EBat_Lackey4:
 org $8A8755
 db $1F,$00,$00
 EBat_Simple:
+{
+cop #$27 : db $0C
+cop #$B6 : db $30
+EBatSimple_Wait:    ; org $8a875e
+cop #$27 : db $01
+cop #$C2
+EBatSimple_ChooseDir:    ; org $8a8763
+cop #$23 : and #$0003
+  dec : bmi EBatSimple_TrySouth
+  beq EBatSimple_TryNorth
+  dec : beq EBatSimple_TryWest
+bra EBatSimple_TryEast
+EBatSimple_TrySouth:    ; org $8a8772
+cop #$16 : dw EBatSimple_Wait
+lda $16 : cmp $0696 : bcs EBatSimple_Wait
+cop #$83 : db $1F, $00, $11
+cop #$89
+bra EBatSimple_ChooseDir
+EBatSimple_TryNorth:    ; org $8a8786
+cop #$15 : dw EBatSimple_Wait
+lda $16 : cmp #$0010 : bcc EBatSimple_Wait
+cop #$83 : db $20, $00, $12
+cop #$89
+bra EBatSimple_ChooseDir
+EBatSimple_TryWest:    ; org $8a879a
+cop #$17 : dw EBatSimple_Wait
+lda $14 : cmp #$0010 : bcc EBatSimple_Wait
+cop #$83 : db $21, $12, $00
+cop #$89
+bra EBatSimple_ChooseDir
+EBatSimple_TryEast:    ; org $8a87ae
+cop #$18 : dw EBatSimple_Wait
+lda $14 : cmp $0692 : bcs EBatSimple_Wait
+cop #$83 : db $A1, $11, $00
+cop #$89
+jmp EBatSimple_ChooseDir
+}
+;warnpc $8a87c3
 
-
-
-
-org $8A87C3
+;org $8A87C3
 db $38,$02,$23
 ECSpear:
 .Far:
@@ -79,6 +315,29 @@ org $8A8858
 db $C1,$03,$11,$C7,$0D,$04,$C2,$00,$64,$87,$88,$A3,$AC,$87,$80,$A3,$AC,$A4,$87,$84,$AC,$D6,$CD,$A3,$87,$80,$A0,$84,$CB,$80,$A3,$AC,$A4,$87,$84,$AC,$D6,$C9,$D6,$8E,$A4,$87,$84,$CB,$A3,$84,$80,$A3,$88,$83,$84,$AC,$82,$80,$A6,$84,$2A,$2A,$2A,$C3,$00,$C0
 
 ;org $8A8896
+db $1e : dw $0100
+EMPPullableStatue:
+lda #$ABF0 : sta $7F0020,x
+lda #$1111 : sta $20
+  sta $22
+lda #$0031 : tsb $12
+cop #$5B : dw $0008
+cop #$0B
+cop #$A2 : dl B_80E256 : dw $2300
+
+B_8A88B9:    ; org $8a88b9
+lda #$00FF : sta $7F0026,x
+cop #$C1
+lda $7F0026,x : cmp #$00FF : bne +
+rtl
++:
+lda $09AE : bit #$0002 : bne B_8A88D9
+dec $24 : bmi B_8A88B9
+rtl
+B_8A88D9:    ; org $8a88d9
+cop #$C7 : dl J_80DBB6
+warnpc $8a88de
+
 
 org $8A8931
 db $0F,$01,$01
@@ -122,16 +381,232 @@ ECCrawlingSpikeBall:
 org $8a8b1b
 db $00 : dw $0000
 EMPMudGolem:
+cop #$27 : db $10
+J_8A8B21:    ; org $8a8b21
+cop #$C2
+J_8A8B23:    ; org $8a8b23
+cop #$2C : dw B_8A8B29, B_8A8B33
+B_8A8B29:    ; org $8a8b29
+cop #$2A : dw $0008, B_8A8B56, B_8A8B33, B_8A8B71
+B_8A8B33:    ; org $8a8b33
+cop #$2B : dw $0008, B_8A8B8C, B_8A8B3D, B_8A8BA8
+B_8A8B3D:    ; org $8a8b3d
+rtl
+B_8A8B3E:    ; org $8a8b3e
+cop #$C2
+cop #$23 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, $8B4E : dw B_8A8B56, B_8A8B71 : dw B_8A8B8C, B_8A8BA8
+B_8A8B56:    ; org $8a8b56
+cop #$21 : db $03 : dw B_8A8BC4
+cop #$17 : dw B_8A8B3E
+cop #$81 : db $07, $12 : cop #$89
+cop #$17 : dw B_8A8B3E
+cop #$81 : db $08, $12 : cop #$89
+bra J_8A8B23
+B_8A8B71:    ; org $8a8b71
+cop #$21 : db $03 : dw B_8A8BEF
+cop #$18 : dw B_8A8B3E
+cop #$81 : db $87, $11 : cop #$89
+cop #$18 : dw B_8A8B3E
+cop #$81 : db $88, $11 : cop #$89
+bra J_8A8B23
+B_8A8B8C:    ; org $8a8b8c
+cop #$21 : db $03 : dw B_8A8C1A
+cop #$15 : dw B_8A8B3E
+cop #$82 : db $05, $12 : cop #$89
+cop #$15 : dw B_8A8B3E
+cop #$82 : db $06, $12 : cop #$89
+jmp J_8A8B23
+B_8A8BA8:    ; org $8a8ba8
+cop #$21 : db $03 : dw B_8A8C45
+cop #$16 : dw B_8A8B3E
+cop #$82 : db $03, $11 : cop #$89
+cop #$16 : dw B_8A8B3E
+cop #$82 : db $04, $11 : cop #$89
+jmp J_8A8B23
+B_8A8BC4:    ; org $8a8bc4
+lda #$0008 : tsb $10
+cop #$81 : db $07, $11 : cop #$89
+cop #$81 : db $08, $11 : cop #$89
+cop #$84 : db $02, $10 : cop #$8A
+cop #$81 : db $25, $04 : cop #$89
+cop #$84 : db $02, $10 : cop #$8A
+lda #$0008 : trb $10
+jmp J_8A8B21
+B_8A8BEF:    ; org $8a8bef
+lda #$0008 : tsb $10
+cop #$81 : db $87, $12 : cop #$89
+cop #$81 : db $88, $12 : cop #$89
+cop #$84 : db $82, $10 : cop #$8A
+cop #$81 : db $A5, $03 : cop #$89
+cop #$84 : db $82, $10 : cop #$8A
+lda #$0008 : trb $10
+jmp J_8A8B21
+B_8A8C1A:    ; org $8a8c1a
+lda #$0008 : tsb $10
+cop #$82 : db $05, $11 : cop #$89
+cop #$82 : db $06, $11 : cop #$89
+cop #$84 : db $01, $10 : cop #$8A
+cop #$82 : db $24, $04 : cop #$89
+cop #$84 : db $01, $10 : cop #$8A
+lda #$0008 : trb $10
+jmp J_8A8B21
+B_8A8C45:    ; org $8a8c45
+lda #$0008 : tsb $10
+cop #$82 : db $03, $12 : cop #$89
+cop #$82 : db $04, $12 : cop #$89
+cop #$84 : db $00, $10 : cop #$8A
+cop #$82 : db $23, $03 : cop #$89
+cop #$84 : db $00, $10 : cop #$8A
+lda #$0008 : trb $10
+jmp J_8A8B21
 
 
-org $8a8c70
+;org $8a8c70
 db $09 : dw $0000
 EMPSpinner:
+cop #$BC : db $08, $00
+lda #$0011 : tsb $12
+cop #$5B : dw $0008
+cop #$0B
+B_8A8C82:    ; org $8a8c82
+cop #$27 : db $10
+J_8A8C85:    ; org $8a8c85
+lda $10 : bit #$4000 : bne B_8A8C82
+cop #$84 : db $28, $08
+cop #$8A
+cop #$2D : and #$0001 : beq B_8A8CD2
+cop #$80 : db $29
+cop #$89
+cop #$07 : db $1E
+cop #$A5 : dl B_8A8D61 : dw $F0F2, $0200
+cop #$A5 : dl B_8A8D74 : dw $F00F, $0200
+cop #$A5 : dl B_8A8D87 : dw $04F2, $0200
+cop #$A5 : dl B_8A8D9A : dw $040F, $0200
+cop #$80 : db $2A
+cop #$89
+cop #$84 : db $27, $02
+cop #$8A
+bra J_8A8C85
+B_8A8CD2:    ; org $8a8cd2
+cop #$80 : db $0A
+cop #$89
+cop #$07 : db $1E
+cop #$A5 : dl C_8A8D0C : dw $E000, $0200
+cop #$A5 : dl C_8A8D2B : dw $0000, $0202
+cop #$A5 : dl C_8A8D3D : dw $F5E8, $0200
+cop #$A5 : dl C_8A8D4F : dw $F518, $0200
+cop #$80 : db $0B
+cop #$89
+cop #$84 : db $09, $02
+cop #$8A
+jmp J_8A8C85
+C_8A8D0C:    ; org $8a8d0c
+jsr S_8A8DAD
+cop #$B9
+cop #$82 : db $0D, $06
+cop #$89
+lda #$0002 : tsb $10
+B_8A8D1C:    ; org $8a8d1c
+cop #$82 : db $0D, $06
+cop #$89
+lda $10 : bit #$4000 : beq B_8A8D1C
+cop #$E0
+C_8A8D2B:    ; org $8a8d2b
+jsr S_8A8DAD
+B_8A8D2E:    ; org $8a8d2e
+cop #$82 : db $0D, $05
+cop #$89
+lda $10 : bit #$4000 : beq B_8A8D2E
+cop #$E0
+C_8A8D3D:    ; org $8a8d3d
+jsr S_8A8DAD
+B_8A8D40:    ; org $8a8d40
+cop #$81 : db $0C, $06
+cop #$89
+lda $10 : bit #$4000 : beq B_8A8D40
+cop #$E0
+C_8A8D4F:    ; org $8a8d4f
+jsr S_8A8DAD
+B_8A8D52:    ; org $8a8d52
+cop #$81 : db $8C, $05
+cop #$89
+lda $10 : bit #$4000 : beq B_8A8D52
+cop #$E0
+B_8A8D61:    ; org $8a8d61
+jsr S_8A8DAD
+cop #$83 : db $2C, $04, $04
+cop #$89
+lda $10 : bit #$4000 : beq B_8A8D61
+cop #$E0
+B_8A8D74:    ; org $8a8d74
+jsr S_8A8DAD
+cop #$83 : db $AC, $03, $04
+cop #$89
+lda $10 : bit #$4000 : beq B_8A8D74
+cop #$E0
+B_8A8D87:    ; org $8a8d87
+jsr S_8A8DAD
+cop #$83 : db $2B, $04, $03
+cop #$89
+lda $10 : bit #$4000 : beq B_8A8D87
+cop #$E0
+B_8A8D9A:    ; org $8a8d9a
+jsr S_8A8DAD
+cop #$83 : db $AB, $03, $03
+cop #$89
+lda $10 : bit #$4000 : beq B_8A8D9A
+cop #$E0
+S_8A8DAD:    ; org $8a8dad
+cop #$5B : dw $0010
+lda #$0080 : tsb $12
+rts
+
 
 
 org $8A8DB7
 db $11,$00,$00
 EMPSlug:
+
+
+org $8a8eb6
+db $11 : dw $0000
+EMPSlugBlue:
+
+
+org $8a9061
+db $00 : dw $0300
+EMPStatueSouthGreen:
+
+
+org $8a906b
+db $02 : dw $0300
+EMPStatueWestGreen:
+
+
+org $8a9070
+db $02 : dw $0300
+EMPStatueEastGreen:
+
+
+org $8a95b3
+db $00 : dw $0300
+EMPStatueSouthRed:
+
+
+org $8a95b8
+db $01 : dw $0300
+EMPStatueNorthRed:
+
+
+org $8a95bd
+db $02 : dw $0300
+EMPStatueWestRed:
+
+
+org $8a95c2
+db $02 : dw $0300
+EMPStatueEastRed:
 
 
 org $8a97ee
@@ -1080,6 +1555,61 @@ db $3b : dw $0200
 ENazcaFireball:
 
 
+J_8ACD1E:    ; org $8acd1e
+cop #$14 : db $00, $01 : dw J_8ACD4A
+cop #$14 : db $FF, $00 : dw J_8ACDA2
+cop #$14 : db $FF, $01 : dw J_8ACD76
+lda $7F000A,x
+bne B_8ACD40
+cop #$87 : db $3B, $08, $12, $11
+cop #$8A
+bra J_8ACD1E
+B_8ACD40:    ; org $8acd40
+cop #$87 : db $3B, $04, $02, $01
+cop #$8A
+bra J_8ACD1E
+J_8ACD4A:    ; org $8acd4a
+cop #$14 : db $FF, $00 : dw J_8ACD76
+cop #$14 : db $00, $FF : dw J_8ACD1E
+cop #$14 : db $FF, $FF : dw J_8ACDA2
+lda $7F000A,x
+bne B_8ACD6C
+cop #$87 : db $3B, $08, $12, $12
+cop #$8A
+bra J_8ACD4A
+B_8ACD6C:    ; org $8acd6c
+cop #$87 : db $3B, $04, $02, $02
+cop #$8A
+bra J_8ACD4A
+J_8ACD76:    ; org $8acd76
+cop #$14 : db $00, $FF : dw J_8ACDA2
+cop #$14 : db $01, $00 : dw J_8ACD4A
+cop #$14 : db $01, $FF : dw J_8ACD1E
+lda $7F000A,x
+bne B_8ACD98
+cop #$87 : db $3B, $08, $11, $12
+cop #$8A
+bra J_8ACD76
+B_8ACD98:    ; org $8acd98
+cop #$87 : db $3B, $04, $01, $02
+cop #$8A
+bra J_8ACD76
+J_8ACDA2:    ; org $8acda2
+cop #$14 : db $01, $00 : dw J_8ACD1E
+cop #$14 : db $00, $01 : dw J_8ACD76
+cop #$14 : db $01, $01 : dw J_8ACD4A
+lda $7F000A,x
+bne B_8ACDC4
+cop #$87 : db $3B, $08, $11, $11
+cop #$8A
+bra J_8ACDA2
+B_8ACDC4:    ; org $8acdc4
+cop #$87 : db $3B, $04, $01, $01
+cop #$8A
+bra J_8ACDA2
+
+
+
 
 org $8ACF0E
 db $D3,$C2,$00,$69,$8E,$A5,$AC,$D6,$98,$83,$84,$85,$84,$80,$A4,$84,$83,$AC,$A4,$87,$84,$2B,$AC,$CB,$D6,$9C,$83,$84,$8C,$8E,$8D,$4F,$AC,$CB,$4B,$8E,$8E,$8A,$4F,$AC,$40,$AC,$4C,$A9,$A3,$A4,$88,$82,$AC,$63,$A4,$80,$A4,$A5,$84,$4F,$4F,$C3,$00,$C0
@@ -1816,10 +2346,89 @@ rts
 ; org $8ad9d2
 
 
+org $8adc55
+db $00 : dw $2000
+EJPusherSolidArmRoom:
+phx
+sep #$20
+ldx #$0000
+J_8ADC5E:    ; org $8adc5e
+lda $8ADCFE,x : bne B_8ADC69
+B_8ADC64:    ; org $8adc64
+rep #$20
+plx
+cop #$E0
+B_8ADC69:    ; org $8adc69
+cmp $0644 : beq B_8ADC75
+  bcs B_8ADC64
+inx : inx : inx
+bra J_8ADC5E
+B_8ADC75:    ; org $8adc75
+rep #$20
+lda $8ADCFF,x : sec : sbc #$DCFE : sta $24
+plx
+cop #$DA : db $01
+phx
+ldx $24
+phd
+lda #$0000 : tcd
+lda $09A6 : sta $18
+inc : sta $1A
+lda $09A8 : sta $1C
+inc : sta $1E
+sep #$20
+J_8ADC9F:    ; org $8adc9f
+lda $8ADCFE,x : bmi B_8ADCF9
+  cmp $1A : bcs B_8ADCF1
+lda $8ADCFF,x : cmp $1E : bcs B_8ADCF1
+lda $8ADD00,x : cmp $18 : bcc B_8ADCF1
+lda $8ADD01,x : cmp $1C : bcc B_8ADCF1
+lda $8ADD02,x
+rep #$20
+and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  clc : adc $0408 : sta $0408
+lda $8ADD03,x : and #$00FF : bit #$0080 : beq +
+  ora #$FF00
++:
+  clc : adc $040A : sta $040A
+sep #$20
+B_8ADCF1:    ; org $8adcf1
+inx : inx : inx : inx : inx : inx
+bra J_8ADC9F
+B_8ADCF9:    ; org $8adcf9
+rep #$20
+pld
+plx
+rtl
+
+db $55 : dw $dd05
+db $EA : dw $dd0b
+db $00
+
+db $02,$04,$16,$0A,$00,$04 
+db $03,$07,$04,$09,$00,$04 
+db $07,$06,$08,$08,$00,$FC 
+db $0B,$07,$0C,$09,$00,$04 
+db $FF
+warnpc $8add1e
+
+
+org $8add9e
+db $00 : dw $0110
+EMuRockGolemWaiting:
+
+
+org $8ade07
+db $00 : dw $0100
+EMuRockGolemSleeping:
+
+
 org $8ae26e
 db $0d,$00,$20
 EMuWizard:
-org $8ae271
+{
 cop #$13 : dw .SleepForever    ; Not on open ground.
 lda #$0011 : tsb $12
 lda $14 : sta $7F100C,x
@@ -1963,12 +2572,21 @@ dec $24 : bmi .DieOrRefresh
 .DieOrRefresh:
 lda $10 : bit #$4000 : beq .RefreshSprite
 cop #$E0
+}
 
 ;org $8ae45c
 db $19,$00,$03
 EMuSlime:
 
 
+org $8ae6cc
+db $1d : dw $0000
+EMuDroplet:
+
+
+org $8ae943
+db $2c : dw $2000
+EMuGlowBallWorm:
 
 
 org $8aea51
@@ -1995,22 +2613,22 @@ EVJack:
 cop #$9C : dl EVColorMathManager : dw $2800    ; $8af53d
 cop #$9C : dl EVCombinedAttackTimer : dw $2000    ; $8af6e6
 lda #$FFFF : sta $00FE
-cop #$28 : db $80, $01, $60, $00 : dw B_8AFA48
-cop #$28 : db $80, $01, $E0, $01 : dw B_8AFA48
+cop #$28 : db $80, $01, $60, $00 : dw EVampsSleep  ; if player in other room
+cop #$28 : db $80, $01, $E0, $01 : dw EVampsSleep
 lda #$0002 : jsl LR_SecOnDefeatedBossA : bcc +    ; $80B05E
   stz $0AEC
   stz $0AEE
   cop #$E0
 +:
 lda #$008A : and #$00FF : sta $0AF6  ; i.e. BankOf(EVRespawnData)
-  lda #EVRespawnData : sta $0AF4     ; #$FA51
+  lda.w #EVRespawnData : sta $0AF4     ; #$FA51
 cop #$57 : dl EVJack_OnDeath
 lda #$8011 : tsb $12
-cop #$D0 : db $87, $01 : dw .SeenIntro    ; $f27e
+cop #$D0 : db $87, $01 : dw EVJack_SeenIntro    ; $f27e
 cop #$C1
-cop #$45 : db $01, $13, $0F, $15 : dw B_8AF259
+cop #$45 : db $01, $13, $0F, $15 : dw EVJack_PlayerApproaches
   rtl
-B_8AF259:
+EVJack_PlayerApproaches:
 cop #$D2 : db $86, $01
 lda $14 : sta $7F0018,x
 lda #$0100 : sta $7F001A,x
@@ -2019,8 +2637,8 @@ cop #$53
 cop #$D0 : db $87, $01 : dw .SeenIntro    ; $f27e
 cop #$CC : db $87
 cop #$BF : dw EVText_Intro    ; $FB45
-.SeenIntro:    ; $f27e
-lda $0644 : cmp #$0067 : bne .SkipMuDoorSetup
+EVJack_SeenIntro:    ; $f27e
+lda $0644 : cmp #$0067 : bne EVJack_PostMuDoorSetup
 lda #$EFF0 : tsb $065A
 cop #$07 : db $0E
 cop #$DA : db $0E
@@ -2030,23 +2648,23 @@ cop #$32 : db $91
 cop #$33
 cop #$04 : db $0F
 cop #$DA : db $27
-.SkipMuDoorSetup:
+EVJack_PostMuDoorSetup:
 lda #$EFF0 : trb $065A
 cop #$DA : db $77
 cop #$CC : db $02
-cop #$A2 : dl J_8AF876 : dw $2200
+cop #$A2 : dl EVampJackImageManager : dw $2200
 stz $09F0
 stz $09F2
 bra J_8AF2CA
-J_8AF2BD:
-jsr S_8AFA17
+EVJack_Main:
+jsr SR_SetVampDestFromIndexes
 cop #$52 : db $01, $02, $FF
 cop #$53
 cop #$DA : db $1D
 J_8AF2CA:
 lda $00F2 : beq B_8AF313
 J_8AF2CF:
-jsr B_8AF961
+jsr SR_SetJackRandomDest
 cop #$58 : dw EVJack_OnHit
 cop #$52 : db $01, $02, $FF
 cop #$53
@@ -2054,12 +2672,13 @@ cop #$DA : db $13
 cop #$80 : db $02
 cop #$89
 cop #$07 : db $06
-cop #$A5 : dl C_8AF8AC : dw $0000, $2200
-cop #$A5 : dl C_8AF8C7 : dw $0000, $2200
-cop #$A5 : dl C_8AF8E2 : dw $0000, $2200
-cop #$A5 : dl C_8AF8FD : dw $0000, $2200
+cop #$A5 : dl EVBulletJackWest : dw $0000, $2200
+cop #$A5 : dl EVBulletJackEast : dw $0000, $2200
+cop #$A5 : dl EVBulletJackNorth : dw $0000, $2200
+cop #$A5 : dl EVBulletJackSouth : dw $0000, $2200
 cop #$80 : db $0D
-cop #$89 : bra J_8AF2CA
+cop #$89
+bra J_8AF2CA
 B_8AF313:
 lda $09F2 : beq B_8AF31B
 jmp J_8AF394
@@ -2090,7 +2709,7 @@ B_8AF36E:
 lda #$0200 : tsb $10
 cop #$80 : db $04
 cop #$89
-cop #$3B : db $43 : dl $80B519
+cop #$3B : db $43 : dl TIndexedPaletteBundleOnce    ; $80b519
 cop #$DA : db $17
 cop #$A5 : dl C_8AF619 : dw $0000, $0202
 cop #$80 : db $11
@@ -2108,19 +2727,19 @@ cop #$A2 : dl EVShield_J3 : dw $0200
 cop #$A2 : dl EVShield_J4 : dw $0200
 cop #$84 : db $01, $02
 cop #$8A
-jmp J_8AF2BD
+jmp EVJack_Main
 
 ;org $8af3c8
 db $17,$00,$01
 EVSyl:
-cop #$28 : db $80, $01, $60, $00 : dw B_8AFA48
-cop #$28 : db $80, $01, $E0, $01 : dw B_8AFA48
+cop #$28 : db $80, $01, $60, $00 : dw EVampsSleep  ; if player in other room
+cop #$28 : db $80, $01, $E0, $01 : dw EVampsSleep
 lda #$0002 : jsl LR_SecOnDefeatedBossA : bcc +    ; $80B05E
   cop #$E0
 +:
 cop #$57 : dl EVSyl_OnDeath    ; $8afaa0
 lda #$8011 : tsb $12
-cop #$D0 : db $87, $01 : dw .SeenIntro    ; $f41d
+cop #$D0 : db $87, $01 : dw EVSyl_SeenIntro    ; $f41d
 cop #$C1
 cop #$45 : db $01, $13, $0F, $15 : dw B_8AF401
 rtl
@@ -2132,30 +2751,31 @@ lda #$0100 : sta $7F001A,x
 cop #$52 : db $17, $02, $FF
 cop #$53
 cop #$D2 : db $02, $01
-
-.SeenIntro:    ; org $8af41d
-cop #$A2 : dl C_8AF7B6 : dw $2200
+EVSyl_SeenIntro:    ; org $8af41d
+cop #$A2 : dl EVSylPlayerShooter : dw $2200
 bra J_8AF433
 
-J_8AF426:    ; org $8af426
-jsr S_8AFA17
+EVSyl_Main:    ; org $8af426
+jsr SR_SetVampDestFromIndexes
 cop #$52 : db $17, $02, $FF
 cop #$53
 cop #$DA : db $3B
-
 J_8AF433:    ; org $8af433
 lda $00F2 : beq B_8AF455
 cop #$58 : dw EVSyl_OnHit
-stz $00F0
-jsr S_8AF9A8
+stz $00F0    ; $00f0 seems to mean "suppress Syl attack".
+jsr SR_GetSylStepDest
 cop #$52 : db $17, $02, $FF
 cop #$53
-cop #$58 : dw $0000 : inc $00F0
-cop #$DA : db $07 : bra J_8AF433
+cop #$58 : dw $0000
+inc $00F0
+cop #$DA : db $07
+bra J_8AF433
 
 B_8AF455:    ; org $8af455
 lda $09F2 : bne B_8AF4BE
-cop #$58 : dw $0000 : inc $00F0
+cop #$58 : dw $0000
+inc $00F0
 cop #$C1
 lda $09F2 : bne B_8AF4BE
 lda $09F0 : bne B_8AF46E
@@ -2179,40 +2799,44 @@ lda #$0200 : tsb $10
 cop #$80 : db $1A
 cop #$89
 cop #$DA : db $17
-cop #$A5 : dl C_8AF551 : dw $0000, $0202
+cop #$A5 : dl EVampEnergyBall : dw $0000, $0202
 cop #$DA : db $1F
 cop #$80 : db $2A
 cop #$89
 lda #$0200 : trb $10
-jmp J_8AF426
+jmp EVSyl_Main
 
 B_8AF4BE:    ; org $8af4be
 lda #$0001 : sta $00F2
-jmp J_8AF426
+jmp EVSyl_Main
 
 ;org $8af4c7
+EVSyl_DoFireWest:
 cop #$84 : db $18,$02
 cop #$8A
-cop #$A5 : dl C_8af8a5 : dw $0000, $2200
-jmp J_8AF426
+cop #$A5 : dl EVBulletSylWest : dw $0000, $2200
+jmp EVSyl_Main
 
 ;org $8af4d9
+EVSyl_DoFireEast:
 cop #$84 : db $18,$02
 cop #$8A
-cop #$A5 : dl C_8AF8C0 : dw $0000, $2200
-jmp J_8AF426
+cop #$A5 : dl EVBulletSylEast : dw $0000, $2200
+jmp EVSyl_Main
 
 ;org $8af4eb
+EVSyl_DoFireNorth:
 cop #$84 : db $18,$02
 cop #$8A
-cop #$A5 : dl C_8AF8DB : dw $0000, $2200
-jmp J_8AF426
+cop #$A5 : dl EVBulletSylNorth : dw $0000, $2200
+jmp EVSyl_Main
 
 ;org $8af4fd
+EVSyl_DoFireSouth:
 cop #$84 : db $18,$02
 cop #$8A
-cop #$A5 : dl C_8AF8F6 : dw $0000, $2200
-jmp J_8AF426
+cop #$A5 : dl EVBulletSylSouth : dw $0000, $2200
+jmp EVSyl_Main
 
 ;org $8af50f
 EVSyl_OnHit:
@@ -2225,7 +2849,7 @@ cop #$A2 : dl EVShield_S3 : dw $0200
 cop #$A2 : dl EVShield_S4 : dw $0200
 cop #$84 : db $17, $02
 cop #$8A
-jmp J_8AF426
+jmp EVSyl_Main
 
 ;org $8af53d
 EVColorMathManager:
@@ -2237,7 +2861,8 @@ rep #$20
 rtl
 
 ;org $8af551
-C_8AF551:
+EVampEnergyBall:
+{
 lda $0644 : cmp #$0067 : bne .UseBabelStats
 .UseMuStats:
   lda #$ACB4 : sta $7F0020,x : bra +
@@ -2250,55 +2875,49 @@ lda $16 : clc : adc #$0020 : sta $7F001A,x
 cop #$52 : db $0A, $04, $FF
 cop #$53
 cop #$08 : db $23, $23
-cop #$9C : dl C_8AF633 : dw $2000
+cop #$9C : dl EVampOrbRadiusGrower : dw $2000
 cop #$3B : db $67 : dl TIndexedPaletteBundleOnce    ; $80B519
 cop #$84 : db $0B, $04
 cop #$8A
-jsr S_8AF6D7
+jsr SR_SetVampOrbPosFromThis
 cop #$07 : db $20
 cop #$8D : db $2E
 lda #$0000 : sta $7F100C,x
-cop #$2B : dw $0000, B_8AF5B5, B_8AF5B5, B_8AF5BA
-
-B_8AF5B5:    ; org $8af5b5
-lda #$FFFD : bra J_8AF5BD
-
-B_8AF5BA:    ; org $8af5ba
+cop #$2B : dw $0000, .PlayerNorth, .PlayerNorth, .PlayerSouth
+.PlayerNorth:
+lda #$FFFD : bra +
+.PlayerSouth:
 lda #$0003
-
-J_8AF5BD:    ; org $8af5bd
++:
 sta $7F100E,x
-cop #$2A : dw $0028, B_8AF5CB, J_8AF5D7, B_8AF5D0
-
-B_8AF5CB:    ; org $8af5cb
-lda #$FFFE : bra J_8AF5D3
-
-B_8AF5D0:    ; org $8af5d0
+cop #$2A : dw $0028, .PlayerWest, .DoFly, .PlayerEast
+.PlayerWest:
+lda #$FFFE : bra +
+.PlayerEast:
 lda #$0002
-
-J_8AF5D3:    ; org $8af5d3
++:
 sta $7F100C,x
-
-J_8AF5D7:    ; org $8af5d7
-jsr S_8AF6D7
-cop #$A2 : dl C_8AF640 : dw $0300
+.DoFly:    ; org $8af5d7
+jsr SR_SetVampOrbPosFromThis
+cop #$A2 : dl EVCombinedLightning : dw $0300
 jsr S_8AF6AA
-lda $10 : bit #$4000 : bne B_8AF5F0
-cop #$C4 : dl J_8AF5D7
-
-B_8AF5F0:    ; org $8af5f0
-lda $16 : bmi B_8AF5FE
-cmp #$0240 : bcs B_8AF608
-cop #$C4 : dl J_8AF5D7
-
-B_8AF5FE:    ; org $8af5fe
-cmp #$FFC0 : bcc B_8AF608
-cop #$C4 : dl J_8AF5D7
-
-B_8AF608:    ; org $8af608
-lda #$FFFF : sta $00FE : sta $00F6 : sta $00FA
+lda $10 : bit #$4000 : bne .OffScreenCheckForDie
+cop #$C4 : dl .DoFly
+.OffScreenCheckForDie:    ; org $8af5f0
+lda $16 : bmi ..FarNorthVerifyDie
+cmp #$0240 : bcs .Die
+cop #$C4 : dl .DoFly
+..FarNorthVerifyDie:    ; org $8af5fe
+cmp #$FFC0 : bcc .Die
+cop #$C4 : dl .DoFly
+.Die:    ; org $8af608
+lda #$FFFF
+  sta $00FE
+  sta $00F6
+  sta $00FA
 cop #$DA : db $01
 cop #$E0
+}
 
 ;org $8af619
 C_8AF619:
@@ -2309,79 +2928,74 @@ cop #$53
 cop #$E0
 
 ;org $8af633
-C_8AF633:
+EVampOrbRadiusGrower:
 cop #$CA : db $20
   inc $00FE
-  jsr S_8AF6D7
+  jsr SR_SetVampOrbPosFromThis
 cop #$CB
 cop #$E0
 
-C_8AF640:    ; org $8af640
+EVCombinedLightning:    ; org $8af640
+{
 ldy $24
 lda $0026,y : and #$0007 : sta $0000
-cop #$D9 : dw $0000, $F651
-dw B_8AF661, B_8AF666
-dw B_8AF66B, B_8AF670
-dw B_8AF675, B_8AF67A
-dw B_8AF67F, B_8AF684
-
-B_8AF661:    ; org $8af661
-cop #$8D : db $11 : bra B_8AF687
-
-B_8AF666:    ; org $8af666
-cop #$8D : db $95 : bra B_8AF687
-
-B_8AF66B:    ; org $8af66b
-cop #$8D : db $12 : bra B_8AF687
-
-B_8AF670:    ; org $8af670
-cop #$8D : db $13 : bra B_8AF687
-
-B_8AF675:    ; org $8af675
-cop #$8D : db $94 : bra B_8AF687
-
-B_8AF67A:    ; org $8af67a
-cop #$8D : db $93 : bra B_8AF687
-
-B_8AF67F:    ; org $8af67f
-cop #$8D : db $15 : bra B_8AF687
-
-B_8AF684:    ; org $8af684
+cop #$D9 : dw $0000, .SpriteState ;$F651
+.SpriteState:
+dw .State11, .State95
+dw .State12, .State13
+dw .State94, .State93
+dw .State15, .State14
+.State11:
+cop #$8D : db $11 : bra .DoFly
+.State95:
+cop #$8D : db $95 : bra .DoFly
+.State12:
+cop #$8D : db $12 : bra .DoFly
+.State13:
+cop #$8D : db $13 : bra .DoFly
+.State94:
+cop #$8D : db $94 : bra .DoFly
+.State93:
+cop #$8D : db $93 : bra .DoFly
+.State15:
+cop #$8D : db $15 : bra .DoFly
+.State14:
 cop #$8D : db $14
-
-B_8AF687:    ; org $8af687
+.DoFly:    ; org $8af687
 cop #$C1
 cop #$8B
-lda $2A : beq B_8AF6A8
-lda $08 : stz $08 : sta $26
+lda $2A : beq .Die
+lda $08
+  stz $08
+  sta $26
 cop #$C2
 ldy $24
 lda $0014,y : sta $14
 lda $0016,y : sta $16
-dec $26 : bmi B_8AF687
+dec $26 : bmi .DoFly
 rtl
-
-B_8AF6A8:    ; org $8af6a8
+.Die:    ; org $8af6a8
 cop #$E0
+}
 
 S_8AF6AA:    ; org $8af6aa
 inc $26
 lda $16 : clc : adc $7F100E,x : sta $16
 lda $14 : clc : adc $7F100C,x : sta $14
-  bit #$FF00 : beq B_8AF6D6
-  sec : sbc $7F100C,x : sta $14
-lda $7F100C,x : eor #$FFFF : inc a : sta $7F100C,x
-
-B_8AF6D6:    ; org $8af6d6
+  bit #$FF00 : beq +
+    sec : sbc $7F100C,x : sta $14
+  lda $7F100C,x : eor #$FFFF : inc a : sta $7F100C,x
++:
 rts
 
-S_8AF6D7:    ; org $8af6d7
+SR_SetVampOrbPosFromThis:    ; org $8af6d7
 lda $14 : sta $00F6
 lda $16 : sec : sbc $068E : sta $00FA
 rts
 
 ;org $8af6e6
 EVCombinedAttackTimer:
+{
 cop #$23 : and #$00FF : clc : adc #$02D0 : sta $00F2
 cop #$C2
 dec $00F2 : beq +
@@ -2397,9 +3011,11 @@ lda $09F2 : bne +
 cop #$C1
 lda #$0001 : sta $00F2
 rtl
+}
 
 
 EVShield:
+{
 .J1:
 cop #$6C : dw $0000
 bra .JCommon
@@ -2413,8 +3029,7 @@ bra .JCommon
 cop #$6C : dw $C000
 .JCommon:
 cop #$8D : db $2B
-bra .Act
-
+bra .SpiralOut
 .S1:    ;org $8af72d
 cop #$6C : dw $0000
 bra .SCommon
@@ -2428,327 +3043,319 @@ bra .SCommon
 cop #$6C : dw $C000
 .SCommon:    ; org $8af743
 cop #$8D : db $2C
-
-.Act:     ;org $8af746
-.RefreshSprite:
+.SpiralOut:     ;org $8af746
+..RefreshSprite:
 cop #$C1
 cop #$8B
-lda $2A : beq .RefreshSprite
+lda $2A : beq ..RefreshSprite
   lda $08
   stz $08 : sta $26
 cop #$C2
 lda $24 : sta $0000
-cop #$6D : db $03, $02
-lda $7F0012,x : cmp #$0080 : bcs B_8AF76D
+cop #$6D : db $03, $02   ; Little-used "Spiral" routine!
+lda $7F0012,x : cmp #$0080 : bcs .DoOrbit
 dec $26 : bmi .RefreshSprite
 rtl
-B_8AF76D:
+.DoOrbit:
 cop #$CA : db $1E
-B_8AF770:
+..RefreshSprite:
 cop #$C1
 cop #$8B
-lda $2A : beq B_8AF770
-lda $08
-stz $08 : sta $26
+lda $2A : beq ..RefreshSprite
+  lda $08
+  stz $08 : sta $26
 cop #$C2
 lda $24 : sta $0000
-cop #$6D : db $00, $04
-dec $26 : bmi B_8AF78E
+cop #$6D : db $00, $04   ; Little-used "Spiral" routine!
+dec $26 : bmi .SpiralIn
 rtl
-B_8AF78E:
+.SpiralIn:
 cop #$CB
-B_8AF790:
+..RefreshSprite:
 cop #$C1
 cop #$8B
-lda $2A : beq B_8AF790
-lda $08
-stz $08 : sta $26
+lda $2A : beq ..RefreshSprite
+  lda $08
+  stz $08 : sta $26
 cop #$C2
 lda $24 : sta $0000
-cop #$6D : db $FC, $04
+cop #$6D : db $FC, $04   ; Little-used "Spiral" routine!
 lda $7F0012,x : bmi EVShield_Die
-dec $26 : bmi B_8AF790
+dec $26 : bmi ..RefreshSprite
 rtl
 EVShield_Die:
 cop #$E0
+}
 
 ;org $8af7b6
-lda $00F0 : beq B_8AF7BC
+EVSylPlayerShooter:
+{
+lda $00F0 : beq .NotSuppressed
 rtl
-
-B_8AF7BC:    ; org $8af7bc
-lda $10 : bit #$00C0 : beq B_8AF7C4
+.NotSuppressed:
+lda $10 : bit #$00C0 : beq .NotHurtOrDyingOkay
 rtl
-
-B_8AF7C4:    ; org $8af7c4
-ldy $24 : sep #$20
-lda $02
-cmp $0002,y : beq B_8AF7D2
-jmp J_8AF873
-
-B_8AF7D2:    ; org $8af7d2
+.NotHurtOrDyingOkay:    ; org $8af7c4
+ldy $24
+sep #$20
+lda $02 : cmp $0002,y : beq .SylAliveOkay
+jmp .ParentWrongBank
+.SylAliveOkay:    ; org $8af7d2
 rep #$20
 ldy $24
 lda $0014,y : sta $14
 lda $0016,y : sta $16
-cop #$2C : dw B_8AF7E6, B_8AF81D
-
-B_8AF7E6:    ; org $8af7e6
+cop #$2C : dw .PlayerEastWest, .PlayerNorthSouth
+.PlayerEastWest:    ; org $8af7e6
 lda $16
-cmp $8AFA40 : beq B_8AF801
-cmp $8AFA42 : beq B_8AF801
-cmp $8AFA44 : beq B_8AF801
-cmp $8AFA46 : beq B_8AF801
+cmp.l T_VampGridPosY+0 : beq ..AtYGridlineOkay    ; cmp.l $8afa40
+cmp.l T_VampGridPosY+2 : beq ..AtYGridlineOkay
+cmp.l T_VampGridPosY+4 : beq ..AtYGridlineOkay
+cmp.l T_VampGridPosY+6 : beq ..AtYGridlineOkay
 rtl
-
-B_8AF801:    ; org $8af801
-cop #$2A : dw $000F, B_8AF80B, B_8AF875, B_8AF814
-
-B_8AF80B:    ; org $8af80b
-cop #$44 : db $FB, $FF, $FF, $01 : dw B_8AF854
+..AtYGridlineOkay:
+cop #$2A : dw $000F, ..PlayerWest, .NoShoot, ..PlayerEast
+..PlayerWest:
+cop #$44 : db $FB, $FF, $FF, $01 : dw .PlayerOnWestLineFire
 rtl
-
-B_8AF814:    ; org $8af814
-cop #$44 : db $01, $FF, $05, $01 : dw B_8AF859
+..PlayerEast:
+cop #$44 : db $01, $FF, $05, $01 : dw .PlayerOnEastLineFire
 rtl
-
-B_8AF81D:    ; org $8af81d
+.PlayerNorthSouth:    ; org $8af81d
 lda $14
-cmp $8AFA38 : beq B_8AF838
-cmp $8AFA3A : beq B_8AF838
-cmp $8AFA3C : beq B_8AF838
-cmp $8AFA3E : beq B_8AF838
+cmp.l T_VampGridPosX+0 : beq ..AtXGridlineOkay    ; cmp.l $8afa38
+cmp.l T_VampGridPosX+2 : beq ..AtXGridlineOkay
+cmp.l T_VampGridPosX+4 : beq ..AtXGridlineOkay
+cmp.l T_VampGridPosX+6 : beq ..AtXGridlineOkay
 rtl
-
-B_8AF838:    ; org $8af838
-cop #$2B : dw $000F, B_8AF842, B_8AF875, B_8AF84B
-
-B_8AF842:    ; org $8af842
-cop #$44 : db $FF, $FA, $01, $FF : dw B_8AF85E
+..AtXGridlineOkay:
+cop #$2B : dw $000F, ..PlayerNorth, .NoShoot, ..PlayerSouth
+..PlayerNorth:
+cop #$44 : db $FF, $FA, $01, $FF : dw .PlayerOnNorthLineFire
 rtl
-
-B_8AF84B:    ; org $8af84b
-cop #$44 : db $FF, $01, $01, $06 : dw B_8AF863
+..PlayerSouth:
+cop #$44 : db $FF, $01, $01, $06 : dw .PlayerOnSouthLineFire
 rtl
-
-B_8AF854:    ; org $8af854
-lda #$F4C7 : bra J_8AF866
-
-B_8AF859:    ; org $8af859
-lda #$F4D9 : bra J_8AF866
-
-B_8AF85E:    ; org $8af85e
-lda #$F4EB : bra J_8AF866
-
-B_8AF863:    ; org $8af863
-lda #$F4FD
-
-J_8AF866:    ; org $8af866
+.PlayerOnWestLineFire:
+lda.w #EVSyl_DoFireWest : bra .Finalize
+.PlayerOnEastLineFire:
+lda.w #EVSyl_DoFireEast : bra .Finalize
+.PlayerOnNorthLineFire:
+lda.w #EVSyl_DoFireNorth : bra .Finalize
+.PlayerOnSouthLineFire:
+lda.w #EVSyl_DoFireSouth
+.Finalize:    ; org $8af866
 ldy $24 : sta $0000,y
-cop #$07 : db $06 : inc $00F0
+cop #$07 : db $06
+inc $00F0
 rtl
-
 ;org $8af872
-plx
-
-;org $8af873
-J_8AF873:
+plx  ; Unreachable?
+.ParentWrongBank:    ; Actor in $24 is not in this bank. May indicate Syl is dead.
 rep #$20
-
-B_8AF875:    ; org $8af875
+.NoShoot:    ; org $8af875
 rtl
+}
 
 ;org $8af876
-J_8AF876:
+EVampJackImageManager:
+{
+.WaitAndCheckAgain:
 cop #$DA : db $04
 ldy $24
-lda $0014,y : cmp $14 : bne B_8AF889
-lda $0016,y : cmp $16 : beq J_8AF876
-B_8AF889:
-cop #$9C : dl C_8AF89E : dw $0300
+lda $0014,y : cmp $14 : bne .DoSpawnImage
+lda $0016,y : cmp $16 : beq .WaitAndCheckAgain
+.DoSpawnImage:
+cop #$9C : dl EVampJackImageSprite : dw $0300
 ldy $24
 lda $0014,y : sta $14
 lda $0016,y : sta $16
-bra J_8AF876
-C_8AF89E:
+bra .WaitAndCheckAgain
+EVampJackImageSprite:
 cop #$80 : db $0E
 cop #$89
 cop #$E0
+}
 
-;org $8af8a5
-; Unclear where this is referenced.
+EVBullet:
+{
+EVBulletSylWest:    ;org $8af8a5
 lda #$0001 : sta $26
-bra J_8AF8B6
-
-;org $8af8ac
-C_8AF8AC:
+bra EVBulletFlyWest
+EVBulletJackWest:    ;org $8af8ac
 stz $26
 cop #$BC : db $F0, $00
-cop #$C8 : dw B_8AF937
-J_8AF8B6:
+cop #$C8 : dw EVBulletDoCharge
+EVBulletFlyWest:
 cop #$BC : db $F0, $00
-cop #$C8 : dw B_8AF911
-bra J_8AF8B6
-
-;org $8af8c0
-; Unclear where this is referenced.
+cop #$C8 : dw EVBulletAnimate
+bra EVBulletFlyWest
+EVBulletSylEast:    ;org $8af8c0
 lda #$0001 : sta $26
-bra J_8AF8D1
-
-;org $8af8c7
-C_8AF8C7:
+bra EVBulletFlyEast
+EVBulletJackEast:    ;org $8af8c7
 stz $26
 cop #$BC : db $10, $00
-cop #$C8 : dw B_8AF937
-J_8AF8D1:
+cop #$C8 : dw EVBulletDoCharge
+EVBulletFlyEast:
 cop #$BC : db $10, $00
-cop #$C8 : dw B_8AF911
-bra J_8AF8D1
-
-;org $8af8db
-; Unclear where this is referenced.
+cop #$C8 : dw EVBulletAnimate
+bra EVBulletFlyEast
+EVBulletSylNorth:    ;org $8af8db
 lda #$0001 : sta $26
-bra J_8AF8EC
-
-;org $8af8e2
-C_8AF8E2:
+bra EVBulletFlyNorth
+EVBulletJackNorth:    ;org $8af8e2
 stz $26
 cop #$BC : db $00, $F0
-cop #$C8 : dw B_8AF937
-J_8AF8EC:
+cop #$C8 : dw EVBulletDoCharge
+EVBulletFlyNorth:
 cop #$BC : db $00, $F0
-cop #$C8 : dw B_8AF911
-bra J_8AF8EC
-
-;org $8af8f6
-; Unclear where this is referenced.
+cop #$C8 : dw EVBulletAnimate
+bra EVBulletFlyNorth
+EVBulletSylSouth:    ;org $8af8f6
 lda #$0001 : sta $26
-bra J_8AF907
-
-;org $8af8fd
-C_8AF8FD:
+bra EVBulletFlySouth
+EVBulletJackSouth:    ;org $8af8fd
 stz $26
 cop #$BC : db $00, $10
-cop #$C8 : dw B_8AF937
-J_8AF907:
+cop #$C8 : dw EVBulletDoCharge
+EVBulletFlySouth:
 cop #$BC : db $00, $10
-cop #$C8 : dw B_8AF911
-bra J_8AF907
-B_8AF911:
-cop #$13 : dw B_8AF95F
-lda $26 : beq B_8AF928
-cop #$9C : dl C_8AF95A : dw $0200
+cop #$C8 : dw EVBulletAnimate
+bra EVBulletFlySouth
+EVBulletAnimate:
+cop #$13 : dw EVBullet_Die
+lda $26 : beq EVBulletJackCommon
+EVBulletSylCommon:
+cop #$9C : dl EVBulletSylSprite : dw $0200
 cop #$07 : db $14
 cop #$DA : db $03
 cop #$C5
-B_8AF928:
-cop #$9C : dl C_8AF94F : dw $0200
+EVBulletJackCommon:
+cop #$9C : dl EVBulletJackSprite : dw $0200
 cop #$07 : db $14
 cop #$DA : db $01
 cop #$C5
-B_8AF937:
-cop #$13 : dw B_8AF95F
-cop #$9C : dl C_8AF947 : dw $0200
+EVBulletDoCharge:
+cop #$13 : dw EVBullet_Die
+cop #$9C : dl EVBulletChargeSprite : dw $0200
 cop #$DA : db $1D
 cop #$C5
-C_8AF947:
+EVBulletChargeSprite:
 cop #$84 : db $07, $06
 cop #$8A
 cop #$E0
-C_8AF94F:
+EVBulletJackSprite:
 cop #$5B : dw $0010
 cop #$80 : db $23
 cop #$89
 cop #$E0
-C_8AF95A:
+EVBulletSylSprite:
 cop #$80 : db $06
 cop #$89
-B_8AF95F:
+EVBullet_Die:
 cop #$E0
-B_8AF961:
+}
+
+SR_SetJackRandomDest:
+{
 lda $7F0018,x : sta $0018
 lda $7F001A,x : sta $001C
 cop #$23 : and #$0003 : sta $7F100C,x
   asl
 phx : tax
-  lda $8AFA38,x
+  lda.l T_VampGridPosX,x    ; $8afa38
 plx : sta $7F0018,x
 cop #$23 : and #$0003 : sta $7F100E,x
   asl
 phx : tax
-  lda $8AFA40,x
+  lda.l T_VampGridPosY,x    ; $8afa40
 plx : sta $7F001A,x
-  cmp $001C : bne B_8AF9A7
-lda $0018 : cmp $7F0018,x : beq B_8AF961
-B_8AF9A7:
+  cmp $001C : bne .Done
+lda $0018 : cmp $7F0018,x : beq SR_SetJackRandomDest
+.Done:
 rts
+}
 
 ;org $8af9a8
-S_8AF9A8:
-cop #$23
-lsr a : bcc B_8AF9E8
-cop #$23
-lsr a
-lda $7F100C,x : and #$0003 : bcc B_8AF9C1
-cmp #$0003 : beq J_8AF9C4 : inc a : bra J_8AF9C4
-
-B_8AF9C1:    ; org $8af9c1
-beq B_8AF9E8
-dec a
-
-J_8AF9C4:    ; org $8af9c4
-sta $7F100C,x : asl
-phx : tax
-lda $8AFA38,x
-plx : sta $7F0018,x
-
-J_8AF9D4:    ; org $8af9d4
-lda $7F100E,x : and #$0003 : asl
-phx : tax
-lda $8AFA40,x
-plx : sta $7F001A,x
-rts
-
-B_8AF9E8:    ; org $8af9e8
-lda $0410
-lsr a
-lsr a
-lda $7F100E,x : and #$0003 : bcc B_8AF9FE
-  cmp #$0003 : beq J_8AFA01
+SR_GetSylStepDest:
+{
+cop #$23 : lsr : bcc .TryChangeY
+.TryChangeX:
+cop #$23 : lsr
+    lda $7F100C,x : and #$0003
+  bcc ..TryMoveWest
+..TryMoveEast:
+    cmp #$0003 : beq ..DoneXSaveAndRts
 inc a
-bra J_8AFA01
-
-B_8AF9FE:    ; org $8af9fe
-beq J_8AFA01
+bra ..DoneXSaveAndRts
+..TryMoveWest:    ; org $8af9c1
+beq .TryChangeY
 dec a
-
-J_8AFA01:    ; org $8afa01
+..DoneXSaveAndRts:    ; org $8af9c4
+sta $7F100C,x
+asl
+phx
+  tax
+  lda.l T_VampGridPosX,x    ; $8afa38
+plx
+  sta $7F0018,x
+-:    ; org $8af9d4
+lda $7F100E,x : and #$0003 : asl
+phx
+  tax
+  lda.l T_VampGridPosY,x    ; $8afa40
+plx
+  sta $7F001A,x
+rts
+.TryChangeY:    ; org $8af9e8
+lda $0410 : lsr : lsr
+  lda $7F100E,x : and #$0003
+bcc ..TryMoveNorth
+..TryMoveSouth:
+  cmp #$0003 : beq ..DoneYSaveAndRts
+inc a
+bra ..DoneYSaveAndRts
+..TryMoveNorth:    ; org $8af9fe
+beq ..DoneYSaveAndRts
+dec a
+..DoneYSaveAndRts:    ; org $8afa01
 sta $7F100E,x
 lda $7F100C,x : asl
   phx
   tax
-    lda $8AFA38,x
+    lda.l T_VampGridPosX,x    ; $8afa38
   plx
     sta $7F0018,x
-bra J_8AF9D4
+bra -
+}
 
 ;org $8afa17
-S_8AFA17:
+SR_SetVampDestFromIndexes:
+{
 lda $7F100C,x : asl
-phx : tax
-lda $8AFA38,x
-plx : sta $7F0018,x
+phx
+  tax
+  lda.l T_VampGridPosX,x    ; $8afa38
+plx
+  sta $7F0018,x
 lda $7F100E,x : asl
-phx : tax
-lda $8AFA40,x
-plx : sta $7F001A,x
+phx
+  tax
+  lda.l T_VampGridPosY,x    ; $8afa40
+plx
+  sta $7F001A,x
 rts
+}
 
 ;org $8afa38
-dw $0018,$0058,$00a8,$00e8,$0058,$00d8,$0158,$01d8
+T_VampGridPosX:
+dw $0018,$0058,$00a8,$00e8
+T_VampGridPosY:
+dw $0058,$00d8,$0158,$01d8
 
 ;org $8afa48
-B_8AFA48:
+EVampsSleep:
 lda #$0008 : tsb $09AE
 cop #$C1
 rtl
@@ -2759,6 +3366,7 @@ db $66,$f8,$00,$30,$00,$00,$00,$22    ; Respawn data.
 
 ;org $8afa59
 EVJack_OnDeath:
+{
 cop #$C1
 lda $09F2 : bne .SylDead
 .SylAlive:
@@ -2770,17 +3378,19 @@ bra .AfterText
 lda #$0020 : tsb $09AE
 cop #$A5 : dl LR_SetPlayerImmune : dw $0000, $2000
 .AfterText:
-lda $09AE : bit #$0200 : bne B_8AFA97
-cop #$A5 : dl C_8AFAE7 : dw $F000, $2300
+lda $09AE : bit #$0200 : bne .IfPlayerDiedFirst
+cop #$A5 : dl EVampExplosionFactory : dw $F000, $2300
 cop #$DA : db $1D
 cop #$E0
-B_8AFA97:
+.IfPlayerDiedFirst:
 lda #$0020 : trb $09AE
 cop #$C1
 rtl
+}
 
 ;org $8afaa0
 EVSyl_OnDeath:
+{
 cop #$C1
 lda $09F2 : bne .JackDead
 .JackAlive:
@@ -2792,41 +3402,44 @@ bra .AfterText
 lda #$0020 : tsb $09AE
 cop #$A5 : dl LR_SetPlayerImmune : dw $0000, $2000    ; $8aa36e
 .AfterText:    ; org $8afac8
-lda $09AE : bit #$0200 : bne B_8AFADE
-cop #$A5 : dl C_8AFAE7 : dw $F000, $2300
+lda $09AE : bit #$0200 : bne .IfPlayerDiedFirst
+cop #$A5 : dl EVampExplosionFactory : dw $F000, $2300
 cop #$DA : db $1D
 cop #$E0
-B_8AFADE:    ; org $8afade
+.IfPlayerDiedFirst:    ; org $8afade
 lda #$0020 : trb $09AE
 cop #$C1
 rtl
+}
 
 ;org $8afae7
-C_8AFAE7:
+EVampExplosionFactory:
+{
 cop #$88 : dl $8EE000
 cop #$CA : db $03
-cop #$A5 : dl C_8AFB0E : dw $0000, $0302
+cop #$A5 : dl EVampExplosion06 : dw $0000, $0302
 cop #$DA : db $01
-cop #$A5 : dl C_8AFB1B : dw $0000, $0302
+cop #$A5 : dl EVampExplosion01 : dw $0000, $0302
 cop #$DA : db $05
 cop #$CB
-cop #$C7 : dl J_80DB8A
-C_8AFB0E:
-jsr S_8AFB28
+cop #$C7 : dl EBasicMonsterDeath    ; $80DB8A
+EVampExplosion06:
+jsr SR_SetVampExplosionRandomPos
 cop #$07 : db $06
 cop #$80 : db $07
 cop #$89
 cop #$E0
-C_8AFB1B:
-jsr S_8AFB28
+EVampExplosion01:
+jsr SR_SetVampExplosionRandomPos
 cop #$07 : db $06
 cop #$80 : db $01
 cop #$89
 cop #$E0
-S_8AFB28:
+SR_SetVampExplosionRandomPos:
 cop #$23 : and #$003F : sec : sbc #$001F : clc : adc $16 : sta $16
 cop #$23 : and #$001F : sec : sbc #$000F : clc : adc $14 : sta $14
 rts
+}
 
 
 ;org $8AFB45

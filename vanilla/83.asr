@@ -38,7 +38,8 @@ sep #$20 : bra J_83808B
 ; org $83806d
 B_83806D:
 cop #$BD : dl $81EAC6
-lda #$8000 : trb $09EC : sep #$20
+lda #$8000 : trb $09EC
+sep #$20
 jsl S_828191
 jsl S_828043
 jsl S_8281A2
@@ -48,6 +49,7 @@ J_83808B:
 ldx #$0000
 phx
 ; org $83808f
+; Pause loop: advances flash color, refreshes screen, nothing else
 B_83808F:
 jsl S_828191
 jsl S_828043
@@ -153,20 +155,21 @@ lda #$0001 : tsb $09EC
 ldx #$0000
 rts
 ; org $838259
+; SR to advance icon flash color on pause screen.
 S_838259:
-lda $0036
-lsr a : bcs B_838260
+lda $0036 : lsr : bcs B_838260
 rts
 ; org $838260
 B_838260:
 rep #$20
-lda $03,s : inc a
-cmp #$001D : bcc B_83826D
+lda $03,s : inc : cmp #$001D : bcc B_83826D
 lda #$0000
 ; org $83826d
 B_83826D:
-sta $03,s : asl : tax
-lda $8383D6,x : sta $7F0A24 : sep #$20
+sta $03,s
+asl : tax
+lda $8383D6,x : sta $7F0A24
+sep #$20
 rts
 ; org $83827c
 S_83827C:    ; Calculates the treasure chest counter and positions
@@ -266,24 +269,27 @@ cmp $001C : bmi B_8383D5
 cmp $001E : bcs B_8383D5
 phx
 lda $0014,x : sec : sbc $0018
-lsr a
-lsr a
-lsr a
-lsr a
-lsr a : and #$FFFE : sta $0000
-lda $0016,x : sec : sbc $001C : and #$FFC0
-clc : adc $0000
-clc : adc #$0216 : tax
+  lsr : lsr : lsr : lsr : lsr
+  and #$FFFE
+  sta $0000
+lda $0016,x : sec : sbc $001C
+  and #$FFC0
+  clc : adc $0000
+  clc : adc #$0216
+  tax
 lda #$280D : sta $7F0200,x
 plx
 ; org $8383d5
 B_8383D5:
 rts
-warnpc $8383d6
+;org $8383d6
+; Pause screen icon color sequence
+dw $5c82,$5cc4,$5906,$5928,$596a,$55ac,$55ee,$5610
+dw $5252,$5294,$52d6,$4ef8,$4f3a,$4f7c,$4bbf,$4bbf
+dw $4b9d,$4b5b,$4f19,$4ef7,$4eb5,$5273,$5231,$520f
+dw $55cd,$558b,$5549,$5927,$58e5
 
-
-
-org $838410
+;org $838410
 LR_HandleUseItem:
 {
 pea .Return-1    ; #$842E
@@ -313,16 +319,16 @@ dw $888a    ; Herb
 dw SR_UseItemDiamondBlock    ; $8917, Diamond Block
 dw $899a    ; Wind Melody
 dw SR_UseItemLolasMelody    ; $8ba4, Lola's Melody
-dw $8d67    ; Meat
+dw $8d67    ; $0a = Meat
 dw $8e15    ; Mine Key A
 dw $8e96    ; Mine Key B
-dw $8f17    ; Memory Melody
+dw SR_UseItemMemoryMelody    ; $8f17, Memory Melody
 dw $8ff3    ; Crystal Ball
 dw $90ce    ; Mine Elevator Key
 dw $9144    ; $9144, Item $10 = Mu Palace Key
 dw $921a    ; Purification Stone
-dw $9299    ; Statue of Hope
-dw $932b    ; Rama Statue
+dw SR_UseItemHopeStatue    ; $9299, Statue of Hope
+dw SR_UseItemRamaStatue    ; $932b, Rama Statue
 dw $93a1    ; Magic Powder
 dw SR_UseItemBlueJournal    ; $9427 Blue Journal (unused)
 dw SR_UseItemLancesLetter    ; $950c Lance's Letter
@@ -556,14 +562,56 @@ cop #$CC : db $2F
 rts
 ;org $83897C
 db $D3,$47,$84,$AC,$85,$88,$A4,$AC,$A4,$87,$84,$AC,$81,$8B,$8E,$82,$8A,$CB,$D6,$A1,$A4,$87,$84,$AC,$A4,$88,$8B,$84,$4F,$C0
+
 ;org $83899A
+SR_UseItemWindMelody:
+lda $0AD4 : bne .NoFlute
+jsl LR_SecIfAwaitingMusic : bcc +
+  rts
++:
+lda $0644 : cmp #$0024 : bne .WrongMapOrAlreadyUsed
+cop #$D0 : db $01, $01 : dw .WrongMapOrAlreadyUsed
+lda #$0080 : tsb $09EC
+cop #$BF : dw $8A2B
+phx
+ldx #$0000
+cop #$A5 : dl EFluteSongPlayer : dw $0000, $2000
+cpy #$1FC0 : bne +
+jmp ++
++:
+lda #$CFF0 : tsb $065A
+++:
+lda $0012,y : ora #$1000 : sta $0012,y
+lda #$0019 : sta $0026,y
+lda #$0000 : sta $0020,y
+plx
+rts
+.WrongMapOrAlreadyUsed:    ; org $8389f0
+cop #$BF : dw $8A8A
+rts
+.NoFlute:    ; org $8389f5
+cop #$BF : dw $8B76
+rts
 
+;org $8389fa
+cop #$BF : dw $8b8f
+rts
 
+; "Play the Flute?" options text.
+db $D3,$D7,$27,$A4,$87,$84,$AC,$45,$8B,$A5,$A4,$84,$0D,$CB,$AC,$69,$84,$A3,$CB,$AC,$4D,$8E,$CA
 
+;org $838a16
+EFluteSongPlayer_PostWindMelody:
+cop #$CC : db $01
+cop #$BF : dw $8A46
+cop #$3B : db $2F : dl TIndexedPaletteBundle    ; $80B522
+cop #$C5
 
+B_838A25:
+cop #$BF : dw $8ab5
+cop #$C5
 
-
-org $838A2B
+;org $838A2B
 db $D3,$47,$84,$AC,$D7,$A1,$A0,$8B,$80,$A9,$84,$83,$CB,$A4,$87,$84,$AC,$D7,$3D,$4C,$84,$8B,$8E,$83,$A9,$2A,$C0
 ;org $838A46
 Text_WindMelodyGoldenTileRoom:
@@ -606,7 +654,7 @@ lda #$0080 : tsb $09EC
 cop #$BF : dw Text_PlayLolasMelody    ; $8C76
 phx
 ldx #$0000
-cop #$A5 : dl ELolaSongPlayer : dw $0000, $2000    ; $839FCA
+cop #$A5 : dl EFluteSongPlayer : dw $0000, $2000    ; $839FCA
 cpy #$1FC0 : bne +
   jmp ++
 +:
@@ -623,12 +671,33 @@ rts
 .NoFlute:    ; org $838c30
 cop #$BF : dw Text_DoesntHaveFlute    ; $8F82
 rts
-warnpc $838c35
+
+;org $838c35
+EFluteSongPlayer_PostLolasMelody:
+lda $0644 : cmp #$0015 : beq EFluteSongPlayer_PostLolasMelody_Itory
+cmp #$0011 : beq EFluteSongPlayer_PostLolasMelody_Dungeon
+cmp #$00CD : beq EFluteSongPlayer_PostLolasMelody_Pyramid
+bra EFluteSongPlayer_PostLolasMelody_ButNothingHappened
+EFluteSongPlayer_PostLolasMelody_Itory:    ; org $838c49
+cop #$D0 : db $40, $01 : dw EFluteSongPlayer_PostLolasMelody_Pyramid
+cop #$CC : db $40
+cop #$BF : dw $8CA0
+cop #$C5
+EFluteSongPlayer_PostLolasMelody_Dungeon:    ; org $838c58
+cop #$D1 : dw $0113 : db $01 : dw EFluteSongPlayer_PostLolasMelody_ButNothingHappened
+cop #$CC : db $02
+cop #$BF : dw $8D17
+cop #$C5
+EFluteSongPlayer_PostLolasMelody_Pyramid:    ; org $838c68
+cop #$CC : db $01
+cop #$CE : db $0E
+cop #$C5
+EFluteSongPlayer_PostLolasMelody_ButNothingHappened:    ; org $838c70
+cop #$BF : dw $8D05
+cop #$C5
 
 
-
-
-org $838C76
+;org $838C76
 Text_PlayLolasMelody:
 db $D3,$47,$84,$AC,$D7,$A1,$A0,$8B,$80,$A9,$84,$83,$AC,$A4,$87,$84,$CB,$D6,$B4,$87,$84,$AC,$87,$80,$83,$AC,$8B,$84,$80,$A2,$8D,$84,$83,$CB,$D6,$8E,$4B,$8E,$8B,$80,$2A,$C0
 ;org $838CA0
@@ -656,7 +725,44 @@ org $838EBA
 db $D3,$47,$84,$AC,$A4,$A2,$88,$84,$A3,$AC,$A5,$A3,$88,$8D,$86,$AC,$A4,$87,$84,$AC,$8A,$84,$A9,$AC,$CB,$A4,$8E,$AC,$A4,$87,$84,$AC,$8C,$88,$8D,$84,$2A,$AC,$CF,$CA
 ;org $838EE2
 
-org $838F82
+
+org $838f17
+SR_UseItemMemoryMelody:
+lda $0AD4 : beq B_838F21
+cop #$BF : dw $8F82
+rts
+#B_838F21:    ; org $838f21
+lda $0644 : cmp #$0039 : beq B_838F2B
+bra J_838F7D
+#B_838F2B:    ; org $838f2b
+cop #$D0 : db $68, $01 : dw J_838F7D
+cop #$45 : db $13, $18, $1A, $1D : dw B_838F3B
+bra J_838F7D
+#B_838F3B:    ; org $838f3b
+lda #$0080 : tsb $09EC
+cop #$BF : dw $8FCD
+phx
+ldx #$0000
+cop #$A5 : dl EFluteSongPlayer : dw $0000, $2000
+lda $0012,y : ora #$1000 : sta $0012,y
+lda #$001D : sta $0026,y
+lda #$0002 : sta $0020,y
+plx
+lda #$000E : sta $06F2
+rts
+
+EFluteSongPlayer_PostMemoryMelody:    ; org $838f6f
+cop #$D5 : db $0D
+cop #$3B : db $1B : dl TIndexedPaletteBundleOnce   ; $80B519
+cop #$CC : db $0F
+cop #$C5
+
+#J_838F7D:    ; org $838f7d
+cop #$BF : dw $8F98
+rts
+
+
+;org $838F82
 Text_DoesntHaveFlute:
 db $D3,$47,$84,$AC,$D6,$84,$87,$80,$A6,$84,$CB,$A4,$87,$84,$AC,$45,$8B,$A5,$A4,$84,$2A,$C0
 ;org $838F98
@@ -690,9 +796,35 @@ org $839244
 db $D3,$47,$84,$AC,$A2,$80,$88,$A3,$84,$A3,$AC,$A4,$87,$84,$AC,$CB,$D6,$40,$63,$A4,$8E,$8D,$84,$2A,$AC,$CF,$CA
 ;org $83925F
 
-org $8392DE
+org $839299
+SR_UseItemHopeStatue:
+cop #$BF : dw $92DE
+lda $0644 : cmp #$0063 : bne .NothingHappened
+cop #$45 : db $06, $06, $0A, $08 : dw .InLeftRoom
+cop #$45 : db $16, $06, $1A, $08 : dw .InRightRoom
+bra .NothingHappened
+.InRightRoom:
+cop #$D0 : db $7E, $01 : dw .NothingHappened
+jsr SR_RemoveHeldItem
+cop #$BF : dw $930B
+cop #$CC : db $7E
+rts
+.InLeftRoom:
+cop #$D0 : db $7B, $01 : dw .NothingHappened
+jsr SR_RemoveHeldItem
+cop #$BF : dw $930B
+cop #$CC : db $7B
+rts
+.NothingHappened:
+cop #$BF : dw $92FB
+rts
+
+;org $8392DE
 db $D3,$47,$84,$AC,$A2,$80,$88,$A3,$84,$A3,$AC,$A4,$87,$84,$AC,$CB,$D6,$48,$8E,$85,$AC,$47,$8E,$A0,$84,$2A,$AC,$CF,$CA
 ;org $8392FB
+
+org $83932b
+SR_UseItemRamaStatue:
 
 org $839370
 db $D3,$47,$84,$AC,$A2,$80,$88,$A3,$84,$A3,$AC,$A4,$87,$84,$AC,$CB,$62,$80,$8C,$80,$AC,$63,$A4,$80,$A4,$A5,$84,$2A,$AC,$CF,$CA
@@ -841,7 +973,74 @@ lda #$0000 : sta $0AC6
 rts
 
 ;org $839FCA
-ELolaSongPlayer:
+EFluteSongPlayer:
+lda #$0080 : tsb $09EC
+lda $06F2 : sta $24
+cop #$9C : dl EMusicSetterImmediate : dw $2000    ; $83e1d6
+cpy #$1FC0 : bne +
+  jmp EFluteSongPlayer_Die
++:
+txa
+tyx
+tay
+lda $26 : inc : sta $7F000A,x
+lda $0012,x : ora #$1000 : sta $0012,x
+txa
+tyx
+tay
+ldy $09AA
+lda $0012,y : ora #$1000 : sta $0012,y
+lda #$0080 : sta $0002,y
+lda.w #PlayerFreezePointer_SpriteFlute : jsr SR_SetYActorPtrAndZeroWait    ; lda #$c446
+lda #$0800 : tsb $09AE
+lda #$CFF0 : tsb $065A
+cop #$C1
+lda $06FA : cmp #$FFFF : beq +
+  rtl
++:
+cop #$C1
+sep #$20
+lda $2141
+rep #$20
+and #$00FF : cmp #$00FF : beq +
+  rtl
++:
+ldy $09AA
+lda $0012,y : and #$EFFF : sta $0012,y
+lda #$0080 : sta $0002,y
+lda.w #PlayerFreezePointer_FromFlute : jsr SR_SetYActorPtrAndZeroWait    ; lda #$c455
+lda #$CFF0 : trb $065A
+cop #$C6 : dw EFluteSongPlayer_PostTrigger
+lda $20 : sta $0000
+cop #$D9 : dw $0000, EFluteSongPlayer_SongTriggerOptions    ; $A068
+EFluteSongPlayer_SongTriggerOptions:
+  dw EFluteSongPlayer_PostWindMelody
+  dw EFluteSongPlayer_PostLolasMelody
+  dw EFluteSongPlayer_PostMemoryMelody
+EFluteSongPlayer_PostTrigger:    ; org $83a06e
+cop #$9C : dl EMusicSetterImmediate : dw $2000    ; $83e1d6
+txa
+tyx
+tay
+lda $24 : sta $7F000A,x
+lda $0012,x : ora #$1000 : sta $0012,x
+txa
+tyx
+tay
+cop #$C1
+lda $06FA : cmp #$FFFF : beq +
+  rtl
++:    ; org $83a095
+cop #$DA : db $01
+EFluteSongPlayer_Die:    ; org $83a098
+lda #$0080 : trb $09EC
+cop #$E0
+
+SR_SetYActorPtrAndZeroWait:
+sta $0000,y
+lda #$0000 : sta $0008,y
+rts
+warnpc $83a0aa
 
 
 org $83a2f1
@@ -1220,7 +1419,7 @@ db $7f,$00,$18,$00,$01,$ff,$00
 db $04,$08
 TWorldMapRenderer:
 sep #$20
-  lda #$80 : sta $211A
+  lda #$80 : sta $211A   ; Mode 7 settings (enabled by $02 header card).
 rep #$20
 lda #$FFFF : sta $7F0B22
 lda #$FFFF : sta $7F0B24
@@ -4974,7 +5173,7 @@ bra .NextToken
 {
 dw .HoldClearReturn    ; $C0 at $e2f5, awaits + clears screen + ends text
 dw $e30f    ; @$e30f set text box pos, db $c1 : db PosX,PosY; minimum 1,1
-dw $e335    ; Card $C2 at $e335, "yellow"
+dw $e335    ; Card $C2 at $e335, "template"
 dw $e35b    ; @$e35b set palette, db $c3 : db Pal
 dw $e36b    ; Card $C4 at $e36b
 dw .IncludeIndexed    ; db $c5 : dw PtrList,Index

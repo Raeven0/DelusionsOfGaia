@@ -664,11 +664,30 @@ db $C2,$0E,$C2,$00,$67,$88,$8B,$8B,$2F,$AC,$D6,$4D,$A7,$80,$A3,$AC,$CB,$82,$87,$
 ;org $84DC19
 db $1B,$00,$10
 ECGuard_Unlocker:
+cop #$D0 : db $42, $00 : dw B_84DC26
+cop #$12 : db $09, $17
+B_84DC26:    ; org $84dc26
+cop #$D0 : db $43, $00 : dw B_84DC30
+cop #$12 : db $14, $17
+B_84DC30:    ; org $84dc30
+lda #$0200 : tsb $12
+cop #$C0 : dw B_84DC59
+cop #$0B
+cop #$C1
+cop #$45 : db $0D, $12, $11, $14 : dw B_84DC4F
+ldy $09AA
+lda #$2000 : sta $000E,y
+rtl
+B_84DC4F:    ; org $84dc4f
+ldy $09AA
+lda #$3000 : sta $000E,y
+rtl
+B_84DC59:
+cop #$BF : dw ECGuardPrisonerText
+rtl
 
-
-
-
-org $84DC5E
+;org $84DC5E
+ECGuardPrisonerText:
 db $C2,$0E,$48,$AC,$D6,$82,$D6,$BA,$80,$8D,$A9,$8E,$8D,$84,$0E,$A3,$CB,$87,$84,$8B,$A0,$2A,$2A,$2A,$AC,$48,$AC,$82,$80,$8D,$CB,$86,$84,$A4,$AC,$8E,$A5,$A4,$AC,$81,$A9,$AC,$8C,$A9,$A3,$84,$8B,$85,$2A,$2A,$2A,$C0
 
 ;org $84DC92
