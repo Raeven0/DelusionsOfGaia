@@ -1,0 +1,177 @@
+arch 65816
+hirom
+bank noassume
+
+
+org $8a9bd5
+; Castoth vulnerability timer 1.
+cop #$DB : dw $0050
+
+org $8a9be0
+; Castoth vulnerability timer 2.
+cop #$DB : dw $0030
+
+org $8a9bf6
+; Castoth master timer.
+cop #$DB : dw $0020
+cop #$A2 : dl $8a9d64 : dw $0302
+cop #$DB : dw $00c0
+
+
+org $8a9d6e
+; Castoth Headball.
+;lda #$0001 : sta $26
+;-:
+;cop #$A5 : dl $8a9fdb : db $00,$a0 : dw $2000
+;cop #$DA : db $0a
+;dec $26 : bpl -
+;warnpc $8a9d8b
+;padbyte $ea
+;pad $8a9d8b
+
+
+org $8a9fcc
+; Firesnake speed up.
+db $09
+
+
+
+
+org $8ad257
+jmp $d265
+;cop #$C6 : dw EViper_ReturnFromIce
+;cop #$2A : dw $0020
+;  dw EViper_DoIceLeft, EViper_DoIceDown, EViper_DoIceRight
+;EViper_ReturnFromIce:    ; org $8ad265
+;stz $24
+
+org $8ad27e
+EViperWindManager:
+ldy $24
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+lda $0028,y : beq .DoWind
+  dec : beq .DoWind
+.NoWind:
+rtl
+.DoWind:
+lda #$0004
+  sta $2c
+  sta $2e
+cop #$35 : beq ..ToN
+  dec : beq ..ToE
+  dec : beq ..ToS
+..ToW:
+lda $2c : eor #$FFFF : inc : sta $2c
+stz $2e
+bra ..AndGo
+..ToN:
+stz $2c
+lda $2e : eor #$FFFF : inc : sta $2e
+bra ..AndGo
+..ToE:
+stz $2e : bra ..AndGo
+..ToS:
+stz $2c ;: bra ..AndGo
+..AndGo:
+lda $2C : clc : adc $0408 : sta $0408    ; XWind.
+lda $2E : clc : adc $040A : sta $040A    ; YWind.
+rtl
+warnpc $8ad2da
+
+org $8ad2da
+EViper_FlyToRandomNearPlayer:    ; org $8ad2da
+cop #$23 : and #$003F : sec : sbc #$001F
+  clc : adc $09A2 : sta $7F0018,x
+lda $0410 : and #$001F : sec : sbc #$000F : clc : adc #$0050
+  clc : adc $24 : sta $7F001A,x
+cop #$22 : db $00, $06
+cop #$C5
+
+
+
+
+
+org $8af39d
+; Jack's first "do nothing while player smashes me" animation.
+nop : nop : nop : nop : nop : nop
+org $8af3bf
+; Jack's second "do nothing while player smashes me" animation.
+nop : nop : nop : nop : nop : nop
+org $8af512
+; Syl's first etc.
+nop : nop : nop : nop : nop : nop
+org $8af534
+; Syl's second etc.
+nop : nop : nop : nop : nop : nop
+
+
+
+
+
+
+org $8b8200
+EFanger_ChooseAttack:
+cop #$DA : db $10
+
+org $8b8508
+EFanger_DoAttackEgg_WormOptionList:
+dw $8518, $851D
+dw $8522, $851D
+dw $8522, $8518
+dw $8518, $8518
+
+org $8b87da
+EFangerEgg_RunnerLeft:
+lda #$4000 : tsb $12
+cop #$AA : db $01
+bra $05
+EFangerEgg_RunnerRight:   ;org $8b87e4
+cop #$AA : db $01
+
+org $8b88db
+EFangerEgg_WormRight:
+cop #$AA : db $01
+
+org $8b88f7
+; Worm egg HP load.
+nop : lda $0ace
+
+
+
+
+
+
+org $8ba763
+; Mummy Queen fly speed.
+db $03
+
+org $8bac2d
+; Ghosts move immediately.
+nop : nop : nop : nop : nop
+
+org $8bac4a
+; Ghost fly speed.
+db $02
+
+
+
+org $8ce3c3
+; Solid Arm y-coordinate.
+db $06
+
+
+
+
+org $8cef36
+; Comet attack delay.
+cop #$DB : dw $00d0
+
+org $8cf14d
+; DG attack delay.
+cop #$DB : dw $0060
+
+
+
+
+
