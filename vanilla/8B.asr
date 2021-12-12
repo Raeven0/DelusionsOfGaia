@@ -1009,6 +1009,310 @@ rts
 warnpc $8b8bf8
 
 
+org $8b8dbe
+db $00 : dw $0000
+EGWFloorFireball:
+cop #$27 : db $07
+lda #$0001 : tsb $12
+cop #$80 : db $03
+cop #$89
+lda #$0001 : trb $12
+lda $10 : bit #$4000 : bne EGWFloorFireball
+cop #$21 : db $04 : dw B_8B8E29
+J_8B8DDF:    ; org $8b8ddf
+cop #$2A : dw $0000, B_8B8DEA, B_8B8DEA, B_8B8DF2
+rtl
+B_8B8DEA:    ; org $8b8dea
+cop #$8D : db $02
+lda #$FFE0
+bra J_8B8DFD
+B_8B8DF2:    ; org $8b8df2
+cop #$8D : db $82
+lda #$0002 : tsb $12
+lda #$0020
+J_8B8DFD:    ; org $8b8dfd
+clc : adc $14 : sta $7F0018,x
+cop #$23 : and #$003F : sec : sbc #$001F : clc : adc $16 : sta $7F001A,x
+lda #$0008 : tsb $10
+cop #$22 : db $FF, $01
+lda #$0008 : trb $10
+lda #$0002 : trb $12
+bra EGWFloorFireball
+B_8B8E29:    ; org $8b8e29
+lda #$0001 : tsb $12
+cop #$84 : db $0F, $02
+cop #$8A
+cop #$CA : db $03
+cop #$80 : db $0F
+cop #$89
+cop #$23
+cop #$9E : dl C_8B8E67 : dw $0000, $FFF6, $0302
+cop #$9E : dl C_8B8E6C : dw $0000, $FFF6, $0302
+cop #$07 : db $1E
+cop #$CB
+cop #$84 : db $00, $02
+cop #$8A
+lda #$0001 : trb $12
+jmp J_8B8DDF
+C_8B8E67:    ; org $8b8e67
+lda #$4000 : tsb $12
+C_8B8E6C:    ; org $8b8e6c
+cop #$63 : db $02, $0A, $00
+pea $8E90
+lda $0410 : and #$0003 : bne B_8B8E80
+cop #$AA : db $00
+rts
+B_8B8E80:    ; org $8b8e80
+dec : bne B_8B8E86
+cop #$AA : db $13
+B_8B8E86:    ; org $8b8e86
+dec : bne B_8B8E8D
+cop #$AA : db $11
+rts
+B_8B8E8D:    ; org $8b8e8d
+cop #$AA : db $13
+rts
+Q_8B8E91:    ; org $8b8e91
+cop #$23 : and #$001F : sta $24
+lda $12 : bit #$4000 : beq B_8B8EA7
+lda $24 : eor #$FFFF : inc a : sta $24
+B_8B8EA7:    ; org $8b8ea7
+lda $24 : clc : adc $16 : sta $7F001A,x
+cop #$8D : db $04
+J_8B8EB3:    ; org $8b8eb3
+cop #$8B
+lda $08
+stz $08
+inc : sta $24
+cop #$C1
+lda $2A : bne B_8B8EC8
+cop #$B1
+stz $2E
+bra J_8B8EB3
+B_8B8EC8:    ; org $8b8ec8
+cop #$C1
+cop #$64
+cmp #$0000 : bmi B_8B8ED6
+dec $24 : bmi J_8B8EB3
+rtl
+B_8B8ED6:    ; org $8b8ed6
+lda #$0102 : trb $10
+stz $2C
+stz $2E
+cop #$5D : dw $8EF0
+cop #$83 : db $04, $47, $45
+cop #$89
+cop #$84 : db $04, $02
+cop #$8A
+cop #$E0
+warnpc $8b8ef2
+
+
+
+
+org $8b9155
+db $07 : dw $0000
+EGWArcherFacingWest:
+cop #$58 : dw EGWArcherMobile
+J_8B915C:    ; org $8b915c
+cop #$27 : db $09
+cop #$C8 : dw B_8B91AF
+bra J_8B915C
+;org $8b9165
+db $07 : dw $0000
+EGWArcherFacingEast:
+cop #$BB
+cop #$58 : dw EGWArcherMobile
+-:
+cop #$27 : db $09
+cop #$C8 : dw B_8B91C6
+bra -
+
+db $05 : dw $0000
+EGWArcherMobile:    ; org $8b917a
+cop #$27 : db $09
+cop #$C6 : dw B_8B918B
+cop #$2A : dw $0000, B_8B91AF, B_8B91AF, B_8B91C6
+B_8B918B:    ; org $8b918b
+lda $10 : bit #$4000 : bne EGWArcherMobile
+cop #$C6 : dw B_8B918B
+cop #$21 : db $04 : dw B_8B91FF
+cop #$2B : dw $000E, B_8B91DD, B_8B91A5, B_8B91E9
+B_8B91A5:    ; org $8b91a5
+cop #$2A : dw $0000, B_8B91AF, B_8B91AF, B_8B91C6
+B_8B91AF:    ; org $8b91af
+cop #$80 : db $0B
+cop #$89
+cop #$9E : dl C_8B926C : dw $0000, $FFF5, $0300
+cop #$80 : db $0E
+cop #$89
+cop #$C5
+B_8B91C6:    ; org $8b91c6
+cop #$80 : db $8B
+cop #$89
+cop #$9E : dl C_8B9253 : dw $0000, $FFF5, $0300
+cop #$80 : db $8E
+cop #$89
+cop #$C5
+B_8B91DD:    ; org $8b91dd
+cop #$15 : dw J_8B91F5
+cop #$82 : db $09, $12
+cop #$89
+cop #$C5
+B_8B91E9:    ; org $8b91e9
+cop #$16 : dw J_8B91F5
+cop #$82 : db $08, $11
+cop #$89
+cop #$C5
+J_8B91F5:    ; org $8b91f5
+cop #$2A : dw $0000, B_8B91AF, B_8B91AF, B_8B91C6
+B_8B91FF:    ; org $8b91ff
+cop #$2A : dw $0000, B_8B922E, B_8B922E, B_8B9209
+B_8B9209:    ; org $8b9209
+cop #$CA : db $02
+cop #$17 : dw J_8B91F5
+cop #$8D : db $8A
+cop #$AA : db $04
+cop #$C1
+cop #$8C : db $02
+cop #$C2 : stz $2C
+cop #$17 : dw J_8B91F5
+cop #$AA : db $04
+cop #$C1
+cop #$89
+cop #$CB : bra J_8B91F5
+B_8B922E:    ; org $8b922e
+cop #$CA : db $02
+cop #$18 : dw J_8B91F5
+cop #$8D : db $0A
+cop #$AA : db $03
+cop #$C1
+cop #$8C : db $02
+cop #$C2 : stz $2C
+cop #$18 : dw J_8B91F5
+cop #$AA : db $03
+cop #$C1
+cop #$89
+cop #$CB : bra J_8B91F5
+C_8B9253:    ; org $8b9253
+cop #$5E : dw $92E9
+cop #$5B : dw $0010
+cop #$A2 : dl C_8B931A : dw $2000
+cop #$80 : db $8C
+cop #$89
+cop #$AA : db $05 : bra J_8B9283
+C_8B926C:    ; org $8b926c
+cop #$5E : dw $92F9
+cop #$5B : dw $0010
+cop #$A2 : dl C_8B9375 : dw $2000
+cop #$80 : db $0C
+cop #$89
+cop #$AA : db $06
+J_8B9283:    ; org $8b9283
+cop #$07 : db $1E
+lda #$0064 : sta $24
+cop #$C1
+cop #$62 : db $0F, $A8, $92
+dec $24 : bmi B_8B9297
+rtl
+B_8B9297:    ; org $8b9297
+cop #$C1
+cop #$62 : db $0F, $A8, $92
+lda $10 : bit #$4000 : bne B_8B92A6
+rtl
+B_8B92A6:    ; org $8b92a6
+cop #$E0
+warnpc $8b92a8
+
+org $8b931a
+C_8B931A:
+ldy $09AA
+lda $0010,y : bit #$0040 : beq B_8B9328
+cop #$C1
+rtl
+B_8B9328:    ; org $8b9328
+bit #$2280 : beq B_8B932E
+rtl
+B_8B932E:    ; org $8b932e
+lda #$0000
+jsr S_8B9408
+clc : adc #$0008 : bpl B_8B933E
+  eor #$FFFF : inc a
+B_8B933E:    ; org $8b933e
+cmp #$0005 : bcc B_8B9344
+rtl
+B_8B9344:    ; org $8b9344
+lda $0016,y : sec : sbc #$0014 : sec : sbc $001C : bpl B_8B9355
+  eor #$FFFF : inc a
+B_8B9355:    ; org $8b9355
+cmp #$000F : bcc B_8B935B
+rtl
+B_8B935B:    ; org $8b935b
+lda #$0F00 : tsb $065A
+phy
+lda #$0002
+ldy #$0003
+jsl $80C397
+ply
+lda #$92DC
+jsr S_8B93FB : bra J_8B93C8
+C_8B9375:    ; org $8b9375
+ldy $09AA
+lda $0010,y : bit #$0040 : beq B_8B9383
+cop #$C1
+rtl
+B_8B9383:    ; org $8b9383
+bit #$2280 : beq B_8B9389
+rtl
+B_8B9389:    ; org $8b9389
+lda #$0010
+jsr S_8B9408 : sec : sbc #$0008 : bpl B_8B9399
+  eor #$FFFF : inc a
+B_8B9399:    ; org $8b9399
+cmp #$0005 : bcc B_8B939F
+rtl
+B_8B939F:    ; org $8b939f
+lda $0016,y : sec : sbc #$0014 : sec : sbc $001C : bpl B_8B93B0
+  eor #$FFFF : inc a
+B_8B93B0:    ; org $8b93b0
+cmp #$000F : bcc B_8B93B6
+rtl
+B_8B93B6:    ; org $8b93b6
+phy
+lda #$0002
+ldy #$0002
+jsl $80C397
+ply
+lda #$92CF
+jsr S_8B93FB
+J_8B93C8:    ; org $8b93c8
+phx
+ldx $09AA
+lda $0014,y : sec : sbc $0014,x : sta $14
+lda $0016,y : sec : sbc $0016,x : sta $16
+plx
+cop #$C1
+phx
+ldx $09AA
+ldy $24
+lda $0014,x : clc : adc $14 : sta $0014,y
+lda $0016,x : clc : adc $16 : sta $0016,y
+plx
+rtl
+S_8B93FB:    ; org $8b93fb
+sta $0000,y
+lda #$0000 : sta $0008,y : sta $002C,y
+rts
+S_8B9408:    ; org $8b9408
+clc : adc $09A2 : sta $0018
+lda $09A4 : sec : sbc #$0001 : sta $001C
+ldy $24
+lda $0014,y : sec : sbc $0018
+rts
+warnpc $8b9423
+
+
+
 org $8B9CE8
 SR_ScaledSine8B:    ; Returns $7F:12 * sin($7F:10).
 lda $7F0010,x : tay
@@ -1167,6 +1471,509 @@ EBabelMummyQueen:
 org $8ba6b6
 db $00 : dw $0000
 EMummyQueen:
+lda #$0004 : jsl LR_SecOnDefeatedBossA : bcc +
+  stz $0AEC
+  stz $0AEE
+  cop #$E0
++:
+lda #$8191 : tsb $12
+ldy $09AA
+lda $0012,y : ora #$0008 : sta $0012,y
+lda #$0A0A : sta $20
+lda #$1858 : sta $22
+lda #$0000 : sta $7F0010,x
+cop #$A2 : dl C_8AFD69 : dw $2000
+tya : sta $7F1016,x
+cop #$57 : dl EMummyQueen_OnDeath
+
+EMummyQueen_ChooseAttack:    ; org $8ba6fd
+lda $7F0010,x : cmp #$0002 : bcc +
+cop #$58 : dw EMummyQueen_TryGhostWheel
+bra ++
++:
+cop #$58 : dw EMummyQueen_TryGhostScatter
+++:    ; org $8ba710
+cop #$C6 : dw EMummyQueen_ChooseAttack
+cop #$23 : and #$0007 : sta $0000
+cop #$D9 : dw $0000, EMummyQueen_AttackOptions   ; $A722
+EMummyQueen_AttackOptions:
+  dw EMummyQueen_AttackQuake, EMummyQueen_AttackQuake
+  dw EMummyQueen_AttackOrb, EMummyQueen_AttackOrb
+  dw EMummyQueen_AttackFly, EMummyQueen_AttackFly
+  dw EMummyQueen_AttackFly, EMummyQueen_AttackFly
+
+EMummyQueen_AttackFly:    ; org $8ba732
+lda $7F0010,x : clc : adc #$0000 : sta $28
+cop #$8D : db $FF
+cop #$23
+pha
+  and #$003F : sec : sbc #$001F : clc : adc $09A2 : sta $7F0018,x
+pla
+lsr : lsr : sec : sbc #$001F : clc : adc $09A4 : sta $7F001A,x
+cop #$52 : db $FF, $01, $FF
+cop #$53
+cop #$C5
+
+EMummyQueen_AttackOrb:    ; org $8ba769
+cop #$9A : dl EMummyQueenOrb : dw $2202
+lda $7F0010,x : clc : adc #$0000 : sta $28
+cop #$84 : db $FF, $0A
+cop #$8A
+cop #$C5
+
+EMummyQueenOrb:    ; org $8ba782
+cop #$BC : db $0C, $B2
+lda #$2000 : trb $10
+cop #$07 : db $1E
+cop #$80 : db $13
+cop #$89
+cop #$07 : db $20
+lda #$0004 : clc : adc $0B02 : sta $7F0014,x
+cop #$A2 : dl EChaserAlt : dw $2000    ; $80e4fc
+lda $09AA : sta $0024,y
+.KeepGoing:    ; org $8ba7ae
+cop #$84 : db $0C, $08
+cop #$8A
+lda $10 : bit #$4000 : beq .KeepGoing
+cop #$E0
+
+EMummyQueen_TryGhostWheel:    ; org $8ba7bd
+lda #$0007 : sta $26
+-:
+cop #$9E : dl EMummyQueenWheelGhost : dw $0000, $FFFC, $2200
+lda #$0000 : sta $0026,y
+dec $26 : bpl -
+lda #$0001 : sta $0026,y
+lda #$0200 : tsb $10
+cop #$07 : db $0C
+lda $7F0010,x : clc : adc #$0009 : sta $28
+cop #$80 : db $FF
+cop #$89
+lda #$2000 : tsb $10
+lda #$0008 : tsb $12
+lda #$0001 : sta $7F0018,x
+lda #$0001 : sta $7F001A,x
+cop #$C2
+lda $26 : beq B_8BA829
+jsr S_8BA842
+jsr S_8BA876
+lda $7F0018,x : sta $7F002C,x
+lda $7F001A,x : sta $7F002E,x
+rtl
+B_8BA829:    ; org $8ba829
+lda #$0008 : trb $12
+lda #$00FF : sta $24
+lda #$0007 : sta $0000
+lda.w #EConvergeOn26 : jsr SR_SetGhostPointersToA    ; pointers to #$ac7f
+jmp EMummyQueen_Appear
+
+S_8BA842:    ; org $8ba842
+lda $7F0018,x : bpl B_8BA85F
+lda $14 : bmi B_8BA852
+  cmp #$0050 : bcc B_8BA852
+rts
+B_8BA852:
+lda $7F0018,x : eor #$FFFF : inc : sta $7F0018,x
+rts
+B_8BA85F:
+lda $14 : bmi B_8BA868
+  cmp #$01B0 : bcs B_8BA869
+B_8BA868:
+rts
+B_8BA869:
+lda $7F0018,x : eor #$FFFF : inc : sta $7F0018,x
+rts
+
+S_8BA876:    ; org $8ba876
+lda $7F001A,x : bpl B_8BA893
+lda $16 : bmi B_8BA886
+  cmp #$0080 : bcc B_8BA886
+rts
+B_8BA886:
+lda $7F001A,x : eor #$FFFF : inc : sta $7F001A,x
+rts
+B_8BA893:
+lda $16 : bmi B_8BA89C
+  cmp #$01B0 : bcs B_8BA89D
+B_8BA89C:
+rts
+B_8BA89D:
+lda $7F001A,x : eor #$FFFF : inc : sta $7F001A,x
+rts
+
+EMummyQueen_TryGhostScatter:    ; org $8ba8aa
+lda #$0007 : sta $26
+-:
+cop #$9E : dl EMummyQueenScatterGhost : dw $0000, $FFFC, $2200
+dec $26 : bpl -
+stz $26
+lda #$0200 : tsb $10
+lda #$00FF : sta $24
+cop #$07 : db $0C
+lda $7F0010,x : clc : adc #$0009 : sta $28
+cop #$80 : db $FF
+cop #$89
+lda #$2000 : tsb $10
+lda $0B02 : xba : lsr : lsr : clc : adc #$0168 : sta $08
+cop #$C2
+lda #$0007 : sta $0000
+lda #$AC7D : jsr S_8BAA63
+EMummyQueen_Appear:    ; org $8ba8fb
+cop #$C1
+lda $24 : beq +
+  rtl
++:
+lda #$0007 : sta $0000
+lda #$ACAF : jsr SR_SetGhostPointersToA
+lda $7F0026,x
+  cmp #$0014 : bcc .LowHealth
+  cmp #$001E : bcc .MidHealth
+  bra .DoAppear
+.MidHealth:    ; org $8ba91e
+lda $7F0010,x : cmp #$0001 : beq .DoAppear
+lda #$0001 : sta $7F0010,x
+cop #$3B : db $5C : dl TIndexedPaletteBundleOnce    ; $80B519
+bra .DoAppear
+.LowHealth:    ; org $8ba936
+lda $7F0010,x : cmp #$0002 : beq .DoAppear
+lda #$0002 : sta $7F0010,x
+cop #$3B : db $5D : dl TIndexedPaletteBundleOnce    ; $80B519
+bra .DoAppear
+.DoAppear:    ; org $8ba94e
+cop #$07 : db $29
+lda #$2000 : trb $10
+lda $7F0010,x : clc : adc #$0010 : sta $28
+cop #$80 : db $FF
+cop #$89
+lda #$0200 : trb $10
+jmp EMummyQueen_ChooseAttack
+
+EMummyQueen_AttackQuake:    ; org $8ba96d
+cop #$58 : dw .OnHitCancel
+cop #$07 : db $15
+lda $7F0010,x : clc : adc #$0003 : sta $28
+cop #$80 : db $FF
+cop #$89
+lda $28 : clc : adc #$0003 : sta $28
+cop #$80 : db $FF
+cop #$89
+cop #$A2 : dl EMummyQueenQuake : dw $2800
+cop #$84 : db $FF, $0A
+cop #$8A
+ldy $06
+lda #$0001 : sta $0024,y
+lda $7F0010,x : clc : adc #$0000 : sta $28
+cop #$84 : db $FF, $12
+cop #$8A
+cop #$C5
+.OnHitCancel:
+ldy $06
+lda #$0001 : sta $0024,y
+jmp EMummyQueen_TryGhostScatter
+
+EMummyQueen_OnDeath:    ; org $8ba9c2
+ldy $06
+lda #$0001 : sta $0024,y
+lda $09AE : bit #$0200 : beq .PlayerAlive
+.PlayerDying:
+cop #$C1
+rtl
+.PlayerAlive:    ; org $8ba9d5
+lda #$0020 : tsb $09AE   ; Make player not die at 0 HP.
+cop #$A5 : dl LR_SetPlayerImmune : dw $0000, $2000
+cop #$A5 : dl EMummyQueenExplosionFactory : dw $E000, $2300
+cop #$DA : db $3B
+cop #$E0
+
+EMummyQueenExplosionFactory:    ; org $8ba9f2
+cop #$88 : dl $8EE000
+cop #$CA : db $0C
+cop #$A5 : dl EMummyQueenExplosion07 : dw $0000, $0302
+cop #$DA : db $01
+cop #$A5 : dl EMummyQueenExplosion01 : dw $0000, $0302
+cop #$DA : db $03
+cop #$CB
+cop #$C7 : dl EBasicMonsterDeath
+
+EMummyQueenExplosion07:    ; org $8baa19
+jsr SR_SetRandomMQExplosionPos
+cop #$80 : db $07
+cop #$89
+cop #$E0
+
+EMummyQueenExplosion01:    ; org $8baa23
+jsr SR_SetRandomMQExplosionPos
+cop #$80 : db $01
+cop #$89
+cop #$E0
+
+SR_SetRandomMQExplosionPos:    ; org $8baa2d
+cop #$23 : and #$003F : sec : sbc #$001F : clc : adc $14 : sta $14
+cop #$23 : and #$007F : sec : sbc #$003F : clc : adc $16 : sta $16
+rts
+
+SR_SetGhostPointersToA:    ; org $8baa4a
+ldy $06
+pha
+.NextGhost:
+lda #$0000 : sta $0008,y
+lda $01,s : sta $0000,y
+lda $0006,y : tay
+dec $0000 : bpl .NextGhost
+pla
+rts
+
+S_8BAA63:    ; org $8baa63
+ldy $06
+stz $0018
+stz $001C
+pha
+B_8BAA6C:    ; org $8baa6c
+lda #$0000 : sta $0008,y
+lda $01,s : sta $0000,y
+lda $0014,y : clc : adc $0018 : sta $0018
+lda $0016,y : clc : adc $001C : sta $001C
+lda $0006,y : tay
+lda $0006,y : tay
+dec $0000 : bpl B_8BAA6C
+lda $0018 : lsr : lsr : lsr : sta $14
+lda $001C : lsr : lsr : lsr : sta $16
+pla
+rts
+
+EMummyQueenWheelGhost:    ; org $8baaaa
+cop #$DA : db $07
+lda #$2000 : trb $10
+lda #$00B9 : sta $12
+lda $26 : sta $7F0002,x
+lda $24 : sta $26
+cop #$8D : db $0E
+B_8BAAC4:    ; org $8baac4
+cop #$DA : db $03
+cop #$07 : db $26
+ldy $26
+lda $0010,y : bit #$2000 : beq B_8BAAC4
+lda $0026,y : and #$0007
+phx
+tax : inc : sta $0026,y
+lda $8BACB4,x
+plx
+and #$00FF : sta $7F0010,x
+lda #$0002 : sta $7F0012,x
+lda #$0000 : sta $7F0000,x
+J_8BAAFA:    ; org $8baafa
+cop #$8B
+lda $2A : beq J_8BAAFA
+lda $08 : sta $24
+stz $08
+B_8BAB06:    ; org $8bab06
+jsr S_8BABAC
+cop #$C2
+lda $7F0012,x : cmp #$0080 : bcs B_8BAB25 : clc : adc #$0003 : adc $0B02 : sta $7F0012,x
+dec $24 : bpl B_8BAB06
+bra J_8BAAFA
+B_8BAB25:    ; org $8bab25
+lda $7F0002,x : bne B_8BAB60
+J_8BAB2B:    ; org $8bab2b
+cop #$8B
+lda $2A : beq J_8BAB2B
+lda $08
+stz $08 : sta $24
+jsr S_8BABAC
+cop #$C2
+J_8BAB3C:    ; org $8bab3c
+lda $7F0010,x : clc : adc #$0002 : clc : adc $0B02 : sta $7F0010,x
+lda $0036 : lsr : bcc B_8BAB59
+lda #$2000 : tsb $10 : bra J_8BAB2B
+B_8BAB59:    ; org $8bab59
+lda #$2000 : trb $10 : bra J_8BAB2B
+B_8BAB60:    ; org $8bab60
+lda #$0200 : trb $10
+cop #$57 : dl P_8BAB98
+lda #$0000 : sta $7F0026,x
+J_8BAB71:    ; org $8bab71
+cop #$8B
+lda $2A : beq J_8BAB71
+lda $08
+stz $08 : sta $24
+B_8BAB7D:    ; org $8bab7d
+jsr S_8BABAC
+cop #$C2
+lda $7F0010,x : clc : adc #$0002 : clc : adc $0B02 : sta $7F0010,x
+dec $24 : bpl B_8BAB7D
+bra J_8BAB71
+P_8BAB98:    ; org $8bab98
+lda #$0200 : tsb $10
+lda #$0040 : trb $10
+ldy $26
+lda #$0000 : sta $0026,y : bra J_8BAB3C
+S_8BABAC:    ; org $8babac
+ldy $26
+jsl LR_OrbitAtY    ; $80F3C9
+rts
+EMummyQueenScatterGhost:    ; org $8babb3
+cop #$DA : db $07
+lda #$2000 : trb $10
+cop #$8D : db $0E
+B_8BABBE:    ; org $8babbe
+cop #$DA : db $03
+cop #$07 : db $26
+ldy $24
+lda $0010,y : bit #$2000 : beq B_8BABBE
+cop #$80 : db $0E
+cop #$89
+ldy $24
+lda $0026,y : and #$0007
+phx : tax : inc : sta $0026,y
+lda $8BACB4,x
+plx : and #$00FF : sta $7F0010,x
+lda #$000A : sta $7F0012,x
+lda $14 : sta $7F100C,x
+lda $16 : sta $7F100E,x
+lda #$0000 : sta $7F0000,x
+J_8BAC07:    ; org $8bac07
+cop #$8B
+lda $2A : beq J_8BAC07
+lda $08 : sta $26
+stz $08
+lda $7F0000,x : cmp #$0006 : bcs B_8BAC2D : inc : sta $7F0000,x
+B_8BAC21:    ; org $8bac21
+jsl S_80F3D3
+cop #$C2
+dec $26 : bpl B_8BAC21 : bra J_8BAC07
+B_8BAC2D:    ; org $8bac2d
+cop #$80 : db $0E
+cop #$89
+lda $24 : sta $26
+cop #$A2 : dl C_80E6A6 : dw $2000
+tya : sta $7F0012,x
+lda #$800E : sta $7F000A,x
+lda #$0001 : sta $7F0014,x
+lda $09AA : sta $0024,y
+cop #$C2
+J_8BAC58:    ; org $8bac58
+lda $7F0012,x : tay
+lda $09AA : sta $0024,y
+cop #$C8 : dw B_8BBF64
+lda $7F0012,x : tay
+phx
+ldx $26
+lda $7F1016,x
+plx : sta $0024,y
+cop #$C8 : dw B_8BBF64
+bra J_8BAC58
+
+;org $8bac7d
+cop #$A9   ; Kill Actor06
+EConvergeOn26:
+lda #$2000 : trb $10
+ldy $26
+lda $0014,y : sta $7F0018,x
+lda $0016,y : clc : adc #$FFFC : sta $7F001A,x
+cop #$52 : db $FF, $02, $FF
+cop #$53
+ldy $26
+lda $0024,y : lsr : sta $0024,y
+-:
+cop #$80 : db $0E
+cop #$89
+bra -
+
+;org $8bacaf
+cop #$DA : db $07
+cop #$E0
+
+;org $8bacb4
+db $00,$20,$40,$60,$80,$A0,$C0,$E0
+
+;org $8bacbc
+EMummyQueenQuake:
+cop #$A2 : dl C_8BACD8 : dw $2000
+stz $24
+B_8BACC5:    ; org $8bacc5
+cop #$37 : db $5F
+cop #$39
+lda $24 : beq B_8BACC5
+ldy $06
+lda #$ACFE : sta $0000,y
+cop #$E0
+
+C_8BACD8:    ; org $8bacd8
+lda #$0000 : sta $7F100C,x : sta $7F100E,x
+cop #$DA : db $0F
+lda $26 : inc : cmp #$0020 : bcc B_8BACF8
+cop #$9C : dl C_8BAD6B : dw $0202
+lda #$0000
+B_8BACF8:    ; org $8bacf8
+sta $26
+jsr SR_MummyScreenShake
+rtl
+
+;org $8bacfe
+lda #$0000 : sta $7F100C,x
+  sta $7F100E,x
+cop #$CA : db $78
+jsr SR_MummyScreenShake
+cop #$CB
+cop #$E0
+
+;org $8bad13
+SR_MummyScreenShake:
+lda $06EE : bit #$0200 : bne B_8BAD49
+lda #$0000 : sta $7F100C,x
+  sta $7F100E,x
+J_8BAD26:    ; org $8bad26
+cop #$23
+pha
+  and #$0003 : sec : sbc #$0001 : clc : adc $06BE : sta $06BE
+pla : lsr : lsr : and #$0003 : sec : sbc #$0001 : clc : adc $06C2 : sta $06C2
+rts
+B_8BAD49:    ; org $8bad49
+lda $7F100C,x : bne B_8BAD5F
+lda $06BE : sta $7F100C,x
+lda $06C2 : sta $7F100E,x
+bra J_8BAD26
+B_8BAD5F:    ; org $8bad5f
+sta $06BE
+lda $7F100E,x : sta $06C2
+bra J_8BAD26
+
+C_8BAD6B:    ; org $8bad6b
+cop #$8D : db $0D
+lda #$0002 : tsb $12
+cop #$23
+pha
+  and #$001F : sta $16
+pla : asl : sta $14
+B_8BAD7F:    ; org $8bad7f
+cop #$AA : db $01
+cop #$23 : lsr : bcc B_8BAD8E
+lda $12 : eor #$4000 : sta $12
+B_8BAD8E:    ; org $8bad8e
+cop #$63 : db $02, $07, $05
+cop #$C1
+cop #$64
+cmp #$0000 : bmi B_8BAD9D
+rtl
+B_8BAD9D:    ; org $8bad9d
+cop #$B8
+lda $10 : bit #$4000 : bne B_8BADB3
+cop #$07 : db $15
+lda #$0001 : clc : adc $06C2 : sta $06C2
+B_8BADB3:    ; org $8badb3
+lda $16 : bmi B_8BAD7F
+cmp #$0200 : bcc B_8BAD7F
+cop #$E0
+warnpc $8badbe
+
+
+
+
+
+
+
+
+
 
 
 org $8baf4f
@@ -1613,18 +2420,491 @@ cop #$07 : db $06
 cop #$A5 : dl C_80DF15 : dw $0000, $0302
 cop #$C1
 rtl
-warnpc $8bb817
+
+
+;org $8bb817
+db $00 : dw $0000
+EAWGolemJumpingDown:
+cop #$27 : db $0F
+cop #$C1
+cop #$21 : db $04 : dw B_8BB939
+rtl
+
+;org $8bb825
+db $00 : dw $2000
+EAWGolemFalling:
+cop #$21 : db $05 : dw B_8BB82E
+rtl
+B_8BB82E:    ; org $8bb82e
+cop #$9C : dl EAWFallingGolemShadow : dw $0300
+cop #$9C : dl EAWFallingGolemPieceOne : dw $0300
+cop #$DA : db $0F
+cop #$9C : dl EAWFallingGolemPieceTwo : dw $0300
+cop #$DA : db $0F
+cop #$9C : dl EAWFallingGolemPieceThree : dw $0300
+cop #$DA : db $0F
+cop #$9C : dl EAWFallingGolemPieceFour : dw $0300
+cop #$DA : db $0F
+cop #$9C : dl EAWFallingGolemPieceFive : dw $0300
+cop #$DA : db $0F
+cop #$9C : dl EAWFallingGolemPieceSix : dw $0300
+cop #$DA : db $0F
+cop #$9C : dl EAWFallingGolemPieceSeven : dw $0300
+cop #$DA : db $0F
+cop #$9C : dl EAWFallingGolemPieceEight : dw $0300
+lda #$FFFF : sta $26
+cop #$C1
+lda $26 : bpl B_8BB88E
+rtl
+B_8BB88E:    ; org $8bb88e
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+lda #$2000 : trb $10
+bra J_8BB8AA
+B_8BB8A7:    ; org $8bb8a7
+cop #$27 : db $08
+J_8BB8AA:    ; org $8bb8aa
+lda $10 : bit #$4000 : bne B_8BB8A7
+cop #$21 : db $04 : dw B_8BB994
+cop #$2C : dw B_8BB8BC, B_8BB8F2
+B_8BB8BC:    ; org $8bb8bc
+cop #$2A : dw $0000, B_8BB8C6, B_8BB8C6, B_8BB8DC
+B_8BB8C6:    ; org $8bb8c6
+cop #$17 : dw B_8BB97C
+cop #$81 : db $05, $12
+cop #$89
+cop #$17 : dw B_8BB97C
+cop #$81 : db $2A, $12
+cop #$89
+bra J_8BB8AA
+B_8BB8DC:    ; org $8bb8dc
+cop #$18 : dw B_8BB97C
+cop #$81 : db $85, $11
+cop #$89
+cop #$18 : dw B_8BB97C
+cop #$81 : db $AA, $11
+cop #$89
+bra J_8BB8AA
+B_8BB8F2:    ; org $8bb8f2
+cop #$2B : dw $0000, B_8BB8FC, B_8BB8FC, B_8BB912
+B_8BB8FC:    ; org $8bb8fc
+cop #$15 : dw B_8BB97C
+cop #$82 : db $04, $12
+cop #$89
+cop #$15 : dw B_8BB97C
+cop #$82 : db $29, $12
+cop #$89
+bra J_8BB8AA
+B_8BB912:    ; org $8bb912
+cop #$16 : dw B_8BB928
+cop #$82 : db $03, $11
+cop #$89
+cop #$16 : dw B_8BB928
+cop #$82 : db $28, $11
+cop #$89
+bra J_8BB8AA
+B_8BB928:    ; org $8bb928
+cop #$2B : dw $0010, B_8BB97C, B_8BB97C, B_8BB932
+B_8BB932:    ; org $8bb932
+cop #$1C : db $08 : dw B_8BB939
+bra B_8BB97C
+B_8BB939:    ; org $8bb939
+lda #$0011 : tsb $12
+cop #$80 : db $2C
+cop #$89
+J_8BB943:    ; org $8bb943
+cop #$82 : db $2D, $07
+cop #$89
+cop #$1A : db $00 : dw B_8BB950
+bra J_8BB943
+B_8BB950:    ; org $8bb950
+lda #$0011 : trb $12
+cop #$07 : db $15
+cop #$A2 : dl J_8BB9BE : dw $2000
+lda #$0010 : tsb $10
+cop #$A5 : dl C_8BB9DF : dw $0000, $2000
+cop #$80 : db $2E
+cop #$89
+lda #$0010 : trb $10
+cop #$A9
+cop #$B7 : db $00
+B_8BB97C:    ; org $8bb97c
+cop #$C2
+cop #$23 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, $B98C : dw B_8BB8C6, B_8BB8DC : dw B_8BB912, B_8BB8FC
+B_8BB994:    ; org $8bb994
+cop #$C2
+lda #$0010 : tsb $10
+cop #$A2 : dl J_8BB9BE : dw $2000
+cop #$80 : db $07
+cop #$89
+cop #$84 : db $08, $04
+cop #$8A
+cop #$80 : db $21
+cop #$89
+cop #$A9
+lda #$0010 : trb $10
+cop #$B7 : db $00
+bra B_8BB97C
+J_8BB9BE:    ; org $8bb9be
+ldy $24
+lda $000E,y : and #$F1FF : sta $000E,y
+cop #$DA : db $01
+ldy $24
+lda $000E,y : and #$F1FF : ora #$0200 : sta $000E,y
+cop #$DA : db $01
+bra J_8BB9BE
+C_8BB9DF:    ; org $8bb9df
+cop #$CA : db $0F
+cop #$9C : dl C_8BB9FC : dw $2300
+cop #$A5 : dl C_80CFEF : dw $0000, $2000
+clc : adc #$0020 : sta $08
+cop #$CB
+cop #$E0
+C_8BB9FC:    ; org $8bb9fc
+cop #$23 : clc : adc $068A : sta $14 : sta $7F0018,x
+cop #$23 : clc : adc $068E : sta $16 : sta $7F001A,x
+cop #$13 : dw B_8BBA54
+cop #$9C : dl C_8BBA56 : dw $0300
+cop #$DA : db $3B
+lda #$2000 : trb $10
+lda $068E : sec : sbc #$0020 : sta $16
+cop #$52 : db $18, $04, $FF
+cop #$53
+cop #$07 : db $14
+cop #$86 : db $18, $0B, $45
+cop #$8A
+cop #$A9
+lda #$0100 : trb $10
+cop #$80 : db $19
+cop #$89
+cop #$80 : db $30
+cop #$89
+cop #$C2
+B_8BBA54:    ; org $8bba54
+cop #$E0
+C_8BBA56:    ; org $8bba56
+cop #$88 : dl $8EE000
+J_8BBA5B:    ; org $8bba5b
+cop #$80 : db $31
+cop #$89
+bra J_8BBA5B
+EAWFallingGolemShadow:    ; org $8bba62
+cop #$80 : db $12
+cop #$89
+bra EAWFallingGolemShadow
+EAWFallingGolemPieceOne:    ; org $8bba69
+jsr SR_AWFallingGolemPieceSpawnHigh
+cop #$52 : db $09, $06, $FF
+cop #$53
+cop #$07 : db $15
+cop #$86 : db $09, $10, $4A
+cop #$8A
+cop #$C1
+rtl
+EAWFallingGolemPieceTwo:    ; org $8bba80
+jsr SR_AWFallingGolemPieceSpawnHigh
+cop #$52 : db $0A, $06, $FF
+cop #$53
+cop #$07 : db $15
+cop #$86 : db $0A, $10, $4A
+cop #$8A
+cop #$C1
+rtl
+EAWFallingGolemPieceThree:    ; org $8bba97
+jsr SR_AWFallingGolemPieceSpawnHigh
+cop #$52 : db $0B, $06, $FF
+cop #$53
+cop #$07 : db $15
+cop #$86 : db $0B, $10, $4A
+cop #$8A
+cop #$C1
+rtl
+EAWFallingGolemPieceFour:    ; org $8bbaae
+jsr SR_AWFallingGolemPieceSpawnHigh
+cop #$52 : db $0C, $06, $FF
+cop #$53
+cop #$07 : db $15
+cop #$86 : db $0C, $10, $4A
+cop #$8A
+cop #$C1
+rtl
+EAWFallingGolemPieceFive:    ; org $8bbac5
+jsr SR_AWFallingGolemPieceSpawnHigh
+cop #$52 : db $0D, $06, $FF
+cop #$53
+cop #$07 : db $15
+cop #$86 : db $0D, $10, $4A
+cop #$8A
+cop #$C1
+rtl
+EAWFallingGolemPieceSix:    ; org $8bbadc
+jsr SR_AWFallingGolemPieceSpawnHigh
+cop #$52 : db $0E, $06, $FF
+cop #$53
+cop #$07 : db $15
+cop #$86 : db $0E, $10, $4A
+cop #$8A
+cop #$C1
+rtl
+EAWFallingGolemPieceSeven:    ; org $8bbaf3
+jsr SR_AWFallingGolemPieceSpawnHigh
+cop #$52 : db $0F, $06, $FF
+cop #$53
+cop #$07 : db $15
+cop #$86 : db $0F, $11, $4A
+cop #$8A
+cop #$C1
+rtl
+EAWFallingGolemPieceEight:    ; org $8bbb0a
+jsr SR_AWFallingGolemPieceSpawnHigh
+lda $24 : sta $26
+lda $7F001A,x : clc : adc #$0010 : sta $7F001A,x
+cop #$52 : db $10, $08, $FF
+cop #$53
+lda $14 : sta $7F0018,x
+lda $16 : sec : sbc #$0010 : sta $7F001A,x
+cop #$52 : db $10, $04, $FF
+cop #$53
+ldy $26
+lda #$0000 : sta $0026,y
+cop #$C1
+rtl
+SR_AWFallingGolemPieceSpawnHigh:    ; org $8bbb46
+lda $14 : sta $7F0018,x
+lda $16 : sta $7F001A,x
+lda $068E : sec : sbc #$0010 : sta $16
+rts
+warnpc $8bbb5c
 
 
 
-org $8bbd8d
+org $8bbb66
+db $13 : dw $0000
+; One of the two types of AW wall bug.
+stz $26
+lda #$0011 : tsb $12
+cop #$57 : dl P_8BBD48
+J_8BBB75:    ; org $8bbb75
+cop #$58 : dw B_8BBB96
+J_8BBB79:    ; org $8bbb79
+cop #$C1
+cop #$21 : db $06 : dw B_8BBB88
+cop #$23 : and #$000F : sta $08
+rtl
+B_8BBB88:    ; org $8bbb88
+cop #$A4 : dl C_8BBD02 : dw $E600, $0202
+cop #$DA : db $77
+bra J_8BBB79
+B_8BBB96:    ; org $8bbb96
+cop #$80 : db $14
+cop #$89
+lda $26 : bne B_8BBBD1
+cop #$9E : dl C_8BBC04 : dw $0000, $0000, $0302
+jsr S_8BBD81
+cop #$C2
+cop #$9E : dl C_8BBC04 : dw $0000, $0000, $0302
+jsr S_8BBD81
+cop #$C2
+cop #$9E : dl C_8BBC04 : dw $0000, $0000, $0302
+cop #$80 : db $2B
+cop #$89
+bra J_8BBB75
+B_8BBBD1:    ; org $8bbbd1
+cop #$9E : dl C_8BBC86 : dw $0000, $0000, $0302
+jsr S_8BBD81
+cop #$C2
+cop #$9E : dl C_8BBC86 : dw $0000, $0000, $0302
+jsr S_8BBD81
+cop #$C2
+cop #$9E : dl C_8BBC86 : dw $0000, $0000, $0302
+cop #$80 : db $2B
+cop #$89
+jmp J_8BBB75
+C_8BBC04:    ; org $8bbc04
+cop #$07 : db $28
+lda #$00A0 : tsb $12
+cop #$23 : lsr : bcs B_8BBC1F
+cop #$14 : db $00, $03 : dw B_8BBC1F
+lda $16 : clc : adc #$0030
+bra J_8BBC31
+B_8BBC1F:    ; org $8bbc1f
+cop #$14 : db $00, $02 : dw B_8BBD00
+lda $14 : sta $7F0018,x
+lda $16 : clc : adc #$0020
+J_8BBC31:    ; org $8bbc31
+sta $7F001A,x
+lda $14 : sta $7F0018,x
+cop #$22 : db $2F, $02
+cop #$5B : dw $0080
+lda #$0302 : trb $10
+cop #$2A : dw $0000, B_8BBC52, B_8BBC52, B_8BBC6C
+B_8BBC52:    ; org $8bbc52
+cop #$C2
+cop #$17 : dw B_8BBC6C
+cop #$80 : db $A0
+cop #$89
+cop #$81 : db $A7, $04
+cop #$89
+lda $10 : bit #$4000 : beq B_8BBC52
+cop #$E0
+B_8BBC6C:    ; org $8bbc6c
+cop #$C2
+cop #$18 : dw B_8BBC52
+cop #$80 : db $20
+cop #$89
+cop #$81 : db $27, $03
+cop #$89
+lda $10
+bit #$4000
+beq B_8BBC6C
+cop #$E0
+C_8BBC86:    ; org $8bbc86
+cop #$07 : db $28
+lda #$00A0 : tsb $12
+cop #$23 : lsr : bcs B_8BBCA1
+cop #$14 : db $01, $02 : dw B_8BBCA1
+lda $14 : clc : adc #$0010
+bra J_8BBCA9
+B_8BBCA1:    ; org $8bbca1
+cop #$14 : db $00, $02 : dw B_8BBD00
+lda $14
+J_8BBCA9:    ; org $8bbca9
+sta $7F0018,x
+lda $16 : clc : adc #$0020 : sta $7F001A,x
+cop #$22 : db $2F, $02
+cop #$5B : dw $0080
+lda #$0302 : trb $10
+cop #$2B : dw $0000, B_8BBCCE, B_8BBCCE, B_8BBCE8
+B_8BBCCE:    ; org $8bbcce
+cop #$C2
+cop #$15 : dw B_8BBCE8
+cop #$80 : db $1F
+cop #$89
+cop #$82 : db $26, $04
+cop #$89
+lda $10 : bit #$4000 : beq B_8BBCCE
+cop #$E0
+B_8BBCE8:    ; org $8bbce8
+cop #$C2
+cop #$16 : dw B_8BBCCE
+cop #$80 : db $1F
+cop #$89
+cop #$82 : db $26, $03
+cop #$89
+lda $10 : bit #$4000 : beq B_8BBCE8
+B_8BBD00:    ; org $8bbd00
+cop #$E0
+
+C_8BBD02:    ; org $8bbd02
+cop #$80 : db $23
+cop #$89
+cop #$9E : dl C_8BBD19 : dw $0000, $0002, $0202
+cop #$80 : db $24
+cop #$89
+cop #$E0
+C_8BBD19:    ; org $8bbd19
+cop #$07 : db $1E
+cop #$5B : dw $0010
+cop #$88 : dl $8EE000
+cop #$80 : db $03
+cop #$89
+lda $09AA : sta $24
+lda #$0003 : sta $0028,x
+lda #$0002 : sta $7F0014,x
+sep #$20
+  lda #$80 : pha
+rep #$20
+lda #$E4DA : pha
+rtl
+P_8BBD48:    ; org $8bbd48
+lda $0AEC : cmp #$0001 : bne B_8BBD55
+cop #$C7 : dl J_80DB8A
+B_8BBD55:    ; org $8bbd55
+cop #$C8 : dw B_8BC11B
+cop #$9C : dl C_80DA78 : dw $0020
+lda $7F0010,x : sta $0026,y
+cop #$CA : db $28
+cop #$80 : db $15
+cop #$89
+lda #$2000 : tsb $10
+cop #$C2
+lda #$2000 : trb $10
+cop #$C2
+cop #$CB
+cop #$E0
+S_8BBD81:    ; org $8bbd81
+cop #$23 : and #$001F : clc : adc #$0008 : sta $08
+rts
+
+;org $8bbd8d
 db $16 : dw $1000
 EAWFlyingSkull:
+
+
+
+
+org $8bbf64
+B_8BBF64:
+lda #$BF75 : sta $7F001E,x
+cop #$23 : and #$0001 : inc : sta $7F0014,x
+B_8BBF75:    ; org $8bbf75
+cop #$8B
+lda $2A : beq B_8BBF75
+lda $08 : sta $24
+stz $08
+cop #$C2
+dec $24 : bmi B_8BBF88
+rtl
+B_8BBF88:    ; org $8bbf88
+cop #$CB
+cop #$C5
+warnpc $8bbf8c
 
 
 org $8bbfd0
 db $16 : dw $1000
 EAWWallSkull:
+; Initial dir given by Param: 0/2/4/6 = E/W/S/N; head seeks corners left
+
+
+
+org $8bc11b
+B_8BC11B:
+cop #$07 : db $06
+sed
+  lda $0AEE : sec : sbc #$0001 : sta $0AEE
+cld
+lda $0AEC : dec : sta $0AEC
+  sta $7F0010,x
+cop #$AC : db $00, $00
+lda #$0000
+  sta $7F002C,x
+  sta $7F002E,x
+cop #$A5 : dl C_80DF15 : dw $0000, $0302
+cop #$D8
+lda $7F002A,x : bit #$0008 : beq B_8BC15A
+cop #$0C
+B_8BC15A:    ; org $8bc15a
+lda $7F0024,x : beq B_8BC182
+jsl S_80B4F6 : bcs B_8BC182
+lda $7F0024,x
+jsl S_80B4E0
+cop #$A5 : dl C_80DDF2 : dw $0000, $0342
+phx
+  lda $7F0024,x
+  tyx
+  sta $7F0024,x
+plx
+B_8BC182:    ; org $8bc182
+cop #$C5
 
 
 
@@ -1721,20 +3001,21 @@ cop #$37 : db $2d
 cop #$39
 cop #$E0
 
-org $8bc9ae
+;org $8bc9ae
 db $00,$00,$38
+ETitleScreenStartButtonListener:
 lda #$FFF0 : tsb $065A
 cop #$DB : dw $021B
-bra J_8BC9C6     ; $09
+bra +
 ;org $8bc9bd
 db $00,$00,$38
+EAttractMapsStartButtonListener:
 lda #$FFF0 : tsb $065A
-J_8BC9C6:
++:
 cop #$C1
-cop #$40 : dw $1001, B_8BC9CF    ; $C9CF
+cop #$40 : dw $1001, .PressedStart
 rtl
-
-#B_8BC9CF:    ; org $8bc9cf
+.PressedStart:    ; org $8bc9cf
 stz $0DB6
 lda #$0000 : sta $064A
 lda #$0001 : sta $0648
@@ -1752,6 +3033,143 @@ sep #$20
 rep #$20
 rtl
 ;org $8bca02
+
+
+org $8bcb4e
+db $00 : dw $3800
+EAttractMapTwoDriver:
+sep #$20
+  stz $211A   ; Reset mode 7 special settings.
+rep #$20
+cop #$50 : dl $DE1935 : db $00, $00, $20
+cop #$D1 : dw $017C : db $01 : dw .PhaseTwo
+.PhaseOne:
+cop #$CD : dw $017C
+cop #$9A : dl C_8BCC2B : dw $2800
+cop #$A0 : dl EAttractMapTextWriter : dw $0020, $0050, $2000
+lda #$D0B2 : sta $0026,y
+cop #$3C : dl $8BD031
+cop #$E0
+.PhaseTwo:    ; org $8bcb8a
+cop #$D1 : dw $017D : db $01 : dw .PhaseThree
+cop #$CD : dw $017D
+cop #$9A : dl C_8BCC5B : dw $2800
+cop #$A0 : dl EAttractMapTextWriter : dw $0064, $0058, $2000
+lda #$D0E3 : sta $0026,y
+cop #$3C : dl $8BD031
+cop #$E0
+.PhaseThree:    ; org $8bcbb4
+cop #$D1 : dw $017E : db $01 : dw .PhaseFour
+cop #$CD : dw $017E
+cop #$9A : dl C_8BCC85 : dw $2800
+cop #$A0 : dl EAttractMapTextWriter : dw $0038, $007C, $2000
+lda #$D11C : sta $0026,y
+cop #$3C : dl $8BD031
+cop #$E0
+.PhaseFour:    ; org $8bcbde
+cop #$D1 : dw $017F : db $01 : dw .PhaseFive
+cop #$CD : dw $017F
+cop #$9A : dl C_8BCCAE : dw $2800
+cop #$A0 : dl EAttractMapTextWriter : dw $0040, $0020, $2000
+lda #$D144 : sta $0026,y
+cop #$3C : dl $8BD031
+cop #$E0
+.PhaseFive:    ; org $8bcc08
+cop #$9A : dl C_8BCCD7 : dw $2800
+cop #$CF : dw $017C
+cop #$A0 : dl EAttractMapTextWriter : dw $0038, $0050, $2000
+lda #$D189 : sta $0026,y
+cop #$3C : dl $8BD031
+cop #$E0
+C_8BCC2B:    ; org $8bcc2b
+jsr S_8BCD26
+cop #$C1
+lda $0036 : and #$0003 : bne B_8BCC3E
+dec $00CA
+dec $06BE
+B_8BCC3E:    ; org $8bcc3e
+dec $00C2
+dec $00C8
+lda $00C2 : cmp #$00E0 : beq B_8BCC55
+  cmp #$008B : bcc B_8BCC52
+rtl
+B_8BCC52:    ; org $8bcc52
+jmp J_8BCCF5
+B_8BCC55:    ; org $8bcc55
+cop #$3C : dl $8BD039
+rtl
+C_8BCC5B:    ; org $8bcc5b
+jsr S_8BCD26
+cop #$C1
+lda $0036 : and #$0003 : bne B_8BCC6E
+inc $00CA
+inc $06BE
+B_8BCC6E:    ; org $8bcc6e
+dec $00C2
+dec $00C8
+lda $00C2 : cmp #$00E0 : beq B_8BCC55
+  cmp #$008B : bcc B_8BCC82
+rtl
+B_8BCC82:    ; org $8bcc82
+jmp J_8BCCF5
+C_8BCC85:    ; org $8bcc85
+jsr S_8BCD26
+cop #$C1
+lda $0036 : and #$0003 : bne B_8BCC98
+  inc $00CC : inc $06C2
+B_8BCC98:    ; org $8bcc98
+dec $00C2
+dec $00C8
+lda $00C2 : cmp #$00E0 : beq B_8BCC55
+  cmp #$008B : bcc B_8BCCAC
+rtl
+B_8BCCAC:    ; org $8bccac
+bra J_8BCCF5
+C_8BCCAE:    ; org $8bccae
+jsr S_8BCD26
+cop #$C1
+lda $0036 : and #$0003 : bne B_8BCCC1
+dec $00CC
+dec $06C2
+B_8BCCC1:    ; org $8bccc1
+dec $00C2
+dec $00C8
+lda $00C2 : cmp #$00E0 : beq B_8BCC55
+  cmp #$008B : bcc B_8BCCD5
+rtl
+B_8BCCD5:    ; org $8bccd5
+bra J_8BCCF5
+C_8BCCD7:    ; org $8bccd7
+jsr S_8BCD26
+cop #$C1
+dec $00C2
+dec $00C8
+lda $00C2 : cmp #$0050 : bne B_8BCCED
+jmp B_8BCC55
+B_8BCCED:    ; org $8bcced
+cmp #$0000 : beq B_8BCCF3
+rtl
+B_8BCCF3:    ; org $8bccf3
+bra J_8BCCF5
+J_8BCCF5:    ; org $8bccf5
+cop #$D1 : dw $017C : db $00 : dw B_8BCD14
+lda #$0200 : sta $064A
+lda #$0001 : sta $0648
+cop #$26 : db $8D, $00, $00, $00, $00, $00, $00, $11
+cop #$E0
+B_8BCD14:    ; org $8bcd14
+lda #$0804 : sta $064A
+cop #$26 : db $8E, $00, $00, $00, $00, $00, $00, $11
+cop #$E0
+S_8BCD26:    ; org $8bcd26
+lda #$0200 : sta $00C2
+lda #$0200 : sta $00C8
+lda #$0200 : sta $00CA
+lda #$0200 : sta $00CC
+lda #$0180 : sta $06BE
+lda #$0180 : sta $06C2
+rts
+warnpc $8bcd4b
 
 
 org $8bcf52
@@ -1779,11 +3197,21 @@ plx
   sta $14
 lda #$0038 : sta $16
 lda #$2300 : sta $0E : bra J_8BCFB3
-warnpc $8bcf8f
 
-
-org $8bcfb3
-#J_8BCFB3:
+;org $8bcf8f
+EAttractMapTextWriter:
+phb
+lda #$0000 : sta $7F0BE0
+  sta $7F0BE2
+  sta $7F0BE4
+  sta $7F0BE6
+lda #$2F00 : sta $0E
+sep #$20
+  ldy $24
+  lda $0002,y
+  pha : plb
+rep #$20
+J_8BCFB3:
 ldy $26
 stz $00DA
 lda $14 : sta $18
@@ -1795,43 +3223,137 @@ rep #$20
 phx
 ldx #$0000
 sep #$20
-#J_8BCFCE:
+J_8BCFCE:    ; org $8bcfce
 lda $0000,y
-iny
+  iny
   cmp #$C0 : bcs J_8BD00B
   cmp #$57 : beq B_8BCFFD
 rep #$20
-and #$00FF : asl : ora $0E : sta $7F0602,x
+  and #$00FF : asl : ora $0E : sta $7F0602,x
 lda $26 : sta $7F0600,x
   clc : adc #$0008 : sta $26
 inc $00DA
 inx : inx : inx : inx
 sep #$20
 bra J_8BCFCE
-#B_8BCFFD:
+B_8BCFFD:    ; org $8bcffd
 rep #$20
 lda $26 : clc : adc #$0008 : sta $26
 sep #$20
 bra J_8BCFCE
-#J_8BD00B:
-  cmp #$CA : beq B_8BD025
-  cmp #$CB : beq B_8BD016
-nop
-bra J_8BD00B
-#B_8BD016:
+J_8BD00B:    ; org $8bd00b
+cmp #$CA : beq B_8BD025
+cmp #$CB : beq B_8BD016
+nop : bra J_8BD00B
+B_8BD016:    ; org $8bd016
 lda $18 : sta $26
 lda $1A : clc : adc #$10 : sta $27
-  sta $1A
+sta $1A
 bra J_8BCFCE
-#B_8BD025:
+B_8BD025:    ; org $8bd025
 plx
 rep #$20
 plb
-asl $00DA : asl $00DA
+asl $00DA
+asl $00DA
 cop #$E0
+C_8BD031:    ; org $8bd031
+cop #$37 : db $75
+cop #$39
+cop #$3D
+rtl
+C_8BD039:    ; org $8bd039
+cop #$37 : db $76
+cop #$39
+cop #$CC : db $0F
+cop #$3D
+rtl
+
+; Mode 7 cutscene text. Letters are drawn as sprites on the screen (OAM),
+;   and the encoding is unique:
+;   $00 - $07 = ABCDEFGH
+;   $10 - $17 = IJKLMNO!
+;   $20 - $27 = PQRSTUVW
+;   $30 - $37 = XYZ/?-()
+;   $40 - $47 = abcdefgh
+;   $50 - $57 = ijklmno   the last character being a space
+;   $60 - $67 = pqrstuvw
+;   $70 - $77 = xyz,.'""  the latter being left and right double-quotes
+;   $ca = end text, $cb = newline
+; (Like other text, the encoded bytes are VRAM offsets. Each 8x16 letter
+;   has an 8x16 transparent space next to it, so when rendered as
+;   overlapping 16x16 sprites they look like normal text. That means
+;   each VRAM row only fits 8 letters, which the devs chose to address
+;   here as $00-7 instead of $00,2,4,6,8,A,C,E.)
+; org $8bd044
+db $24,$47,$44,$57,$67,$56,$62,$53,$43,$57,$67,$40,$63,$57,$50,$55,$cb
+db $40,$55,$57,$40,$46,$44,$57,$56,$45,$57,$cb
+db $44,$70,$60,$53,$56,$62,$40,$64,$50,$56,$55,$74,$ca
+
+; org $8bd06d
+db $13,$56,$56,$52,$50,$55,$46,$57,$45,$56,$62,$57,$55,$44,$67,$cb
+db $53,$40,$55,$43,$63,$73,$cb
+db $54,$40,$55,$57,$65,$55,$42,$56,$66,$44,$62,$44,$43,$57,$64,$47,$44,$cb
+db $62,$44,$53,$50,$42,$63,$57,$56,$45,$57,$40,$55,$42,$50,$44,$55,$64,$cb
+db $42,$65,$53,$64,$65,$62,$44,$63,$74,$ca
+
+; org $8bd0b2
+db $00,$63,$57,$64,$50,$54,$44,$57,$60,$40,$63,$63,$44,$43,$73,$cb
+db $54,$40,$55,$71,$57,$53,$44,$46,$44,$55,$43,$63,$57,$cb
+db $41,$44,$46,$40,$55,$57,$64,$56,$57,$63,$65,$62,$45,$40,$42,$44,$74,$57,$ca
+
+; org $8bD0E3
+db $00,$57,$53,$44,$46,$44,$55,$43,$57,$45,$62,$56,$54,$57,$44,$40,$42,$47,$cb
+db $62,$65,$50,$55,$73,$cb
+db $40,$57,$53,$44,$46,$44,$55,$43,$57,$45,$62,$56,$54,$57,$44,$40,$42,$47,$cb
+db $42,$65,$53,$64,$65,$62,$44,$74,$74,$74,$74,$57,$ca
+
+; org $8bD11C
+db $26,$40,$62,$50,$56,$65,$63,$57,$62,$44,$53,$50,$42,$63,$cb
+db $67,$44,$62,$44,$57,$45,$56,$65,$55,$43,$57,$50,$55,$57,$64,$47,$44,$cb
+db $62,$65,$50,$55,$63,$74,$ca
+
+; org $8bD144
+db $16,$55,$44,$57,$56,$45,$57,$64,$47,$44,$cb
+db $53,$44,$46,$44,$55,$43,$63,$57,$64,$56,$53,$43,$57,$56,$45,$cb
+db $63,$64,$62,$40,$55,$46,$44,$57,$63,$64,$40,$64,$65,$44,$63,$cb
+db $50,$55,$57,$64,$47,$44,$57,$63,$47,$40,$60,$44,$63,$57,$56,$45,$cb
+db $63,$60,$50,$62,$50,$64,$63,$74,$ca
+
+; org $8bD189
+db $27,$47,$40,$64,$57,$67,$40,$63,$57,$40,$57,$63,$60,$50,$62,$50,$64,$57,$64,$56,$cb
+db $40,$55,$42,$50,$44,$55,$64,$57,$60,$44,$56,$60,$53,$44,$74,$74,$74,$cb
+db $24,$47,$44,$57,$62,$65,$50,$55,$63,$57,$cb
+db $43,$56,$55,$75,$64,$57,$64,$44,$53,$53,$57,$65,$63,$74,$ca
+
+; org $8bd1ca
+db $20,$44,$56,$60,$53,$44,$57,$67,$47,$56,$57,$44,$55,$64,$44,$62,$44,$43,$cb
+db $64,$47,$44,$57,$62,$65,$50,$55,$63,$73,$cb
+db $63,$44,$40,$62,$42,$47,$50,$55,$46,$57,$45,$56,$62,$cb
+db $67,$44,$40,$53,$64,$47,$73,$57,$67,$44,$55,$64,$57,$50,$55,$73,$cb
+db $40,$55,$43,$57,$67,$44,$62,$44,$57,$55,$44,$66,$44,$62,$57,$63,$44,$44,$55,$cb
+db $40,$46,$40,$50,$55,$74,$ca
+
+; org $8bd222
+db $23,$56,$54,$44,$57,$63,$40,$50,$43,$57,$64,$47,$44,$62,$44,$cb
+db $67,$44,$62,$44,$57,$64,$62,$40,$60,$63,$57,$64,$56,$cb
+db $60,$62,$56,$64,$44,$42,$64,$57,$64,$47,$44,$cb
+db $64,$62,$44,$40,$63,$65,$62,$44,$73,$57,$56,$64,$47,$44,$62,$63,$cb
+db $63,$40,$50,$43,$57,$50,$64,$57,$67,$40,$63,$57,$40,$cb
+db $42,$65,$62,$63,$44,$74,$ca
+
+; org $8bd272
+db $15,$56,$57,$56,$55,$44,$57,$64,$47,$56,$65,$46,$47,$64,$cb
+db $64,$47,$44,$63,$44,$57,$62,$65,$50,$55,$63,$57,$67,$56,$65,$53,$43,$cb
+db $41,$62,$50,$55,$46,$57,$40,$41,$56,$65,$64,$cb
+db $43,$50,$63,$40,$63,$64,$44,$62,$74,$74,$74,$ca
+
+warnpc $82d2ab
 
 
 
+
+; Post-Comet victory text.
 org $8BD558
 db $C1,$03,$04,$C7,$0D,$03,$D2,$00,$C2,$13,$D2,$00,$D5,$06,$D6,$25,$CB,$D6,$64,$D6,$9D,$A4,$8E,$AC,$CB,$A4,$87,$84,$AC,$82,$8E,$8C,$84,$A4,$2A,$2A,$2A,$0D,$AC,$C9,$78,$CE,$64,$87,$80,$A4,$AC,$86,$8B,$8E,$A7,$88,$8D,$86,$CB,$86,$A2,$84,$84,$8D,$AC,$A0,$8B,$80,$8D,$84,$A4,$0D,$C9,$B4,$C8,$CA
 ;org $8BD5A0
@@ -1944,7 +3466,7 @@ cop #$D9 : dw $0000, ...Choices    ; $E34C
 
 EMenuNew:    ; org $8be354
 jsr S_8BEBF9
-cop #$6B : db $37, $F4
+cop #$6B : dw $F437
 cop #$C8 : dw B_8BEB8B
 cop #$BD : dl $81EADC
 lda $0D8C : and #$0003 : sta $0D92
@@ -1953,7 +3475,13 @@ cop #$C2
 lda #$000C : sta $7F101C,x
 cop #$C8 : dw B_8BE527
 cop #$E2 : dl J_8BE36D
-warnpc $8be37f
+cop #$40 : dw $0800, $E398
+cop #$40 : dw $0400, $E3B1
+cop #$40 : dw $0080, $E3DF
+cop #$40 : dw $8000, $E3CD
+rtl
+
+;org $8be398
 
 
 org $8be3df    ; Select file
@@ -1963,8 +3491,8 @@ org $8be462
 EMenuStartGame:
 cop #$C2
 cop #$40 : dw $0380, .ChangeOrConfirm
-cop #$40 : dw $0800, LR_MenuPressedUp
-cop #$40 : dw $0400, LR_MenuPressedDown
+cop #$40 : dw $0800, LR_OptionsOrNewGamePressedUp
+cop #$40 : dw $0400, LR_OptionsOrNewGamePressedDown
 cop #$40 : dw $8000, .ReturnToNew
 rtl
 .ReturnToNew:    ; org $8be47d
@@ -2115,17 +3643,16 @@ EMenuOptions:    ; org $8be6ba
 
 
 org $8be75b
-LR_MenuPressedUp:
+LR_OptionsOrNewGamePressedUp:
 cop #$06 : db $10
 lda $0656 : ora $0658 : sta $0658
-lda $0D98
-dec a : bpl B_8BE770
+lda $0D98 : dec : bpl B_8BE770
 lda #$0002
 B_8BE770:    ; org $8be770
 sta $0D98
 rtl
 ; org $8be774
-LR_MenuPressedDown:
+LR_OptionsOrNewGamePressedDown:
 cop #$06 : db $10
 lda $0656 : ora $0658 : sta $0658
 lda $0D98 : inc a : cmp #$0003 : bcc B_8BE78C
@@ -2187,6 +3714,7 @@ warnpc $8bec06
 org $8BEE20
 db $02,$00,$10
 EDebugMan:
+{
 cop #$0B
 cop #$C0 : dw .OnUse    ; $EE2C
 cop #$C1
@@ -2385,6 +3913,7 @@ db $CE,$AC,$61,$A5,$88,$A4,$CB,$AC,$60,$A9,$A2,$80,$8C,$88,$83,$CB,$AC,$67,$80,$
 db $CE,$41,$A9,$84,$AC,$81,$A9,$84,$4F,$C0
 ;org $8BF164
 db $CE,$4E,$8A,$4F,$CB,$63,$84,$84,$AC,$A9,$8E,$A5,$AC,$80,$86,$80,$88,$8D,$4F,$C0
+}
 
 ;org $8BF178
 ; Unknown code.
@@ -2406,6 +3935,7 @@ rtl
 
 org $8bf1db
 SR_Bin2DecForMenu:
+{
 pha
 ldy $0000
 stz $0000
@@ -2451,8 +3981,81 @@ sty $0000
 pla
 sec
 rts
+}
 warnpc $8bf24b
 
+org $8bf437
+Bg3_DiaryListNew:
+db $C1,$02,$08
+db $C7,$0E,$07
+db $67,$87,$88,$82,$87,$AC,$43,$88,$80,$A2,$A9,$0D,$CB
+Bg3_DiaryList:
+db $AC,$43,$88,$80,$A2,$A9,$21,$AC,$C5,$06,$F7,$74,$0D,$CB,$CB
+db $AC,$43,$88,$80,$A2,$A9,$22,$AC,$C5,$06,$F7,$76,$0D,$CB,$CB
+db $AC,$43,$88,$80,$A2,$A9,$23,$AC,$C5,$06,$F7,$78,$0D
+db $CA
+Bg3_DiaryListChangeSnd:
+db $C1,$02,$08
+db $C7,$0E,$07
+db $D6,$0B,$63,$8D,$83,$6B,$41,$A5,$A4,$A4,$8E,$8D,$CB
+db $D1,$4A,$F4   ; i.e. db $d1 : dw Bg3_DiaryList
+Bg3_DiaryListMove:
+db $C1,$02,$08
+db $C7,$0E,$07
+db $4C,$8E,$A6,$84,$AC,$A7,$87,$88,$82,$87,$AC,$43,$88,$80,$A2,$A9,$0D,$CB
+db $D1,$4A,$F4   ; i.e. db $d1 : dw Bg3_DiaryList
+Bg3_DiaryListErase:
+db $C1,$02,$08
+db $C7,$0E,$07
+db $44,$A2,$80,$A3,$84,$AC,$A7,$87,$88,$82,$87,$AC,$43,$88,$80,$A2,$A9,$0D,$CB
+db $D1,$4A,$F4   ; i.e. db $d1 : dw Bg3_DiaryList
+Bg3_Diary1Stats:   ; $8bf4c3
+db $C1,$02,$0C
+db $CC,$02
+db $47,$60   ; "HP"
+db $CC,$01
+db $C6,$02,$00,$9A,$0D
+db $CC,$02
+db $63,$64,$62   ; "STR"
+db $CC,$01
+db $C6,$02,$00,$9C,$0D
+db $CC,$02
+db $43,$44,$45   ; "DEF"
+db $CC,$01
+db $C6,$02,$00,$9E,$0D
+db $CA
+Bg3_Diary2Stats:
+db $C1,$02,$10
+db $CC,$02
+db $47,$60
+db $CC,$01
+db $C6,$02,$00,$9A,$0D
+db $CC,$02
+db $63,$64,$62
+db $CC,$01
+db $C6,$02,$00,$9C,$0D
+db $CC,$02
+db $43,$44,$45
+db $CC,$01
+db $C6,$02,$00,$9E,$0D
+db $CA
+Bg3_Diary3Stats:
+db $C1,$02,$14
+db $CC,$02
+db $47,$60
+db $CC,$01
+db $C6,$02,$00,$9A,$0D
+db $CC,$02
+db $63,$64,$62
+db $CC,$01
+db $C6,$02,$00,$9C,$0D
+db $CC,$02
+db $43,$44,$45
+db $CC,$01
+db $C6,$02,$00,$9E,$0D
+db $CA
+
+;org $8bf538
 
 org $8bf706
 Table_SaveFileLocationText:
