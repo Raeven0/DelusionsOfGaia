@@ -31,7 +31,7 @@ MusicItemGet = $DD57FC    ; Item fanfare
 MusicLolasMelody = $DE6C12    ; Lola's Melody
 MusicWindMelody = $DE6B33    ; Wind Melody
 MusicSilence = $DF2A1D    ; Silence
-MusicCityDupe = $95F39C    ; City (copy of other data)
+MusicCityDupe = $95F39C    ; City (variant)
 MusicWaterfall = $DF2BCB    ; Ishtar's waterfall
 MusicMemoryMelody = $DE2A6E    ; Memory Melody
 MusicTitleScreenDanger = $D11233    ; Danger: clobbers sound engine
@@ -55,6 +55,13 @@ ViperSpTl = $8ecadb
 
 org $8D8000
 {
+; Map header card format:
+; db MapNum : db $00
+; followed by any combination of:
+; db $02 : db PpuSettingsIndex    ; indexes pointers at $818000
+; db $03 : db SrcOffset,Size,DestOffset : dl SrcAddr : db Layer
+; db $04 : db SrcOffset,Size,DestOffset : dl SrcAddress
+; db $05 : 
 
 Map00HeaderCards:
 {
@@ -1572,7 +1579,7 @@ db $15 : db $18
 db $00
 }
 
-Map67HeaderCards:    ; Vamps
+Map67HeaderCards:    ; Vamps, $8d945a
 {
 db $67 : db $00
 db $02 : db $14
@@ -3557,4 +3564,14 @@ SpecVram8DB000:
 db $00    ; With previous $00, this is SpecVram8DAFFF.
 
 ;org $8DB001
-; Inventory graphics and some VRAM follow.
+; Inventory graphics.
+incsrc "assets/include/ItemVram.asr"
+
+;org $8df001
+incsrc "assets/include/RushVram8DF001.asr"
+
+;org $8DFF8B
+incsrc "assets/include/FrejTlMp8DFF8B.asr"
+;warnpc $8dffff
+
+;End of bank.

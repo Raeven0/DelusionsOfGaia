@@ -326,7 +326,7 @@ db $0A,$26,$00 : dl $84893A : db $00
 db $03,$1D,$01 : dl EJeweler-3 : db $00    ; $88cea0
 db $0D,$15,$00 : dl $84922C : db $00 
 db $00,$01,$00 : dl $84BC65 : db $00 
-db $0E,$06,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $0E,$06,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
 db $08,$0C,$03 : dl ERedJewelPickup-3 : db $00    ; $80C66F
 db $FF,$D6,$47,$42,$80,$A0,$84,$CA
@@ -457,7 +457,7 @@ db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $0B,$20,$00 : dl ECPlotDriver-3 : db $00    ; $84D202
 db $02,$14,$00 : dl ECGuard_Unlocker-3 : db $00    ; $84DC19
-db $1A,$15,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $1A,$15,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $0D,$11,$00 : dl ECCellBlocker-3 : db $00    ; $84DB12
 db $0E,$11,$00 : dl ECCellBlocker-3 : db $00    ; $84DB12
 db $0F,$11,$00 : dl ECCellBlocker-3 : db $00    ; $84DB12
@@ -643,7 +643,7 @@ db $2D,$36,$00 : dl $84E06A : db $00
 db $0A,$18,$00 : dl $84E929 : db $00 
 db $46,$27,$00 : dl $84F0A3 : db $00 
 db $47,$27,$00 : dl $84EF74 : db $00 
-db $43,$08,$05 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $43,$08,$05 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
 db $30,$19,$01 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $0F,$25,$01 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
@@ -730,10 +730,10 @@ db $2C,$3F,$00 : dl EMPSpinner-3 : db $0C,$08,$0E     ; $8A8C70
 db $0A,$45,$00 : dl EMPSpinner-3 : db $0C,$09,$00     ; $8A8C70
 db $07,$4C,$00 : dl EMPSpinner-3 : db $0C,$0A,$00     ; $8A8C70
 db $2D,$19,$00 : dl EMPSpinner-3 : db $0C,$0B,$0F     ; $8A8C70
-db $09,$3A,$00 : dl $8A8EB6 : db $0B,$0C,$00 
-db $03,$3D,$00 : dl $8A8EB6 : db $0B,$0D,$00 
-db $17,$41,$00 : dl $8A8EB6 : db $0B,$0E,$00 
-db $14,$48,$00 : dl $8A8EB6 : db $0B,$0F,$00 
+db $09,$3A,$00 : dl EMPSlugBlue-3 : db $0B,$0C,$00     ; $8A8EB6
+db $03,$3D,$00 : dl EMPSlugBlue-3 : db $0B,$0D,$00     ; $8A8EB6
+db $17,$41,$00 : dl EMPSlugBlue-3 : db $0B,$0E,$00     ; $8A8EB6
+db $14,$48,$00 : dl EMPSlugBlue-3 : db $0B,$0F,$00     ; $8A8EB6
 db $02,$3E,$00 : dl $89C26F : db $00 
 db $FF,$D7,$19,$42,$8B,$88,$85,$85,$CA
 ;org $8C8D85
@@ -741,20 +741,20 @@ ActorList_Map1E:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $89C4B2 : db $00 
+db $00,$01,$00 : dl EMPBossExteriorWindListener-3 : db $00    ; $89C4B2
 db $37,$14,$00 : dl $89C54D : db $00 
 db $26,$17,$00 : dl $89C563 : db $00 
 db $19,$12,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
-db $2C,$05,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $2C,$05,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $FF,$CA
 ;org $8C8DBF
 ActorList_Map1F:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $05,$0F,$00 : dl $8A95C2 : db $0D,$00,$00 
-db $05,$15,$00 : dl $8A95C2 : db $0D,$00,$00 
-db $1A,$0F,$00 : dl $8A95BD : db $0D,$00,$00 
-db $1A,$15,$00 : dl $8A95BD : db $0D,$00,$00 
+db $05,$0F,$00 : dl EMPStatueEastRed-3 : db $0D,$00,$00     ; $8A95C2
+db $05,$15,$00 : dl EMPStatueEastRed-3 : db $0D,$00,$00     ; $8A95C2
+db $1A,$0F,$00 : dl EMPStatueWestRed-3 : db $0D,$00,$00     ; $8A95BD
+db $1A,$15,$00 : dl EMPStatueWestRed-3 : db $0D,$00,$00     ; $8A95BD
 db $08,$0C,$03 : dl $89C3BB : db $00 
 db $0C,$0C,$05 : dl $89C3BB : db $00 
 db $12,$0C,$07 : dl $89C3BB : db $00 
@@ -779,19 +779,19 @@ db $FF,$CA
 ActorList_Map21:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $25,$15,$0B : dl $80D428 : db $00 
-db $25,$1A,$03 : dl $80D3BA : db $00 
+db $25,$15,$0B : dl ERampLauncherToSouth-3 : db $00    ; $80D428
+db $25,$1A,$03 : dl ERampLauncherToNorth-3 : db $00    ; $80D3BA
 db $3C,$3C,$00 : dl $8A9026 : db $00 
-db $18,$05,$00 : dl $8A9061 : db $0D,$18,$00 
-db $21,$05,$00 : dl $8A9061 : db $0D,$19,$00 
-db $2A,$05,$00 : dl $8A9061 : db $0D,$1A,$00 
-db $05,$19,$00 : dl $8A95C2 : db $0D,$1B,$00 
-db $02,$2C,$00 : dl $8A9070 : db $0D,$1C,$00 
-db $07,$2C,$00 : dl $8A906B : db $0D,$1D,$00 
-db $1F,$3A,$10 : dl $8A95B3 : db $0D,$1E,$00 
-db $27,$3A,$10 : dl $8A95B3 : db $0D,$1F,$00 
-db $2F,$3A,$10 : dl $8A9061 : db $0D,$20,$00 
-db $37,$3A,$10 : dl $8A9061 : db $0D,$21,$00 
+db $18,$05,$00 : dl EMPStatueSouthGreen-3 : db $0D,$18,$00     ; $8A9061
+db $21,$05,$00 : dl EMPStatueSouthGreen-3 : db $0D,$19,$00     ; $8A9061
+db $2A,$05,$00 : dl EMPStatueSouthGreen-3 : db $0D,$1A,$00     ; $8A9061
+db $05,$19,$00 : dl EMPStatueEastRed-3 : db $0D,$1B,$00     ; $8A95C2
+db $02,$2C,$00 : dl EMPStatueEastGreen-3 : db $0D,$1C,$00    ; $8A9070
+db $07,$2C,$00 : dl EMPStatueWestGreen-3 : db $0D,$1D,$00    ; $8A906B
+db $1F,$3A,$10 : dl EMPStatueSouthRed-3 : db $0D,$1E,$00     ; $8A95B3
+db $27,$3A,$10 : dl EMPStatueSouthRed-3 : db $0D,$1F,$00     ; $8A95B3
+db $2F,$3A,$10 : dl EMPStatueSouthGreen-3 : db $0D,$20,$00     ; $8A9061
+db $37,$3A,$10 : dl EMPStatueSouthGreen-3 : db $0D,$21,$00     ; $8A9061
 db $3B,$25,$00 : dl EMPSlime-3 : db $0F,$22,$00     ; $8A97EE
 db $3B,$29,$00 : dl EMPSlime-3 : db $0F,$23,$00     ; $8A97EE
 db $3B,$2E,$00 : dl EMPSlime-3 : db $0F,$24,$00     ; $8A97EE
@@ -808,13 +808,13 @@ db $FF,$CA
 ActorList_Map22:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $22,$19,$00 : dl $8A9061 : db $0D,$2D,$00 
-db $1A,$19,$00 : dl $8A9061 : db $0D,$2E,$00 
+db $22,$19,$00 : dl EMPStatueSouthGreen-3 : db $0D,$2D,$00     ; $8A9061
+db $1A,$19,$00 : dl EMPStatueSouthGreen-3 : db $0D,$2E,$00     ; $8A9061
 db $0A,$1E,$00 : dl $8A9026 : db $00 
-db $0A,$1A,$10 : dl $8A95B3 : db $0D,$2F,$00 
-db $0A,$23,$10 : dl $8A95B8 : db $0D,$30,$00 
-db $0E,$1E,$10 : dl $8A95BD : db $0D,$31,$00 
-db $06,$1E,$10 : dl $8A95C2 : db $0D,$32,$00 
+db $0A,$1A,$10 : dl EMPStatueSouthRed-3 : db $0D,$2F,$00     ; $8A95B3
+db $0A,$23,$10 : dl EMPStatueNorthRed-3 : db $0D,$30,$00    ; $8A95B8
+db $0E,$1E,$10 : dl EMPStatueWestRed-3 : db $0D,$31,$00     ; $8A95BD
+db $06,$1E,$10 : dl EMPStatueEastRed-3 : db $0D,$32,$00     ; $8A95C2
 db $11,$2C,$00 : dl EMPSlime-3 : db $0F,$33,$00     ; $8A97EE
 db $0E,$2F,$00 : dl EMPSlime-3 : db $0F,$34,$00     ; $8A97EE
 db $14,$2F,$00 : dl EMPSlime-3 : db $0F,$35,$00     ; $8A97EE
@@ -895,18 +895,18 @@ db $1A,$2C,$00 : dl EMPMudGolem-3 : db $0A,$61,$00    ; $8A8B1B
 db $15,$2A,$00 : dl EMPMudGolem-3 : db $0A,$62,$00    ; $8A8B1B 
 db $02,$12,$00 : dl EMPSlug-3 : db $0B,$63,$00    ; $8A8DB7
 db $03,$12,$00 : dl EMPSlug-3 : db $0B,$64,$00    ; $8A8DB7
-db $0A,$1C,$00 : dl $8A8EB6 : db $0B,$65,$00 
-db $0B,$1C,$00 : dl $8A8EB6 : db $0B,$66,$00 
-db $0C,$1C,$00 : dl $8A8EB6 : db $0B,$67,$00 
-db $0D,$1C,$00 : dl $8A8EB6 : db $0B,$68,$00 
-db $13,$1D,$00 : dl $8A8896 : db $00 
-db $18,$1E,$00 : dl $8A8896 : db $00 
-db $1D,$20,$00 : dl $8A8896 : db $00 
-db $19,$21,$00 : dl $8A8896 : db $00 
-db $1A,$21,$00 : dl $8A8896 : db $00 
+db $0A,$1C,$00 : dl EMPSlugBlue-3 : db $0B,$65,$00     ; $8A8EB6
+db $0B,$1C,$00 : dl EMPSlugBlue-3 : db $0B,$66,$00     ; $8A8EB6
+db $0C,$1C,$00 : dl EMPSlugBlue-3 : db $0B,$67,$00     ; $8A8EB6
+db $0D,$1C,$00 : dl EMPSlugBlue-3 : db $0B,$68,$00     ; $8A8EB6
+db $13,$1D,$00 : dl EMPPullableStatue-3 : db $00    ; $8A8896
+db $18,$1E,$00 : dl EMPPullableStatue-3 : db $00    ; $8A8896
+db $1D,$20,$00 : dl EMPPullableStatue-3 : db $00    ; $8A8896
+db $19,$21,$00 : dl EMPPullableStatue-3 : db $00    ; $8A8896
+db $1A,$21,$00 : dl EMPPullableStatue-3 : db $00    ; $8A8896
 db $11,$28,$00 : dl $89C798 : db $00 
 db $11,$16,$00 : dl $89C8F7 : db $00 
-db $1C,$14,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $1C,$14,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $FF,$CA
 ;org $8C9242
 ActorList_Map27:
@@ -935,16 +935,16 @@ db $FF,$CA
 ActorList_Map28:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $11,$08,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
-db $13,$17,$00 : dl $8A8EB6 : db $0B,$7F,$00 
-db $0C,$24,$00 : dl $8A8EB6 : db $0B,$80,$00 
-db $11,$27,$00 : dl $8A8EB6 : db $0B,$81,$00 
+db $11,$08,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
+db $13,$17,$00 : dl EMPSlugBlue-3 : db $0B,$7F,$00     ; $8A8EB6
+db $0C,$24,$00 : dl EMPSlugBlue-3 : db $0B,$80,$00     ; $8A8EB6
+db $11,$27,$00 : dl EMPSlugBlue-3 : db $0B,$81,$00     ; $8A8EB6
 db $04,$10,$00 : dl EMPSpinner-3 : db $0C,$82,$00     ; $8A8C70
 db $02,$1A,$00 : dl EMPSpinner-3 : db $0C,$83,$00     ; $8A8C70
 db $04,$24,$00 : dl EMPSpinner-3 : db $0C,$84,$10     ; $8A8C70
 db $12,$12,$00 : dl EMPSpinner-3 : db $0C,$85,$00     ; $8A8C70
 db $0E,$18,$00 : dl EMPSpinner-3 : db $0C,$86,$00     ; $8A8C70
-db $00,$01,$00 : dl $89C6A9 : db $00 
+db $00,$01,$00 : dl EMP28TileListener-3 : db $00    ; $89C6A9
 db $1B,$13,$00 : dl $89C89D : db $00 
 db $FF,$CA
 ;org $8C935F
@@ -961,8 +961,8 @@ ActorList_Map2A:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $08,$19,$00 : dl $859454 : db $00 
-db $00,$01,$01 : dl $80C1AA : db $00 
+db $08,$19,$00 : dl EShiraInDream-3 : db $00    ; $859454
+db $00,$01,$01 : dl EShiraDreamSpotlightBuilder-3 : db $00    ; $80C1AA
 db $FF,$CA
 ;org $8C93B2
 ActorList_Map2B:
@@ -1102,7 +1102,7 @@ ActorList_Map34:    ; Freejia, Dark Space room
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $04,$09,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $04,$09,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $FF,$CA
 ;org $8C96D5
 ActorList_Map35:
@@ -1189,7 +1189,7 @@ db $0B,$51,$00 : dl EMineEyeFrozen-3 : db $19,$09,$00     ; $8AB0B3
 db $02,$29,$00 : dl EMineWorm-3 : db $1A,$0A,$00     ; $8AAFF5
 db $0D,$29,$00 : dl EMineWorm-3 : db $1A,$0B,$00     ; $8AAFF5
 db $05,$03,$00 : dl $8AA9EC : db $00 
-db $0D,$0B,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $0D,$0B,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $FF,$CA
 ;org $8C98B7
 ActorList_Map3E:
@@ -1283,7 +1283,7 @@ db $FF,$CA
 ActorList_Map42:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $27,$06,$05 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $27,$06,$05 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $28,$17,$07 : dl EMineSlave-3 : db $00    ; $8aa6b6 
 db $FF,$CA
 ;org $8C9B57
@@ -1376,7 +1376,7 @@ db $0F,$14,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $41,$41,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl $80C667 : db $00 
-db $09,$06,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $09,$06,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $13,$0E,$00 : dl $85F504 : db $00 
 db $13,$12,$00 : dl $85F533 : db $00 
 db $0B,$0C,$00 : dl $85F571 : db $00 
@@ -1509,9 +1509,9 @@ db $28,$08,$00 : dl ENazcaTopWormB-3 : db $1B,$8A,$00     ; $8AC533
 db $23,$0C,$00 : dl ENazcaTopWormB-3 : db $1B,$8B,$00     ; $8AC533
 db $1A,$23,$00 : dl ENazcaTopWormB-3 : db $1B,$8C,$2C     ; $8AC533
 db $18,$22,$00 : dl $8ACCD4 : db $00 
-db $30,$33,$00 : dl $85F8C0 : db $00 
-db $30,$34,$00 : dl $85F8C0 : db $00 
-db $03,$0B,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $30,$33,$00 : dl ESGPullableStatue-3 : db $00    ; $85F8C0
+db $30,$34,$00 : dl ESGPullableStatue-3 : db $00    ; $85F8C0
+db $03,$0B,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $00,$01,$00 : dl $85F76B : db $00 
 db $00,$01,$00 : dl $8AB496 : db $00 
 db $FF,$63,$8A,$A9,$AC,$46,$80,$A2,$83,$84,$8D,$CA
@@ -1602,7 +1602,7 @@ db $29,$34,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
 db $3B,$0C,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
 db $00,$01,$00 : dl $85F76B : db $00 
 db $00,$01,$00 : dl $80C667 : db $00 
-db $02,$06,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $02,$06,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $00,$01,$00 : dl $8AB496 : db $00 
 db $FF,$D7,$04,$8E,$85,$AC,$46,$80,$A2,$83,$84,$8D,$CA
 ;org $8CA43B
@@ -1662,7 +1662,7 @@ ActorList_Map5A:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $21,$51,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $2F,$08,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $2F,$08,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $21,$0A,$00 : dl $8689A3 : db $00 
 db $2D,$2B,$00 : dl $8689A3 : db $00 
 db $13,$27,$00 : dl $8689A3 : db $00 
@@ -1701,12 +1701,12 @@ db $1C,$2B,$65 : dl $868A59 : db $00
 db $30,$29,$07 : dl $868A59 : db $00 
 db $31,$29,$29 : dl $868A59 : db $00 
 db $36,$0B,$6B : dl $868A59 : db $00 
-db $2A,$19,$00 : dl $8AE45C : db $2A,$00,$00 
-db $37,$19,$00 : dl $8AE45C : db $2A,$00,$00 
-db $26,$2A,$00 : dl $8AE45C : db $2A,$00,$00 
-db $1A,$2B,$00 : dl $8AE45C : db $2A,$00,$00 
-db $0D,$3B,$00 : dl $8AE45C : db $2A,$00,$00 
-db $1E,$3B,$00 : dl $8AE45C : db $2A,$00,$00 
+db $2A,$19,$00 : dl EMuSlime-3 : db $2A,$00,$00     ; $8ae45c
+db $37,$19,$00 : dl EMuSlime-3 : db $2A,$00,$00     ; $8ae45c
+db $26,$2A,$00 : dl EMuSlime-3 : db $2A,$00,$00     ; $8ae45c
+db $1A,$2B,$00 : dl EMuSlime-3 : db $2A,$00,$00     ; $8ae45c
+db $0D,$3B,$00 : dl EMuSlime-3 : db $2A,$00,$00     ; $8ae45c
+db $1E,$3B,$00 : dl EMuSlime-3 : db $2A,$00,$00     ; $8ae45c
 db $30,$2B,$00 : dl $8AE6F4 : db $2B,$00,$00 
 db $0A,$2A,$00 : dl $8AE6F4 : db $2B,$00,$00 
 db $08,$2C,$00 : dl $8AE6F4 : db $2B,$00,$00 
@@ -1736,108 +1736,108 @@ db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl $868496 : db $00 
-db $26,$13,$30 : dl $8ADD9E : db $28,$13,$00 
-db $23,$3B,$30 : dl $8ADE07 : db $28,$01,$3D 
-db $3D,$24,$30 : dl $8ADD9E : db $28,$02,$00 
-db $3A,$1F,$30 : dl $8ADD9E : db $28,$03,$00 
-db $16,$16,$30 : dl $8ADD9E : db $28,$04,$00 
-db $1E,$20,$30 : dl $8ADD9E : db $28,$05,$00 
-db $10,$0C,$30 : dl $8AE45C : db $2A,$06,$00 
-db $1A,$07,$30 : dl $8AE45C : db $2A,$07,$00 
-db $1E,$0B,$30 : dl $8AE45C : db $2A,$08,$00 
-db $26,$1F,$30 : dl $8AE45C : db $2A,$09,$00 
-db $26,$31,$30 : dl $8AE45C : db $2A,$0A,$00 
-db $23,$3E,$30 : dl $8AE45C : db $2A,$0B,$00 
-db $33,$31,$30 : dl $8AE45C : db $2A,$0C,$00 
-db $3B,$31,$30 : dl $8AE45C : db $2A,$0D,$00 
-db $3D,$37,$30 : dl $8AE45C : db $2A,$0E,$00 
-db $14,$32,$30 : dl $8AE45C : db $2A,$0F,$00 
-db $1A,$2D,$30 : dl $8AE45C : db $2A,$10,$00 
-db $21,$1B,$30 : dl $8AE45C : db $2A,$11,$00 
+db $26,$13,$30 : dl EMuRockGolemWaiting-3 : db $28,$13,$00     ; $8add9e
+db $23,$3B,$30 : dl EMuRockGolemSleeping-3 : db $28,$01,$3D     ; $8ade07
+db $3D,$24,$30 : dl EMuRockGolemWaiting-3 : db $28,$02,$00     ; $8add9e
+db $3A,$1F,$30 : dl EMuRockGolemWaiting-3 : db $28,$03,$00     ; $8add9e
+db $16,$16,$30 : dl EMuRockGolemWaiting-3 : db $28,$04,$00     ; $8add9e
+db $1E,$20,$30 : dl EMuRockGolemWaiting-3 : db $28,$05,$00     ; $8add9e
+db $10,$0C,$30 : dl EMuSlime-3 : db $2A,$06,$00     ; $8ae45c
+db $1A,$07,$30 : dl EMuSlime-3 : db $2A,$07,$00     ; $8ae45c
+db $1E,$0B,$30 : dl EMuSlime-3 : db $2A,$08,$00     ; $8ae45c
+db $26,$1F,$30 : dl EMuSlime-3 : db $2A,$09,$00     ; $8ae45c
+db $26,$31,$30 : dl EMuSlime-3 : db $2A,$0A,$00     ; $8ae45c
+db $23,$3E,$30 : dl EMuSlime-3 : db $2A,$0B,$00     ; $8ae45c
+db $33,$31,$30 : dl EMuSlime-3 : db $2A,$0C,$00     ; $8ae45c
+db $3B,$31,$30 : dl EMuSlime-3 : db $2A,$0D,$00     ; $8ae45c
+db $3D,$37,$30 : dl EMuSlime-3 : db $2A,$0E,$00     ; $8ae45c
+db $14,$32,$30 : dl EMuSlime-3 : db $2A,$0F,$00     ; $8ae45c
+db $1A,$2D,$30 : dl EMuSlime-3 : db $2A,$10,$00     ; $8ae45c
+db $21,$1B,$30 : dl EMuSlime-3 : db $2A,$11,$00     ; $8ae45c
 db $14,$2E,$30 : dl EMuWizard-3 : db $29,$12,$00    ; $8ae26e
-db $33,$3E,$09 : dl $80D1B5 : db $00 
+db $33,$3E,$09 : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
 db $FF,$4C,$A5,$CA
 ;org $8CA7ED
 ActorList_Map60:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $3A,$21,$30 : dl $869D4D : db $00 
-db $2F,$08,$30 : dl $869D4D : db $00 
-db $36,$2E,$30 : dl $8AE6CC : db $2B,$20,$00 
-db $3C,$2F,$30 : dl $8AE6CC : db $2B,$21,$3E 
-db $38,$31,$30 : dl $8AE6CC : db $2B,$22,$00 
-db $3C,$32,$30 : dl $8AE6CC : db $2B,$23,$3F 
-db $37,$35,$30 : dl $8AE6CC : db $2B,$24,$00 
-db $1F,$1A,$30 : dl $8ADE07 : db $28,$25,$00 
-db $3B,$1A,$30 : dl $8ADD9E : db $28,$26,$00 
-db $3E,$1A,$30 : dl $8ADD9E : db $28,$27,$00 
-db $2C,$3B,$30 : dl $8ADD9E : db $28,$28,$00 
-db $2C,$3E,$30 : dl $8ADD9E : db $28,$29,$00 
-db $28,$1E,$30 : dl $8ADD9E : db $28,$2A,$00 
-db $2D,$1E,$30 : dl $8ADE07 : db $28,$2B,$00 
-db $2F,$1E,$30 : dl $8ADE07 : db $28,$2C,$00 
+db $3A,$21,$30 : dl EMuBouncer-3 : db $00     ; $869d4d
+db $2F,$08,$30 : dl EMuBouncer-3 : db $00     ; $869d4d
+db $36,$2E,$30 : dl EMuDroplet-3 : db $2B,$20,$00     ; $8ae6cc
+db $3C,$2F,$30 : dl EMuDroplet-3 : db $2B,$21,$3E     ; $8ae6cc
+db $38,$31,$30 : dl EMuDroplet-3 : db $2B,$22,$00     ; $8ae6cc
+db $3C,$32,$30 : dl EMuDroplet-3 : db $2B,$23,$3F     ; $8ae6cc
+db $37,$35,$30 : dl EMuDroplet-3 : db $2B,$24,$00     ; $8ae6cc
+db $1F,$1A,$30 : dl EMuRockGolemSleeping-3 : db $28,$25,$00     ; $8ade07
+db $3B,$1A,$30 : dl EMuRockGolemWaiting-3 : db $28,$26,$00     ; $8add9e
+db $3E,$1A,$30 : dl EMuRockGolemWaiting-3 : db $28,$27,$00     ; $8add9e
+db $2C,$3B,$30 : dl EMuRockGolemWaiting-3 : db $28,$28,$00     ; $8add9e
+db $2C,$3E,$30 : dl EMuRockGolemWaiting-3 : db $28,$29,$00     ; $8add9e
+db $28,$1E,$30 : dl EMuRockGolemWaiting-3 : db $28,$2A,$00     ; $8add9e
+db $2D,$1E,$30 : dl EMuRockGolemSleeping-3 : db $28,$2B,$00     ; $8ade07
+db $2F,$1E,$30 : dl EMuRockGolemSleeping-3 : db $28,$2C,$00     ; $8ade07
 db $11,$08,$30 : dl EMuWizard-3 : db $29,$2D,$00    ; $8ae26e
 db $3C,$0B,$30 : dl EMuWizard-3 : db $29,$2E,$00    ; $8ae26e
 db $34,$1F,$30 : dl EMuWizard-3 : db $29,$2F,$00    ; $8ae26e
 db $0D,$2E,$30 : dl EMuWizard-3 : db $29,$39,$00    ; $8ae26e
-db $27,$0A,$30 : dl $8AE45C : db $2A,$30,$00 
-db $32,$05,$30 : dl $8AE45C : db $2A,$31,$00 
-db $31,$0A,$30 : dl $8AE45C : db $2A,$32,$00 
-db $3A,$28,$30 : dl $8AE45C : db $2A,$33,$00 
-db $1B,$37,$30 : dl $8AE45C : db $2A,$34,$00 
-db $0A,$1A,$30 : dl $8AE45C : db $2A,$35,$00 
-db $11,$1A,$30 : dl $8AE45C : db $2A,$36,$00 
-db $0D,$16,$30 : dl $8AE45C : db $2A,$37,$00 
-db $2C,$28,$30 : dl $8AE45C : db $2A,$38,$00 
-db $19,$26,$30 : dl $869CE9 : db $00 
-db $1A,$26,$30 : dl $869CE9 : db $00 
-db $1B,$26,$30 : dl $869CE9 : db $00 
-db $1C,$26,$30 : dl $869CE9 : db $00 
-db $1D,$26,$30 : dl $869CE9 : db $00 
-db $1E,$26,$30 : dl $869CE9 : db $00 
-db $2B,$34,$30 : dl $8AE943 : db $00 
-db $07,$23,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $27,$0A,$30 : dl EMuSlime-3 : db $2A,$30,$00     ; $8ae45c
+db $32,$05,$30 : dl EMuSlime-3 : db $2A,$31,$00     ; $8ae45c
+db $31,$0A,$30 : dl EMuSlime-3 : db $2A,$32,$00     ; $8ae45c
+db $3A,$28,$30 : dl EMuSlime-3 : db $2A,$33,$00     ; $8ae45c
+db $1B,$37,$30 : dl EMuSlime-3 : db $2A,$34,$00     ; $8ae45c
+db $0A,$1A,$30 : dl EMuSlime-3 : db $2A,$35,$00     ; $8ae45c
+db $11,$1A,$30 : dl EMuSlime-3 : db $2A,$36,$00     ; $8ae45c
+db $0D,$16,$30 : dl EMuSlime-3 : db $2A,$37,$00     ; $8ae45c
+db $2C,$28,$30 : dl EMuSlime-3 : db $2A,$38,$00     ; $8ae45c
+db $19,$26,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $1A,$26,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $1B,$26,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $1C,$26,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $1D,$26,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $1E,$26,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $2B,$34,$30 : dl EMuGlowBallWorm-3 : db $00     ; $8ae943
+db $07,$23,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $FF,$CA
 ;org $8CA934
 ActorList_Map61:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $3B,$12,$30 : dl $869D4D : db $00 
-db $21,$25,$30 : dl $869D4D : db $00 
-db $2B,$18,$30 : dl $8AE6CC : db $2B,$40,$00 
-db $2E,$1C,$30 : dl $8AE6CC : db $2B,$41,$00 
-db $2B,$20,$30 : dl $8AE6CC : db $2B,$42,$00 
-db $2E,$24,$30 : dl $8AE6CC : db $2B,$43,$00 
-db $3C,$27,$30 : dl $8ADD9E : db $28,$44,$00 
-db $3C,$31,$30 : dl $8ADD9E : db $28,$45,$00 
-db $18,$31,$30 : dl $8ADE07 : db $28,$46,$00 
-db $21,$13,$30 : dl $8ADD9E : db $28,$47,$00 
-db $22,$18,$30 : dl $8ADE07 : db $28,$48,$00 
+db $3B,$12,$30 : dl EMuBouncer-3 : db $00     ; $869d4d
+db $21,$25,$30 : dl EMuBouncer-3 : db $00     ; $869d4d
+db $2B,$18,$30 : dl EMuDroplet-3 : db $2B,$40,$00     ; $8ae6cc
+db $2E,$1C,$30 : dl EMuDroplet-3 : db $2B,$41,$00     ; $8ae6cc
+db $2B,$20,$30 : dl EMuDroplet-3 : db $2B,$42,$00     ; $8ae6cc
+db $2E,$24,$30 : dl EMuDroplet-3 : db $2B,$43,$00     ; $8ae6cc
+db $3C,$27,$30 : dl EMuRockGolemWaiting-3 : db $28,$44,$00     ; $8add9e
+db $3C,$31,$30 : dl EMuRockGolemWaiting-3 : db $28,$45,$00     ; $8add9e
+db $18,$31,$30 : dl EMuRockGolemSleeping-3 : db $28,$46,$00     ; $8ade07
+db $21,$13,$30 : dl EMuRockGolemWaiting-3 : db $28,$47,$00     ; $8add9e
+db $22,$18,$30 : dl EMuRockGolemSleeping-3 : db $28,$48,$00     ; $8ade07
 db $3B,$08,$30 : dl EMuWizard-3 : db $29,$49,$00    ; $8ae26e
 db $20,$2A,$30 : dl EMuWizard-3 : db $29,$4A,$00    ; $8ae26e
 db $0F,$2A,$30 : dl EMuWizard-3 : db $29,$4B,$00    ; $8ae26e
 db $09,$24,$30 : dl EMuWizard-3 : db $29,$4C,$00    ; $8ae26e
 db $0C,$1F,$30 : dl EMuWizard-3 : db $29,$4D,$00    ; $8ae26e
-db $20,$0B,$30 : dl $8AE45C : db $2A,$4E,$00 
-db $36,$3A,$30 : dl $8AE45C : db $2A,$4F,$00 
-db $36,$3E,$30 : dl $8AE45C : db $2A,$50,$00 
-db $30,$3A,$30 : dl $8AE45C : db $2A,$51,$00 
-db $29,$3A,$30 : dl $8AE45C : db $2A,$52,$00 
-db $22,$3B,$30 : dl $8AE45C : db $2A,$53,$00 
-db $22,$20,$30 : dl $8AE45C : db $2A,$54,$00 
-db $2E,$14,$30 : dl $8AE45C : db $2A,$55,$00 
-db $22,$31,$30 : dl $8AE45C : db $2A,$56,$00 
-db $22,$33,$30 : dl $8AE45C : db $2A,$57,$00 
-db $22,$35,$30 : dl $8AE45C : db $2A,$58,$00 
-db $22,$37,$30 : dl $8AE45C : db $2A,$59,$00 
-db $1A,$0A,$30 : dl $869CE9 : db $00 
-db $1A,$0B,$30 : dl $869CE9 : db $00 
-db $1A,$0C,$30 : dl $869CE9 : db $00 
-db $1D,$0A,$30 : dl $869CE9 : db $00 
-db $1D,$0B,$30 : dl $869CE9 : db $00 
-db $1D,$0C,$30 : dl $869CE9 : db $00 
+db $20,$0B,$30 : dl EMuSlime-3 : db $2A,$4E,$00     ; $8ae45c
+db $36,$3A,$30 : dl EMuSlime-3 : db $2A,$4F,$00     ; $8ae45c
+db $36,$3E,$30 : dl EMuSlime-3 : db $2A,$50,$00     ; $8ae45c
+db $30,$3A,$30 : dl EMuSlime-3 : db $2A,$51,$00     ; $8ae45c
+db $29,$3A,$30 : dl EMuSlime-3 : db $2A,$52,$00     ; $8ae45c
+db $22,$3B,$30 : dl EMuSlime-3 : db $2A,$53,$00     ; $8ae45c
+db $22,$20,$30 : dl EMuSlime-3 : db $2A,$54,$00     ; $8ae45c
+db $2E,$14,$30 : dl EMuSlime-3 : db $2A,$55,$00     ; $8ae45c
+db $22,$31,$30 : dl EMuSlime-3 : db $2A,$56,$00     ; $8ae45c
+db $22,$33,$30 : dl EMuSlime-3 : db $2A,$57,$00     ; $8ae45c
+db $22,$35,$30 : dl EMuSlime-3 : db $2A,$58,$00     ; $8ae45c
+db $22,$37,$30 : dl EMuSlime-3 : db $2A,$59,$00     ; $8ae45c
+db $1A,$0A,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $1A,$0B,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $1A,$0C,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $1D,$0A,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $1D,$0B,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $1D,$0C,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
 db $00,$01,$00 : dl $8697A6 : db $00 
 db $00,$01,$00 : dl $868496 : db $00 
 db $FF,$CA
@@ -1847,45 +1847,45 @@ db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $2F,$3A,$00 : dl $8698A2 : db $00 
-db $10,$1A,$05 : dl EDarkSpace-3 : $00    ; $88D6A9
-db $2A,$24,$30 : dl $8AE45C : db $2A,$60,$00 
-db $30,$24,$30 : dl $8AE45C : db $2A,$61,$00 
-db $2A,$28,$30 : dl $8AE45C : db $2A,$62,$00 
-db $30,$28,$30 : dl $8AE45C : db $2A,$63,$00 
-db $2D,$26,$30 : dl $8AE45C : db $2A,$64,$42 
-db $26,$09,$30 : dl $8AE45C : db $2A,$65,$00 
-db $18,$2A,$30 : dl $8AE45C : db $2A,$66,$00 
-db $11,$28,$30 : dl $8AE45C : db $2A,$67,$00 
-db $1A,$31,$30 : dl $8AE45C : db $2A,$68,$00 
-db $07,$2D,$30 : dl $8AE45C : db $2A,$69,$00 
+db $10,$1A,$05 : dl EDarkSpace-3 : db $00    ; $88D6A9
+db $2A,$24,$30 : dl EMuSlime-3 : db $2A,$60,$00     ; $8ae45c
+db $30,$24,$30 : dl EMuSlime-3 : db $2A,$61,$00     ; $8ae45c
+db $2A,$28,$30 : dl EMuSlime-3 : db $2A,$62,$00     ; $8ae45c
+db $30,$28,$30 : dl EMuSlime-3 : db $2A,$63,$00     ; $8ae45c
+db $2D,$26,$30 : dl EMuSlime-3 : db $2A,$64,$42     ; $8ae45c
+db $26,$09,$30 : dl EMuSlime-3 : db $2A,$65,$00     ; $8ae45c
+db $18,$2A,$30 : dl EMuSlime-3 : db $2A,$66,$00     ; $8ae45c
+db $11,$28,$30 : dl EMuSlime-3 : db $2A,$67,$00     ; $8ae45c
+db $1A,$31,$30 : dl EMuSlime-3 : db $2A,$68,$00     ; $8ae45c
+db $07,$2D,$30 : dl EMuSlime-3 : db $2A,$69,$00     ; $8ae45c
 db $1B,$26,$30 : dl EMuWizard-3 : db $29,$6A,$00    ; $8ae26e
 db $11,$30,$30 : dl EMuWizard-3 : db $29,$6B,$00    ; $8ae26e
-db $38,$11,$30 : dl $8AE943 : db $00 
+db $38,$11,$30 : dl EMuGlowBallWorm-3 : db $00     ; $8ae943
 db $20,$1C,$11 : dl $80D119 : db $00 
 db $28,$1C,$11 : dl $80D0D1 : db $00 
-db $33,$05,$0B : dl $80D16A : db $00 
+db $33,$05,$0B : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
 db $FF,$CA
 ;org $8CAB28
 ActorList_Map63:    ; Room of Hope
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $00,$01,$00 : dl $8699C7 : db $00 
+db $00,$01,$00 : dl EMuHopeRoomListener-3 : db $00    ; $8699C7
 db $FF,$62,$8E,$8E,$8C,$AC,$8E,$85,$AC,$87,$8E,$A0,$84,$CA
 ;org $8CAB4B
 ActorList_Map64:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $13,$20,$30 : dl $8ADD9E : db $28,$45,$00 
-db $04,$31,$30 : dl $8AE45C : db $2A,$70,$00 
-db $07,$27,$30 : dl $8AE45C : db $2A,$71,$00 
-db $0E,$3D,$30 : dl $8AE45C : db $2A,$72,$00 
-db $16,$3B,$30 : dl $8AE45C : db $2A,$73,$00 
-db $1B,$1B,$30 : dl $8AE45C : db $2A,$74,$00 
+db $13,$20,$30 : dl EMuRockGolemWaiting-3 : db $28,$45,$00     ; $8add9e
+db $04,$31,$30 : dl EMuSlime-3 : db $2A,$70,$00     ; $8ae45c
+db $07,$27,$30 : dl EMuSlime-3 : db $2A,$71,$00     ; $8ae45c
+db $0E,$3D,$30 : dl EMuSlime-3 : db $2A,$72,$00     ; $8ae45c
+db $16,$3B,$30 : dl EMuSlime-3 : db $2A,$73,$00     ; $8ae45c
+db $1B,$1B,$30 : dl EMuSlime-3 : db $2A,$74,$00     ; $8ae45c
 db $0E,$13,$30 : dl EMuWizard-3 : db $29,$75,$00    ; $8ae26e
 db $0E,$31,$30 : dl EMuWizard-3 : db $29,$76,$00    ; $8ae26e
-db $03,$2E,$30 : dl $8AE943 : db $00 
-db $09,$2E,$30 : dl $8AE943 : db $00 
+db $03,$2E,$30 : dl EMuGlowBallWorm-3 : db $00     ; $8ae943
+db $09,$2E,$30 : dl EMuGlowBallWorm-3 : db $00     ; $8ae943
 db $15,$26,$00 : dl $8A9026 : db $00 
 db $1B,$2D,$00 : dl $8A9026 : db $00 
 db $1A,$27,$00 : dl $869D1F : db $00 
@@ -1896,39 +1896,39 @@ ActorList_Map65:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $14,$1F,$1B : dl $80D16A : db $00 
-db $14,$13,$19 : dl $80D1B5 : db $00 
-db $1D,$39,$30 : dl $8ADE07 : db $28,$90,$41 
-db $36,$19,$30 : dl $8ADE07 : db $28,$91,$00 
-db $3D,$19,$30 : dl $8ADE07 : db $28,$92,$00 
-db $36,$20,$30 : dl $8ADE07 : db $28,$93,$00 
-db $3D,$20,$30 : dl $8ADE07 : db $28,$94,$00 
-db $08,$08,$30 : dl $8ADE07 : db $28,$95,$00 
+db $14,$1F,$1B : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
+db $14,$13,$19 : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
+db $1D,$39,$30 : dl EMuRockGolemSleeping-3 : db $28,$90,$41     ; $8ade07
+db $36,$19,$30 : dl EMuRockGolemSleeping-3 : db $28,$91,$00     ; $8ade07
+db $3D,$19,$30 : dl EMuRockGolemSleeping-3 : db $28,$92,$00     ; $8ade07
+db $36,$20,$30 : dl EMuRockGolemSleeping-3 : db $28,$93,$00     ; $8ade07
+db $3D,$20,$30 : dl EMuRockGolemSleeping-3 : db $28,$94,$00     ; $8ade07
+db $08,$08,$30 : dl EMuRockGolemSleeping-3 : db $28,$95,$00     ; $8ade07
 db $15,$2F,$30 : dl EMuWizard-3 : db $29,$96,$00    ; $8ae26e
-db $31,$3E,$30 : dl $8AE45C : db $2A,$97,$00 
-db $2F,$07,$30 : dl $8AE45C : db $2A,$98,$00 
-db $22,$08,$30 : dl $8AE45C : db $2A,$99,$00 
-db $10,$18,$30 : dl $8AE45C : db $2A,$9A,$00 
-db $1E,$27,$30 : dl $8AE45C : db $2A,$9B,$00 
-db $31,$29,$30 : dl $8AE6CC : db $2B,$9C,$00 
-db $31,$2F,$30 : dl $8AE6CC : db $2B,$9D,$00 
-db $2E,$2C,$30 : dl $8AE6CC : db $2B,$9E,$40 
-db $06,$05,$30 : dl $8AE6CC : db $2B,$9F,$00 
-db $06,$0A,$30 : dl $8AE6CC : db $2B,$A0,$00 
+db $31,$3E,$30 : dl EMuSlime-3 : db $2A,$97,$00     ; $8ae45c
+db $2F,$07,$30 : dl EMuSlime-3 : db $2A,$98,$00     ; $8ae45c
+db $22,$08,$30 : dl EMuSlime-3 : db $2A,$99,$00     ; $8ae45c
+db $10,$18,$30 : dl EMuSlime-3 : db $2A,$9A,$00     ; $8ae45c
+db $1E,$27,$30 : dl EMuSlime-3 : db $2A,$9B,$00     ; $8ae45c
+db $31,$29,$30 : dl EMuDroplet-3 : db $2B,$9C,$00     ; $8ae6cc
+db $31,$2F,$30 : dl EMuDroplet-3 : db $2B,$9D,$00     ; $8ae6cc
+db $2E,$2C,$30 : dl EMuDroplet-3 : db $2B,$9E,$40     ; $8ae6cc
+db $06,$05,$30 : dl EMuDroplet-3 : db $2B,$9F,$00     ; $8ae6cc
+db $06,$0A,$30 : dl EMuDroplet-3 : db $2B,$A0,$00     ; $8ae6cc
 db $2A,$3E,$30 : dl $86994D : db $00 
-db $39,$1C,$30 : dl $8AE943 : db $00 
-db $37,$38,$30 : dl $869D4D : db $00 
-db $35,$3D,$30 : dl $869CE9 : db $00 
-db $34,$3D,$30 : dl $869CE9 : db $00 
-db $2D,$3D,$30 : dl $869CE9 : db $00 
-db $2C,$3D,$30 : dl $869CE9 : db $00 
+db $39,$1C,$30 : dl EMuGlowBallWorm-3 : db $00     ; $8ae943
+db $37,$38,$30 : dl EMuBouncer-3 : db $00     ; $869d4d
+db $35,$3D,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $34,$3D,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $2D,$3D,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
+db $2C,$3D,$30 : dl EMuFloorSpike-3 : db $00     ; $869ce9
 db $FF,$CA
 ;org $8CACC3
 ActorList_Map66:
 db $05,$0A,$32 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $24,$08,$00 : dl $869C2A : db $00 
-db $2B,$08,$00 : dl $869C6D : db $00 
+db $24,$08,$00 : dl EMuRamaStatueWest-3 : db $00    ; $869C2A
+db $2B,$08,$00 : dl EMuRamaStatueEast-3 : db $00    ; $869C6D
 db $00,$01,$00 : dl $869C85 : db $00 
 db $0F,$07,$00 : dl $869E3C : db $00 
 db $FF,$CA
@@ -2034,7 +2034,7 @@ db $2B,$05,$00 : dl $86D139 : db $00
 db $2E,$05,$00 : dl $86D134 : db $00 
 db $35,$06,$00 : dl $86D141 : db $00 
 db $23,$09,$0D : dl ERedJewelPickup-3 : db $00    ; $80C66F
-db $19,$0A,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $19,$0A,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $FF,$CA
 ;org $8CAF6E
 ActorList_Map6D:    ; Angel Village dungeon, entry hall
@@ -2042,29 +2042,29 @@ db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl $80C667 : db $00 
-db $12,$07,$00 : dl $86D56F : db $00 
-db $1E,$05,$00 : dl $86D56F : db $00 
-db $29,$05,$00 : dl $86D56F : db $00 
-db $2E,$05,$00 : dl $86D57E : db $00 
-db $10,$15,$00 : dl $86D57E : db $00 
-db $25,$15,$00 : dl $86D57E : db $00 
-db $14,$28,$00 : dl $86D56F : db $00 
-db $2C,$25,$00 : dl $86D56F : db $00 
+db $12,$07,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $1E,$05,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $29,$05,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $2E,$05,$00 : dl EAVFlamePointingEast-3 : db $00    ; $86D57E 
+db $10,$15,$00 : dl EAVFlamePointingEast-3 : db $00    ; $86D57E 
+db $25,$15,$00 : dl EAVFlamePointingEast-3 : db $00    ; $86D57E 
+db $14,$28,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $2C,$25,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $1F,$0C,$00 : dl EAVSkeleton-3 : db $2C,$01,$00    ; $8aea51
 db $24,$19,$00 : dl EAVSkeleton-3 : db $2C,$02,$00    ; $8aea51
 db $10,$19,$00 : dl EAVSkeleton-3 : db $2C,$03,$00    ; $8aea51
 db $10,$2C,$00 : dl EAVSkeleton-3 : db $2C,$04,$00    ; $8aea51
 db $1C,$2C,$00 : dl EAVSkeleton-3 : db $2C,$05,$00    ; $8aea51
 db $2D,$29,$00 : dl EAVSkeleton-3 : db $2C,$06,$00    ; $8aea51
-db $10,$03,$00 : dl $8AEE9F : db $2D,$07,$00 
-db $14,$04,$00 : dl $8AEE9F : db $2D,$08,$00 
-db $24,$04,$00 : dl $8AEE9F : db $2D,$09,$00 
-db $22,$13,$00 : dl $8AEE9F : db $2D,$0A,$00 
-db $18,$12,$00 : dl $8AEE9F : db $2D,$0B,$00 
-db $1B,$12,$00 : dl $8AEE9F : db $2D,$0C,$00 
-db $07,$13,$00 : dl $8AEE9F : db $2D,$0D,$00 
-db $16,$25,$00 : dl $8AEE9F : db $2D,$0E,$00 
-db $20,$25,$00 : dl $8AEE9F : db $2D,$0F,$00 
+db $10,$03,$00 : dl EAVSwoopBat-3 : db $2D,$07,$00    ; $8AEE9F 
+db $14,$04,$00 : dl EAVSwoopBat-3 : db $2D,$08,$00    ; $8AEE9F 
+db $24,$04,$00 : dl EAVSwoopBat-3 : db $2D,$09,$00    ; $8AEE9F 
+db $22,$13,$00 : dl EAVSwoopBat-3 : db $2D,$0A,$00    ; $8AEE9F 
+db $18,$12,$00 : dl EAVSwoopBat-3 : db $2D,$0B,$00    ; $8AEE9F 
+db $1B,$12,$00 : dl EAVSwoopBat-3 : db $2D,$0C,$00    ; $8AEE9F 
+db $07,$13,$00 : dl EAVSwoopBat-3 : db $2D,$0D,$00    ; $8AEE9F 
+db $16,$25,$00 : dl EAVSwoopBat-3 : db $2D,$0E,$00    ; $8AEE9F 
+db $20,$25,$00 : dl EAVSwoopBat-3 : db $2D,$0F,$00    ; $8AEE9F 
 db $FF,$CA
 ;org $8CB04B
 ActorList_Map6E:
@@ -2072,12 +2072,12 @@ db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl $80C667 : db $00 
-db $09,$05,$00 : dl $86D56F : db $00 
-db $10,$05,$00 : dl $86D56F : db $00 
-db $25,$06,$00 : dl $86D56F : db $00 
-db $2A,$06,$00 : dl $86D57E : db $00 
-db $33,$05,$00 : dl $86D57E : db $00 
-db $31,$27,$00 : dl $86D56F : db $00 
+db $09,$05,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $10,$05,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $25,$06,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $2A,$06,$00 : dl EAVFlamePointingEast-3 : db $00    ; $86D57E 
+db $33,$05,$00 : dl EAVFlamePointingEast-3 : db $00    ; $86D57E 
+db $31,$27,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $11,$0C,$00 : dl EAVSkeleton-3 : db $2C,$10,$00    ; $8aea51
 db $33,$0C,$00 : dl EAVSkeleton-3 : db $2C,$11,$00    ; $8aea51
 db $3D,$1C,$00 : dl EAVSkeleton-3 : db $2C,$12,$00    ; $8aea51
@@ -2086,14 +2086,14 @@ db $05,$1C,$00 : dl EAVSkeleton-3 : db $2C,$14,$00    ; $8aea51
 db $03,$2C,$00 : dl EAVSkeleton-3 : db $2C,$15,$00    ; $8aea51
 db $08,$2A,$00 : dl EAVSkeleton-3 : db $2C,$16,$00    ; $8aea51
 db $3B,$2C,$00 : dl EAVSkeleton-3 : db $2C,$17,$00    ; $8aea51
-db $1B,$05,$00 : dl $8AEE9F : db $2D,$18,$00 
-db $21,$04,$00 : dl $8AEE9F : db $2D,$19,$00 
-db $2A,$03,$00 : dl $8AEE9F : db $2D,$1A,$00 
-db $2F,$15,$00 : dl $8AEE9F : db $2D,$1B,$00 
-db $0E,$25,$00 : dl $8AEE9F : db $2D,$1C,$00 
-db $16,$25,$00 : dl $8AEE9F : db $2D,$1D,$00 
-db $30,$24,$00 : dl $8AEE9F : db $2D,$1E,$00 
-db $35,$23,$00 : dl $8AEE9F : db $2D,$1F,$00 
+db $1B,$05,$00 : dl EAVSwoopBat-3 : db $2D,$18,$00    ; $8AEE9F 
+db $21,$04,$00 : dl EAVSwoopBat-3 : db $2D,$19,$00    ; $8AEE9F 
+db $2A,$03,$00 : dl EAVSwoopBat-3 : db $2D,$1A,$00    ; $8AEE9F 
+db $2F,$15,$00 : dl EAVSwoopBat-3 : db $2D,$1B,$00    ; $8AEE9F 
+db $0E,$25,$00 : dl EAVSwoopBat-3 : db $2D,$1C,$00    ; $8AEE9F 
+db $16,$25,$00 : dl EAVSwoopBat-3 : db $2D,$1D,$00    ; $8AEE9F 
+db $30,$24,$00 : dl EAVSwoopBat-3 : db $2D,$1E,$00    ; $8AEE9F 
+db $35,$23,$00 : dl EAVSwoopBat-3 : db $2D,$1F,$00    ; $8AEE9F 
 db $28,$09,$00 : dl $8AEF33 : db $2E,$20,$00 
 db $37,$08,$00 : dl $8AEF33 : db $2E,$21,$00 
 db $39,$29,$00 : dl $8AEF33 : db $2E,$22,$00 
@@ -2104,16 +2104,16 @@ db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl $80C667 : db $00 
-db $0D,$06,$00 : dl $86D56F : db $00 
-db $14,$07,$00 : dl $86D56F : db $00 
-db $1A,$06,$00 : dl $86D56F : db $00 
-db $22,$09,$00 : dl $86D56F : db $00 
-db $0F,$02,$00 : dl $8AEE9F : db $2D,$23,$00 
-db $16,$02,$00 : dl $8AEE9F : db $2D,$24,$00 
-db $18,$02,$00 : dl $8AEE9F : db $2D,$25,$00 
-db $1C,$02,$00 : dl $8AEE9F : db $2D,$26,$00 
-db $22,$05,$00 : dl $8AEE9F : db $2D,$27,$00 
-db $24,$05,$00 : dl $8AEE9F : db $2D,$28,$00 
+db $0D,$06,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $14,$07,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $1A,$06,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $22,$09,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $0F,$02,$00 : dl EAVSwoopBat-3 : db $2D,$23,$00    ; $8AEE9F 
+db $16,$02,$00 : dl EAVSwoopBat-3 : db $2D,$24,$00    ; $8AEE9F 
+db $18,$02,$00 : dl EAVSwoopBat-3 : db $2D,$25,$00    ; $8AEE9F 
+db $1C,$02,$00 : dl EAVSwoopBat-3 : db $2D,$26,$00    ; $8AEE9F 
+db $22,$05,$00 : dl EAVSwoopBat-3 : db $2D,$27,$00    ; $8AEE9F 
+db $24,$05,$00 : dl EAVSwoopBat-3 : db $2D,$28,$00    ; $8AEE9F 
 db $FF,$CA
 ;org $8CB1AE
 ActorList_Map70:
@@ -2121,24 +2121,24 @@ db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl $80C667 : db $00 
-db $12,$07,$00 : dl $86D56F : db $00 
-db $1D,$04,$00 : dl $86D57E : db $00 
-db $2A,$05,$00 : dl $86D57E : db $00 
-db $05,$16,$00 : dl $86D56F : db $00 
+db $12,$07,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $1D,$04,$00 : dl EAVFlamePointingEast-3 : db $00    ; $86D57E 
+db $2A,$05,$00 : dl EAVFlamePointingEast-3 : db $00    ; $86D57E 
+db $05,$16,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $02,$27,$00 : dl $86D58F : db $00 
 db $07,$26,$00 : dl $86D58F : db $00 
 db $0C,$27,$00 : dl $86D58F : db $00 
 db $17,$08,$00 : dl $86D59E : db $00 
 db $00,$01,$00 : dl $86D62F : db $00 
 db $1B,$19,$00 : dl EAVSkeleton-3 : db $2C,$30,$00    ; $8aea51
-db $1F,$12,$00 : dl $8AEE9F : db $2D,$31,$00 
-db $17,$13,$00 : dl $8AEE9F : db $2D,$32,$00 
-db $12,$14,$00 : dl $8AEE9F : db $2D,$33,$00 
+db $1F,$12,$00 : dl EAVSwoopBat-3 : db $2D,$31,$00    ; $8AEE9F 
+db $17,$13,$00 : dl EAVSwoopBat-3 : db $2D,$32,$00    ; $8AEE9F 
+db $12,$14,$00 : dl EAVSwoopBat-3 : db $2D,$33,$00    ; $8AEE9F 
 db $27,$18,$00 : dl $8AEF33 : db $2E,$34,$00 
 db $2A,$18,$00 : dl $8AEF33 : db $2E,$35,$00 
-db $12,$1C,$00 : dl $8AF0C7 : db $2E,$36,$00 
-db $26,$18,$09 : dl $80D16A : db $00 
-db $0A,$2E,$09 : dl $80D1B5 : db $00 
+db $12,$1C,$00 : dl EAVFireballShooter-3 : db $2E,$36,$00    ; $8AF0C7 
+db $26,$18,$09 : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
+db $0A,$2E,$09 : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
 db $FF,$CA
 ;org $8CB258
 ActorList_Map71:
@@ -2146,10 +2146,10 @@ db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $00,$01,$00 : dl $80C667 : db $00 
 db $00,$01,$00 : dl $86D68D : db $00 
-db $1C,$09,$00 : dl $86D56F : db $00 
-db $14,$07,$00 : dl $86D56F : db $00 
-db $1B,$0C,$00 : dl $8AF0C7 : db $2E,$37,$00 
-db $1E,$0E,$00 : dl $8AF0C7 : db $2E,$38,$00 
+db $1C,$09,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $14,$07,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
+db $1B,$0C,$00 : dl EAVFireballShooter-3 : db $2E,$37,$00    ; $8AF0C7 
+db $1E,$0E,$00 : dl EAVFireballShooter-3 : db $2E,$38,$00    ; $8AF0C7 
 db $FF,$D7,$3D,$64,$A5,$8D,$8D,$84,$8B,$CA
 ;org $8CB29E
 ActorList_Map72:
@@ -2158,21 +2158,21 @@ db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $00,$01,$00 : dl $80C667 : db $00 
 db $19,$0C,$00 : dl EAVSkeleton-3 : db $2C,$43,$00    ; $8aea51
 db $49,$0C,$00 : dl EAVSkeleton-3 : db $2C,$44,$00    ; $8aea51
-db $13,$05,$00 : dl $8AEE9F : db $2D,$45,$00 
-db $15,$05,$00 : dl $8AEE9F : db $2D,$46,$00 
-db $19,$05,$00 : dl $8AEE9F : db $2D,$47,$00 
-db $1B,$05,$00 : dl $8AEE9F : db $2D,$48,$00 
-db $1F,$05,$00 : dl $8AEE9F : db $2D,$49,$00 
-db $21,$05,$00 : dl $8AEE9F : db $2D,$50,$00 
-db $32,$05,$00 : dl $8AEE9F : db $2D,$51,$00 
-db $39,$05,$00 : dl $8AEE9F : db $2D,$52,$00 
-db $47,$05,$00 : dl $8AEE9F : db $2D,$53,$00 
-db $29,$0B,$00 : dl $8AF0C7 : db $2E,$54,$00 
-db $2A,$0C,$00 : dl $8AF0C7 : db $2E,$55,$00 
-db $2B,$0D,$00 : dl $8AF0C7 : db $2E,$56,$00 
-db $45,$0B,$00 : dl $8AF0C7 : db $2E,$57,$00 
-db $46,$0C,$00 : dl $8AF0C7 : db $2E,$58,$00 
-db $47,$0D,$00 : dl $8AF0C7 : db $2E,$59,$00 
+db $13,$05,$00 : dl EAVSwoopBat-3 : db $2D,$45,$00    ; $8AEE9F 
+db $15,$05,$00 : dl EAVSwoopBat-3 : db $2D,$46,$00    ; $8AEE9F 
+db $19,$05,$00 : dl EAVSwoopBat-3 : db $2D,$47,$00    ; $8AEE9F 
+db $1B,$05,$00 : dl EAVSwoopBat-3 : db $2D,$48,$00    ; $8AEE9F 
+db $1F,$05,$00 : dl EAVSwoopBat-3 : db $2D,$49,$00    ; $8AEE9F 
+db $21,$05,$00 : dl EAVSwoopBat-3 : db $2D,$50,$00    ; $8AEE9F 
+db $32,$05,$00 : dl EAVSwoopBat-3 : db $2D,$51,$00    ; $8AEE9F 
+db $39,$05,$00 : dl EAVSwoopBat-3 : db $2D,$52,$00    ; $8AEE9F 
+db $47,$05,$00 : dl EAVSwoopBat-3 : db $2D,$53,$00    ; $8AEE9F 
+db $29,$0B,$00 : dl EAVFireballShooter-3 : db $2E,$54,$00    ; $8AF0C7 
+db $2A,$0C,$00 : dl EAVFireballShooter-3 : db $2E,$55,$00    ; $8AF0C7 
+db $2B,$0D,$00 : dl EAVFireballShooter-3 : db $2E,$56,$00    ; $8AF0C7 
+db $45,$0B,$00 : dl EAVFireballShooter-3 : db $2E,$57,$00    ; $8AF0C7 
+db $46,$0C,$00 : dl EAVFireballShooter-3 : db $2E,$58,$00    ; $8AF0C7 
+db $47,$0D,$00 : dl EAVFireballShooter-3 : db $2E,$59,$00    ; $8AF0C7 
 db $57,$08,$09 : dl $80D161 : db $00 
 db $FF,$CA
 ;org $8CB355
@@ -2180,7 +2180,7 @@ ActorList_Map73:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $08,$1E,$09 : dl $80D1B5 : db $00 
+db $08,$1E,$09 : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
 db $00,$01,$00 : dl $86D62F : db $00 
 db $2C,$17,$00 : dl $86D59E : db $00 
 db $00,$01,$00 : dl $86D6F4 : db $00 
@@ -2190,27 +2190,27 @@ ActorList_Map74:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $07,$08,$00 : dl $86D14E : db $00 
-db $25,$0B,$00 : dl $86CE82 : db $00 
+db $25,$0B,$00 : dl EAVIshtar-3 : db $00    ; $86ce82
 db $15,$09,$0F : dl ERedJewelPickup-3 : db $00    ; $80C66F
 db $FF,$CA
 ;org $8CB3AD
 ActorList_Map75:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $08,$1A,$01 : dl $86D784 : db $00 
-db $12,$1A,$03 : dl $86D784 : db $00 
-db $25,$1A,$05 : dl $86D784 : db $00 
-db $2F,$1A,$07 : dl $86D784 : db $00 
-db $42,$1A,$09 : dl $86D784 : db $00 
-db $4C,$1A,$0B : dl $86D784 : db $00 
-db $5F,$1A,$0D : dl $86D784 : db $00 
-db $69,$1A,$0F : dl $86D784 : db $00 
+db $08,$1A,$01 : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
+db $12,$1A,$03 : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
+db $25,$1A,$05 : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
+db $2F,$1A,$07 : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
+db $42,$1A,$09 : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
+db $4C,$1A,$0B : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
+db $5F,$1A,$0D : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
+db $69,$1A,$0F : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
 db $00,$01,$00 : dl $86D8BC : db $00 
-db $1D,$1D,$00 : dl $86DC50 : db $00 
-db $25,$08,$00 : dl $86D139 : db $00 
-db $29,$08,$00 : dl $86D141 : db $00 
-db $35,$08,$00 : dl $86D139 : db $00 
-db $39,$08,$00 : dl $86D141 : db $00 
+db $1D,$1D,$00 : dl EAVIshtarsApprentice-3 : db $00    ; $86DC50
+db $25,$08,$00 : dl EAVPortraitGreen-3 : db $00    ; $86D139
+db $29,$08,$00 : dl EAVPortraitDefault-3 : db $00    ; $86D141
+db $35,$08,$00 : dl EAVPortraitGreen-3 : db $00    ; $86D139
+db $39,$08,$00 : dl EAVPortraitDefault-3 : db $00    ; $86D141
 db $FF,$CA
 ;org $8CB41F
 ActorList_Map78:
@@ -2301,7 +2301,7 @@ ActorList_Map7C:
 db $05,$09,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $04,$09,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $04,$09,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $FF,$CA
 ;org $8CB64B
 ActorList_Map7D:
@@ -2335,38 +2335,38 @@ db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffectY-3 : db $00    ; $80EAA7
 db $00,$01,$00 : dl $87B52F : db $00 
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
-db $20,$18,$00 : dl $8B9177 : db $33,$01,$00 
-db $20,$1B,$00 : dl $8B9177 : db $33,$02,$00 
-db $21,$38,$00 : dl $8B9177 : db $33,$03,$00 
-db $33,$38,$00 : dl $8B9177 : db $33,$04,$00 
-db $47,$38,$00 : dl $8B9177 : db $33,$05,$00 
-db $60,$28,$00 : dl $8B9155 : db $33,$06,$00 
-db $60,$2B,$00 : dl $8B9155 : db $33,$07,$00 
-db $6F,$28,$00 : dl $8B9155 : db $33,$08,$00 
-db $6F,$2B,$00 : dl $8B9155 : db $33,$09,$00 
-db $15,$0A,$00 : dl $8B9155 : db $33,$10,$00 
-db $13,$1A,$00 : dl $8B9165 : db $33,$11,$00 
-db $0E,$1A,$00 : dl $8B9165 : db $33,$12,$00 
-db $14,$29,$00 : dl $8B9165 : db $33,$13,$00 
-db $13,$2B,$00 : dl $8B9165 : db $33,$14,$00 
-db $64,$1B,$00 : dl $8B9165 : db $33,$15,$00 
-db $62,$18,$00 : dl $8B9165 : db $33,$16,$00 
-db $5D,$1B,$00 : dl $8B9165 : db $33,$17,$00 
+db $20,$18,$00 : dl EGWArcherMobile-3 : db $33,$01,$00   ; $8B9177 
+db $20,$1B,$00 : dl EGWArcherMobile-3 : db $33,$02,$00   ; $8B9177 
+db $21,$38,$00 : dl EGWArcherMobile-3 : db $33,$03,$00   ; $8B9177 
+db $33,$38,$00 : dl EGWArcherMobile-3 : db $33,$04,$00   ; $8B9177 
+db $47,$38,$00 : dl EGWArcherMobile-3 : db $33,$05,$00   ; $8B9177 
+db $60,$28,$00 : dl EGWArcherFacingWest-3 : db $33,$06,$00   ; $8B9155 
+db $60,$2B,$00 : dl EGWArcherFacingWest-3 : db $33,$07,$00   ; $8B9155 
+db $6F,$28,$00 : dl EGWArcherFacingWest-3 : db $33,$08,$00   ; $8B9155 
+db $6F,$2B,$00 : dl EGWArcherFacingWest-3 : db $33,$09,$00   ; $8B9155 
+db $15,$0A,$00 : dl EGWArcherFacingWest-3 : db $33,$10,$00   ; $8B9155 
+db $13,$1A,$00 : dl EGWArcherFacingEast-3 : db $33,$11,$00   ; $8B9165 
+db $0E,$1A,$00 : dl EGWArcherFacingEast-3 : db $33,$12,$00   ; $8B9165 
+db $14,$29,$00 : dl EGWArcherFacingEast-3 : db $33,$13,$00   ; $8B9165 
+db $13,$2B,$00 : dl EGWArcherFacingEast-3 : db $33,$14,$00   ; $8B9165 
+db $64,$1B,$00 : dl EGWArcherFacingEast-3 : db $33,$15,$00   ; $8B9165 
+db $62,$18,$00 : dl EGWArcherFacingEast-3 : db $33,$16,$00   ; $8B9165 
+db $5D,$1B,$00 : dl EGWArcherFacingEast-3 : db $33,$17,$00   ; $8B9165 
 db $1F,$04,$00 : dl $8B8C70 : db $35,$18,$00 
 db $2C,$04,$00 : dl $8B8C70 : db $35,$19,$00 
 db $30,$14,$00 : dl $8B8C70 : db $35,$1A,$00 
 db $30,$34,$00 : dl $8B8C70 : db $35,$1B,$00 
 db $5F,$13,$00 : dl $8B8C70 : db $35,$1C,$00 
 db $57,$03,$00 : dl $8B8C70 : db $35,$1D,$00 
-db $0E,$38,$00 : dl $8B8DBE : db $34,$1E,$00 
-db $17,$37,$00 : dl $8B8DBE : db $34,$1F,$00 
-db $40,$39,$00 : dl $8B8DBE : db $34,$20,$00 
-db $43,$37,$00 : dl $8B8DBE : db $34,$21,$00 
-db $5C,$38,$00 : dl $8B8DBE : db $34,$22,$00 
-db $76,$38,$00 : dl $8B8DBE : db $34,$23,$00 
-db $70,$1A,$00 : dl $8B8DBE : db $34,$24,$00 
-db $51,$19,$00 : dl $8B8DBE : db $34,$25,$00 
-db $4C,$1A,$00 : dl $8B8DBE : db $34,$26,$00 
+db $0E,$38,$00 : dl EGWFloorFireball-3 : db $34,$1E,$00   ; $8B8DBE 
+db $17,$37,$00 : dl EGWFloorFireball-3 : db $34,$1F,$00   ; $8B8DBE 
+db $40,$39,$00 : dl EGWFloorFireball-3 : db $34,$20,$00   ; $8B8DBE 
+db $43,$37,$00 : dl EGWFloorFireball-3 : db $34,$21,$00   ; $8B8DBE 
+db $5C,$38,$00 : dl EGWFloorFireball-3 : db $34,$22,$00   ; $8B8DBE 
+db $76,$38,$00 : dl EGWFloorFireball-3 : db $34,$23,$00   ; $8B8DBE 
+db $70,$1A,$00 : dl EGWFloorFireball-3 : db $34,$24,$00   ; $8B8DBE 
+db $51,$19,$00 : dl EGWFloorFireball-3 : db $34,$25,$00   ; $8B8DBE 
+db $4C,$1A,$00 : dl EGWFloorFireball-3 : db $34,$26,$00   ; $8B8DBE 
 db $5A,$08,$01 : dl $8B8C30 : db $00 
 db $5D,$08,$01 : dl $8B8C30 : db $00 
 db $60,$08,$01 : dl $8B8C30 : db $00 
@@ -2380,22 +2380,22 @@ ActorList_Map83:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffectY-3 : db $00    ; $80EAA7
-db $14,$0A,$00 : dl $8B9177 : db $33,$30,$00 
-db $24,$49,$00 : dl $8B9177 : db $33,$31,$00 
-db $1A,$0A,$00 : dl $8B9155 : db $33,$32,$00 
-db $3B,$2B,$00 : dl $8B9155 : db $33,$33,$00 
-db $2F,$2B,$00 : dl $8B9155 : db $33,$34,$00 
-db $24,$69,$00 : dl $8B9165 : db $33,$35,$00 
-db $24,$6B,$00 : dl $8B9165 : db $33,$36,$00 
-db $30,$49,$00 : dl $8B9165 : db $33,$37,$00 
-db $25,$19,$00 : dl $8B9165 : db $33,$38,$00 
-db $24,$1A,$00 : dl $8B9165 : db $33,$39,$00 
+db $14,$0A,$00 : dl EGWArcherMobile-3 : db $33,$30,$00   ; $8B9177 
+db $24,$49,$00 : dl EGWArcherMobile-3 : db $33,$31,$00   ; $8B9177 
+db $1A,$0A,$00 : dl EGWArcherFacingWest-3 : db $33,$32,$00   ; $8B9155 
+db $3B,$2B,$00 : dl EGWArcherFacingWest-3 : db $33,$33,$00   ; $8B9155 
+db $2F,$2B,$00 : dl EGWArcherFacingWest-3 : db $33,$34,$00   ; $8B9155 
+db $24,$69,$00 : dl EGWArcherFacingEast-3 : db $33,$35,$00   ; $8B9165 
+db $24,$6B,$00 : dl EGWArcherFacingEast-3 : db $33,$36,$00   ; $8B9165 
+db $30,$49,$00 : dl EGWArcherFacingEast-3 : db $33,$37,$00   ; $8B9165 
+db $25,$19,$00 : dl EGWArcherFacingEast-3 : db $33,$38,$00   ; $8B9165 
+db $24,$1A,$00 : dl EGWArcherFacingEast-3 : db $33,$39,$00   ; $8B9165 
 db $31,$78,$00 : dl $8B8EFE : db $33,$40,$00 
 db $30,$04,$00 : dl $8B8C70 : db $35,$41,$00 
 db $37,$33,$00 : dl $8B8C70 : db $35,$42,$00 
-db $30,$6B,$00 : dl $8B8DBE : db $34,$43,$00 
-db $30,$58,$00 : dl $8B8DBE : db $34,$44,$00 
-db $34,$58,$00 : dl $8B8DBE : db $34,$45,$00 
+db $30,$6B,$00 : dl EGWFloorFireball-3 : db $34,$43,$00   ; $8B8DBE 
+db $30,$58,$00 : dl EGWFloorFireball-3 : db $34,$44,$00   ; $8B8DBE 
+db $34,$58,$00 : dl EGWFloorFireball-3 : db $34,$45,$00   ; $8B8DBE 
 db $27,$4B,$00 : dl $8B9423 : db $32,$46,$00 
 db $37,$3A,$00 : dl $8B9423 : db $32,$47,$00 
 db $34,$39,$00 : dl $8B9423 : db $32,$48,$00 
@@ -2442,22 +2442,22 @@ db $26,$2A,$00 : dl $8B9423 : db $32,$56,$00
 db $6A,$2A,$00 : dl $8B9423 : db $32,$57,$00 
 db $6E,$2B,$00 : dl $8B9423 : db $32,$58,$00 
 db $75,$2A,$00 : dl $8B9423 : db $32,$59,$00 
-db $27,$1D,$00 : dl $8B8DBE : db $34,$60,$00 
-db $4C,$1C,$00 : dl $8B8DBE : db $34,$61,$00 
-db $28,$2D,$00 : dl $8B8DBE : db $34,$64,$00 
-db $4E,$2D,$00 : dl $8B8DBE : db $34,$66,$00 
-db $55,$2D,$00 : dl $8B8DBE : db $34,$67,$00 
-db $5C,$2D,$00 : dl $8B8DBE : db $34,$68,$00 
-db $6D,$2D,$00 : dl $8B8DBE : db $34,$69,$00 
-db $74,$2D,$00 : dl $8B8DBE : db $34,$6A,$00 
+db $27,$1D,$00 : dl EGWFloorFireball-3 : db $34,$60,$00   ; $8B8DBE 
+db $4C,$1C,$00 : dl EGWFloorFireball-3 : db $34,$61,$00   ; $8B8DBE 
+db $28,$2D,$00 : dl EGWFloorFireball-3 : db $34,$64,$00   ; $8B8DBE 
+db $4E,$2D,$00 : dl EGWFloorFireball-3 : db $34,$66,$00   ; $8B8DBE 
+db $55,$2D,$00 : dl EGWFloorFireball-3 : db $34,$67,$00   ; $8B8DBE 
+db $5C,$2D,$00 : dl EGWFloorFireball-3 : db $34,$68,$00   ; $8B8DBE 
+db $6D,$2D,$00 : dl EGWFloorFireball-3 : db $34,$69,$00   ; $8B8DBE 
+db $74,$2D,$00 : dl EGWFloorFireball-3 : db $34,$6A,$00   ; $8B8DBE 
 db $4B,$25,$00 : dl $8B8C70 : db $35,$6B,$00 
 db $5A,$25,$00 : dl $8B8C70 : db $35,$6C,$00 
-db $11,$1D,$00 : dl $8B9165 : db $33,$6D,$00 
-db $1D,$1C,$00 : dl $8B9165 : db $33,$6E,$00 
-db $20,$1B,$00 : dl $8B9165 : db $33,$6F,$00 
-db $23,$1C,$00 : dl $8B9165 : db $33,$70,$00 
-db $10,$2B,$00 : dl $8B9165 : db $33,$71,$00 
-db $17,$2B,$00 : dl $8B9165 : db $33,$72,$00 
+db $11,$1D,$00 : dl EGWArcherFacingEast-3 : db $33,$6D,$00   ; $8B9165 
+db $1D,$1C,$00 : dl EGWArcherFacingEast-3 : db $33,$6E,$00   ; $8B9165 
+db $20,$1B,$00 : dl EGWArcherFacingEast-3 : db $33,$6F,$00   ; $8B9165 
+db $23,$1C,$00 : dl EGWArcherFacingEast-3 : db $33,$70,$00   ; $8B9165 
+db $10,$2B,$00 : dl EGWArcherFacingEast-3 : db $33,$71,$00   ; $8B9165 
+db $17,$2B,$00 : dl EGWArcherFacingEast-3 : db $33,$72,$00   ; $8B9165 
 db $13,$29,$01 : dl $8B8C30 : db $00 
 db $1A,$29,$01 : dl $8B8C30 : db $00 
 db $12,$19,$00 : dl $87BCE8 : db $00 
@@ -2471,7 +2471,7 @@ db $29,$2B,$05 : dl $80C9FB : db $00
 db $37,$2C,$07 : dl $80C9FB : db $00 
 db $64,$1D,$09 : dl $80C9FB : db $00 
 db $00,$01,$00 : dl $87E901 : db $00 
-db $06,$2B,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $06,$2B,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $FF,$CA
 ;org $8CBB18
 ActorList_Map86:
@@ -2487,18 +2487,18 @@ db $26,$1B,$00 : dl $8B9423 : db $32,$85,$00
 db $08,$5B,$00 : dl $8B9423 : db $32,$86,$00 
 db $1F,$5B,$00 : dl $8B9423 : db $32,$87,$00 
 db $24,$5B,$00 : dl $8B9423 : db $32,$88,$00 
-db $15,$47,$05 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $15,$47,$05 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $FF,$CA
 ;org $8CBB87
 ActorList_Map87:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffectY-3 : db $00    ; $80EAA7
-db $21,$0A,$00 : dl $8B9155 : db $33,$9B,$53 
-db $0D,$18,$00 : dl $8B9165 : db $33,$90,$00 
-db $0C,$19,$00 : dl $8B9165 : db $33,$91,$00 
-db $0B,$1A,$00 : dl $8B9165 : db $33,$92,$00 
-db $0A,$1B,$00 : dl $8B9165 : db $33,$93,$00 
+db $21,$0A,$00 : dl EGWArcherFacingWest-3 : db $33,$9B,$53   ; $8B9155 
+db $0D,$18,$00 : dl EGWArcherFacingEast-3 : db $33,$90,$00   ; $8B9165 
+db $0C,$19,$00 : dl EGWArcherFacingEast-3 : db $33,$91,$00   ; $8B9165 
+db $0B,$1A,$00 : dl EGWArcherFacingEast-3 : db $33,$92,$00   ; $8B9165 
+db $0A,$1B,$00 : dl EGWArcherFacingEast-3 : db $33,$93,$00   ; $8B9165 
 db $08,$2A,$00 : dl $8B8F72 : db $46,$94,$00 
 db $14,$2A,$00 : dl $8B8F72 : db $46,$95,$00 
 db $1B,$2B,$00 : dl $8B8F72 : db $46,$96,$00 
@@ -2522,12 +2522,12 @@ db $11,$11,$00 : dl EParallax_ScaleEffectY-3 : db $00    ; $80EAA7
 db $16,$09,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $18,$09,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $00,$01,$00 : dl $87BDE8 : db $00 
-db $14,$1B,$00 : dl $8B9177 : db $33,$A0,$00 
-db $2F,$1A,$00 : dl $8B9177 : db $33,$A1,$00 
-db $1E,$18,$00 : dl $8B9155 : db $33,$A2,$00 
-db $3A,$1A,$00 : dl $8B9155 : db $33,$A3,$00 
-db $05,$18,$00 : dl $8B9165 : db $33,$A4,$00 
-db $0A,$1B,$00 : dl $8B9165 : db $33,$A5,$00 
+db $14,$1B,$00 : dl EGWArcherMobile-3 : db $33,$A0,$00   ; $8B9177 
+db $2F,$1A,$00 : dl EGWArcherMobile-3 : db $33,$A1,$00   ; $8B9177 
+db $1E,$18,$00 : dl EGWArcherFacingWest-3 : db $33,$A2,$00   ; $8B9155 
+db $3A,$1A,$00 : dl EGWArcherFacingWest-3 : db $33,$A3,$00   ; $8B9155 
+db $05,$18,$00 : dl EGWArcherFacingEast-3 : db $33,$A4,$00   ; $8B9165 
+db $0A,$1B,$00 : dl EGWArcherFacingEast-3 : db $33,$A5,$00   ; $8B9165 
 db $2F,$2B,$00 : dl $8B8F4F : db $33,$F8,$00 
 db $06,$2B,$00 : dl $8B8F4F : db $33,$F9,$00 
 db $11,$28,$00 : dl $8B8F4F : db $33,$FA,$00 
@@ -2535,8 +2535,8 @@ db $15,$28,$00 : dl $8B8F4F : db $33,$FB,$00
 db $27,$28,$00 : dl $8B8F4F : db $33,$FC,$00 
 db $36,$28,$00 : dl $8B8F4F : db $33,$FD,$00 
 db $19,$18,$00 : dl $8B9423 : db $32,$A8,$00 
-db $28,$1B,$00 : dl $8B8DBE : db $34,$A6,$00 
-db $35,$1B,$00 : dl $8B8DBE : db $34,$A7,$00 
+db $28,$1B,$00 : dl EGWFloorFireball-3 : db $34,$A6,$00   ; $8B8DBE 
+db $35,$1B,$00 : dl EGWFloorFireball-3 : db $34,$A7,$00   ; $8B8DBE 
 db $2B,$17,$01 : dl $8B8C30 : db $00 
 db $32,$17,$01 : dl $8B8C30 : db $00 
 db $07,$17,$01 : dl $8B8BF8 : db $00 
@@ -2566,12 +2566,12 @@ db $FF,$CA
 ActorList_Map8C:    ; Attract map 1, ships/Babel on Mode 7 ocean
 db $00,$01,$00 : dl $8BCA02 : db $00 
 db $00,$01,$00 : dl $8BCE79 : db $00 
-db $00,$01,$00 : dl $8BC9BD : db $00 
+db $00,$01,$00 : dl EAttractMapsStartButtonListener-3 : db $00    ; $8BC9BD
 db $FF,$CA
 ;org $8CBD76
 ActorList_Map8D:    ; Attract map 2, floating graphics
-db $00,$01,$00 : dl $8BCB4E : db $00 
-db $00,$01,$00 : dl $8BC9BD : db $00 
+db $00,$01,$00 : dl EAttractMapTwoDriver-3 : db $00    ; $8BCB4E
+db $00,$01,$00 : dl EAttractMapsStartButtonListener-3 : db $00    ; $8BC9BD
 db $FF,$CA
 ;org $8CBD86
 ActorList_Map8E:    ; Attract map 3, golden temple
@@ -2579,12 +2579,12 @@ db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $00,$12,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl $8BCD4B : db $00 
-db $00,$01,$00 : dl $8BC9BD : db $00 
+db $00,$01,$00 : dl EAttractMapsStartButtonListener-3 : db $00    ; $8BC9BD
 db $FF,$CA
 ;org $8CBDAB
 ActorList_Map8F:    ; Attract map 4, skeleton and text
 db $00,$01,$00 : dl $8BCE33 : db $00 
-db $00,$01,$00 : dl $8BC9BD : db $00 
+db $00,$01,$00 : dl EAttractMapsStartButtonListener-3 : db $00    ; $8BC9BD
 db $FF,$CA
 ;org $8CBDBB
 ActorList_Map90:    ; Ending evolving map screen
@@ -2715,7 +2715,7 @@ ActorList_Map99:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $0B,$0A,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $0B,$0A,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $04,$1A,$05 : dl $87C92A : db $00 
 db $FF,$CA
 ;org $8CC0BE
@@ -2784,11 +2784,11 @@ ActorList_MapA1:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $DF,$DF,$00 : dl $80E94D : db $00 
-db $36,$27,$09 : dl $80D3BA : db $00 
-db $16,$1E,$09 : dl $80D3BA : db $00 
-db $1A,$23,$11 : dl $80D428 : db $00 
+db $36,$27,$09 : dl ERampLauncherToNorth-3 : db $00    ; $80d3ba
+db $16,$1E,$09 : dl ERampLauncherToNorth-3 : db $00    ; $80d3ba
+db $1A,$23,$11 : dl ERampLauncherToSouth-3 : db $00    ; $80d428
 db $10,$0C,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
-db $1F,$30,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $1F,$30,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $0B,$33,$30 : dl $8B983B : db $3F,$10,$00 
 db $28,$0C,$30 : dl $8B983B : db $3F,$11,$00 
 db $1B,$0B,$30 : dl $8B983B : db $3F,$12,$00 
@@ -2820,7 +2820,7 @@ ActorList_MapA2:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $DF,$DF,$00 : dl $80E94D : db $00 
-db $0C,$2D,$09 : dl $80D3BA : db $00 
+db $0C,$2D,$09 : dl ERampLauncherToNorth-3 : db $00    ; $80d3ba
 db $00,$01,$00 : dl $87E7F0 : db $00 
 db $0D,$1C,$30 : dl $8BA0CF : db $3C,$30,$00 
 db $0D,$18,$30 : dl $8BA0CF : db $3C,$31,$00 
@@ -2848,7 +2848,7 @@ db $58,$11,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0
 db $47,$11,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $36,$11,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $25,$11,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
-db $7C,$0B,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $7C,$0B,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $12,$09,$30 : dl $8B9C44 : db $3E,$40,$00 
 db $21,$09,$30 : dl $8B9C44 : db $3E,$41,$00 
 db $3D,$09,$30 : dl $8B9C44 : db $3E,$42,$00 
@@ -2912,7 +2912,7 @@ ActorList_MapA5:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $DF,$DF,$00 : dl $80E94D : db $00 
-db $14,$0F,$11 : dl $80D428 : db $00 
+db $14,$0F,$11 : dl ERampLauncherToSouth-3 : db $00    ; $80d428
 db $00,$01,$00 : dl $87E843 : db $00 
 db $00,$01,$00 : dl $87E896 : db $00 
 db $23,$3D,$30 : dl $8B983B : db $3F,$80,$00 
@@ -2967,12 +2967,12 @@ ActorList_MapA7:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $DF,$DF,$00 : dl $80E94D : db $00 
-db $79,$31,$05 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $79,$31,$05 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $25,$09,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $27,$0F,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $15,$1F,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
-db $0F,$22,$09 : dl $80D3BA : db $00 
-db $22,$28,$09 : dl $80D3BA : db $00 
+db $0F,$22,$09 : dl ERampLauncherToNorth-3 : db $00    ; $80d3ba
+db $22,$28,$09 : dl ERampLauncherToNorth-3 : db $00    ; $80d3ba
 db $4A,$1F,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $66,$35,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $65,$2E,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
@@ -3053,7 +3053,7 @@ db $1C,$1E,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
-db $1C,$04,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $1C,$04,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $1D,$1D,$00 : dl $888546 : db $00 
 db $1D,$1E,$00 : dl $888057 : db $00 
 db $1D,$1F,$00 : dl $888659 : db $00 
@@ -3125,37 +3125,37 @@ db $6D,$10,$00 : dl EAWFlyingSkull-3 : db $42,$12,$00    ; $8bbd8d
 db $1A,$0B,$02 : dl EAWWallSkull-3 : db $43,$13,$00    ; $8bbfd0
 db $1A,$11,$02 : dl EAWWallSkull-3 : db $43,$14,$00    ; $8bbfd0
 db $1A,$17,$02 : dl EAWWallSkull-3 : db $43,$15,$00    ; $8bbfd0
-db $1D,$11,$06 : dl $8BBFBB : db $43,$16,$00 
-db $1D,$18,$06 : dl $8BBFBB : db $43,$17,$00 
-db $22,$0E,$06 : dl $8BBFBB : db $43,$18,$00 
-db $22,$14,$06 : dl $8BBFBB : db $43,$19,$00 
-db $22,$1A,$06 : dl $8BBFBB : db $43,$1A,$00 
-db $27,$11,$06 : dl $8BBFBB : db $43,$1B,$00 
-db $27,$18,$06 : dl $8BBFBB : db $43,$1C,$00 
-db $47,$04,$00 : dl $8BBB5C : db $44,$1D,$6C 
-db $10,$0E,$00 : dl $8BBB66 : db $44,$1E,$00 
-db $58,$10,$00 : dl $8BB825 : db $45,$1F,$00 
-db $62,$12,$00 : dl $8BB825 : db $45,$20,$00 
-db $75,$08,$00 : dl $8BB825 : db $45,$21,$00 
-db $7A,$08,$00 : dl $8BB825 : db $45,$22,$00 
+db $1D,$11,$06 : dl EAWSkullStationary-3 : db $43,$16,$00    ; $8BBFBB 
+db $1D,$18,$06 : dl EAWSkullStationary-3 : db $43,$17,$00    ; $8BBFBB 
+db $22,$0E,$06 : dl EAWSkullStationary-3 : db $43,$18,$00    ; $8BBFBB 
+db $22,$14,$06 : dl EAWSkullStationary-3 : db $43,$19,$00    ; $8BBFBB 
+db $22,$1A,$06 : dl EAWSkullStationary-3 : db $43,$1A,$00    ; $8BBFBB 
+db $27,$11,$06 : dl EAWSkullStationary-3 : db $43,$1B,$00    ; $8BBFBB 
+db $27,$18,$06 : dl EAWSkullStationary-3 : db $43,$1C,$00    ; $8BBFBB 
+db $47,$04,$00 : dl EAWScarabVert-3 : db $44,$1D,$6C    ; $8BBB5C 
+db $10,$0E,$00 : dl EAWScarabHorz-3 : db $44,$1E,$00    ; $8BBB66 
+db $58,$10,$00 : dl EAWGolemFalling-3 : db $45,$1F,$00    ; $8BB825
+db $62,$12,$00 : dl EAWGolemFalling-3 : db $45,$20,$00    ; $8BB825
+db $75,$08,$00 : dl EAWGolemFalling-3 : db $45,$21,$00    ; $8BB825
+db $7A,$08,$00 : dl EAWGolemFalling-3 : db $45,$22,$00    ; $8BB825
 db $FF,$60,$80,$A3,$A3,$80,$86,$84,$AC,$6D,$AC,$4E,$A5,$A4,$A3,$88,$83,$84,$CA,$CA
 ;org $8CCCA5
 ActorList_MapB2:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $07,$27,$00 : dl $8898C8 : db $00 
-db $07,$1E,$13 : dl $80D1B5 : db $00 
+db $07,$1E,$13 : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
 db $0B,$6D,$00 : dl EAWFlyingSkull-3 : db $42,$30,$00    ; $8bbd8d
 db $08,$0C,$00 : dl EAWFlyingSkull-3 : db $42,$31,$00    ; $8bbd8d
 db $06,$57,$02 : dl EAWWallSkull-3 : db $43,$32,$00    ; $8bbfd0
-db $03,$33,$00 : dl $8BBFBB : db $43,$33,$00 
-db $0C,$33,$00 : dl $8BBFBB : db $43,$34,$00 
-db $0B,$45,$00 : dl $8BBB66 : db $44,$35,$00 
-db $06,$25,$00 : dl $8BBB66 : db $44,$36,$00 
-db $09,$25,$00 : dl $8BBB66 : db $44,$37,$6B 
-db $07,$47,$00 : dl $8BB825 : db $45,$38,$00 
-db $04,$09,$00 : dl $8BB825 : db $45,$39,$00 
-db $0B,$09,$00 : dl $8BB825 : db $45,$3A,$00 
+db $03,$33,$00 : dl EAWSkullStationary-3 : db $43,$33,$00    ; $8BBFBB 
+db $0C,$33,$00 : dl EAWSkullStationary-3 : db $43,$34,$00    ; $8BBFBB 
+db $0B,$45,$00 : dl EAWScarabHorz-3 : db $44,$35,$00    ; $8BBB66 
+db $06,$25,$00 : dl EAWScarabHorz-3 : db $44,$36,$00    ; $8BBB66 
+db $09,$25,$00 : dl EAWScarabHorz-3 : db $44,$37,$6B    ; $8BBB66 
+db $07,$47,$00 : dl EAWGolemFalling-3 : db $45,$38,$00    ; $8BB825
+db $04,$09,$00 : dl EAWGolemFalling-3 : db $45,$39,$00    ; $8BB825
+db $0B,$09,$00 : dl EAWGolemFalling-3 : db $45,$3A,$00    ; $8BB825
 db $FF,$CA
 ;org $8CCD26
 ActorList_MapB3:
@@ -3166,10 +3166,10 @@ db $00,$01,$00 : dl $8898DA : db $00
 db $18,$13,$00 : dl EAWFlyingSkull-3 : db $42,$40,$00    ; $8bbd8d
 db $71,$05,$06 : dl EAWWallSkull-3 : db $43,$41,$00    ; $8bbfd0
 db $71,$10,$02 : dl EAWWallSkull-3 : db $43,$42,$00    ; $8bbfd0
-db $35,$05,$00 : dl $8BBB66 : db $44,$43,$00 
-db $3B,$05,$00 : dl $8BBB66 : db $44,$44,$00 
-db $41,$05,$00 : dl $8BBB66 : db $44,$45,$00 
-db $47,$05,$00 : dl $8BBB66 : db $44,$46,$00 
+db $35,$05,$00 : dl EAWScarabHorz-3 : db $44,$43,$00    ; $8BBB66 
+db $3B,$05,$00 : dl EAWScarabHorz-3 : db $44,$44,$00    ; $8BBB66 
+db $41,$05,$00 : dl EAWScarabHorz-3 : db $44,$45,$00    ; $8BBB66 
+db $47,$05,$00 : dl EAWScarabHorz-3 : db $44,$46,$00    ; $8BBB66 
 db $FF,$CA
 ;org $8CCD83
 ActorList_MapB4:
@@ -3177,7 +3177,7 @@ db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $00,$01,$00 : dl $88992A : db $00 
 db $00,$01,$00 : dl $8897CB : db $00 
-db $04,$05,$00 : dl $8BBB5C : db $3A,$50,$6D 
+db $04,$05,$00 : dl EAWScarabVert-3 : db $3A,$50,$6D    ; $8BBB5C 
 db $24,$0D,$00 : dl EAWFlyingSkull-3 : db $42,$51,$00    ; $8bbd8d
 db $24,$15,$00 : dl EAWFlyingSkull-3 : db $42,$52,$00    ; $8bbd8d
 db $14,$11,$00 : dl EAWFlyingSkull-3 : db $42,$53,$00    ; $8bbd8d
@@ -3188,31 +3188,31 @@ db $FF,$CA
 ActorList_MapB5:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $06,$0E,$0F : dl $80D1B5 : db $00 
-db $08,$0E,$0F : dl $80D1B5 : db $00 
-db $06,$15,$11 : dl $80D16A : db $00 
-db $08,$15,$11 : dl $80D16A : db $00 
-db $07,$1E,$13 : dl $80D1B5 : db $00 
-db $07,$27,$15 : dl $80D16A : db $00 
-db $07,$4B,$11 : dl $80D428 : db $00 
-db $04,$45,$00 : dl $8BBB66 : db $3A,$60,$00 
-db $0B,$45,$00 : dl $8BBB66 : db $3A,$61,$00 
+db $06,$0E,$0F : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
+db $08,$0E,$0F : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
+db $06,$15,$11 : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
+db $08,$15,$11 : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
+db $07,$1E,$13 : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
+db $07,$27,$15 : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
+db $07,$4B,$11 : dl ERampLauncherToSouth-3 : db $00    ; $80d428
+db $04,$45,$00 : dl EAWScarabHorz-3 : db $3A,$60,$00    ; $8BBB66 
+db $0B,$45,$00 : dl EAWScarabHorz-3 : db $3A,$61,$00    ; $8BBB66 
 db $03,$19,$02 : dl EAWWallSkull-3 : db $43,$62,$00    ; $8bbfd0
 db $0C,$19,$00 : dl EAWWallSkull-3 : db $43,$63,$00    ; $8bbfd0
-db $06,$34,$04 : dl $8BBFBB : db $43,$64,$00 
-db $04,$12,$00 : dl $8BB817 : db $45,$65,$00 
-db $0B,$12,$00 : dl $8BB817 : db $45,$66,$00 
-db $04,$2F,$00 : dl $8BB825 : db $45,$67,$00 
-db $0B,$2F,$00 : dl $8BB825 : db $45,$68,$00 
-db $03,$74,$00 : dl $8BB817 : db $45,$69,$00 
-db $0C,$74,$00 : dl $8BB817 : db $45,$6A,$00 
+db $06,$34,$04 : dl EAWSkullStationary-3 : db $43,$64,$00    ; $8BBFBB 
+db $04,$12,$00 : dl EAWGolemJumpingDown-3 : db $45,$65,$00    ; $8BB817
+db $0B,$12,$00 : dl EAWGolemJumpingDown-3 : db $45,$66,$00    ; $8BB817
+db $04,$2F,$00 : dl EAWGolemFalling-3 : db $45,$67,$00    ; $8BB825
+db $0B,$2F,$00 : dl EAWGolemFalling-3 : db $45,$68,$00    ; $8BB825
+db $03,$74,$00 : dl EAWGolemJumpingDown-3 : db $45,$69,$00    ; $8BB817
+db $0C,$74,$00 : dl EAWGolemJumpingDown-3 : db $45,$6A,$00    ; $8BB817
 db $FF,$CA
 ;org $8CCE7B
 ActorList_MapB6:    ; Garden
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $42,$32,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $42,$32,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $3A,$31,$00 : dl EAWZipFly-3 : db $4A,$70,$00    ; $8baf4f
 db $4F,$34,$00 : dl EAWZipFly-3 : db $4A,$71,$00    ; $8baf4f
 db $4C,$28,$00 : dl EAWZipFly-3 : db $4A,$72,$00    ; $8baf4f
@@ -3228,22 +3228,22 @@ db $02,$1A,$00 : dl EAWBush-3 : db $49,$7B,$00    ; $8bb1d7
 db $02,$17,$00 : dl EAWBush-3 : db $49,$7C,$00    ; $8bb1d7
 db $13,$16,$00 : dl EAWBush-3 : db $49,$7D,$00    ; $8bb1d7
 db $1E,$11,$00 : dl EAWBush-3 : db $49,$7E,$00    ; $8bb1d7
-db $14,$33,$00 : dl $8BB1B4 : db $49,$7F,$00 
-db $18,$23,$00 : dl $8BB1B4 : db $49,$80,$00 
-db $19,$19,$00 : dl $8BB1B4 : db $49,$81,$00 
-db $28,$1C,$00 : dl $8BB1B4 : db $49,$82,$00 
-db $27,$1B,$00 : dl $8BB1B4 : db $49,$83,$00 
-db $28,$1A,$00 : dl $8BB1B4 : db $49,$84,$00 
-db $29,$19,$00 : dl $8BB1B4 : db $49,$85,$00 
-db $3F,$1C,$00 : dl $8BB1B4 : db $49,$86,$00 
-db $3E,$1D,$00 : dl $8BB1B4 : db $49,$87,$00 
-db $41,$20,$00 : dl $8BB1B4 : db $49,$88,$00 
-db $5B,$1B,$00 : dl $8BB1B4 : db $49,$89,$00 
-db $5B,$1C,$00 : dl $8BB1B4 : db $49,$8A,$00 
-db $5B,$1D,$00 : dl $8BB1B4 : db $49,$8B,$00 
-db $5B,$1E,$00 : dl $8BB1B4 : db $49,$8C,$00 
-db $19,$0A,$00 : dl $8BB1B4 : db $49,$8D,$00 
-db $12,$03,$00 : dl $8BB1B4 : db $49,$8E,$00 
+db $14,$33,$00 : dl EAWBushStationary-3 : db $49,$7F,$00    ; $8BB1B4 
+db $18,$23,$00 : dl EAWBushStationary-3 : db $49,$80,$00    ; $8BB1B4 
+db $19,$19,$00 : dl EAWBushStationary-3 : db $49,$81,$00    ; $8BB1B4 
+db $28,$1C,$00 : dl EAWBushStationary-3 : db $49,$82,$00    ; $8BB1B4 
+db $27,$1B,$00 : dl EAWBushStationary-3 : db $49,$83,$00    ; $8BB1B4 
+db $28,$1A,$00 : dl EAWBushStationary-3 : db $49,$84,$00    ; $8BB1B4 
+db $29,$19,$00 : dl EAWBushStationary-3 : db $49,$85,$00    ; $8BB1B4 
+db $3F,$1C,$00 : dl EAWBushStationary-3 : db $49,$86,$00    ; $8BB1B4 
+db $3E,$1D,$00 : dl EAWBushStationary-3 : db $49,$87,$00    ; $8BB1B4 
+db $41,$20,$00 : dl EAWBushStationary-3 : db $49,$88,$00    ; $8BB1B4 
+db $5B,$1B,$00 : dl EAWBushStationary-3 : db $49,$89,$00    ; $8BB1B4 
+db $5B,$1C,$00 : dl EAWBushStationary-3 : db $49,$8A,$00    ; $8BB1B4 
+db $5B,$1D,$00 : dl EAWBushStationary-3 : db $49,$8B,$00    ; $8BB1B4 
+db $5B,$1E,$00 : dl EAWBushStationary-3 : db $49,$8C,$00    ; $8BB1B4 
+db $19,$0A,$00 : dl EAWBushStationary-3 : db $49,$8D,$00    ; $8BB1B4 
+db $12,$03,$00 : dl EAWBushStationary-3 : db $49,$8E,$00    ; $8BB1B4 
 db $5B,$26,$00 : dl EAWCyclops-3 : db $46,$8F,$00    ; $8bb275
 db $48,$2E,$00 : dl EAWCyclops-3 : db $46,$90,$00    ; $8bb275
 db $29,$2F,$00 : dl EAWCyclops-3 : db $46,$91,$00    ; $8bb275
@@ -3259,27 +3259,27 @@ ActorList_MapB7:    ; Wat, blocking golem room.
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $03,$10,$00 : dl EAWGolemBlocker-3 : db $45,$A0,$00    ; $8899AF
-db $29,$15,$00 : dl $8BB817 : db $45,$A1,$00 
-db $0B,$14,$00 : dl $8BB825 : db $45,$A2,$00 
-db $14,$05,$00 : dl $8BBB5C : db $3A,$A3,$00 
-db $1A,$05,$00 : dl $8BBB66 : db $3A,$A4,$00 
+db $29,$15,$00 : dl EAWGolemJumpingDown-3 : db $45,$A1,$00    ; $8BB817
+db $0B,$14,$00 : dl EAWGolemFalling-3 : db $45,$A2,$00    ; $8BB825
+db $14,$05,$00 : dl EAWScarabVert-3 : db $3A,$A3,$00    ; $8BBB5C 
+db $1A,$05,$00 : dl EAWScarabHorz-3 : db $3A,$A4,$00    ; $8BBB66 
 db $54,$09,$04 : dl EAWWallSkull-3 : db $43,$A5,$00    ; $8bbfd0
 db $54,$15,$04 : dl EAWWallSkull-3 : db $43,$A6,$00    ; $8bbfd0
 db $49,$1B,$06 : dl EAWWallSkull-3 : db $43,$A7,$00    ; $8bbfd0
 db $51,$15,$06 : dl EAWWallSkull-3 : db $43,$A8,$00    ; $8bbfd0
 db $58,$15,$06 : dl EAWWallSkull-3 : db $43,$A9,$00    ; $8bbfd0
-db $4E,$0F,$06 : dl $8BBFBB : db $43,$AA,$00 
-db $4A,$15,$06 : dl $8BBFBB : db $43,$AB,$00 
+db $4E,$0F,$06 : dl EAWSkullStationary-3 : db $43,$AA,$00    ; $8BBFBB 
+db $4A,$15,$06 : dl EAWSkullStationary-3 : db $43,$AB,$00    ; $8BBFBB 
 db $FF,$60,$80,$A3,$A3,$80,$86,$84,$AC,$6D,$AC,$48,$8D,$A3,$88,$83,$84,$CA,$CA
 ;org $8CD092
 ActorList_MapB8:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $08,$06,$05 : dl EDarkSpace-3 : $00    ; $88D6A9
-db $05,$56,$00 : dl $8BB817 : db $45,$B0,$00 
-db $0A,$4D,$00 : dl $8BB817 : db $45,$B1,$00 
-db $05,$25,$00 : dl $8BBB5C : db $3A,$B2,$00 
-db $0A,$25,$00 : dl $8BBB5C : db $3A,$B3,$00 
+db $08,$06,$05 : dl EDarkSpace-3 : db $00    ; $88D6A9
+db $05,$56,$00 : dl EAWGolemJumpingDown-3 : db $45,$B0,$00    ; $8BB817
+db $0A,$4D,$00 : dl EAWGolemJumpingDown-3 : db $45,$B1,$00    ; $8BB817
+db $05,$25,$00 : dl EAWScarabVert-3 : db $3A,$B2,$00    ; $8BBB5C 
+db $0A,$25,$00 : dl EAWScarabVert-3 : db $3A,$B3,$00    ; $8BBB5C 
 db $03,$3D,$02 : dl EAWWallSkull-3 : db $43,$B4,$00    ; $8bbfd0
 db $0C,$3D,$02 : dl EAWWallSkull-3 : db $43,$B5,$6F    ; $8bbfd0
 db $FF,$CA
@@ -3291,17 +3291,17 @@ db $07,$16,$00 : dl EAWFlyingSkull-3 : db $42,$B8,$00    ; $8bbd8d
 db $08,$4F,$00 : dl EAWFlyingSkull-3 : db $42,$B9,$00    ; $8bbd8d
 db $05,$17,$00 : dl EAWWallSkull-3 : db $43,$BA,$00    ; $8bbfd0
 db $0A,$17,$02 : dl EAWWallSkull-3 : db $43,$BB,$00    ; $8bbfd0
-db $04,$32,$00 : dl $8BB825 : db $45,$BC,$00 
-db $0B,$32,$00 : dl $8BB825 : db $45,$BD,$00 
-db $04,$45,$00 : dl $8BBB66 : db $3A,$BE,$00 
-db $0B,$45,$00 : dl $8BBB66 : db $3A,$BF,$00 
+db $04,$32,$00 : dl EAWGolemFalling-3 : db $45,$BC,$00    ; $8BB825
+db $0B,$32,$00 : dl EAWGolemFalling-3 : db $45,$BD,$00    ; $8BB825
+db $04,$45,$00 : dl EAWScarabHorz-3 : db $3A,$BE,$00    ; $8BBB66 
+db $0B,$45,$00 : dl EAWScarabHorz-3 : db $3A,$BF,$00    ; $8BBB66 
 db $FF,$CA
 ;org $8CD137
 ActorList_MapBA:    ; "Road to Main Hall"
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $3D,$0E,$00 : dl $8BB1B4 : db $49,$C0,$00 
+db $3D,$0E,$00 : dl EAWBushStationary-3 : db $49,$C0,$00    ; $8BB1B4 
 db $3D,$0E,$00 : dl $889F7C : db $00    ; Black glasses pickup
 db $15,$3C,$00 : dl EAWCyclops-3 : db $46,$C1,$00    ; $8bb275
 db $0F,$43,$00 : dl EAWCyclops-3 : db $46,$C2,$00    ; $8bb275
@@ -3313,7 +3313,7 @@ db $FF,$62,$8E,$80,$83,$AC,$A4,$8E,$AC,$D7,$1B,$47,$80,$8B,$8B,$CA
 ActorList_MapBB:    ; "Main Hall 1F"
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $2B,$1B,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $2B,$1B,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $00,$01,$00 : dl EAWDropDownListener-3 : db $00    ; $88985e
 db $07,$11,$00 : dl EAWFlyingSkull-3 : db $42,$C8,$00    ; $8bbd8d
 db $0B,$11,$00 : dl EAWFlyingSkull-3 : db $42,$C9,$00    ; $8bbd8d
@@ -3326,17 +3326,17 @@ db $FF,$D7,$1B,$47,$80,$8B,$8B,$AC,$21,$45,$CA
 ActorList_MapBC:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $00,$01,$00 : dl $889A1C : db $00 
-db $1D,$0B,$00 : dl $889F2C : db $00 
-db $0F,$1D,$00 : dl $889F2C : db $00 
-db $06,$24,$00 : dl $889F2C : db $00 
-db $27,$15,$00 : dl $889F2C : db $00 
-db $05,$14,$0F : dl $80D1B5 : db $00 
-db $05,$1B,$0F : dl $80D16A : db $00 
-db $20,$1C,$0F : dl $80D1B5 : db $00 
-db $22,$1C,$0F : dl $80D1B5 : db $00 
-db $20,$23,$0F : dl $80D16A : db $00 
-db $21,$23,$0F : dl $80D16A : db $00 
+db $00,$01,$00 : dl EAWBrightRoomManager-3 : db $00    ; $889A1C
+db $1D,$0B,$00 : dl EAWBrightRoomCrystal-3 : db $00    ; $889F2C
+db $0F,$1D,$00 : dl EAWBrightRoomCrystal-3 : db $00    ; $889F2C
+db $06,$24,$00 : dl EAWBrightRoomCrystal-3 : db $00    ; $889F2C
+db $27,$15,$00 : dl EAWBrightRoomCrystal-3 : db $00    ; $889F2C
+db $05,$14,$0F : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
+db $05,$1B,$0F : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
+db $20,$1C,$0F : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
+db $22,$1C,$0F : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
+db $20,$23,$0F : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
+db $21,$23,$0F : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
 db $09,$1F,$00 : dl EAWFlyingSkull-3 : db $42,$D0,$00    ; $8bbd8d
 db $27,$23,$00 : dl EAWFlyingSkull-3 : db $42,$D1,$00    ; $8bbd8d
 db $23,$07,$06 : dl EAWWallSkull-3 : db $43,$D2,$00    ; $8bbfd0
@@ -3350,33 +3350,33 @@ ActorList_MapBD:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $00,$01,$00 : dl EAWDropDownListener-3 : db $00    ; $88985e
-db $08,$1A,$0D : dl $80D1B5 : db $00 
-db $0A,$1A,$0D : dl $80D1B5 : db $00 
-db $08,$20,$0D : dl $80D16A : db $00 
-db $09,$20,$0D : dl $80D16A : db $00 
+db $08,$1A,$0D : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
+db $0A,$1A,$0D : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
+db $08,$20,$0D : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
+db $09,$20,$0D : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
 db $05,$22,$00 : dl EAWFlyingSkull-3 : db $42,$E0,$00    ; $8bbd8d
 db $10,$10,$00 : dl EAWFlyingSkull-3 : db $42,$E1,$00    ; $8bbd8d
 db $19,$0F,$00 : dl EAWFlyingSkull-3 : db $42,$E2,$00    ; $8bbd8d
-db $24,$1D,$06 : dl $8BBFBB : db $43,$E3,$00 
-db $26,$27,$04 : dl $8BBFBB : db $43,$E4,$00 
-db $21,$23,$04 : dl $8BBFBB : db $43,$E5,$00 
-db $12,$1A,$04 : dl $8BBFBB : db $43,$E6,$00 
-db $06,$1C,$04 : dl $8BBFBB : db $43,$E7,$00 
-db $06,$26,$00 : dl $8BB817 : db $45,$E8,$00 
-db $2B,$19,$00 : dl $8BB825 : db $45,$E9,$00 
-db $0E,$1C,$00 : dl $8BB825 : db $45,$EA,$00 
+db $24,$1D,$06 : dl EAWSkullStationary-3 : db $43,$E3,$00    ; $8BBFBB 
+db $26,$27,$04 : dl EAWSkullStationary-3 : db $43,$E4,$00    ; $8BBFBB 
+db $21,$23,$04 : dl EAWSkullStationary-3 : db $43,$E5,$00    ; $8BBFBB 
+db $12,$1A,$04 : dl EAWSkullStationary-3 : db $43,$E6,$00    ; $8BBFBB 
+db $06,$1C,$04 : dl EAWSkullStationary-3 : db $43,$E7,$00    ; $8BBFBB 
+db $06,$26,$00 : dl EAWGolemJumpingDown-3 : db $45,$E8,$00    ; $8BB817
+db $2B,$19,$00 : dl EAWGolemFalling-3 : db $45,$E9,$00    ; $8BB825
+db $0E,$1C,$00 : dl EAWGolemFalling-3 : db $45,$EA,$00    ; $8BB825
 db $FF,$D7,$1B,$47,$80,$8B,$8B,$AC,$23,$45,$CA
 ;org $8CD339
 ActorList_MapBE:    ; "Main Hall 4F"
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $20,$2B,$04 : dl $8BBFBB : db $43,$F0,$00 
-db $17,$2B,$04 : dl $8BBFBB : db $43,$F1,$00 
-db $0E,$2B,$04 : dl $8BBFBB : db $43,$F2,$00 
-db $25,$07,$04 : dl $8BBFBB : db $43,$F3,$00 
-db $2A,$07,$06 : dl $8BBFBB : db $43,$F4,$00 
+db $20,$2B,$04 : dl EAWSkullStationary-3 : db $43,$F0,$00    ; $8BBFBB 
+db $17,$2B,$04 : dl EAWSkullStationary-3 : db $43,$F1,$00    ; $8BBFBB 
+db $0E,$2B,$04 : dl EAWSkullStationary-3 : db $43,$F2,$00    ; $8BBFBB 
+db $25,$07,$04 : dl EAWSkullStationary-3 : db $43,$F3,$00    ; $8BBFBB 
+db $2A,$07,$06 : dl EAWSkullStationary-3 : db $43,$F4,$00    ; $8BBFBB 
 db $1E,$13,$00 : dl EAWFlyingSkull-3 : db $42,$F5,$00    ; $8bbd8d
-db $25,$2B,$00 : dl $8BB825 : db $45,$F6,$00 
+db $25,$2B,$00 : dl EAWGolemFalling-3 : db $45,$F6,$00    ; $8BB825
 db $FF,$D7,$1B,$47,$80,$8B,$8B,$AC,$24,$45,$CA,$CA
 ;org $8CD392
 ActorList_MapBF:    ; Angkor Wat spirit room
@@ -3470,7 +3470,7 @@ db $3B,$3C,$00 : dl $88B6A2 : db $00
 db $1C,$1E,$00 : dl $8BC65F : db $4F,$01,$00 
 db $23,$1E,$00 : dl $8BC65F : db $4F,$02,$73 
 db $27,$1B,$E7 : dl $88B668 : db $00 
-db $1C,$38,$03 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $1C,$38,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $1F,$13,$00 : dl $88CD6C : db $00 
 db $36,$2A,$1D : dl ERedJewelPickup-3 : db $00    ; $80C66F
 db $FF,$60,$A9,$A2,$80,$8C,$88,$83,$CA
@@ -3833,7 +3833,7 @@ db $04,$0C,$30 : dl $8BADBE : db $00
 db $04,$1B,$30 : dl $8BADC7 : db $00 
 db $1B,$0C,$30 : dl $8BADBE : db $00 
 db $1B,$1B,$30 : dl $8BADCC : db $00 
-db $0F,$0C,$30 : dl EMummyQueen : db $50,$00,$00    ; $8ba6b6
+db $0F,$0C,$30 : dl EMummyQueen-3 : db $50,$00,$00    ; $8ba6b6
 db $00,$01,$01 : dl $8BA5DF : db $00 
 db $00,$01,$00 : dl $88CE12 : db $00 
 db $00,$01,$01 : dl EBossClearRewarder-3 : db $00    ; $80C2BB
@@ -3871,7 +3871,7 @@ ActorList_MapE0:
 db $07,$0E,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $46,$3A,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $46,$3A,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $00,$01,$00 : dl $898718 : db $00 
 db $00,$01,$00 : dl $898748 : db $00 
 db $00,$01,$00 : dl $898778 : db $00 
@@ -3904,7 +3904,7 @@ db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl $8987D8 : db $00 
 db $00,$01,$00 : dl $898620 : db $00 
 db $09,$1A,$00 : dl $898515 : db $00 
-db $2B,$1A,$01 : dl EDarkSpace-3 : $00    ; $88D6A9
+db $2B,$1A,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $28,$1A,$00 : dl $898000 : db $00 
 db $FF,$CA
 ;org $8CE16E
@@ -3953,8 +3953,8 @@ ActorList_MapE9:    ; Jeweler's Mansion
 db $33,$3E,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $81,$02,$00 : dl $80E9EC : db $00 
-db $28,$2E,$17 : dl $80D16A : db $00 
-db $28,$23,$17 : dl $80D1B5 : db $00 
+db $28,$2E,$17 : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
+db $28,$23,$17 : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
 db $00,$01,$00 : dl EJMansionEntranceListener-3 : db $00    ; $88fc6a
 db $25,$3A,$00 : dl EMineLizard-3 : db $61,$00,$00     ; $8AAACA
 db $1D,$3A,$00 : dl EMineLizard-3 : db $61,$00,$9A     ; $8AAACA
@@ -4000,7 +4000,7 @@ ActorList_MapEA:    ; Solid Arm
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $83,$04,$00 : dl $80E9EC : db $00 
-db $00,$01,$00 : dl $8ADC55 : db $00 
+db $00,$01,$00 : dl EJPusherSolidArmRoom-3 : db $00    ; $8ADC55
 db $08,$07,$00 : dl $88F709 : db $5F,$00,$00 
 db $FF,$CA
 ;org $8CE3CD
@@ -4075,7 +4075,7 @@ db $04,$0C,$30 : dl $8BADBE : db $00
 db $04,$1B,$30 : dl $8BADC7 : db $00 
 db $1B,$0C,$30 : dl $8BADBE : db $00 
 db $1B,$1B,$30 : dl $8BADCC : db $00 
-db $0F,$0C,$30 : dl EBabelMummyQueen : db $5E,$05,$00    ; $8ba61a
+db $0F,$0C,$30 : dl EBabelMummyQueen-3 : db $5E,$05,$00    ; $8ba61a
 db $00,$01,$01 : dl $8BA5DF : db $00 
 db $FF,$CA
 ;org $8CE538
@@ -4094,7 +4094,7 @@ db $07,$08,$01 : dl $8BC8BA : db $00
 db $FF,$CA
 ;org $8CE56D
 ActorList_MapFC:    ; Title screen
-db $00,$01,$00 : dl $8BC924 : db $00    ; Intro cutscene driver?
+db $00,$01,$00 : dl $8BC924 : db $00    ; Title screen manager
 db $00,$01,$00 : dl $8BC9AE : db $00 
 db $FF,$CA
 ;org $8CE57D

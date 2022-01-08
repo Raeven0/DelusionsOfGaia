@@ -5,7 +5,6 @@ fillbyte $FF
 
 
 org $978000
-; Friar metasprite data.
 dw AnimFriar00    ; $800E
 dw AnimFriar01    ; $8034
 dw AnimFriar02    ; $8042

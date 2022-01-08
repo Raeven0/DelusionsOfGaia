@@ -602,8 +602,8 @@ dw $aab6    ; COP #$C8
 dw $aac6    ; COP #$C9
 dw $aad8    ; COP #$CA
 dw $ab0e    ; COP #$CB
-dw $ab41    ; COP #$CC
-dw $ab51    ; COP #$CD
+dw Cop_CC   ; $ab41    ; COP #$CC
+dw Cop_CD   ; $ab51    ; COP #$CD
 dw $ab60    ; COP #$CE
 dw $ab70    ; COP #$CF
 dw $ab7f    ; COP #$D0
@@ -1742,6 +1742,29 @@ rti
 }
 ;org $80a894
 
+org $80ab41
+Cop_CC:
+{
+tyx
+lda [$0a]
+  inc $0a
+  and #$00ff
+jsr SR_SetFlagA   ; jsr $b0b7
+lda $0a : sta $02,s
+rti
+}
+;org $80ab51
+Cop_CD:
+{
+tyx
+lda [$0a]
+  inc $0a : inc $0a
+jsr SR_SetFlagA   ; jsr $b0b7
+lda $0a : sta $02,s
+rti
+}
+;org $80ab60
+
 org $809f5f ; Usage: High bit of new sprite index is artificial,
 SR_SetSpriteIndexMaybeMirror:
 {
@@ -2074,10 +2097,20 @@ SR_SecOnDefeatedEnemyA:
 
 org $80B0B7
 SR_SetFlagA:
+{
+phx
+sta $0000
+lsr : lsr : lsr : tay
+lda #$0000
+sep #$20
+lda $0000 : and #$07 : tax
+lda $0a00,y : ora.l T_PowersOfTwo80,x : sta $0a00,y   ; $80b11d,x
+rep #$20
+plx
+rts
+}
 
-
-
-org $80B0D8
+;org $80B0D8
 SR_ClearFlagA:
 
 
@@ -2420,8 +2453,23 @@ cop #$3D
 rtl
 warnpc $80b5c0
 
+org $80b7cc
+db $00, $08
+TAWBrightRoomFadeToWhite:
+cop #$37 : db $18
+cop #$39
+cop #$3D
+rtl
 
-org $80b7e0
+;org $80b7d6
+db $00, $08
+TAWBrightRoomFadeToNormal:
+cop #$37 : db $19
+cop #$39
+cop #$3D
+rtl
+
+;org $80b7e0
 db $00, $08
 TMuHopeRoomFadeToBlack:
 cop #$37 : db $1B
@@ -2758,6 +2806,23 @@ TPlayerChatListener:
 
 
 
+org $80c1aa
+db $00 : dw $2800
+EShiraDreamSpotlightBuilder:
+cop #$D2 : db $0E, $01
+lda #$0088 : sec : sbc $068A : sta $00F6
+lda #$0180 : sec : sbc $068E : sta $00FA
+lda #$00A0 : sta $00FE
+cop #$C1
+lda $00FE : sec : sbc #$0002 : sta $00FE
+cmp #$0040 : bcc +
+  rtl
++:    ; org $80c1dd
+cop #$E0
+warnpc $80c1df
+
+
+
 org $80c2bb
 db $00 : dw $2000
 EBossClearRewarder:
@@ -2832,7 +2897,7 @@ phy
   tya : jsl LR_SetFlag30A    ; $80b4a1
 ply
 lda $0004
-pea .AwardGivenCheckNext-1    ; $c34f
+pea.w .AwardGivenCheckNext-1    ; $c34f
 dec : bne .NotHp
 .IsHp:
   inc $0aca
@@ -3167,6 +3232,48 @@ db $00,$00,$30
 
 org $80cf8e
 ESimpleScreenShake:
+
+
+C_80CFEF:    ; org $80cfef
+cop #$23 : sta $28
+lda #$0002 : sta $2A
+cop #$C1
+phb
+phk
+plb
+lda $28 : inc $28 : and #$0007 : asl : tay
+lda $D068,y : pha
+  clc : adc $06C2 : sta $06C2
+  bpl B_80D016
+  stz $06C2
+B_80D016:    ; org $80d016
+lda $24 : cmp #$FFFF : beq B_80D02C
+pla : clc : adc $06C4 : sta $06C4
+  bpl J_80D02D
+  stz $06C4 : bra J_80D02D
+B_80D02C:    ; org $80d02c
+pla
+J_80D02D:    ; org $80d02d
+lda $28 : and #$0007 : asl : tay
+lda $D068,y : pha
+  clc : adc $06BE : sta $06BE
+  bpl B_80D044
+  stz $06BE
+B_80D044:    ; org $80d044
+lda $24 : cmp #$FFFF : beq B_80D05A
+pla : clc : adc $06C0 : sta $06C0
+  bpl J_80D05B
+  stz $06C0 : bra J_80D05B
+B_80D05A:    ; org $80d05a
+pla
+J_80D05B:    ; org $80d05b
+plb
+lda #$0003 : sta $08
+dec $2A : bmi B_80D066
+rtl
+B_80D066:    ; org $80d066
+cop #$E0
+warnpc $80d068
 
 
 org $80D090
@@ -3929,7 +4036,7 @@ cop #$8A
 cop #$E0
 
 ;org $80df7b
-; Unknown actor.
+; Random drop actor. Has a chance of being HP, higher if Player's HP is low.
 cop #$88 : dl $8ee000
 cop #$B7 : db $00
 cop #$A2 : dl $80e155 : dw $2700
@@ -3975,7 +4082,7 @@ cop #$8A
 cop #$E0
 
 ;org $80dffd
-; Unknown data for the unknown actor. Randomly chooses a path.
+; Probability distributions for random drop.
 dw $000f,$dfe3 : dw $003c,$dfc9 : dw $0099,$df61 : dw $0100,$df38 
 dw $0019,$dfc9 : dw $004c,$df38 : dw $0099,$dfe3 : dw $0100,$df61 
 dw $000c,$df61 : dw $0033,$df38 : dw $007f,$dfc9 : dw $0100,$dfe3 
@@ -4186,7 +4293,19 @@ rts
 warnpc $80e3ba
 
 
-org $80e4fc
+org $80e4db
+stz $002a,x
+cop #$A2 : dl EChaserAlt : dw $2000   ; dl $80e4fc
+cpy #$1FC0 : beq B_80E4FA
+lda $24 : sta $0024,y
+B_80E4EF:
+cop #$C1
+cop #$89
+lda $10 : bit #$4000 : beq B_80E4EF
+B_80E4FA:
+cop #$E0
+
+;org $80e4fc
 EChaserAlt:
 {
 txy

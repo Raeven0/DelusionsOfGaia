@@ -5173,7 +5173,7 @@ bra .NextToken
 {
 dw .HoldClearReturn    ; $C0 at $e2f5, awaits + clears screen + ends text
 dw $e30f    ; @$e30f set text box pos, db $c1 : db PosX,PosY; minimum 1,1
-dw $e335    ; Card $C2 at $e335, "template"
+dw $e335    ; @$e335 1-byte color+sound template from $81CA95
 dw $e35b    ; @$e35b set palette, db $c3 : db Pal
 dw $e36b    ; Card $C4 at $e36b
 dw .IncludeIndexed    ; db $c5 : dw PtrList,Index
@@ -5195,7 +5195,7 @@ dw $e721    ; Card $D4 at $e721
 dw $e736    ; Card $D5 at $e736, "delay speed"
 dw $e743    ; Card $D6 at $e743, dict key 1
 dw $e769    ; Card $D7 at $e769, dict key 2
-dw $e78f    ; Card $D8 at $e78f
+dw $e78f    ; Card $D8 at $e78f, begin block of literals, end with $00
 }
 .HoldClearReturn:    ; Card $C0 at $e2f5
 jsr .Hold

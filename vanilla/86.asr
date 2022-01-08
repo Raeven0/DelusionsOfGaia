@@ -215,6 +215,22 @@ org $8694AA
 db $D3,$C2,$02,$D6,$2A,$67,$87,$80,$A4,$4F,$4F,$AC,$D6,$1D,$80,$AC,$CB,$D6,$C7,$85,$8E,$A5,$8D,$A4,$80,$88,$8D,$2A,$2A,$2A,$AC,$CF,$42,$8E,$A5,$8B,$83,$AC,$D6,$D9,$81,$84,$AC,$80,$CB,$82,$8E,$8D,$8D,$84,$82,$A4,$88,$8E,$8D,$AC,$81,$84,$A4,$A7,$84,$84,$8D,$AC,$A4,$87,$88,$A3,$CB,$80,$8D,$83,$AC,$A4,$87,$84,$AC,$A2,$8E,$82,$8A,$2A,$2A,$2A,$0D,$C3,$00,$C0
 
 ;org $869502
+C_869502:   ; Sparkle that follows its creator?
+lda $0036 : and #$0003 : bne B_86951D
+ldy $04
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+cop #$9C : dl C_86951E : dw $0B02
+B_86951D:    ; org $86951d
+rtl
+C_86951E:    ; org $86951e
+cop #$23 : and #$0003 : dec : clc : adc $14 : sta $14
+cop #$88 : dl $8EE000
+cop #$80 : db $02
+cop #$89
+cop #$E0
+warnpc $869535
+
 
 org $8695AF
 db $C2,$0A,$C2,$00,$CD,$05,$97,$86,$C3,$00,$D6,$46,$66,$8E,$88,$82,$84,$2F,$AC,$CB,$64,$87,$88,$A3,$AC,$88,$A3,$AC,$A4,$87,$84,$AC,$60,$80,$8B,$80,$82,$84,$AC,$8E,$85,$AC,$CB,$66,$80,$8C,$A0,$88,$A2,$84,$A3,$2A,$2A,$2A,$AC,$CF,$64,$87,$84,$AC,$D7,$64,$88,$8D,$AC,$CB,$D6,$D6,$D7,$93,$A0,$A2,$8E,$83,$A5,$82,$84,$A3,$AC,$CB,$D6,$87,$82,$8E,$8D,$A4,$88,$8D,$A5,$8E,$A5,$A3,$8B,$A9,$2A,$2A,$2A,$AC,$C0
@@ -247,8 +263,8 @@ db $D3,$D6,$67,$D6,$8F,$A4,$87,$84,$AC,$D6,$48,$CB,$8E,$85,$AC,$47,$8E,$A0,$84,$
 org $8699c7
 db $0e : dw $3000
 EMuHopeRoomListener:
-cop #$45 : db $10, $00, $20, $10 : dw B_869AC1
-cop #$D0 : db $7B, $01 : dw B_869AAE
+cop #$45 : db $10, $00, $20, $10 : dw EMuHopeRoomListenerRight
+cop #$D0 : db $7B, $01 : dw .StatueAlreadyPlaced
 cop #$D2 : db $7B, $01
 cop #$A0 : dl EMuHopeRoomStatueSprite : dw $0080, $0058, $1000
 lda #$CFF0 : tsb $065A
@@ -287,8 +303,7 @@ cop #$DA : db $7F
 stz $0688
 lda #$CFF0 : trb $065A
 cop #$E0
-
-B_869AAE:    ; org $869aae
+.StatueAlreadyPlaced:    ; org $869aae
 cop #$A0 : dl EMuHopeRoomStatueSprite : dw $0080, $0058, $1000
 cop #$E0
 
@@ -297,8 +312,8 @@ cop #$80 : db $30
 cop #$89
 rtl
 
-B_869AC1:    ; org $869ac1
-cop #$D0 : db $7E, $01 : dw B_869B9D
+EMuHopeRoomListenerRight:    ; org $869ac1
+cop #$D0 : db $7E, $01 : dw .StatueAlreadyPlaced
 cop #$D2 : db $7E, $01
 cop #$A0 : dl EMuHopeRoomStatueSprite : dw $0180, $0058, $1000
 lda #$CFF0 : tsb $065A
@@ -337,8 +352,7 @@ cop #$DA : db $7F
 stz $0688
 lda #$CFF0 : trb $065A
 cop #$E0
-
-B_869B9D:    ; org $869b9d
+.StatueAlreadyPlaced:    ; org $869b9d
 cop #$A0 : dl EMuHopeRoomStatueSprite : dw $0180, $0058, $1000
 cop #$E0
 
@@ -375,7 +389,39 @@ cop #$80 : db $06
 cop #$89
 cop #$D0 : db $02, $00 : dw B_869C1D
 cop #$E0
-warnpc $869c2a
+
+;org $869c2a
+db $2d : dw $3000
+EMuRamaStatueWest:
+cop #$BC : db $00, $f8
+cop #$D2 : db $80, $01
+lda #$2000 : trb $10
+cop #$80 : db $2d
+cop #$89
+cop #$D2 : db $81, $01
+cop #$45 : db $00,$00, $20,$20 : dw .PlayerAlreadyWarped
+.DoWarpPlayer:
+lda #$cff0 : tsb $065a
+cop #$DA : db $1d
+lda #$0404 : sta $064a
+lda #$0303 : sta $0648
+cop #$26 : db $66 : dw $00f8, $01d8 : db $80,$00,$22
+.PlayerAlreadyWarped:
+cop #$C1
+rtl
+
+;org $869c6d
+db $2d : dw $3000
+EMuRamaStatueEast:
+cop #$BC : db $00,$f8
+cop #$D2 : db $81,$01
+lda #$2000 : trb $10
+cop #$80 : db $2d
+cop #$89
+cop #$C1
+rtl
+
+;org $869c85
 
 org $869CB7
 db $C2,$0B,$C2,$00,$64,$87,$88,$A3,$AC,$D6,$AA,$D6,$A5,$80,$8D,$AC,$CB,$D6,$6F,$81,$A5,$A2,$88,$80,$8B,$AC,$D6,$96,$CB,$85,$8E,$A2,$AC,$A4,$87,$84,$AC,$D6,$C1,$8E,$85,$AC,$4C,$A5,$2A,$AC,$CB,$C3,$00,$C0
@@ -789,6 +835,33 @@ db $C2,$0A,$CE,$C2,$00,$D2,$10,$67,$88,$8B,$8B,$2F,$AC,$4A,$80,$A2,$80,$4F,$4F,$
 db $C2,$0A,$C2,$01,$D2,$1B,$D6,$25,$CB,$67,$87,$80,$80,$80,$80,$80,$80,$87,$4F,$AC,$CB,$63,$8E,$81,$2A,$2A,$2A,$2A,$63,$8D,$88,$85,$85,$2A,$2A,$2A,$2A,$AC,$CF,$48,$2A,$2A,$2A,$63,$8E,$81,$2A,$2A,$2A,$AC,$48,$AC,$83,$8E,$8D,$0E,$A4,$CB,$D6,$A4,$D6,$F7,$48,$0E,$8C,$AC,$83,$8E,$88,$8D,$86,$CB,$8C,$A9,$A3,$84,$8B,$85,$2A,$2A,$2A,$63,$8E,$81,$2A,$2A,$2A,$CF,$D6,$61,$48,$AC,$A7,$80,$A3,$AC,$88,$8D,$AC,$A4,$87,$84,$CB,$82,$80,$A3,$A4,$8B,$84,$2A,$2A,$2A,$2A,$48,$AC,$D6,$7A,$87,$80,$A6,$84,$CB,$D6,$6C,$48,$AC,$A7,$80,$8D,$A4,$84,$83,$2A,$2A,$2A,$CF,$41,$A5,$A4,$AC,$48,$AC,$A7,$80,$A3,$AC,$80,$AC,$82,$8E,$8C,$A0,$8B,$84,$A4,$84,$8B,$A9,$CB,$D6,$86,$A0,$84,$A2,$A3,$8E,$8D,$CB,$D6,$74,$D6,$D6,$A4,$A2,$88,$A0,$2A,$2A,$2A,$CF,$C2,$00,$D2,$10,$67,$88,$8B,$8B,$2F,$AC,$4D,$80,$A4,$A5,$A2,$80,$8B,$8B,$A9,$4F,$AC,$D6,$1D,$80,$AC,$CB,$8C,$88,$A3,$A4,$80,$8A,$84,$AC,$A4,$8E,$AC,$D6,$DA,$A9,$8E,$A5,$AC,$CB,$82,$80,$8D,$AC,$82,$8E,$8D,$A4,$A2,$8E,$8B,$AC,$84,$A6,$84,$A2,$A9,$A4,$87,$88,$8D,$86,$4F,$4F,$CF,$C2,$01,$D2,$1B,$D6,$25,$4D,$8E,$4F,$AC,$CF,$D6,$61,$48,$0E,$8C,$AC,$85,$80,$A2,$AC,$80,$A7,$80,$A9,$2B,$AC,$48,$AC,$D6,$91,$CB,$82,$8B,$8E,$A3,$84,$AC,$A4,$8E,$AC,$88,$A4,$2A,$CF,$D6,$61,$48,$0E,$8C,$AC,$82,$8B,$8E,$A3,$84,$2B,$CB,$48,$AC,$D6,$91,$85,$80,$A2,$AC,$80,$A7,$80,$A9,$2A,$AC,$CB,$48,$AC,$A2,$84,$80,$8B,$88,$AA,$84,$AC,$D6,$D7,$8D,$8E,$A7,$2A,$2A,$2A,$AC,$CF,$D6,$1D,$80,$8B,$8B,$AC,$D7,$94,$88,$85,$AC,$A9,$8E,$A5,$CB,$D6,$82,$A5,$8D,$83,$84,$A2,$A3,$A4,$80,$8D,$83,$2A,$2A,$2A,$CF,$48,$AC,$D6,$EF,$D6,$BB,$85,$8E,$A2,$86,$84,$A4,$CB,$D6,$F7,$D6,$9D,$A4,$8E,$83,$80,$A9,$2A,$C3,$00,$C0
 
 ;org $86D55B
+db $06 : dw $1800
+cop #$BC : db $09,$03
+cop #$88 : dl $8eda00
+cop #$C1
+cop #$80 : db $06
+cop #$89
+rtl
+
+;org $86D56F
+db $19 : dw $1800
+EAVFlamePointingWest:
+cop #$BC : db $09,$03
+cop #$C1
+cop #$80 : db $19
+cop #$89
+rtl
+
+;org $86d57e
+db $19 : dw $1800
+EAVFlamePointingEast:
+cop #$B8
+cop #$BC : db $09,$03
+cop #$C1
+cop #$80 : db $99
+cop #$89
+rtl
+
 
 org $86D5ED
 db $C2,$09,$C2,$00,$64,$87,$84,$AC,$D7,$C5,$81,$8B,$8E,$A7,$A3,$AC,$A4,$87,$A2,$8E,$A5,$86,$87,$CB,$80,$AC,$82,$A2,$80,$82,$8A,$AC,$88,$8D,$AC,$A4,$87,$84,$AC,$A7,$80,$8B,$8B,$2A,$CF,$48,$AC,$D6,$8F,$80,$AC,$87,$88,$83,$83,$84,$8D,$AC,$A0,$80,$A3,$A3,$4F,$C3,$00,$C0

@@ -2447,10 +2447,10 @@ db $37,$16,$06,$2D : db $FF
 Table_MovePatternPointers:
 {
 dw $B130    ; Index $00
-dw $B134    ; Index $01
-dw $B138    ; Index $02
-dw $B13C    ; Index $03
-dw $B140    ; Index $04
+dw $B134    ; Index $01 = Move +1px/frame
+dw $B138    ; Index $02 = Move -1px/frame
+dw $B13C    ; Index $03 = Move +2px/frame
+dw $B140    ; Index $04 = etc.
 dw $B144    ; Index $05
 dw $B148    ; Index $06
 dw $B14C    ; Index $07
@@ -2463,74 +2463,74 @@ dw $B164    ; Index $0D
 dw $B168    ; Index $0E
 dw $B16C    ; Index $0F
 dw $B170    ; Index $10
-dw $B174    ; Index $11
-dw $B17C    ; Index $12
-dw $B184    ; Index $13
-dw $B194    ; Index $14
-dw $B1A4    ; Index $15
-dw $B1E8    ; Index $16
-dw $B1F8    ; Index $17
-dw $B208    ; Index $18
-dw $B288    ; Index $19
-dw $B2CC    ; Index $1A
-dw $B328    ; Index $1B
-dw $B358    ; Index $1C
-dw $B3B4    ; Index $1D
-dw $B3CC    ; Index $1E
-dw $B3E4    ; Index $1F
-dw $B3E8    ; Index $20
-dw $B3EC    ; Index $21
-dw $B4D0    ; Index $22
-dw $B50C    ; Index $23
-dw $B548    ; Index $24
-dw $B568    ; Index $25
-dw $B588    ; Index $26
-dw $B608    ; Index $27
-dw $B668    ; Index $28
-dw $B6C8    ; Index $29
-dw $B6F0    ; Index $2A
-dw $B718    ; Index $2B
-dw $B740    ; Index $2C
-dw $B768    ; Index $2D
-dw $B7BC    ; Index $2E
-dw $B810    ; Index $2F
-dw $B864    ; Index $30
-dw $B8B8    ; Index $31
-dw $B8F8    ; Index $32
-dw $B938    ; Index $33
-dw $B978    ; Index $34
-dw $B9B8    ; Index $35
+dw $B174    ; Index $11 = Move +0.5px/fr
+dw $B17C    ; Index $12 = Move -0.5px/fr
+dw $B184    ; Index $13 = Move +0.25px/fr
+dw $B194    ; Index $14 = Move -0.25px/fr
+dw $B1A4    ; Index $15 = Bounce ->+ then hold
+dw $B1E8    ; Index $16 = ? Same as $01?
+dw $B1F8    ; Index $17 = ? Same as $02?
+dw $B208    ; Index $18 = Bounce ->+ then repeat
+dw $B288    ; Index $19 = Move +0.75px/fr
+dw $B2CC    ; Index $1A = Slow move +16px then halt
+dw $B328    ; Index $1B = Move -0.75px/fr
+dw $B358    ; Index $1C = Slow move -16px then halt
+dw $B3B4    ; Index $1D = Move +1.5px/fr
+dw $B3CC    ; Index $1E = Move -1.5px/fr
+dw $B3E4    ; Index $1F = ? Stationary?
+dw $B3E8    ; Index $20 = ? Stationary?
+dw $B3EC    ; Index $21 = Bounce + 3x staircasing
+dw $B4D0    ; Index $22 = Fast + decel 48px(?) then halt
+dw $B50C    ; Index $23 = Fast + decel 32px(?) then halt
+dw $B548    ; Index $24 = Choppy +0.75px/fr
+dw $B568    ; Index $25 = Choppy -0.75px/fr
+dw $B588    ; Index $26 = Oscillate -+ 16px(?)
+dw $B608    ; Index $27 = Short - bounce then -1(?)px/fr
+dw $B668    ; Index $28 = Short + bounce then +1(?)px/fr
+dw $B6C8    ; Index $29 = Accel and move - very fast
+dw $B6F0    ; Index $2A = Fast - decel 32px(?) then halt
+dw $B718    ; Index $2B = Accel and move + very fast
+dw $B740    ; Index $2C = Fast + decel 16px(?) then halt
+dw $B768    ; Index $2D = + staircasing, avg 2px/fr
+dw $B7BC    ; Index $2E = - staircasing, avg 2px/fr
+dw $B810    ; Index $2F = Fast bounce ->+ then repeat
+dw $B864    ; Index $30 = Fast bounce +>- then repeat
+dw $B8B8    ; Index $31 = VFast bounce ->+ then repeat
+dw $B8F8    ; Index $32 = + staircasing, avg 3px/fr
+dw $B938    ; Index $33 = - staircasing, avg 3px/fr
+dw $B978    ; Index $34 = VFast bounce ->+ then repeat
+dw $B9B8    ; Index $35 = Short bounce ->+ then halt
 dw $B9F8    ; Index $36 = Psycho Dash
-dw $BA64    ; Index $37
-dw $BA68    ; Index $38
-dw $BAA8    ; Index $39
-dw $BAE8    ; Index $3A
-dw $BB28    ; Index $3B
-dw $BB78    ; Index $3C
-dw $BB88    ; Index $3D
-dw $BC1C    ; Index $3E
-dw $BC78    ; Index $3F
-dw $BC84    ; Index $40
-dw $BCC8    ; Index $41
-dw $BD0C    ; Index $42
-dw $BD50    ; Index $43
-dw $BD94    ; Index $44
-dw $BDD4    ; Index $45
-dw $BE00    ; Index $46
-dw $BE78    ; Index $47
-dw $BE9C    ; Index $48
-dw $BEF0    ; Index $49
-dw $BF44    ; Index $4A
-dw $BF88    ; Index $4B
-dw $BFE0    ; Index $4C
-dw $C08C    ; Index $4D
-dw $C110    ; Index $4E
-dw $C194    ; Index $4F
-dw $C1F8    ; Index $50
-dw $C25C    ; Index $51
-dw $C270    ; Index $52
-dw $C284    ; Index $53
-dw $C304    ; Index $54
+dw $BA64    ; Index $37 = ? Stationary?
+dw $BA68    ; Index $38 = Pull - then move +3px/fr
+dw $BAA8    ; Index $39 = Long pull - then move +3px/fr
+dw $BAE8    ; Index $3A = Short pull - then move +4px(?)/fr
+dw $BB28    ; Index $3B = Short bounce ->+ then halt
+dw $BB78    ; Index $3C = Short jerks, avg +2.5px(?)/fr
+dw $BB88    ; Index $3D = Jerks + 48px(?) then halt
+dw $BC1C    ; Index $3E = + 32(?)px then halt
+dw $BC78    ; Index $3F = Med jerks, avg +2.5px(?)/fr
+dw $BC84    ; Index $40 = Fast bounce - then halt
+dw $BCC8    ; Index $41 = Short pull -, move +32px, halt
+dw $BD0C    ; Index $42 = Short pull -, move +16px, halt
+dw $BD50    ; Index $43 = Short pull -, move +0px, halt
+dw $BD94    ; Index $44 = Zoom +64px then +1px/fr
+dw $BDD4    ; Index $45 = Short pull -, move +0px, halt
+dw $BE00    ; Index $46 = Hold, run +64px, halt
+dw $BE78    ; Index $47 = Move +16px then halt
+dw $BE9C    ; Index $48 = Move +48px then halt
+dw $BEF0    ; Index $49 = Bounce ->+ then halt
+dw $BF44    ; Index $4A = VShort bounce ->+ then halt
+dw $BF88    ; Index $4B = + staircase 2x total 32px then halt
+dw $BFE0    ; Index $4C = Hold, run -64px, halt
+dw $C08C    ; Index $4D = +48px decel then halt
+dw $C110    ; Index $4E = Pull -, jerk +32px, halt
+dw $C194    ; Index $4F = Pull -, fast +64px, halt
+dw $C1F8    ; Index $50 = Accel -, bounce +, halt
+dw $C25C    ; Index $51 = Move +1px/fr
+dw $C270    ; Index $52 = Move -1px/fr
+dw $C284    ; Index $53 = Staircase walk -16px each
+dw $C304    ; Index $54 = Bounce ->+ then repeat
 }
 Table_MovePatternsAndSteps:
 {
@@ -5033,38 +5033,46 @@ dw $7F62, $7F87, $7FA7, $7FC2, $7FD8, $7FE9, $7FF6, $7FFD
 Table_TextTemplates:
 .Pointers:
 {
-dw $CAC1
-dw $CACE
-dw $CADB
-dw $CAE8
-dw $CAF5
-dw $CB02
-dw $CB0F
-dw $CB1C
-dw $CB27
-dw $CB2E
-dw $CB35
-dw $CB3C
-dw $CB43
-dw $CB4A
-dw $CB51
-dw $CB58
-dw $CB5F
-dw $CB66
-dw $CB7A
-dw $CB85
-dw $CB90
-dw $CB9B
+dw $CAC1    ; Will
+dw $CACE    ; Kara
+dw $CADB    ; Lily
+dw $CAE8    ; ($03) orange
+dw $CAF5    ; Lance
+dw $CB02    ; Seth
+dw $CB0F    ; Neil
+dw $CB1C    ; ($07) red
+dw $CB27    ; << Boxes near top of screen
+dw $CB2E    ; |  of height 1, 2, 3, and 4
+dw $CB35    ; |  text rows.
+dw $CB3C    ; ^^
+dw $CB43    ; << Boxes near bottom of screen
+dw $CB4A    ; |  of height 1, 2, 3, and 4
+dw $CB51    ; |  text rows.
+dw $CB58    ; |  
+dw $CB5F    ; ^^ ($0f and $10 make normal text box)
+dw $CB66    ; ($11) Wide 3-line box at bottom of screen
+dw $CB7A    ; << Normal sound but colors of 
+dw $CB85    ; |  Will, Kara, Lily, and Lance.
+dw $CB90    ; |  
+dw $CB9B    ; ^^ 
 }
 {
 .Index00:
-db $D4,$11,$DF,$6F,$D4,$12,$1E,$0B,$D2,$10,$C3,$04,$CA
+db $D4,$11,$DF,$6F
+db $D4,$12,$1E,$0B
+db $D2,$10
+db $C3,$04
+db $CA
 .Index01:
 db $D4,$11,$7F,$77,$D4,$12,$1E,$56,$D2,$1B,$C3,$04,$CA
 .Index02:
 db $D4,$11,$B7,$7F,$D4,$12,$C2,$79,$D2,$19,$C3,$04,$CA
 .Index03:
-db $D4,$11,$7F,$5F,$D4,$12,$FF,$09,$D2,$19,$C3,$04,$CA
+db $D4,$11,$7F,$5F
+db $D4,$12,$FF,$09
+db $D2,$19
+db $C3,$04
+db $CA
 .Index04:
 db $D4,$11,$F7,$73,$D4,$12,$22,$23,$D2,$1C,$C3,$04,$CA
 .Index05:
@@ -5072,9 +5080,14 @@ db $D4,$11,$3D,$7F,$D4,$12,$37,$71,$D2,$1A,$C3,$04,$CA
 .Index06:
 db $D4,$11,$9C,$73,$D4,$12,$31,$46,$D2,$1A,$C3,$04,$CA
 .Index07:
-db $D4,$11,$3F,$67,$D4,$12,$FF,$24,$C3,$04,$CA
+db $D4,$11,$3F,$67
+db $D4,$12,$FF,$24
+db $C3,$04
+db $CA
 .Index08:
-db $C1,$03,$06,$C7,$0D,$01,$CA
+db $C1,$03,$06
+db $C7,$0D,$01
+db $CA
 .Index09:
 db $C1,$03,$06,$C7,$0D,$02,$CA
 .Index0A:

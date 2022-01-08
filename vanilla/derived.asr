@@ -3,7 +3,7 @@ hirom
 fillbyte $FF
 padbyte $FF
 
-table "table_dialogue.txt",rtl
+table "assets/table_dialogue.txt",rtl
 
 !PlayerActorId = $09AA ; almost always = #$1000
 
@@ -35,6 +35,7 @@ table "table_dialogue.txt",rtl
 !AFNoRecoil   = #$0010
 !AFPersistH   = #$0002
 !AFNoStun     = #$0001
+; $1000 and $0004 allow acting through Quake
 
 ; COP sheet:
 ; == HDMA ==
@@ -114,12 +115,12 @@ table "table_dialogue.txt",rtl
 ; cop #$41 : dw BtnMask,JmpAddr   ; Branch if buttons not pressed this frame (&#$0001 or previous)
 ; cop #$42 : db AbsX,AbsY,Type    ; Set solid type
 ; cop #$43                        ; Snap to grid
-; cop #$44 : db XLeft,YUp,XRight,YDown : dw JmpAddr  ; Branch if player in area, signed relative
-; cop #$45 : db XLeft,YTop,XRight,YBot : dw JmpAddr   ; Branch if player in area, absolute
+; cop #$44 : db XLeft,YUp,XRight,YDown : dw JmpAddr  ; Branch if player in area, signed relative (tiles)
+; cop #$45 : db XLeft,YTop,XRight,YBot : dw JmpAddr   ; Branch if player in area, absolute (tiles)
 ; == UTILITIES ==
 ; cop #$46      ; Actor04 pos to Here
 ; cop #$47      ; Actor06 pos to Here
-; cop #$48      ; Return CardinalToPlayer, 0/1/2/3 = S/N/W/E
+; cop #$48      ; Return player facing direction, 0/1/2/3 = S/N/W/E
 ; cop #$49 : db PlayerBody : dw JmpAddr  ; Branch if PlayerBody is NOT
 ; cop #$4A      ; Utility for #$43?
 ; cop #$4B : db Arg1,Arg2,Arg3  ; Mode7?
@@ -268,6 +269,46 @@ table "table_dialogue.txt",rtl
 
 ; Button mask: ACSTUDLR--LR----
 
+
+macro Cop_BranchIfOtherIsNear(number,distance,target)
+  cop #$20
+  db <number>
+  db <distance>
+  dw <target>
+endmacro
+
+macro Cop_BranchIfPlayerIsNear(distance,target)
+  cop #$21
+  db <distance>
+  dw <target>
+endmacro
+
+macro Cop_DoMoveSimple(sprite,speed)
+  cop #$22
+  db <sprite>
+  db <speed>
+endmacro
+
+macro Cop_Rng()
+  cop #$23
+endmacro
+macro Cop_Rand()
+  cop #$23
+endmacro
+macro Cop_Random()
+  cop #$23
+endmacro
+
+macro Cop_RandomIn(max)
+  cop #$24
+  db <max>
+endmacro
+
+macro Cop_SetPositionAtTile(xtile,ytile)
+  cop #$25
+  db <xtile>
+  db <ytile>
+endmacro
 
 
 

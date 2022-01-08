@@ -230,11 +230,38 @@ ldy $24
 lda $000E,y : and #$F1FF : ora #$0200 : sta $000E,y
 cop #$DA : db $01
 bra EAWGolemBlockerPaletteSwapper
-warnpc $889a1c
 
 
+;org $889a1c
+db $00 : dw $3000
+EAWBrightRoomManager:
+cop #$D0 : db $B7, $01 : dw .SeenIntro
+cop #$CC : db $B7
+lda #$CFF0 : tsb $065A
+cop #$DA : db $1D
+cop #$BF : dw $9A65
+lda #$CFF0 : trb $065A
+.SeenIntro:    ; org $889a3b
+cop #$D7 : db $1C : dw .WasWearingGlasses
+cop #$DA : db $13
+.NotWearingGlasses:    ; org $889a43
+cop #$3C : dl TAWBrightRoomFadeToWhite
+cop #$DA : db $B3
+cop #$C1
+cop #$D7 : db $1C : dw .DonnedGlasses
+rtl
+.DonnedGlasses:    ; org $889a53
+cop #$3C : dl TAWBrightRoomFadeToNormal
+cop #$DA : db $B3
+.WasWearingGlasses:    ; org $889a5b
+cop #$C1
+cop #$D7 : db $1C : dw .StillWearingGlasses
+bra .NotWearingGlasses
+.StillWearingGlasses:    ; org $889a64
+rtl
 
-org $889A65
+
+;org $889A65
 db $D3,$C2,$00,$63,$84,$A4,$A4,$88,$8D,$86,$AC,$8E,$8D,$84,$AC,$85,$8E,$8E,$A4,$AC,$88,$8D,$A3,$88,$83,$84,$2B,$CB,$A4,$87,$84,$AC,$85,$8B,$8E,$80,$A4,$88,$8D,$86,$AC,$82,$A2,$A9,$A3,$A4,$80,$8B,$CB,$D6,$CB,$A4,$8E,$AC,$86,$8B,$8E,$A7,$4F,$C3,$00,$C0
 
 ;org $889AA3
@@ -257,6 +284,34 @@ org $889EFC
 db $C2,$0A,$40,$AC,$D6,$C7,$D6,$EE,$A3,$80,$A9,$A3,$2A,$2A,$2A,$CB,$4B,$84,$A4,$AC,$8C,$84,$AC,$D6,$E7,$D7,$57,$8E,$85,$AC,$8E,$8D,$84,$CB,$8E,$85,$AC,$D6,$FE,$87,$84,$A2,$81,$A3,$2A,$2A,$2A,$C0
 
 ;org $889F2C
+db $31 : dw $0302
+EAWBrightRoomCrystal:
+cop #$9C : dl C_869502 : dw $2800
+lda #$FFFF
+  sta $24
+  sta $26
+cop #$C1
+lda $14 : bmi B_889F60
+  cmp $06DA : bcs B_889F67
+lda $16 : bmi B_889F6E
+  cmp $06DC : bcs B_889F75
+J_889F51:    ; org $889f51
+lda $14 : clc : adc $24 : sta $14
+lda $16 : clc : adc $26 : sta $16
+rtl
+B_889F60:    ; org $889f60
+lda #$0001 : sta $24
+bra J_889F51
+B_889F67:    ; org $889f67
+lda #$FFFF : sta $24
+bra J_889F51
+B_889F6E:    ; org $889f6e
+lda #$0001 : sta $26
+bra J_889F51
+B_889F75:    ; org $889f75
+lda #$FFFF : sta $26
+bra J_889F51
+warnpc $889f7c
 
 org $889FBB
 db $D3,$64,$87,$84,$A2,$84,$0E,$A3,$AC,$D6,$C8,$A3,$87,$88,$8D,$A9,$CB,$8E,$8D,$AC,$A4,$87,$84,$AC,$86,$A2,$8E,$A5,$8D,$83,$2A,$CF,$CA
@@ -637,9 +692,9 @@ rtl
 
 EJeweler_OnChat:   ; org $88cec9
 cop #$BF : dw EJeweler_Text_Greeting
-lda $0AB0 : beq +
+lda $0AB0 : beq J_88CED6
   cop #$BF : dw EJeweler_Text_ImHolding    ; $D0C8
-+:
+J_88CED6:
 cop #$D0 : db $E9, $01 : dw J_88CEE7
 lda $0AB0 : cmp #$0003 : bcc J_88CEE7
 jmp J_88D017
@@ -1383,7 +1438,133 @@ db $D3,$CE,$64,$87,$84,$AC,$D6,$7B,$83,$A2,$80,$A7,$A3,$AC,$8D,$84,$80,$A2,$2A,$
 ;org $88E961
 
 
-org $88eb5a
+org $88e9d4
+EDSAbilityStatueZone:
+phx
+ldx #$0000
+ldy #$0000
+.CheckNextAbilityMapping:    ; org $88e9db
+lda $88EB5A,x : beq .PlayerHasAbility
+  and #$00FF : cmp $0B12 : beq .GetAbilityForMapping
+inx : inx
+iny
+bra .CheckNextAbilityMapping
+.PlayerHasAbility:    ; org $88e9ee
+plx
+cop #$E0
+.GetAbilityForMapping:    ; org $88e9f1
+lda $88EB5B,x : and #$00FF : sta $24
+and $0AA2 : bne .PlayerHasAbility
+tya : sta $0AAC
+plx
+cop #$8D : db $0A
+lda #$2000 : trb $10
+cop #$C1
+cop #$C1
+cop #$8B
+cop #$45 : db $03, $0A, $05, $0B : dw .PlayerInArea
+  rtl
+.PlayerInArea:    ; org $88ea1b
+lda #$FFF0 : tsb $065A
+cop #$DA : db $05
+jsr SR_CheckIfFreedanAbility : cmp #$0000 : beq .MaybeTransformToWill
+.MaybeTransformToFreedan:
+lda $0AD4 : beq ..PlayerIsWill
+cmp #$0002 : beq ..PlayerIsShadow
+bra .BeginGiveAbility
+..PlayerIsShadow:    ; org $88ea38
+ldy $09AA
+sep #$20
+  lda #$88 : sta $0002,y
+rep #$20
+lda #$F2A3 : sta $0000,y
+lda #$0000 : sta $0008,y
+lda #$0800 : tsb $09AE
+bra .BeginGiveAbility
+..PlayerIsWill:    ; org $88ea58
+ldy $09AA
+sep #$20
+  lda #$88 : sta $0002,y
+rep #$20
+lda #$F26E : sta $0000,y
+lda #$0000 : sta $0008,y
+lda #$0800 : tsb $09AE
+bra .BeginGiveAbility
+.MaybeTransformToWill:    ; org $88ea78
+lda $0AD4 : beq .BeginGiveAbility
+ldy $09AA
+sep #$20
+  lda #$88 : sta $0002,y
+rep #$20
+lda #$F37D : sta $0000,y
+lda #$0000 : sta $0008,y
+lda #$0800 : tsb $09AE
+.BeginGiveAbility:    ; org $88ea9b
+cop #$C1
+cop #$C1
+cop #$8B
+lda $09AE : bit #$0800 : beq .GiveAbilityAndAnimateOrb
+  rtl
+.GiveAbilityAndAnimateOrb:    ; org $88eaaa
+cop #$CA : db $08
+lda #$FFF0 : tsb $065A
+cop #$C1
+cop #$8B
+cop #$CB
+lda $24 : ora $0AA2 : sta $0AA2
+cop #$86 : db $0A, $03, $14
+cop #$8A
+cop #$84 : db $0A, $03
+cop #$8A
+ldy $09AA
+lda $0014,y : sta $7F0018,x
+lda $0016,y : sec : sbc #$0010 : sta $7F001A,x
+cop #$22 : db $0A, $01
+lda #$2000 : tsb $10
+lda #$0800 : trb $10
+cop #$04 : db $18
+cop #$DA : db $59
+cop #$BF : dw $EB68
+cop #$C1
+sep #$20
+lda $2141
+rep #$20
+and #$00FF : cmp #$00FF : beq .FanfareFinished
+  rtl
+.FanfareFinished:    ; org $88eb0d
+ldy $26
+lda #$FFFF : sta $0024,y
+cop #$BF : dw $EB85
+ldy $26
+lda #$0000 : sta $0024,y
+cop #$04 : db $16
+cop #$DA : db $3B
+lda #$FFF0 : trb $065A
+cop #$E0
+
+SR_CheckIfFreedanAbility:    ; org $88eb2f
+phx
+ldx #$0000
+-:    ; org $88eb33
+lda $88EB5A,x : beq .NoMappingSecAndReturn
+and #$00FF : cmp $0B12 : beq .GotMapping
+inx : inx
+bra -
+.GotMapping:    ; org $88eb45
+lda $88EB5B,x : and #$00FF
+plx
+and #$00F0 : bne .IsFreedanAbility
+.IsWillAbility:
+rts
+.IsFreedanAbility:    ; org $88eb53
+lda #$0001
+rts
+.NoMappingSecAndReturn:    ; org $88eb57
+plx
+sec
+rts
+
+;org $88eb5a
 EDarkSpace_MapAbilityMappings:    ; format=map,ability
 {
 db $15,$01
@@ -1726,10 +1907,238 @@ lda #$0F00 : trb $065A
 lda #$0800 : trb $09AE
 plx
 rts
-warnpc $88f709
 
+;org $88f709
+db $00 : dw $0000
+ESolidArm:
+lda #$0011 : tsb $12
+lda #$0100 : sta $06DC
+cop #$9A : dl C_88F9F2 : dw $2000
+lda #$0088 : and #$00FF : sta $0AF6
+lda #$F9EA : sta $0AF4
+lda #$EFF0 : tsb $065A
+cop #$DA : db $13
+cop #$07 : db $0E
+cop #$32 : db $9C
+cop #$33
+cop #$D0 : db $E8, $01 : dw B_88F754
+cop #$DA : db $27
+cop #$05 : db $1B
+cop #$DA : db $B3
+cop #$CC : db $E8
+cop #$BF : dw $FA31
+B_88F754:    ; org $88f754
+cop #$DA : db $0F
+cop #$04 : db $0F
+cop #$DA : db $31
+lda #$EFF0 : trb $065A
+J_88F763:    ; org $88f763
+cop #$80 : db $00
+cop #$89
+J_88F768:    ; org $88f768
+lda $09A4
+cmp #$0070 : bcs B_88F773
+jmp J_88F83E
+B_88F773:    ; org $88f773
+cop #$2A : dw $0010, B_88F7AA, B_88F77D, B_88F7AA
+B_88F77D:    ; org $88f77d
+cop #$80 : db $0E
+cop #$89
+cop #$9E : dl C_88F8B4 : dw $0000, $FFE8, $0200
+cop #$9E : dl C_88F8E6 : dw $0000, $FFE8, $0200
+cop #$9E : dl C_88F900 : dw $0000, $FFE8, $0200
+cop #$80 : db $16
+cop #$89 : bra J_88F763
+B_88F7AA:    ; org $88f7aa
+cop #$2A : dw $0050, B_88F7B4, B_88F822, B_88F7B4
+B_88F7B4:    ; org $88f7b4
+cop #$2A : dw $0070, B_88F822, B_88F7BE, B_88F822
+B_88F7BE:    ; org $88f7be
+cop #$2A : dw $0000, B_88F7C8, B_88F7F5, B_88F7F5
+B_88F7C8:    ; org $88f7c8
+cop #$80 : db $0D
+cop #$89
+cop #$9E : dl C_88F937 : dw $FFF0, $FFE6, $0200
+cop #$80 : db $17
+cop #$89
+cop #$80 : db $0D
+cop #$89
+cop #$9E : dl C_88F937 : dw $FFF0, $FFE6, $0200
+cop #$80 : db $17
+cop #$89
+jmp J_88F768
+B_88F7F5:    ; org $88f7f5
+cop #$80 : db $0F
+cop #$89
+cop #$9E : dl C_88F957 : dw $0010, $FFE6, $0200
+cop #$80 : db $18
+cop #$89
+cop #$80 : db $0F
+cop #$89
+cop #$9E : dl C_88F957 : dw $0010, $FFE6, $0200
+cop #$80 : db $18
+cop #$89
+jmp J_88F768
+B_88F822:    ; org $88f822
+cop #$2A : dw $0000, B_88F82C, B_88F835, B_88F835
+B_88F82C:    ; org $88f82c
+cop #$81 : db $07, $12
+cop #$89
+jmp J_88F768
+B_88F835:    ; org $88f835
+cop #$81 : db $05, $11
+cop #$89
+jmp J_88F768
+J_88F83E:    ; org $88f83e
+cop #$2A : dw $0040, B_88F8A2, B_88F848, B_88F8AB
+B_88F848:    ; org $88f848
+cop #$2A : dw $0000, B_88F852, B_88F87A, B_88F87A
+B_88F852:    ; org $88f852
+cop #$07 : db $02
+lda #$0010 : tsb $10
+lda #$AD70 : sta $7F0020,x
+cop #$80 : db $09
+cop #$89
+cop #$80 : db $0A
+cop #$89
+lda #$AD6C : sta $7F0020,x
+lda #$0010 : trb $10
+jmp J_88F768
+B_88F87A:    ; org $88f87a
+cop #$07 : db $02
+lda #$0010 : tsb $10
+lda #$AD70 : sta $7F0020,x
+cop #$80 : db $0B
+cop #$89
+cop #$80 : db $0C
+cop #$89
+lda #$AD6C : sta $7F0020,x
+lda #$0010 : trb $10
+jmp J_88F768
+B_88F8A2:    ; org $88f8a2
+cop #$81 : db $08, $02
+cop #$89
+jmp J_88F768
+B_88F8AB:    ; org $88f8ab
+cop #$81 : db $06, $01
+cop #$89
+jmp J_88F768
+C_88F8B4:    ; org $88f8b4
+cop #$5B : dw $0010
+cop #$B2
+cop #$B6 : db $30
+cop #$80 : db $10
+cop #$89
+cop #$83 : db $13, $06, $11
+cop #$89
+cop #$83 : db $13, $04, $01
+cop #$89
+cop #$83 : db $13, $02, $03
+cop #$89
+cop #$86 : db $13, $04, $07
+cop #$8A
+lda #$0008 : sta $26
+jmp J_88F977
+C_88F8E6:    ; org $88f8e6
+cop #$5B : dw $0010
+cop #$B2
+cop #$B6 : db $30
+cop #$07 : db $1E
+cop #$80 : db $10
+cop #$89
+cop #$86 : db $13, $0C, $07
+cop #$8A
+cop #$E0
+C_88F900:    ; org $88f900
+cop #$5B : dw $0010
+cop #$B2
+cop #$B6 : db $30
+cop #$80 : db $10
+cop #$89
+cop #$83 : db $13, $05, $11
+cop #$89
+cop #$83 : db $13, $03, $01
+cop #$89
+cop #$83 : db $13, $01, $03
+cop #$89
+cop #$82 : db $13, $07
+cop #$89
+cop #$86 : db $13, $04, $07
+cop #$8A
+lda #$0008 : sta $26 : bra J_88F977
+C_88F937:    ; org $88f937
+cop #$5B : dw $0010
+cop #$B2
+cop #$B6 : db $30
+cop #$07 : db $1E
+cop #$80 : db $11
+cop #$89
+cop #$87 : db $13, $05, $06, $05
+cop #$8A
+lda #$000A : sta $26 : bra J_88F977
+C_88F957:    ; org $88f957
+cop #$5B : dw $0010
+cop #$B2
+cop #$B6 : db $30
+cop #$07 : db $1E
+cop #$80 : db $12
+cop #$89
+cop #$87 : db $13, $05, $05, $05
+cop #$8A
+lda #$0006 : sta $26 : bra J_88F977
+J_88F977:    ; org $88f977
+cop #$A2 : dl EChaser : dw $2000
+lda #$8013 : sta $7F000A,x
+lda #$0003 : sta $7F0014,x
+lda $09AA : sta $0024,y
+phx : tyx
+lda $26 : sta $7F000E,x
+plx
+cop #$84 : db $13, $03
+cop #$8A
+phx
+ldx $06
+lda $7F002C,x : sta $0000
+lda $7F002E,x
+plx : sta $7F100E,x
+lda $0000 : sta $7F100C,x
+cop #$A9
+cop #$8D : db $13
+B_88F9C0:    ; org $88f9c0
+cop #$C1
+cop #$8B
+lda $08 : sta $24 : stz $08
+cop #$C1
+lda $7F100C,x : sta $7F002C,x
+lda $7F100E,x : sta $7F002E,x
+dec $24 : bmi B_88F9E1
+rtl
+B_88F9E1:    ; org $88f9e1
+lda $10 : bit #$4000 : beq B_88F9C0
+cop #$E0
 
-org $88FA31
+; org $88f9ea
+db $E9 : dw $0378, $0090 : db $00,$00,$44
+
+C_88F9F2:    ; org $88f9f2
+sep #$20
+lda #$15 : sta $212C
+lda #$21 : sta $2131
+rep #$20
+lda $0AEC : beq B_88FA06
+rtl
+B_88FA06:    ; org $88fa06
+lda #$EFF0 : tsb $065A
+cop #$DA : db $77
+cop #$05 : db $1B
+cop #$DA : db $B3
+cop #$BF : dw $FBC8
+lda #$0202 : sta $0648
+lda #$0404 : sta $064A
+cop #$26 : db $E3, $80, $02, $A0, $01, $80, $10, $23
+cop #$E0
+
+;org $88FA31
 db $D3,$67,$84,$8B,$82,$8E,$8C,$84,$AC,$A4,$8E,$AC,$8C,$A9,$AC,$87,$8E,$8C,$84,$2A,$CF,$64,$87,$84,$AC,$49,$84,$A7,$84,$8B,$84,$A2,$AC,$46,$84,$8C,$AC,$88,$A3,$AC,$80,$CB,$D7,$B4,$85,$8E,$A2,$8C,$2A,$AC,$64,$87,$84,$CB,$A4,$A2,$A5,$84,$AC,$85,$8E,$A2,$8C,$AC,$88,$A3,$AC,$82,$80,$8B,$8B,$84,$83,$CB,$63,$8E,$8B,$88,$83,$AC,$40,$A2,$8C,$2A,$CF,$4B,$8E,$8D,$86,$AC,$80,$86,$8E,$AC,$A4,$87,$84,$AC,$41,$8B,$80,$AA,$84,$A2,$AC,$CB,$D6,$80,$83,$8E,$A7,$8D,$AC,$D6,$8E,$A4,$87,$84,$AC,$A3,$8A,$A9,$2B,$AC,$CB,$80,$8D,$83,$AC,$48,$AC,$A7,$80,$A3,$AC,$A0,$A5,$A4,$AC,$A4,$8E,$AC,$A3,$8B,$84,$84,$A0,$AC,$CB,$85,$8E,$A2,$AC,$80,$AC,$8B,$8E,$8D,$86,$2B,$AC,$D6,$A6,$A4,$88,$8C,$84,$2A,$2A,$2A,$AC,$CF,$4C,$A9,$AC,$D6,$C2,$88,$A3,$AC,$82,$8E,$8D,$A4,$80,$88,$8D,$84,$83,$AC,$88,$8D,$CB,$62,$84,$83,$AC,$D6,$22,$A3,$82,$80,$A4,$A4,$84,$A2,$84,$83,$CB,$D6,$6D,$A4,$87,$84,$AC,$A7,$8E,$A2,$8B,$83,$CF,$D6,$20,$D6,$DD,$D6,$B6,$A4,$87,$88,$8D,$86,$A3,$CB,$A4,$8E,$AC,$D7,$4E,$D6,$6B,$8C,$A9,$CB,$8E,$A7,$8D,$AC,$A2,$84,$A3,$A5,$A2,$A2,$84,$82,$A4,$88,$8E,$8D,$2A,$CF,$48,$A4,$AC,$88,$A3,$AC,$48,$AC,$A7,$87,$8E,$AC,$8C,$80,$8D,$88,$A0,$A5,$8B,$80,$A4,$84,$83,$CB,$A4,$87,$84,$AC,$D6,$AD,$A4,$A2,$80,$83,$84,$2A,$CF,$48,$AC,$D6,$DD,$A5,$A3,$88,$8D,$86,$AC,$85,$8E,$A2,$82,$84,$83,$CB,$D6,$AD,$A4,$8E,$AC,$D6,$90,$A4,$87,$84,$8C,$2B,$CB,$81,$A5,$A4,$AC,$88,$A4,$AC,$D6,$83,$A2,$84,$A3,$A4,$8E,$A2,$84,$CB,$8C,$A9,$AC,$D6,$C2,$85,$80,$A3,$A4,$AC,$84,$8D,$8E,$A5,$86,$87,$2A,$CF,$48,$0E,$8C,$AC,$A3,$8E,$A2,$A2,$A9,$2B,$AC,$81,$A5,$A4,$AC,$48,$AC,$A7,$88,$8B,$8B,$CB,$D6,$98,$A4,$8E,$AC,$83,$84,$85,$84,$80,$A4,$AC,$A9,$8E,$A5,$AC,$A4,$8E,$8E,$4F,$C0
 ;org $88FBC8
 db $D3,$40,$AC,$A1,$A5,$88,$84,$A4,$AC,$D6,$EE,$88,$A3,$AC,$87,$84,$80,$A2,$83,$2A,$CF,$D5,$04,$48,$AC,$A7,$80,$A3,$AC,$83,$84,$85,$84,$80,$A4,$84,$83,$AC,$80,$86,$80,$88,$8D,$2A,$2A,$2A,$CF,$41,$8B,$80,$AA,$84,$A2,$AC,$A7,$80,$A3,$AC,$A3,$A4,$A2,$8E,$8D,$86,$2B,$AC,$CB,$81,$A5,$A4,$AC,$A9,$8E,$A5,$AC,$80,$A2,$84,$AC,$A3,$A4,$A2,$8E,$8D,$86,$84,$A2,$2A,$2A,$2A,$AC,$CF,$43,$80,$8D,$86,$84,$A2,$AC,$80,$A0,$A0,$A2,$8E,$80,$82,$87,$84,$A3,$CB,$D6,$D6,$A0,$8B,$80,$8D,$84,$A4,$2A,$AC,$69,$8E,$A5,$AC,$A3,$87,$8E,$A5,$8B,$83,$CB,$87,$A5,$A2,$A2,$A9,$AC,$A4,$8E,$AC,$A4,$87,$84,$CB,$64,$8E,$A7,$84,$A2,$AC,$8E,$85,$AC,$41,$80,$81,$84,$8B,$2A,$2A,$2A,$C0

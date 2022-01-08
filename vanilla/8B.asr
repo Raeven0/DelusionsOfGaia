@@ -1312,8 +1312,113 @@ rts
 warnpc $8b9423
 
 
+org $8b9ba2
+db $03 : dw $0000
+EKressWavingSkullNorth:
+lda #$2000 : tsb $12
+bra EKressWavingSkullSouth
 
-org $8B9CE8
+;org $8B9BAC
+db $02 : dw $0000
+EKressWavingSkullSouth:
+lda #$0010 : tsb $12
+cop #$27 : db $08
+lda #$0000 : sta $7F0010,x
+lda #$0040 : sta $7F0012,x
+lda #$0150 : sta $7F100E,x
+lda $14 : sta $7F100C,x
+J_8B9BD2:    ; org $8b9bd2
+lda $16 : sta $26
+B_8B9BD6:    ; org $8b9bd6
+cop #$AB : db $01
+J_8B9BD9:    ; org $8b9bd9
+cop #$C1
+cop #$8B
+lda $2A : beq B_8B9BD6
+lda $08 : inc a : sta $24
+stz $08
+jsr SR_ScaledSine8B : clc : adc $7F100C,x : sta $14
+lda $7F0010,x : sec : sbc #$0002 : and #$00FF : sta $7F0010,x
+lda $26 : sec : sbc $16 : bpl +
+  eor #$FFFF : inc a
++:    ; org $8b9c0c
+cmp $7F100E,x : beq B_8B9C19
+dec $24 : bmi +
+  rtl
++:    ; org $8b9c17
+bra J_8B9BD9
+B_8B9C19:    ; org $8b9c19
+stz $2E
+lda $12 : bit #$2000 : bne B_8B9C33
+cop #$80 : db $04
+cop #$89
+cop #$80 : db $03
+cop #$89
+lda #$2000 : tsb $12
+bra J_8B9BD2
+B_8B9C33:    ; org $8b9c33
+cop #$80 : db $84
+cop #$89
+cop #$80 : db $02
+cop #$89
+lda #$2000 : trb $12
+bra J_8B9BD2
+
+;org $8b9c44
+db $04 : dw $0000
+EKressWavingSkullWest:
+lda #$4000 : tsb $12
+bra +
+
+;org $8B9C4E
+db $04 : dw $0000
+EKressWavingSkullEast:
+cop #$BB
++:
+lda #$0010 : tsb $12
+cop #$27 : db $08
+lda #$0000 : sta $7F0010,x
+lda #$0040 : sta $7F0012,x
+lda #$0150 : sta $7F100E,x
+lda $16 : sta $7F100C,x
+J_8B9C76:    ; org $8b9c76
+lda $14 : sta $26
+B_8B9C7A:    ; org $8b9c7a
+cop #$AA : db $01
+J_8B9C7D:    ; org $8b9c7d
+cop #$C1
+cop #$8B
+lda $2A : beq B_8B9C7A
+lda $08 : inc a : sta $24
+stz $08
+jsr SR_ScaledSine8B : clc : adc $7F100C,x : sta $16
+lda $7F0010,x : sec : sbc #$0002 : and #$00FF : sta $7F0010,x
+lda $26 : sec : sbc $14 : bpl +
+  eor #$FFFF : inc a
++:    ; org $8b9cb0
+cmp $7F100E,x : beq B_8B9CBD
+dec $24 : bmi +
+  rtl
++:    ; org $8b9cbb
+bra J_8B9C7D
+B_8B9CBD:    ; org $8b9cbd
+stz $2C
+lda $12 : bit #$4000 : bne B_8B9CD7
+cop #$80 : db $03
+cop #$89
+cop #$80 : db $04
+cop #$89
+lda #$4000 : tsb $12
+bra J_8B9C76
+B_8B9CD7:    ; org $8b9cd7
+cop #$80 : db $02
+cop #$89
+cop #$80 : db $84
+cop #$89
+lda #$4000 : trb $12
+bra J_8B9C76
+
+;org $8B9CE8
 SR_ScaledSine8B:    ; Returns $7F:12 * sin($7F:10).
 lda $7F0010,x : tay
 sep #$20

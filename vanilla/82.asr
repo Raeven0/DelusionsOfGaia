@@ -1785,6 +1785,245 @@ rts
 warnpc $82ab8a
 
 
+org $82ac62
+lda $068A,x : pha
+lda $06BE,x : sec : sbc $068A,x : bpl B_82AC79
+  cmp #$FFF0 : bcs J_82AC81
+lda #$FFF0 : bra J_82AC81
+B_82AC79:    ; org $82ac79
+cmp #$0010 : bcc J_82AC81
+lda #$0010
+J_82AC81:    ; org $82ac81
+sta $06CE,x
+clc : adc $068A,x : sta $068A,x
+eor $01,s : bit #$0010 : beq B_82AC95
+jsr S_82ACF1
+B_82AC95:    ; org $82ac95
+pla
+lda $068E,x : pha
+lda $06C2,x : sec : sbc $068E,x : bpl B_82ACAD
+  cmp #$FFF0 : bcs J_82ACB5
+lda #$FFF0 : bra J_82ACB5
+B_82ACAD:    ; org $82acad
+cmp #$0010 : bcc J_82ACB5
+lda #$0010
+J_82ACB5:    ; org $82acb5
+sta $06D2,x
+clc : adc $068E,x : sta $068E,x
+eor $01,s : bit #$0010 : beq B_82ACC9
+jsr S_82ACCC
+B_82ACC9:    ; org $82acc9
+pla
+plp
+rtl
+S_82ACCC:    ; org $82accc
+lda $068A,x : sta $18
+lda #$FFF0
+ldy $06D2,x : bmi B_82ACDC
+lda #$00E0
+B_82ACDC:    ; org $82acdc
+clc : adc $068E,x
+J_82ACE0:    ; org $82ace0
+sta $1C
+cmp $0696,x : bcc B_82ACED
+sec : sbc $0696,x
+bra J_82ACE0
+B_82ACED:    ; org $82aced
+jsr S_82AD0B
+rts
+S_82ACF1:    ; org $82acf1
+lda #$0000
+ldy $06CE,x : bmi B_82ACFC
+lda #$0100
+B_82ACFC:    ; org $82acfc
+clc : adc $068A,x : sta $18
+lda $068E,x : sta $1C
+jsr S_82ADA2
+rts
+S_82AD0B:    ; org $82ad0b
+php
+phb
+phx
+lda $06AE,x : sta $02
+sep #$20
+  lda #$7E : pha : plb
+  lda $1D : xba
+  lda $0693,x
+  jsl S_8281D1
+  clc : adc $19
+  clc : adc $069F,x
+  xba
+  lda $1C : and #$F0 : tay : sty $04
+rep #$20
+jsr J_82AD8D
+lda $1C : and #$00F0 : asl : asl : clc : adc $06BA,x : pha
+lda $06B6,x : tax
+lda $18 : bit #$0100 : bne B_82AD5B
+pla : sta $0000,x
+clc : adc #$0400 : sta $0082,x
+bra J_82AD66
+B_82AD5B:    ; org $82ad5b
+pla : sta $0082,x
+clc : adc #$0400 : sta $0000,x
+J_82AD66:    ; org $82ad66
+phx
+lda #$0010
+jsr S_82AEF1
+lda $04 : clc : adc #$0100 : sta $04
+lda $03,s : tax
+lda $04
+jsr J_82AD8D
+pla : clc : adc #$0082 : tax
+lda #$0010
+jsr S_82AEF1
+plx
+plb
+plp
+rts
+J_82AD8D:    ; org $82ad8d
+sec : sbc $069E,x : sec : sbc $069A,x : bcs B_82AD98
+rts
+B_82AD98:    ; org $82ad98
+clc : adc $069E,x : sta $0004
+tay
+bra J_82AD8D
+S_82ADA2:    ; org $82ada2
+php
+phb
+phx
+lda $0692,x : sta $1A
+lda $069A,x : sta $08
+clc : adc $069E,x : sta $1E
+lda $06AE,x : sta $02
+sep #$20
+  lda #$7E : pha : plb
+  lda $1D : xba
+  lda $1B
+  jsl S_8281D1
+  clc : adc $19
+  clc : adc $069F,x : sta $05
+  lda $1C : lsr : lsr : lsr : lsr : xba
+  lda #$10
+  jsl S_8281D1
+  sta $04
+  lda $18 : lsr : lsr : lsr : lsr : clc : adc $04 : sta $04
+rep #$20
+lda $04
+jsr J_82AD8D
+lda $04 : sta $06
+lda $06B2,x : pha
+lda $18 : lsr : lsr : lsr : and #$003E : bit #$0020 : bne B_82AE58
+clc : adc $06BA,x
+plx : sta $0000,x
+inc a : sta $0042,x
+phx
+lda $1C : lsr : lsr : lsr : lsr : and #$000F : sta $10
+asl : asl : clc : adc $01,s : tax
+lda #$0010 : sec : sbc $10
+jsr S_82AF26
+ply
+lda $10 : beq B_82AE56
+tyx
+lda $04 : and #$FF0F : clc : adc $1A : cmp $1E : bcc B_82AE44
+sec : sbc $08
+B_82AE44:    ; org $82ae44
+sta $04
+tay
+phx
+lda $03,s : tax
+lda $04
+jsr J_82AD8D
+plx
+lda $10
+jsr S_82AF26
+B_82AE56:    ; org $82ae56
+bra J_82AEB0
+B_82AE58:    ; org $82ae58
+and #$001E : clc : adc $06BA,x : clc : adc #$0400
+plx
+sta $0000,x
+clc : adc #$0001 : sta $0042,x
+phx
+lda $1C : lsr : lsr : lsr : lsr : and #$000F : sta $10
+asl : asl : clc : adc $01,s : tax
+lda #$0010 : sec : sbc $10
+jsr S_82AF26
+ply
+lda $10 : beq J_82AEB0
+tyx
+lda $04 : and #$FF0F : clc : adc $1A : cmp $1E : bcc B_82AE9E
+sec : sbc $08
+B_82AE9E:    ; org $82ae9e
+sta $04
+tay
+phx
+lda $03,s : tax
+lda $04
+jsr J_82AD8D
+plx
+lda $10
+jsr S_82AF26
+J_82AEB0:    ; org $82aeb0
+txa : sec : sbc #$0004 : tax
+lda $06 : bit #$00F0 : bne B_82AED7
+sec : sbc $1A : clc : adc #$00F0 : sta $04
+phx
+lda $03,s : tax
+lda $04 : cmp $069E,x : bmi B_82AED4
+plx
+bra J_82AEDD
+B_82AED4:    ; org $82aed4
+plx
+bra J_82AEED
+B_82AED7:    ; org $82aed7
+sec : sbc #$0010 : sta $04
+J_82AEDD:    ; org $82aedd
+phx
+lda $03,s : tax
+lda $04
+jsr J_82AD8D
+plx
+lda #$0001
+jsr S_82AF26
+J_82AEED:    ; org $82aeed
+plx
+plb
+plp
+rts
+S_82AEF1:    ; org $82aef1
+ldy $04
+sta $0E
+B_82AEF5:    ; org $82aef5
+lda $0000,y
+phy
+and #$00FF : asl : asl : asl : clc : adc $02 : tay
+lda $0000,y : sta $0002,x
+lda $0002,y : sta $0004,x
+lda $0004,y : sta $0042,x
+lda $0006,y : sta $0044,x
+inx : inx : inx : inx
+ply
+iny
+dec $0E : bne B_82AEF5
+rts
+S_82AF26:    ; org $82af26
+ldy $04
+sta $0E
+B_82AF2A:    ; org $82af2a
+lda $0000,y
+phy
+and #$00FF : asl : asl : asl : clc : adc $02 : tay
+lda $0000,y : sta $0002,x
+lda $0002,y : sta $0044,x
+lda $0004,y : sta $0004,x
+lda $0006,y : sta $0046,x
+inx : inx : inx : inx
+pla : clc : adc #$0010 : tay
+dec $0E : bne B_82AF2A
+rts
+warnpc $82af5f
+
+
 org $82b0a3
 LR_GetTileTableIndex82:	; Get table index of tile with coordinates
 {

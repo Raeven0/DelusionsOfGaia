@@ -1187,7 +1187,7 @@ cop #$2A : dw $0030
 ECastothHand_Sleep:
 COP #$80 : db $06
 COP #$89
-BRA ECastothHand_Sleep
+BRA ECastothHand_Main
 ; org $8aa1ee ; Player was in front of hand in loop segment 1.
 ECastothHand_TryWake:
 COP #$84 : db $06,$03
@@ -1502,15 +1502,391 @@ jsl LR_SetupSingleHitTempMonster
 cop #$80 : db $33 : cop #$89
 cop #$C1
 rtl
-warnpc $8aa9ec
+
+;org $8aa9ec
+db $00 : dw $0100
+EMineTunnelBreakableWall:
+cop #$D1 : dw $0133 : db $01 : dw .AlreadyOpen
+cop #$BC : db $08, $08
+cop #$88 : dl $8EE000
+cop #$80 : db $00
+cop #$89
+lda #$ABF0 : sta $7F0020,x
+lda #$0031 : tsb $12
+.MainLoop:    ; org $8aaa10
+lda #$00FF : sta $7F0026,x
+cop #$C1
+lda $7F0026,x : cmp #$00FF : bne .GotHit
+cop #$45 : db $05, $03, $07, $07 : dw .MakeWind
+.ClearWind:
+cop #$CE : db $00
+rtl
+.MakeWind:    ; org $8aaa2e
+cop #$CC : db $00
+rtl
+.GotHit:    ; org $8aaa32
+lda $09AE : bit #$0002 : bne .DoBecomeBroken
+dec $24 : bmi .MainLoop
+rtl
+.DoBecomeBroken:    ; org $8aaa3f
+cop #$9C : dl EBreakingWallExplosionFactory : dw $2000   ; $80c9b8
+cop #$32 : db $33
+cop #$33
+cop #$CE : db $00
+cop #$CD : dw $0133
+.AlreadyOpen:    ; org $8aaa52
+cop #$E0
+warnpc $8aaa54
 
 
 org $8Aaaca
 db $00 : dw $0000
 EMineLizard:
+cop #$23 : and #$003F : sta $08
+J_8AAAD4:    ; org $8aaad4
+cop #$C2
+cop #$CA : db $02
+cop #$21 : db $04 : dw B_8AAB59
+cop #$16 : dw B_8AAAEE
+cop #$82 : db $03, $11
+cop #$89
+cop #$CB
+cop #$C8 : dw B_8AAB36
+B_8AAAEE:    ; org $8aaaee
+cop #$C2
+cop #$CA : db $02
+cop #$21 : db $04 : dw B_8AAB59
+cop #$15 : dw B_8AAB08
+cop #$82 : db $04, $12
+cop #$89
+cop #$CB
+cop #$C8 : dw B_8AAB36
+B_8AAB08:    ; org $8aab08
+cop #$C2
+cop #$CA : db $02
+cop #$17 : dw B_8AAB1E
+cop #$81 : db $05, $12
+cop #$89
+cop #$21 : db $04 : dw B_8AAB59
+cop #$CB
+B_8AAB1E:    ; org $8aab1e
+cop #$C2
+cop #$CA : db $02
+cop #$18 : dw J_8AAAD4
+cop #$81 : db $85, $11
+cop #$89
+cop #$21 : db $04 : dw B_8AAB59
+cop #$CB
+bra J_8AAAD4
+B_8AAB36:    ; org $8aab36
+cop #$84 : db $02, $40
+cop #$8A
+cop #$21 : db $04 : dw B_8AAB59
+cop #$84 : db $00, $10
+cop #$8A
+cop #$21 : db $04 : dw B_8AAB59
+cop #$84 : db $82, $40
+cop #$8A
+cop #$21 : db $04 : dw B_8AAB59
+cop #$C5
+B_8AAB59:    ; org $8aab59
+lda #$0001 : tsb $12
+cop #$2C : dw B_8AAB64, B_8AAB9B
+B_8AAB64:    ; org $8aab64
+cop #$C2
+cop #$2A : dw $0030, B_8AABDE, B_8AAB70, B_8AAC12
+B_8AAB70:    ; org $8aab70
+cop #$2A : dw $0000, B_8AAB8B, B_8AAB7A, B_8AAB7A
+B_8AAB7A:    ; org $8aab7a
+lda #$0100 : tsb $12
+cop #$C8 : dw B_8AAE15
+lda #$0100 : trb $10
+jmp B_8AAC12
+B_8AAB8B:    ; org $8aab8b
+lda #$0100 : tsb $12
+cop #$C8 : dw B_8AAD9A
+lda #$0100 : trb $10 : bra B_8AABDE
+B_8AAB9B:    ; org $8aab9b
+cop #$C2
+cop #$2B : dw $0030, B_8AAC7A, B_8AABA7, B_8AAC46
+B_8AABA7:    ; org $8aaba7
+cop #$2B : dw $0000, B_8AABB1, B_8AABC2, B_8AABC2
+B_8AABB1:    ; org $8aabb1
+lda #$0100 : tsb $12
+cop #$C8 : dw B_8AAD1E
+lda #$0100 : trb $10
+jmp B_8AAC7A
+B_8AABC2:    ; org $8aabc2
+lda #$0100 : tsb $12
+cop #$C8 : dw B_8AACA2
+lda #$0100 : trb $10
+bra B_8AAC46
+B_8AABD2:    ; org $8aabd2
+cop #$C2
+cop #$17 : dw B_8AAC12
+cop #$81 : db $05, $12
+cop #$89
+B_8AABDE:    ; org $8aabde
+cop #$80 : db $02
+cop #$89
+J_8AABE3:    ; org $8aabe3
+cop #$17 : dw B_8AAC06
+cop #$81 : db $05, $12
+cop #$89
+cop #$2C : dw B_8AABF3, B_8AAC46
+B_8AABF3:    ; org $8aabf3
+cop #$2A : dw $0080, B_8AABFD, B_8AABFD, B_8AAC12
+B_8AABFD:    ; org $8aabfd
+cop #$C2
+cop #$21 : db $04 : dw B_8AAB59
+bra J_8AABE3
+B_8AAC06:    ; org $8aac06
+cop #$C2
+cop #$18 : dw B_8AAC46
+cop #$81 : db $85, $11
+cop #$89
+B_8AAC12:    ; org $8aac12
+cop #$80 : db $82
+cop #$89
+J_8AAC17:    ; org $8aac17
+cop #$18 : dw B_8AAC3A
+cop #$81 : db $85, $11
+cop #$89
+cop #$2C : dw B_8AAC27, B_8AAC46
+B_8AAC27:    ; org $8aac27
+cop #$2A : dw $0080, B_8AABFD, B_8AAC31, B_8AAC31
+B_8AAC31:    ; org $8aac31
+cop #$C2
+cop #$21 : db $04 : dw B_8AAB59
+bra J_8AAC17
+B_8AAC3A:    ; org $8aac3a
+cop #$C2
+cop #$16 : dw B_8AAC7A
+cop #$82 : db $03, $11
+cop #$89
+B_8AAC46:    ; org $8aac46
+cop #$80 : db $00
+cop #$89
+J_8AAC4B:    ; org $8aac4b
+cop #$16 : dw B_8AAC6E
+cop #$82 : db $03, $11
+cop #$89
+cop #$2C : dw B_8AABDE, B_8AAC5B
+B_8AAC5B:    ; org $8aac5b
+cop #$2B : dw $0080, B_8AAC99, B_8AAC65, B_8AAC65
+B_8AAC65:    ; org $8aac65
+cop #$C2
+cop #$21 : db $04 : dw B_8AAB59
+bra J_8AAC4B
+B_8AAC6E:    ; org $8aac6e
+cop #$C2
+cop #$15 : dw B_8AABDE
+cop #$82 : db $04, $12
+cop #$89
+B_8AAC7A:    ; org $8aac7a
+cop #$80 : db $01
+cop #$89
+J_8AAC7F:    ; org $8aac7f
+cop #$15 : dw B_8AABD2
+cop #$82 : db $04, $12
+cop #$89
+cop #$2C : dw B_8AABDE, B_8AAC8F
+B_8AAC8F:    ; org $8aac8f
+cop #$2B : dw $0080, B_8AAC99, B_8AAC99, B_8AAC65
+B_8AAC99:    ; org $8aac99
+cop #$C2
+cop #$21 : db $04 : dw B_8AAB59
+bra J_8AAC7F
+B_8AACA2:    ; org $8aaca2
+lda $14 : sta $7F0018,x
+lda $09A4 : and #$FFF0 : sec : sbc #$0010 : sta $7F001A,x
+lda #$0008 : tsb $10
+lda #$0010 : tsb $12
+cop #$22 : db $09, $02
+lda #$0010 : trb $12
+lda #$0008 : trb $10
+cop #$80 : db $09
+cop #$89
+cop #$07 : db $23
+lda #$0010 : tsb $12
+cop #$80 : db $06
+cop #$89
+cop #$A4 : dl C_8AAEA4 : dw $D0F0, $0202
+cop #$A4 : dl C_8AAFB5 : dw $D4F0, $0302
+cop #$A4 : dl C_8AAFB5 : dw $D8F0, $0302
+cop #$A4 : dl C_8AAFB5 : dw $DCF0, $0302
+cop #$A4 : dl C_8AAFB5 : dw $E0F0, $0302
+cop #$A4 : dl C_8AAFC4 : dw $E4F0, $0302
+cop #$80 : db $13
+cop #$89
+jmp J_8AAE8E
+B_8AAD1E:    ; org $8aad1e
+lda $14 : sta $7F0018,x
+lda $09A4 : and #$FFF0 : clc : adc #$0050 : sta $7F001A,x
+lda #$0008 : tsb $10
+lda #$0010 : tsb $12
+cop #$22 : db $0A, $02
+lda #$0010 : trb $12
+lda #$0008 : trb $10
+cop #$80 : db $0A
+cop #$89
+cop #$07 : db $23
+lda #$0010 : tsb $12
+cop #$80 : db $07
+cop #$89
+cop #$A4 : dl C_8AAEC9 : dw $E010, $0200
+cop #$A4 : dl C_8AAFB5 : dw $DC11, $0300
+cop #$A4 : dl C_8AAFB5 : dw $D812, $0300
+cop #$A4 : dl C_8AAFB5 : dw $D414, $0300
+cop #$A4 : dl C_8AAFB5 : dw $D012, $0300
+cop #$A4 : dl C_8AAFD0 : dw $D00C, $0300
+cop #$80 : db $14
+cop #$89
+jmp J_8AAE8E
+B_8AAD9A:    ; org $8aad9a
+lda $09A2 : and #$FFF0 : clc : adc #$0048 : sta $7F0018,x
+lda $16 : sta $7F001A,x
+lda #$0008 : tsb $10
+lda #$0010 : tsb $12
+cop #$22 : db $0B, $02
+lda #$0010 : trb $12
+lda #$0008 : trb $10
+cop #$80 : db $0B
+cop #$89
+cop #$07 : db $23
+lda #$0010 : tsb $12
+cop #$80 : db $08
+cop #$89
+cop #$A4 : dl C_8AAEEE : dw $C0DE, $0200
+cop #$A4 : dl C_8AAFBA : dw $C4E0, $0300
+cop #$A4 : dl C_8AAFBA : dw $C8E2, $0300
+cop #$A4 : dl C_8AAFBA : dw $CCE3, $0300
+cop #$A4 : dl C_8AAFBA : dw $D0E3, $0300
+cop #$A4 : dl C_8AAFDD : dw $E8E3, $0300
+cop #$80 : db $15
+cop #$89 : bra J_8AAE8E
+B_8AAE15:    ; org $8aae15
+lda $09A2 : and #$FFF0 : sec : sbc #$0038 : sta $7F0018,x
+lda $16 : sta $7F001A,x
+lda #$0008 : tsb $10
+lda #$0010 : tsb $12
+cop #$22 : db $8B, $02
+lda #$0010 : trb $12
+lda #$0008 : trb $10
+cop #$80 : db $8B
+cop #$89
+cop #$07 : db $23
+lda #$0010 : tsb $12
+cop #$80 : db $88
+cop #$89
+cop #$A4 : dl C_8AAF0B : dw $C414, $0200
+cop #$A4 : dl C_8AAFBA : dw $C816, $0300
+cop #$A4 : dl C_8AAFBA : dw $CC18, $0300
+cop #$A4 : dl C_8AAFBA : dw $D019, $0300
+cop #$A4 : dl C_8AAFBA : dw $D41A, $0300
+cop #$A4 : dl C_8AAFE9 : dw $D81B, $0300
+cop #$80 : db $95
+cop #$89
+J_8AAE8E:    ; org $8aae8e
+cop #$DA : db $4F
+lda #$0010 : trb $12
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$A9
+cop #$C5
+C_8AAEA4:    ; org $8aaea4
+lda #$FFF4 : sta $7F100C,x
+lda #$FFFC : sta $7F100E,x
+cop #$8D : db $10
+lda $16 : clc : adc #$0060 : sta $7F001A,x
+cop #$2A : dw $0018, B_8AAF69, B_8AAF5C, B_8AAF69
+C_8AAEC9:    ; org $8aaec9
+lda #$000C : sta $7F100C,x
+lda #$FFFC : sta $7F100E,x
+cop #$8D : db $11
+lda $16 : sec : sbc #$0040 : sta $7F001A,x
+cop #$2A : dw $0018, B_8AAF75, B_8AAF5C, B_8AAF75
+C_8AAEEE:    ; org $8aaeee
+lda #$FFE8 : sta $7F100C,x
+lda #$FFEA : sta $7F100E,x
+cop #$8D : db $12
+lda $14 : sec : sbc #$0050 : sta $7F0018,x
+bra J_8AAF2B
+C_8AAF0B:    ; org $8aaf0b
+lda #$0012 : sta $7F100C,x
+lda #$FFEB : sta $7F100E,x
+cop #$8D : db $92
+lda #$0002 : tsb $12
+lda $14 : clc : adc #$0050 : sta $7F0018,x
+J_8AAF2B:    ; org $8aaf2b
+lda $16 : clc : adc #$0030 : sta $16
+cop #$2B : dw $0018, B_8AAF4E, B_8AAF3D, B_8AAF4E
+B_8AAF3D:    ; org $8aaf3d
+lda $16 : sec : sbc #$0030 : sta $16
+lda $09A4 : sta $7F001A,x
+bra J_8AAF7F
+B_8AAF4E:    ; org $8aaf4e
+lda $16 : sta $7F001A,x
+  sec : sbc #$0030 : sta $16
+bra J_8AAF7F
+B_8AAF5C:    ; org $8aaf5c
+lda $09A2 : clc : adc #$0008 : sta $7F0018,x
+bra J_8AAF7F
+B_8AAF69:    ; org $8aaf69
+lda $14 : clc : adc #$0010 : sta $7F0018,x
+bra J_8AAF7F
+B_8AAF75:    ; org $8aaf75
+lda $14 : sec : sbc #$0010 : sta $7F0018,x
+J_8AAF7F:    ; org $8aaf7f
+lda $24 : sta $7F0010,x
+cop #$22 : db $FF, $08
+lda #$0100 : trb $10
+cop #$DA : db $1D
+lda $7F0010,x : tay
+lda $0014,y : clc : adc $7F100C,x : sta $7F0018,x
+lda $0016,y : clc : adc $7F100E,x : sta $7F001A,x
+cop #$22 : db $FF, $04
+cop #$C1
+rtl
+C_8AAFB5:    ; org $8aafb5
+cop #$8D : db $0E
+bra J_8AAFBD
+C_8AAFBA:    ; org $8aafba
+cop #$8D : db $0F
+J_8AAFBD:    ; org $8aafbd
+cop #$C1
+jsl LR_PlaceSelfBetween04And06
+rtl
+C_8AAFC4:    ; org $8aafc4
+cop #$8D : db $0E
+cop #$C2
+cop #$BC : db $04, $18
+cop #$C1
+rtl
+C_8AAFD0:    ; org $8aafd0
+cop #$8D : db $0E
+cop #$DA : db $0F
+cop #$BC : db $00, $24
+cop #$C1
+rtl
+C_8AAFDD:    ; org $8aafdd
+cop #$8D : db $0F
+cop #$C2
+cop #$BC : db $06, $04
+cop #$C1
+rtl
+C_8AAFE9:    ; org $8aafe9
+cop #$8D : db $0F
+cop #$C2
+cop #$BC : db $FA, $13
+cop #$C1
+rtl
 
 
-org $8aaff5
+;org $8aaff5
 db $1a : dw $2200
 EMineWorm:
 
@@ -1518,11 +1894,330 @@ EMineWorm:
 org $8ab0b3
 db $16 : dw $0300
 EMineEyeFrozen:
+cop #$5B : dw $0008
+cop #$80 : db $1A
+cop #$89
+cop #$0B
+cop #$C1
+cop #$21 : db $03 : dw B_8AB0C9
+rtl
+B_8AB0C9:    ; org $8ab0c9
+cop #$80 : db $1B
+cop #$89
+cop #$0C
+lda #$0300 : trb $10
+jmp J_8AB125
+warnpc $8ab0d8
 
 
 org $8ab103
 db $16 : dw $0000
 EMineEyeStalker:
+cop #$5B : dw $0008
+B_8AB10A:
+cop #$27 : db $0F
+lda $10 : bit #$4000 : bne B_8AB10A
+J_8AB114:    ; org $8ab114
+cop #$21 : db $03 : dw B_8AB12B
+J_8AB119:    ; org $8ab119
+cop #$21 : db $05 : dw B_8AB148
+lda $10 : bit #$4000 : bne B_8AB10A
+J_8AB125:    ; org $8ab125
+cop #$C8 : dw B_8AB14E
+bra J_8AB114
+B_8AB12B:    ; org $8ab12b
+lda $0644 : cmp #$00E9 : bne B_8AB138
+cop #$C4 : dl J_8AB119
+B_8AB138:    ; org $8ab138
+lda #$0300 : tsb $10
+cop #$C8 : dw B_8AB3CA
+lda #$0300 : trb $10
+bra J_8AB114
+B_8AB148:    ; org $8ab148
+cop #$C8 : dw B_8AB220
+bra J_8AB125
+B_8AB14E:    ; org $8ab14e
+lda $28 : sec : sbc #$0016 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, $B160 : dw B_8AB16E, B_8AB19C : dw B_8AB1CA, B_8AB1F8
+B_8AB168:    ; org $8ab168
+cop #$C2
+cop #$17 : dw B_8AB19C
+B_8AB16E:    ; org $8ab16e
+cop #$80 : db $18
+cop #$89
+J_8AB173:    ; org $8ab173
+cop #$17 : dw B_8AB196
+cop #$81 : db $18, $02
+cop #$89
+cop #$2C : dw B_8AB183, B_8AB1CA
+B_8AB183:    ; org $8ab183
+cop #$2A : dw $0080, B_8AB18D, B_8AB18D, B_8AB19C
+B_8AB18D:    ; org $8ab18d
+cop #$C2
+cop #$21 : db $05 : dw J_8AB114
+bra J_8AB173
+B_8AB196:    ; org $8ab196
+cop #$C2
+cop #$18 : dw B_8AB1CA
+B_8AB19C:    ; org $8ab19c
+cop #$80 : db $98
+cop #$89
+J_8AB1A1:    ; org $8ab1a1
+cop #$18 : dw B_8AB1C4
+cop #$81 : db $98, $01
+cop #$89
+cop #$2C : dw B_8AB1B1, B_8AB1CA
+B_8AB1B1:    ; org $8ab1b1
+cop #$2A : dw $0080, B_8AB18D, B_8AB1BB, B_8AB1BB
+B_8AB1BB:    ; org $8ab1bb
+cop #$C2
+cop #$21 : db $05 : dw J_8AB114
+bra J_8AB1A1
+B_8AB1C4:    ; org $8ab1c4
+cop #$C2
+cop #$16 : dw B_8AB1F8
+B_8AB1CA:    ; org $8ab1ca
+cop #$80 : db $16
+cop #$89
+J_8AB1CF:    ; org $8ab1cf
+cop #$16 : dw B_8AB1F2
+cop #$82 : db $16, $01
+cop #$89
+cop #$2C : dw B_8AB16E, B_8AB1DF
+B_8AB1DF:    ; org $8ab1df
+cop #$2B : dw $0080, B_8AB217, B_8AB1E9, B_8AB1E9
+B_8AB1E9:    ; org $8ab1e9
+cop #$C2
+cop #$21 : db $05 : dw J_8AB114
+bra J_8AB1CF
+B_8AB1F2:    ; org $8ab1f2
+cop #$C2
+cop #$15 : dw B_8AB16E
+B_8AB1F8:    ; org $8ab1f8
+cop #$80 : db $17
+cop #$89
+J_8AB1FD:    ; org $8ab1fd
+cop #$15 : dw B_8AB168
+cop #$82 : db $17, $02
+cop #$89
+cop #$2C : dw B_8AB16E, B_8AB20D
+B_8AB20D:    ; org $8ab20d
+cop #$2B : dw $0080, B_8AB217, B_8AB217, B_8AB1E9
+B_8AB217:    ; org $8ab217
+cop #$C2
+cop #$21 : db $05 : dw J_8AB114
+bra J_8AB1FD
+B_8AB220:    ; org $8ab220
+cop #$2A : dw $0030, B_8AB22A, B_8AB2B2, B_8AB26E
+B_8AB22A:    ; org $8ab22a
+cop #$80 : db $18
+cop #$89
+jsr S_8ADD66
+lda $7F0018,x : clc : adc #$0060 : sta $7F0018,x
+lda #$0008 : tsb $10
+bra J_8AB24E
+B_8AB245:    ; org $8ab245
+jsr S_8ADD83
+cop #$22 : db $18, $02
+bra J_8AB256
+J_8AB24E:    ; org $8ab24e
+cop #$22 : db $18, $02
+cop #$1F : dw B_8AB245
+J_8AB256:    ; org $8ab256
+lda #$0008 : trb $10
+cop #$80 : db $24
+cop #$89
+cop #$A4 : dl C_8AB39E : dw $EBE8, $2200
+cop #$DA : db $05
+cop #$C5
+B_8AB26E:    ; org $8ab26e
+cop #$80 : db $98
+cop #$89
+jsr S_8ADD66
+lda $7F0018,x : sec : sbc #$0050 : sta $7F0018,x
+lda #$0008 : tsb $10
+bra J_8AB292
+B_8AB289:    ; org $8ab289
+jsr S_8ADD83
+cop #$22 : db $98, $02
+bra J_8AB29A
+J_8AB292:    ; org $8ab292
+cop #$22 : db $98, $02
+cop #$1F : dw B_8AB289
+J_8AB29A:    ; org $8ab29a
+lda #$0008 : trb $10
+cop #$80 : db $A4
+cop #$89
+cop #$A4 : dl C_8AB399 : dw $EB18, $2200
+cop #$DA : db $05
+cop #$C5
+B_8AB2B2:    ; org $8ab2b2
+cop #$2B : dw $0030, B_8AB2BC, B_8AB2BC, B_8AB300
+B_8AB2BC:    ; org $8ab2bc
+cop #$80 : db $17
+cop #$89
+jsr S_8ADD66
+lda $7F001A,x : clc : adc #$0060 : sta $7F001A,x
+lda #$0008 : tsb $10
+bra J_8AB2E0
+B_8AB2D7:    ; org $8ab2d7
+jsr S_8ADD83
+cop #$22 : db $17, $02
+bra J_8AB2E8
+J_8AB2E0:    ; org $8ab2e0
+cop #$22 : db $17, $02
+cop #$1F : dw B_8AB2D7
+J_8AB2E8:    ; org $8ab2e8
+lda #$0008 : trb $10
+cop #$80 : db $23
+cop #$89
+cop #$A4 : dl C_8AB344 : dw $F800, $2200
+cop #$DA : db $05
+cop #$C5
+B_8AB300:    ; org $8ab300
+cop #$80 : db $16
+cop #$89
+jsr S_8ADD66
+lda $7F001A,x : sec : sbc #$0060 : sta $7F001A,x
+lda #$0008 : tsb $10
+bra J_8AB324
+B_8AB31B:    ; org $8ab31b
+jsr S_8ADD83
+cop #$22 : db $16, $02
+bra J_8AB32C
+J_8AB324:    ; org $8ab324
+cop #$22 : db $16, $02
+cop #$1F : dw B_8AB31B
+J_8AB32C:    ; org $8ab32c
+lda #$0008 : trb $10
+cop #$80 : db $22
+cop #$89
+cop #$A4 : dl C_8AB36D : dw $0700, $2202
+cop #$DA : db $05
+cop #$C5
+C_8AB344:    ; org $8ab344
+cop #$B6 : db $30
+lda #$2000 : tsb $12
+lda #$2000 : trb $10
+cop #$07 : db $20
+cop #$82 : db $25, $03
+cop #$89
+cop #$82 : db $26, $05
+cop #$89
+cop #$82 : db $27, $07
+cop #$89
+lda #$0002 : tsb $10
+bra J_8AB384
+C_8AB36D:    ; org $8ab36d
+cop #$B6 : db $30
+lda #$2000 : trb $10
+cop #$07 : db $20
+cop #$82 : db $25, $03
+cop #$89
+cop #$82 : db $26, $03
+cop #$89
+J_8AB384:    ; org $8ab384
+cop #$82 : db $27, $05
+cop #$89
+B_8AB38A:    ; org $8ab38a
+cop #$82 : db $28, $07
+cop #$89
+lda $10 : bit #$4000 : beq B_8AB38A
+cop #$E0
+C_8AB399:    ; org $8ab399
+lda #$4000 : tsb $12
+C_8AB39E:    ; org $8ab39e
+cop #$B6 : db $30
+lda #$2000 : trb $10
+cop #$07 : db $20
+cop #$81 : db $29, $04
+cop #$89
+cop #$81 : db $2A, $04
+cop #$89
+cop #$81 : db $2B, $06
+cop #$89
+B_8AB3BB:    ; org $8ab3bb
+cop #$81 : db $2C, $08
+cop #$89
+lda $10 : bit #$4000 : beq B_8AB3BB
+cop #$E0
+B_8AB3CA:    ; org $8ab3ca
+lda $28 : sec : sbc #$0016 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, $B3DC : dw B_8AB3E4, B_8AB408 : dw B_8AB42C, B_8AB42C
+B_8AB3E4:    ; org $8ab3e4
+cop #$0B
+cop #$80 : db $19
+cop #$89
+cop #$CA : db $0C
+cop #$84 : db $1A, $08
+cop #$8A
+cop #$21 : db $03 : dw B_8AB3FB
+bra J_8AB3FF
+B_8AB3FB:    ; org $8ab3fb
+cop #$CB
+bra J_8AB479
+J_8AB3FF:    ; org $8ab3ff
+cop #$80 : db $1B
+cop #$89
+cop #$0C
+cop #$C5
+B_8AB408:    ; org $8ab408
+cop #$0B
+cop #$80 : db $1C
+cop #$89
+cop #$CA : db $0C
+cop #$84 : db $1D, $08
+cop #$8A
+cop #$21 : db $03 : dw B_8AB41F
+bra J_8AB423
+B_8AB41F:    ; org $8ab41f
+cop #$CB
+bra J_8AB479
+J_8AB423:    ; org $8ab423
+cop #$80 : db $1E
+cop #$89
+cop #$0C
+cop #$C5
+B_8AB42C:    ; org $8ab42c
+cop #$0B
+lda $0E : bit #$4000 : bne B_8AB457
+cop #$80 : db $1F
+cop #$89
+cop #$CA : db $0C
+cop #$84 : db $20, $08
+cop #$8A
+cop #$21 : db $03 : dw B_8AB44A
+bra J_8AB44E
+B_8AB44A:    ; org $8ab44a
+cop #$CB
+bra J_8AB479
+J_8AB44E:    ; org $8ab44e
+cop #$80 : db $21
+cop #$89
+cop #$0C
+cop #$C5
+B_8AB457:    ; org $8ab457
+cop #$80 : db $9F
+cop #$89
+cop #$CA : db $0C
+cop #$84 : db $A0, $08
+cop #$8A
+cop #$21 : db $03 : dw B_8AB46C
+bra J_8AB470
+B_8AB46C:    ; org $8ab46c
+cop #$CB
+bra J_8AB479
+J_8AB470:    ; org $8ab470
+cop #$80 : db $A1
+cop #$89
+cop #$0C
+cop #$C5
+J_8AB479:    ; org $8ab479
+lda #$0300 : trb $10
+cop #$0C
+cop #$23 : and #$0003 : sta $0000
+cop #$D9 : dw $0000, $B48E : dw B_8AB22A, B_8AB26E : dw B_8AB2BC, B_8AB300
+warnpc $8ab496
 
 
 org $8ab4b0
@@ -2415,7 +3110,17 @@ db $FF
 warnpc $8add1e
 
 
-org $8add9e
+org $8add66
+S_8ADD66:
+lda $09A2 : and #$FFF0 : clc : adc #$0008 : sta $7F0018,x
+lda $09A4 : and #$FFF0 : clc : adc #$0020 : sta $7F001A,x
+rts
+S_8ADD83:    ; org $8add83
+lda $14 : sec : sbc #$0008 : and #$FFF0 : clc : adc #$0008 : sta $7F0018,x
+lda $16 : and #$FFF0 : sta $7F001A,x
+rts
+
+;org $8add9e
 db $00 : dw $0110
 EMuRockGolemWaiting:
 
@@ -2592,6 +3297,16 @@ EMuGlowBallWorm:
 org $8aea51
 db $00,$00,$00
 EAVSkeleton:
+
+
+org $8aee9f
+db $0f : dw $0000
+EAVSwoopBat:
+
+
+org $8af0c7
+db $1a : dw $0000
+EAVFireballShooter:
 
 
 

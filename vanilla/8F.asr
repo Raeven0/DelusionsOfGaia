@@ -1,0 +1,4 @@
+arch 65816
+hirom
+fillbyte $FF
+
