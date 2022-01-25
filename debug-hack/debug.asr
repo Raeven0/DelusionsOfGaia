@@ -1,0 +1,445 @@
+arch 65816
+hirom
+bank noassume
+math round off
+table "table_dialogue.txt",rtl
+
+; Fixed labeled addresses, mostly engine subroutines.
+{
+LR_SecOnDefeatedBossA = $80B05E
+TIndexedPaletteBundleOnce = $80B519
+EBreakingWallExplosionFactory = $80c9b8
+ESimpleScreenShake = $80cf8e
+EBasicMonsterDeath = $80DB8A
+EChaser = $80e683
+LR_OrbitAtY = $80F3C9
+LR_DivideY16ByA8 = $8281E8
+LR_SecIfAwaitingMusic = $82a10a
+SR_RemoveHeldItem = $839FB2
+LR_StageBcdInManualOam = $83BAF1
+;LR_SetPlayerImmune = $8aa36e
+}
+
+
+
+org $83843f
+; LR_HandleUseItem_Pointers:
+{
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2    ; Inca Melody
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+dw ItemDebugManSpawner    ; Blue Journal, #$15
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2    ; Apple, #$28
+skip 2 ;dw ItemDebugManSpawner
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2
+skip 2 ;dw ItemDebugManSpawner
+}
+
+org $839427
+ItemDebugManSpawner:
+{
+phx
+phd
+jsl LR_DebugSubActor
+pld
+plx
+rts
+}
+warnpc $83950c
+
+; Skip logo/title screens
+org $8bc8de
+cop #$26 : db $fa : dw $0000,$0000 : db $00,$00,$11
+cop #$E0
+
+; Start new game, with some differences
+org $8be4ee
+lda #$0015 : sta $0ab4
+sta $0ac6
+lda #$FFFF : sta $0D98
+lda $0D90 : sta $0B24
+lda $0D8E : sta $0B26
+jsr $e673    ; $e673
+lda #$0001 : tsb $0a02
+
+
+
+org $8bee20
+cop #$BF : dw $f15a
+cop #$E0
+
+org $8BEE44
+DebugTeleport:
+
+org $8beed0
+jmp $ee20
+
+
+
+org $8cf61f
+
+LR_DebugSubActor:
+{
+lda $09AA : tcd : tax
+cop #$BF : dw .OptionText
+cop #$BE : db $63,$01 : dw .OptionList
+.OptionList:
+  dw .OptCancel
+  dw .OptTeleport, .OptBody, .OptNoclip, .OptPower, .OptItems, .OptResetFlags
+.OptCancel:
+cop #$BF : dw ..Text
+jmp .Return
+..Text:
+;db $d3
+db $CE,"Then go.",$C0
+.OptTeleport:
+cop #$A4 : dl DebugTeleport : dw $0000,$2000
+jmp .Return
+.OptBody:
+stz $0ad4
+cop #$BF : dw ..BodyOptionText
+cop #$BE : db $03,$00 : dw ..BodyOptionList
+..BodyOptionList:
+  dw .OptCancel, ..OptWill, ..OptFreedan, ..OptShadow
+..OptShadow:
+inc $0ad4
+..OptFreedan:
+inc $0ad4
+..OptWill:
+jmp .PrintDone
+..BodyOptionText:
+db $d3
+db $ac, "Will", $cb
+db $ac, "Freedan", $cb
+db $ac, "Shadow", $ca
+.OptNoclip:
+lda $1010 : eor #$0008 : sta $1010
+jmp .PrintDone
+.OptPower:
+jsl LR_ResetStatsForDebugPower
+cop #$BF : dw ..PowerOptionText
+cop #$BE : db $74,$00 : dw ..PowerOptionList
+..PowerOptionList:
+  dw .OptCancel
+  dw ..OptNone, ..OptViper, ..OptFanger, ..OptSuper
+  dw ..OptCastoth, ..OptVampires, ..OptMummyQueen
+..OptNone:
+jmp .PrintDone
+..OptSuper:
+lda #$00FF : sta $0AA2
+lda #$00b0 : sta $0ADE : sta $0ADC : sta $0ACA : sta $0ACE
+jmp .PrintDone
+..OptCastoth:
+lda #$0001 : sta $0aa2
+lda #$0029 : bra ..GiveStatsByBoss
+..OptViper:
+lda #$0011 : sta $0aa2
+lda #$0055 : bra ..GiveStatsByBoss
+..OptVampires:
+lda #$0013 : sta $0aa2
+lda #$0067 : bra ..GiveStatsByBoss
+..OptFanger:
+lda #$0017 : sta $0aa2
+lda #$008a : bra ..GiveStatsByBoss
+..OptMummyQueen:
+lda #$0077 : sta $0aa2
+lda #$00dd : bra ..GiveStatsByBoss
+..GiveStatsByBoss:
+jsl LR_GiveStatsUpToRoomA
+jmp .PrintDone
+..PowerOptionText:
+db $d3
+db "_None________Castoth",$cb
+db "_Viper_______Vampires",$cb
+db "_Fanger______Mummy_Queen",$cb
+db "_Super"
+db $ca
+.OptItems:
+cop #$BF : dw TextDebugItemListPageOne
+cop #$BE : db $0a,$00 : dw ..ItemOptionsListPageOne
+..ItemOptionsListPageOne:
+dw .OptCancel
+dw ..Opt10, ..Opt11, ..Opt12, ..Opt13, ..Opt14
+dw ..Opt15, ..Opt16, ..Opt17, ..Opt18, ..Opt19
+..Opt10:   ; Jewels
+cop #$D4 : db $01 : dw .PrintDone
+cop #$D4 : db $01 : dw .PrintDone
+cop #$D4 : db $01 : dw .PrintDone
+cop #$D4 : db $01 : dw .PrintDone
+cop #$D4 : db $01 : dw .PrintDone
+jmp .PrintDone
+..Opt11:   ; Prison Key + Lola's Melody
+cop #$D4 : db $02 : dw .PrintDone
+cop #$D4 : db $09 : dw .PrintDone
+jmp .PrintDone
+..Opt12:   ; Inca items
+cop #$D4 : db $03 : dw .PrintDone
+cop #$D4 : db $04 : dw .PrintDone
+cop #$D4 : db $07 : dw .PrintDone
+cop #$D4 : db $08 : dw .PrintDone
+jmp .PrintDone
+..Opt13:   ; Herb
+cop #$D4 : db $06 : dw .PrintDone
+jmp .PrintDone
+..Opt14:   ; Meat
+cop #$D4 : db $0a : dw .PrintDone
+jmp .PrintDone
+..Opt15:   ; Mine keys, Memory Melody
+cop #$D4 : db $0b : dw .PrintDone
+cop #$D4 : db $0c : dw .PrintDone
+cop #$D4 : db $0d : dw .PrintDone
+cop #$D4 : db $0f : dw .PrintDone
+jmp .PrintDone
+..Opt16:   ; Crystal Balls
+cop #$D4 : db $0e : dw .PrintDone
+cop #$D4 : db $0e : dw .PrintDone
+jmp .PrintDone
+..Opt17:   ; Mu palace key, Purification Stone
+cop #$D4 : db $10 : dw .PrintDone
+cop #$D4 : db $11 : dw .PrintDone
+jmp .PrintDone
+..Opt18:   ; Hope and Rama Statues
+cop #$D4 : db $12 : dw .PrintDone
+cop #$D4 : db $13 : dw .PrintDone
+jmp .PrintDone
+..Opt19:   ; Next page
+cop #$BF : dw TextDebugItemListPageTwo
+cop #$BE : db $0a,$00 : dw ..ItemOptionsListPageTwo
+..ItemOptionsListPageTwo:
+dw .OptCancel
+dw ..Opt20, ..Opt21, ..Opt22, ..Opt23, ..Opt24
+dw ..Opt25, ..Opt26, ..Opt27, ..Opt28, ..Opt29
+..Opt20:   ; Magic Powder
+cop #$D4 : db $14 : dw .PrintDone
+jmp .PrintDone
+..Opt21:   ; Lance's Letter, Will
+cop #$D4 : db $16 : dw .PrintDone
+cop #$D4 : db $18 : dw .PrintDone
+jmp .PrintDone
+..Opt22:   ; Mushroom Drops, Teapot
+cop #$D4 : db $19 : dw .PrintDone
+cop #$D4 : db $1a : dw .PrintDone
+jmp .PrintDone
+..Opt23:   ; Glasses, Flower
+cop #$D4 : db $1c : dw .PrintDone
+cop #$D4 : db $1d : dw .PrintDone
+jmp .PrintDone
+..Opt24:   ; Hieroglyphs
+cop #$D4 : db $1e : dw .PrintDone
+cop #$D4 : db $1f : dw .PrintDone
+cop #$D4 : db $20 : dw .PrintDone
+cop #$D4 : db $21 : dw .PrintDone
+cop #$D4 : db $22 : dw .PrintDone
+cop #$D4 : db $23 : dw .PrintDone
+jmp .PrintDone
+..Opt25:   ; Aura
+cop #$D4 : db $24 : dw .PrintDone
+jmp .PrintDone
+..Opt26:   ; Lola's Letter, Journal
+cop #$D4 : db $25 : dw .PrintDone
+cop #$D4 : db $26 : dw .PrintDone
+jmp .PrintDone
+..Opt27:   ; Crystal Ring
+cop #$D4 : db $27 : dw .PrintDone
+jmp .PrintDone
+..Opt28:   ; Apple
+cop #$D4 : db $28 : dw .PrintDone
+jmp .PrintDone
+..Opt29:   ; Empty inventory
+sep #$20
+ldy #$0000
+-:
+lda $0ab4,y : cmp #$15 : beq +
+lda #$00 : sta $0ab4,y
++:
+iny : cpy #$0010 : bcc -
+rep #$20
+jmp .PrintDone
+.OptResetFlags:
+ldy #$0002
+lda #$0000
+-:
+sta $0a00,y
+iny : iny
+cpy #$00a2 : bcc -
+bra .PrintDone
+.PrintDone:
+cop #$BF : dw .DoneText
+.Return:
+rtl
+.OptionText:
+db $d3
+db $D6,$62, $88,$a3,$ac, $d6,$fe, $a7,$88,$a3,$87, $0d, $cb ; What is your wish?
+db $ac, "Warp", $ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac, $d7,$25, $cb ; Warp   Power
+db $ac, "Body", $ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac, "Items", $cb ; Body   Items
+db $ac, "Noclip", $ac,$ac,$ac,$ac,$ac,$ac, "Reset flags"
+db $ca
+.DoneText:
+;db $d3
+db $CE, "Done.", $C0
+
+}
+
+LR_GiveStatsUpToRoomA:
+{
+sta $000e
+ldy #$0000
+sep #$20
+bra .CheckNextRoom
+.AwardGivenCheckNext:
+sep #$20
+iny
+.CheckNextRoom:
+lda.w $aade,y : bne .RoomHasAward
+  iny : cpy $000e : bcc .CheckNextRoom
+    bra .Done
+.RoomHasAward:
+rep #$20
+and #$00ff : sta $0004
+tya
+phy
+  jsl $80b496
+ply
+bcs .AwardGivenCheckNext
+phy
+  tya : jsl $80b4a1
+ply
+lda $0004
+pea.w .AwardGivenCheckNext-1
+dec : bne .NotHp
+.IsHp:
+  inc $0aca
+  inc $0ace
+  rts
+.NotHp:
+dec : bne .NotStr
+.IsStr:
+  inc $0ade
+  rts
+.NotStr:
+dec : beq .IsDef
+  rts
+.IsDef:
+inc $0adc
+rts
+.Done:
+rep #$20
+rtl
+}
+
+LR_ResetStatsForDebugPower:
+{
+ldy #$0060
+lda #$0000
+-:
+sta $0a00,y
+iny : iny
+cpy #$007f : bcc -
+lda #$0008 : sta $0aca : sta $0ace
+stz $0adc
+lda #$0001 : sta $0ade
+stz $0aa2
+rtl
+}
+
+TextDebugItemListPageOne:
+db $c1 : db $02,$06
+db $c7 : db $0e,$0a
+db $ce
+db $d2,$00
+db "_Jewels",$cb
+db "_Prison Key, Lola's Melody",$cb
+db "_Inca items",$cb
+db "_Herb",$cb
+db "_Meat",$cb
+db "_Mine keys, Memory Melody",$cb
+db "_Crystal Balls",$cb
+db "_Mu palace key, P. Stone",$cb
+db "_Hope and Rama Statues",$cb
+db "_Other..."
+db $ca
+
+TextDebugItemListPageTwo:
+db $c1 : db $02,$06
+db $c7 : db $0e,$0a
+db $ce
+db $d2,$00
+db "_Magic Powder",$cb
+db "_Lance's Letter, Will",$cb
+db "_Mushroom Drops, Teapot",$cb
+db "_Glasses, Gorgon Flower",$cb
+db "_Hieroglyphs",$cb
+db "_Aura",$cb
+db "_Lola's Letter, Journal",$cb
+db "_Crystal Ring",$cb
+db "_Apple",$cb
+db "_Empty inventory"
+db $ca
+
+
+
+
+
+
+
+
+
+
+
+
