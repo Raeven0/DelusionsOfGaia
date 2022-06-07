@@ -2960,6 +2960,60 @@ bra .Animate
 lda #$0200 : trb $10
 PlayerUnfreezePointer:
 jml EPlayer_FromCastothFreeze    ; $82C3C8
+;org $80c45e
+
+org $80c557
+EPlayer_TryAura:
+{
+lda #$0800 : tsb $09AE
+lda #$0008 : trb $10
+lda #$0200 : tsb $10
+cop #$8E : db $08
+cop #$80 : db $00
+cop #$89
+lda $14 : sta $24
+lda $16 : sta $26
+lda $16 : and #$FFF0 : sta $16
+.FindNextNonZeroTypeTile:   ; org $80c57e
+cop #$13 : dw .CheckTileType
+lda $16 : clc : adc #$0010 : sta $16
+bra .FindNextNonZeroTypeTile
+.CheckTileType:   ; org $80c58c
+cop #$1C : db $04 : dw .GotPhasingTile   ; If a phasing tile isn't below the zero tiles, abort.
+lda $24 : sta $14
+lda $26 : sta $16
+cop #$80 : db $01
+cop #$89
+jmp .Done
+.GotPhasingTile:   ; org $80c5a1
+lda $24 : sta $14
+lda $26 : sta $16
+lda #$2000 : tsb $10
+.ContinueToNonPhasingTiles:   ; org $80c5ae
+lda $16 : and #$000F : bne +
+cop #$1A : db $04 : dw .StartFlickering
++:   ; org $80c5ba
+inc $16
+cop #$C4 : dl .ContinueToNonPhasingTiles
+.StartFlickering:   ; org $80c5c1
+lda #$2000 : trb $10
+lda #$0002 : tsb $10
+.ContinueToZeroTile:   ; org $80c5cb
+cop #$82 : db $02, $01
+cop #$89
+cop #$1A : db $00 : dw .DoHitGround
+bra .ContinueToZeroTile
+.DoHitGround:   ; org $80c5d8
+lda #$0002 : trb $10
+cop #$91 : db $1C, $00
+cop #$89
+.Done:   ; org $80c5e3
+lda #$0008 : tsb $10
+lda #$0200 : trb $10
+stz $08
+jml EPlayer_ParseAct
+}
+warnpc $80c5f3
 
 
 
@@ -3225,9 +3279,139 @@ cop #$66 : dw $0074,$00B4 : db $18
 jmp .Done    ; $cac1
 }
 
+
 ;org $80cd59
 ; Statue-Get cutscene handler.
 db $00,$00,$30
+EStatueGetCutsceneStatue:
+org $80cd5c
+lda #$FFF0 : tsb $065A
+cop #$BC : db $08, $08
+cop #$88 : dl $908000
+sep #$20
+lda #$08 : sta $2107
+lda #$0C : sta $2108
+lda #$13 : sta $212C
+lda #$11 : sta $212D
+lda #$82 : sta $2130
+lda #$02 : sta $2131
+rep #$20
+stz $0676
+lda $0E : sta $24
+bit #$0010 : beq B_80CD9D
+cop #$BC : db $00, $F8
+B_80CD9D:    ; org $80cd9d
+lda #$2000 : sta $0E
+phx
+lda $24 : and #$000F : asl : asl : tax
+lda $80CE97,x : and #$00FF : jsl LR_SecOnFlagA : bcc B_80CDBB
+jmp J_80CE7B
+B_80CDBB:    ; org $80cdbb
+lda $80CE99,x : and #$00FF : cmp $0AAC : beq B_80CDCA
+jmp J_80CE93
+B_80CDCA:    ; org $80cdca
+lda $80CE97,x : and #$00FF
+jsl LR_SetFlagA
+lda $80CE98,x : and #$00FF : sta $28
+stz $2A
+plx
+jsl LR_AnimateSprite
+lda #$0001 : sta $26
+B_80CDEA:    ; org $80cdea
+cop #$9C : dl C_80CEAF : dw $1802
+lda $26 : clc : adc #$0020 : sta $26
+  sta $0026,y
+  cmp #$0101 : bne B_80CDEA
+tya : sta $26
+lda #$00B4 : sta $0AAC
+cop #$C1
+dec $0AAC : beq B_80CE46
+jsl LR_SecIfAwaitingMusic : bcc B_80CE18
+rtl
+B_80CE18:    ; org $80ce18
+lda #$0000 : sta $0AAC
+cop #$DA : db $0F
+cop #$08 : db $25, $25
+cop #$C2
+phx
+ldx $26
+lda $7F0012,x
+plx : cmp #$0000 : beq B_80CE35
+rtl
+B_80CE35:    ; org $80ce35
+lda #$2000 : trb $10
+cop #$CA : db $3C
+cop #$9C : dl C_80CEFF : dw $1802
+cop #$CB
+B_80CE46:    ; org $80ce46
+lda $0B12 : sta $0642
+lda $0B08 : asl : asl : asl : asl : sta $064C
+lda $0B0C : asl : asl : asl : asl : sta $064E
+lda #$0003 : sta $0650
+lda $0B10 : sta $0652
+lda #$0303 : sta $064A
+lda #$0002 : sta $0648
+cop #$C1
+rtl
+J_80CE7B:    ; org $80ce7b
+lda $80CE98,x : and #$00FF : sta $28
+stz $2A
+plx
+jsl LR_AnimateSprite
+lda #$2000 : trb $10
+cop #$C1
+rtl
+J_80CE93:    ; org $80ce93
+plx
+cop #$C1
+rtl
+
+; org $80ce97
+db $F8, $3A : dw $0000 
+db $F9, $3B : dw $0001 
+db $FA, $3C : dw $0002 
+db $FB, $3D : dw $0003 
+db $FC, $3E : dw $0004 
+db $FD, $3F : dw $0005
+
+org $80ceaf
+C_80CEAF:
+cop #$B6 : db $30
+cop #$88 : dl $8EE000
+cop #$8D : db $02
+lda #$00FC : sta $7F0012,x
+lda $26 : sta $7F0010,x
+B_80CEC7:    ; org $80cec7
+cop #$C1
+cop #$8B
+lda $2A : beq B_80CEC7
+lda $08 : inc a : sta $26
+stz $08
+cop #$C1
+dec $26 : bmi B_80CEC7
+ldy $24
+jsl LR_OrbitAtY
+lda $7F0010,x : clc : adc #$0004 : sta $7F0010,x
+lda $7F0012,x : beq B_80CEFD
+sec : sbc #$0002 : sta $7F0012,x
+rtl
+B_80CEFD:    ; org $80cefd
+cop #$E0
+
+C_80CEFF:    ; org $80ceff
+lda $0036 : and #$0003 : bne B_80CF27
+cop #$23 : and #$000F : sec : sbc #$0008 : clc : adc $14 : sta $14
+lda $16 : sec : sbc #$0008 : sta $16
+cop #$88 : dl $8EE000
+cop #$80 : db $02
+cop #$89
+B_80CF27:    ; org $80cf27
+cop #$E0
+warnpc $80cf29
+
+
+
+
 
 
 org $80cf8e
@@ -3469,6 +3653,7 @@ cop #$3B : db $0B : dl TIndexedPaletteBundleOnce
 cop #$3B : db $0D : dl TIndexedPaletteBundleOnce
 cop #$C2
 phb
+; org $80d68c
 lda $0AD6 : cmp #$0064 : bcc .NoExtraLives
 .WithExtraLives:
   sbc #$0064 : sta $0AD6
@@ -3835,13 +4020,14 @@ lda $24 : sta $16
 cop #$22 : db $FF, $04
 cop #$AC : db $00, $45
 cop #$DA : db $0B
-cop #$A2 : dl B_80E155 : dw $2300
+cop #$A2 : dl EPullableNoStopListener : dw $2300
 B_80DB69:    ; org $80db69
 cop #$CA : db $64
 cop #$C1
 cop #$8B
 cop #$CB
-lda $28 : cmp #$0008 : bcs B_80DB69 : clc : adc #$0005 : sta $28
+lda $28 : cmp #$0008 : bcs B_80DB69
+clc : adc #$0005 : sta $28
 cop #$CA : db $0A
 cop #$C1
 cop #$8B
@@ -4013,7 +4199,7 @@ cop #$E0
 warnpc $80df29
 
 org $80df38
-lda #$0083 : sta $7f000a,x
+lda #$0083 : sta $7f000a,x   ; Small DP pickup.
 lda #$0400 : trb $10
 cop #$84 : db $04,$0a
 cop #$8A
@@ -4022,12 +4208,11 @@ cop #$8A
 cop #$E0
 
 ;org $80df52
-; Unknown actor, but it matches the others here.
 cop #$88 : dl $8ee000
 cop #$B7 : db $00
-cop #$A2 : dl $80e155 : dw $2700
+cop #$A2 : dl EPullableNoStopListener : dw $2700
 ;org $80df61
-lda #$0084 : sta $7f000a,x
+lda #$0084 : sta $7f000a,x   ; Medium DP pickup.
 lda #$0400 : trb $10
 cop #$84 : db $05,$0a
 cop #$8A
@@ -4039,7 +4224,7 @@ cop #$E0
 ; Random drop actor. Has a chance of being HP, higher if Player's HP is low.
 cop #$88 : dl $8ee000
 cop #$B7 : db $00
-cop #$A2 : dl $80e155 : dw $2700
+cop #$A2 : dl EPullableNoStopListener : dw $2700
 lda $0aca : lsr : lsr : cmp $0ace : bcc +
   lda #$0020 : bra ++
 +:
@@ -4064,7 +4249,7 @@ pha
 rts
 
 ;org $80dfc9
-lda #$0085 : sta $7f000a,x
+lda #$0085 : sta $7f000a,x    ; Big DP pickup.
 lda #$0400 : trb $10
 cop #$84 : db $06,$0a
 cop #$8A
@@ -4073,7 +4258,7 @@ cop #$8A
 cop #$E0
 
 ;org $80dfe3
-lda #$0086 : sta $7f000a,x
+lda #$0086 : sta $7f000a,x    ; HP pickup.
 lda #$0400 : trb $10
 cop #$84 : db $22,$b4
 cop #$8A
@@ -4161,6 +4346,75 @@ lda $0644 : jsl LR_SetFlag30A     ; $80B4A1
 cop #$C5
 
 ;org $80e155
+EPullableNoStopListener:
+cop #$C6 : dw B_80E155
+cop #$C2
+cop #$40 : dw $0031, B_80E162
+B_80E161:    ; org $80e161
+rtl
+B_80E162:    ; org $80e162
+cop #$21 : db $0F : dw B_80E168
+rtl
+B_80E168:    ; org $80e168
+cop #$2A : dw $000F, B_80E1DF, B_80E172, B_80E1DF
+B_80E172:    ; org $80e172
+ldy $09AA
+lda $0016,y : sec : sbc $16 : bpl B_80E1B1
+bpl B_80E183
+  eor #$FFFF : inc a
+B_80E183:    ; org $80e183
+lsr a : sta $7F0010,x
+jsl LR_GetPlayerFacingDirection : cmp #$0000 : bne B_80E1AF
+cop #$C1
+ldy $04
+lda $0016,y : sec : sbc #$0002 : sta $0016,y : sta $16
+lda $7F0010,x : beq B_80E1AF
+dec a : sta $7F0010,x
+beq B_80E1AF
+rtl
+B_80E1AF:    ; org $80e1af
+cop #$C5
+B_80E1B1:    ; org $80e1b1
+lsr a : sta $7F0010,x
+jsl LR_GetPlayerFacingDirection : cmp #$0001 : bne B_80E1DD
+cop #$C1
+ldy $04
+lda $0016,y : clc : adc #$0002 : sta $0016,y : sta $16
+lda $7F0010,x : beq B_80E1DD
+dec a : sta $7F0010,x
+beq B_80E1DD
+rtl
+B_80E1DD:    ; org $80e1dd
+cop #$C5
+B_80E1DF:    ; org $80e1df
+cop #$2B : dw $000F, B_80E161, B_80E1E9, B_80E161
+B_80E1E9:    ; org $80e1e9
+ldy $09AA
+lda $0014,y : sec : sbc $14 : bpl B_80E228 : bpl B_80E1FA : eor #$FFFF : inc a
+B_80E1FA:    ; org $80e1fa
+lsr a : sta $7F0010,x
+jsl LR_GetPlayerFacingDirection : cmp #$0003 : bne B_80E226
+cop #$C1
+ldy $04
+lda $0014,y : sec : sbc #$0002 : sta $0014,y : sta $14
+lda $7F0010,x : beq B_80E226
+dec a : sta $7F0010,x
+beq B_80E226
+rtl
+B_80E226:    ; org $80e226
+cop #$C5
+B_80E228:    ; org $80e228
+lsr a : sta $7F0010,x
+jsl LR_GetPlayerFacingDirection : cmp #$0002 : bne B_80E254
+cop #$C1
+ldy $04
+lda $0014,y : clc : adc #$0002 : sta $0014,y : sta $14
+lda $7F0010,x : beq B_80E254
+dec a : sta $7F0010,x
+beq B_80E254
+rtl
+B_80E254:    ; org $80e254
+cop #$C5
 
 
 ; org $80e256
@@ -4168,7 +4422,7 @@ EPullableListener:
 B_80E256:
 cop #$C6 : dw B_80E256
 cop #$C2
-cop #$40 : dw $0031, $E263
+cop #$40 : dw $0031, B_80E263
 ; org $80e262
 B_80E262:
 rtl
@@ -5022,7 +5276,7 @@ clc : adc $16 : sta $16     ; Result is This.y += ($7F:12 * cos($7F:10)) / 2.
 rtl
 
 ;org $80f428
-LR_EllipseOrbitAtY:    ; Like LR_Orbit, but $7F:10 and $7F:11 are different angles for x and y.
+LR_EllipseOrbitAtY:    ; Like LR_Orbit, but $7F:10/12 and $7F:11/13 are separate, for x and y respectively.
 lda $0014,y : sta $14
 lda $0016,y : sta $16
 LR_EllipseOrbit:    ; org $80f432

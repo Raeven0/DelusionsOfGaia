@@ -164,6 +164,13 @@ db $11,$17 : db $83,$00 : db $a4,$01,$09 : db $04,$00,$00
 }
 
 ;org $818234
+; Room exit format:
+; db posX,posY,sizeX,sizeY : db newMap : dw spawnX,spawnY : db DeathWarpAndFace,CamNorthWest,CamSouthEast
+; Stairs format:
+; db posX,posY,sizeX,sizeY : db CamNorthWest, CamSouthEast : db StairDirAndSpeed, EnterFaceAndSpeed
+;   : dw spawnRelativeX,spawnRelativeY : db ExitFaceAndSpeed
+; Facing dir+speeds index Table_PlayerSpawnSpritesAndMoves at $81abde. Room exits don't use speed.
+; Stair dir (high) nibble is 1-East, 2-West, 4-South, 8-North (0 also works for South).
 Table_ScreenExits:
 .Pointers:
 {
@@ -1773,24 +1780,30 @@ db $FF
 
 
 ;org $81A95E
+; Stair movement halts on the frame the camera precisely hits a boundary,
+; or when it would go OOB (the frame after if moving positive, the frame before
+; if moving negative). The latter produces a visible jerk as the camera clamps
+; itself after the stair exit animation ends. If you are moving between fixed-
+; and free-camera areas, choose a speed whose traversal path equals (if inbounds)
+; or includes (if hitting OOB) the precise distance between the old and new camera positions.
 Table_StairSpeedPointers:
 {
-dw $A97E    ; Index $00
-dw $A992    ; Index $01
-dw $A9AE    ; Index $02
-dw $A9C2    ; Index $03
-dw $A9D6    ; Index $04
-dw $A9EA    ; Index $05
-dw $AA06    ; Index $06
-dw $AA1A    ; Index $07
-dw $AA2E    ; Index $08
-dw $AA42    ; Index $09
-dw $AA56    ; Index $0A
-dw $AA72    ; Index $0B
-dw $AA86    ; Index $0C
-dw $AA9A    ; Index $0D
-dw $AAAE    ; Index $0E
-dw $AAC2    ; Index $0F
+dw $A97E    ; Index $00 covers distance $100
+dw $A992    ; Index $01 covers distance $200
+dw $A9AE    ; Index $02 covers distance $F0
+dw $A9C2    ; Index $03 covers distance $110
+dw $A9D6    ; Index $04 covers distance $120
+dw $A9EA    ; Index $05 covers distance $500
+dw $AA06    ; Index $06 covers distance $130
+dw $AA1A    ; Index $07 covers distance $140
+dw $AA2E    ; Index $08 covers distance $150
+dw $AA42    ; Index $09 covers distance $160
+dw $AA56    ; Index $0A covers distance $2F0
+dw $AA72    ; Index $0B covers distance $180
+dw $AA86    ; Index $0C covers distance $1E0
+dw $AA9A    ; Index $0D covers distance $1F0
+dw $AAAE    ; Index $0E covers distance $210
+dw $AAC2    ; Index $0F covers distance $310
 }
 Table_StairSpeeds:      ; Format: numFrames,speed
 {
@@ -2011,15 +2024,15 @@ db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 
 ;org $81ABDE
 Table_PlayerSpawnSpritesAndMoves:
-db $09,$12   ; NorthWalk, Speed -1/2
-db $08,$11   ; SouthWalk, Speed +1/2
-db $09,$14   ; NorthWalk, Speed -1/4
-db $08,$11   ; SouthWalk, Speed +1/2
-db $09,$14   ; NorthWalk, Speed -1/4
-db $09,$12   ; NorthWalk, Speed -1/2
-db $02,$00   ; WestFace,  Speed 0
-db $03,$00   ; EastFace,  Speed 0
-db $08,$13   ; SouthWalk, Speed +1/4
+db $09,$12   ; $00 NorthWalk, Speed -1/2
+db $08,$11   ; $01 SouthWalk, Speed +1/2
+db $09,$14   ; $02 NorthWalk, Speed -1/4
+db $08,$11   ; $03 SouthWalk, Speed +1/2
+db $09,$14   ; $04 NorthWalk, Speed -1/4
+db $09,$12   ; $05 NorthWalk, Speed -1/2
+db $02,$00   ; $06 WestFace,  Speed 0
+db $03,$00   ; $07 EastFace,  Speed 0
+db $08,$13   ; $08 SouthWalk, Speed +1/4
 
 
 ;org $81ABF0
@@ -5036,7 +5049,7 @@ Table_TextTemplates:
 dw $CAC1    ; Will
 dw $CACE    ; Kara
 dw $CADB    ; Lily
-dw $CAE8    ; ($03) orange
+dw $CAE8    ; Erik (orange)
 dw $CAF5    ; Lance
 dw $CB02    ; Seth
 dw $CB0F    ; Neil
@@ -5117,7 +5130,7 @@ db $D4,$11,$F7,$73,$D4,$12,$22,$23,$C3,$04,$CA
 }
 
 ;org $81CBA6
-Table_MusicAddresses:   ; Some callers use index 1, some use 0.
+Table_MusicAddresses:   ; Some callers (e.g. COP) use 1-indexed, some use 0.
 {
 dl $97C443    ; City
 dl $97C443    ; City (dupe)
@@ -5791,139 +5804,199 @@ db $4D,$79,$73,$74,$69,$63,$40,$10,$0C,$00
 Text_ItemNamesInv:
 .Pointers:
 {
-dw $de9e    ; $00 = null
-dw $de9f    ; 
-dw $deaa    ; 
-dw $deb0    ; 
-dw $deb6    ; 
-dw $debc    ; 
-dw $dec5    ; 
-dw $dece    ; 
-dw $ded9    ; 
-dw $dee6    ; 
-dw $def5    ; 
-dw $defb    ; 
-dw $df06    ; 
-dw $df11    ; 
-dw $df1f    ; 
-dw $df2c    ; 
-dw $df3b    ; $10
-dw $df46    ; 
-dw $df53    ; 
-dw $df5d    ; 
-dw $df69    ; 
-dw $df74    ; 
-dw $df81    ; 
-dw $df92    ; 
-dw $dfa2    ; 
-dw $dfa7    ; 
-dw $dfb0    ; 
-dw .BagOfGold    ; $dfbe
-dw $dfca    ; 
-dw $dfda    ; 
-dw $dfe9    ; 
-dw $dff4    ; 
-dw $dfff    ; $20
-dw $e00a    ; 
-dw $e015    ; 
-dw $e020    ; 
-dw $e02b    ; 
-dw $e032    ; 
-dw $e041    ; 
-dw $e053    ; 
-dw $e060    ; 
-dw $e06b    ; 
-dw $e074    ; 
-dw $e07d    ; 
-dw $e086    ; 
-dw $e08f    ; 
-dw $e098    ; 
-dw $e0a1    ; 
-dw $e0aa    ; $30
-dw $e0b3    ; 
-dw $e0bc    ; 
-dw $e0c5    ; 
-dw $e0ce    ; 
-dw $e0d7    ; 
-dw $e0e0    ; 
-dw $e0e9    ; 
-dw $e0f2    ; 
-dw $e0f9    ; 
-dw $e100    ; 
-dw $e107    ; 
-dw $e10e    ; 
-dw $e115    ; 
-dw $e11c    ; 
-dw $e123    ; $3f
+dw .Null             ; $de9e    ; $00 = null
+dw .RedJewel         ; $de9f    ; 
+dw .PrisonKey        ; $deaa    ; 
+dw .IncaStatueA      ; $deb0    ; 
+dw .IncaStatueB      ; $deb6    ; 
+dw .IncaMelody       ; $debc    ; 
+dw .Herb             ; $dec5    ; 
+dw .DiamondBlock     ; $dece    ; 
+dw .WindMelody       ; $ded9    ; 
+dw .LolasMelody      ; $dee6    ; 
+dw .Meat             ; $def5    ; 
+dw .MineKeyA         ; $defb    ; 
+dw .MineKeyB         ; $df06    ; 
+dw .MemoryMelody     ; $df11    ; 
+dw .CrystalBall      ; $df1f    ; 
+dw .MineElevatorKey  ; $df2c    ; 
+dw .MuPalaceKey      ; $df3b    ; $10
+dw .PurifyStone      ; $df46    ; 
+dw .HopeStatue       ; $df53    ; 
+dw .RamaStatue       ; $df5d    ; 
+dw .MagicPowder      ; $df69    ; 
+dw .BlueJournal      ; $df74    ; 
+dw .LancesLetter     ; $df81    ; 
+dw .Necklace         ; $df92    ; 
+dw .RussianGlassWill ; $dfa2    ; 
+dw .Teapot           ; $dfa7    ; 
+dw .MushroomDrops    ; $dfb0    ; 
+dw .BagOfGold        ; $dfbe
+dw .BlackGlasses     ; $dfca    ; 
+dw .GorgonFlower     ; $dfda    ; 
+dw .Hieroglyph1E     ; $dfe9    ; 
+dw .Hieroglyph1F     ; $dff4    ; 
+dw .Hieroglyph20     ; $dfff    ; $20
+dw .Hieroglyph21     ; $e00a    ; 
+dw .Hieroglyph22     ; $e015    ; 
+dw .Hieroglyph23     ; $e020    ; 
+dw .Aura             ; $e02b    ; 
+dw .LolasLetter      ; $e032    ; 
+dw .FathersJournal   ; $e041    ; 
+dw .CrystalRing      ; $e053    ; 
+dw .Apple            ; $e060    ; 
+dw .Blank29          ; $e06b    ; 
+dw .Blank2a          ; $e074    ; 
+dw .Blank2b          ; $e07d    ; 
+dw .Blank2c          ; $e086    ; 
+dw .Blank2d          ; $e08f    ; 
+dw .Blank2e          ; $e098    ; 
+dw .Blank2f          ; $e0a1    ; 
+dw .Blank30          ; $e0aa    ; $30
+dw .Blank31          ; $e0b3    ; 
+dw .Blank32          ; $e0bc    ; 
+dw .Blank33          ; $e0c5    ; 
+dw .Blank34          ; $e0ce    ; 
+dw .Blank35          ; $e0d7    ; 
+dw .Blank36          ; $e0e0    ; 
+dw .Blank37          ; $e0e9    ; 
+dw .MysticStatue1    ; $e0f2    ; 
+dw .MysticStatue2    ; $e0f9    ; 
+dw .MysticStatue3    ; $e100    ; 
+dw .MysticStatue4    ; $e107    ; 
+dw .MysticStatue5    ; $e10e    ; 
+dw .MysticStatue6    ; $e115    ; 
+dw .MysticStatue7    ; $e11c    ; 
+dw .MysticStatue8    ; $e123    ; $3f
 }
 {
+.Null:
 db $00
+.RedJewel:
 db $52,$65,$64,$40,$4a,$65,$77,$65,$6c,$40,$00
+.PrisonKey:
 db $10,$06,$4b,$65,$79,$00
+.IncaStatueA:
 db $10,$04,$10,$0c,$41,$00
+.IncaStatueB:
 db $10,$04,$10,$0c,$42,$00
+.IncaMelody:
 db $10,$04,$4d,$65,$6c,$6f,$64,$79,$00
+.Herb:
 db $48,$65,$72,$62,$40,$40,$40,$40,$00
+.DiamondBlock:
 db $42,$6c,$75,$65,$40,$42,$6c,$6f,$63,$6b,$00
+.WindMelody:
 db $57,$69,$6e,$64,$40,$4d,$65,$6c,$6f,$64,$79,$40,$00
+.LolasMelody:
 db $4c,$6f,$6c,$61,$5c,$73,$40,$4d,$65,$6c,$6f,$64,$79,$40,$00
+.Meat:
 db $4d,$65,$61,$74,$40,$00
+.MineKeyA:
 db $4d,$69,$6e,$65,$40,$4b,$65,$79,$40,$41,$00
+.MineKeyB:
 db $4d,$69,$6e,$65,$40,$4b,$65,$79,$40,$42,$00
+.MemoryMelody:
 db $4d,$65,$6d,$6f,$72,$79,$40,$4d,$65,$6c,$6f,$64,$79,$00
+.CrystalBall:
 db $43,$72,$79,$73,$74,$61,$6c,$40,$42,$61,$6c,$6c,$00
+.MineElevatorKey:
 db $45,$6c,$65,$76,$61,$74,$6f,$72,$40,$4b,$65,$79,$40,$40,$00
-; $10 = Mu Palace Key
+.MuPalaceKey:
 db $50,$61,$6c,$61,$63,$65,$40,$4b,$65,$79,$00
+.PurifyStone:
 db $50,$75,$72,$69,$66,$79,$40,$53,$74,$6f,$6e,$65,$00
+.HopeStatue:
 db $10,$0c,$6f,$66,$40,$48,$6f,$70,$65,$00
+.RamaStatue:
 db $52,$61,$6d,$61,$40,$53,$74,$61,$74,$75,$65,$00
+.MagicPowder:
 db $4d,$61,$67,$69,$63,$40,$44,$75,$73,$74,$00
+.BlueJournal:
 db $42,$6c,$75,$65,$40,$4a,$6f,$75,$72,$6e,$61,$6c,$00
+.LancesLetter:
 db $4c,$61,$6e,$63,$65,$5c,$73,$40,$6c,$65,$74,$74,$65,$72,$40,$40,$00
+.Necklace:
 db $4e,$65,$63,$6b,$6c,$61,$63,$65,$40,$53,$74,$6f,$6e,$65,$73,$00
+.RussianGlassWill:
 db $57,$69,$6c,$6c,$00
+.Teapot:
 db $54,$65,$61,$70,$6f,$74,$40,$40,$00
+.MushroomDrops:
 db $4d,$75,$73,$68,$72,$6f,$6f,$6d,$40,$44,$72,$6f,$70,$00
 .BagOfGold:
 db $42,$61,$67,$40,$6f,$66,$40,$47,$6f,$6c,$64,$00
+.BlackGlasses:
 db $42,$6c,$61,$63,$6b,$40,$47,$6c,$61,$73,$73,$65,$73,$40,$40,$00
+.GorgonFlower:
 db $47,$6f,$72,$67,$6f,$6e,$40,$46,$6c,$6f,$77,$65,$72,$40,$00
+.Hieroglyph1E:
 db $48,$69,$65,$72,$6f,$67,$6c,$79,$70,$68,$00
+.Hieroglyph1F:
 db $48,$69,$65,$72,$6f,$67,$6c,$79,$70,$68,$00
-; $20 = Hieroglyph $20
+.Hieroglyph20:
 db $48,$69,$65,$72,$6f,$67,$6c,$79,$70,$68,$00
+.Hieroglyph21:
 db $48,$69,$65,$72,$6f,$67,$6c,$79,$70,$68,$00
+.Hieroglyph22:
 db $48,$69,$65,$72,$6f,$67,$6c,$79,$70,$68,$00
+.Hieroglyph23:
 db $48,$69,$65,$72,$6f,$67,$6c,$79,$70,$68,$00
+.Aura:
 db $41,$75,$72,$61,$40,$40,$00
+.LolasLetter:
 db $4c,$6f,$6c,$61,$5c,$73,$40,$4c,$65,$74,$74,$65,$72,$40,$00
+.FathersJournal:
 db $46,$61,$74,$68,$65,$72,$5c,$73,$40,$4a,$6f,$75,$72,$6e,$61,$6c,$40,$00
+.CrystalRing:
 db $43,$72,$79,$73,$74,$61,$6c,$40,$52,$69,$6e,$67,$00
-; $28 = "Red Apple "
+.Apple:
 db $52,$65,$64,$40,$41,$70,$70,$6c,$65,$40,$00
+.Blank29:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank2a:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank2b:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank2c:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank2d:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank2e:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank2f:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank30:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank31:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank32:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank33:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank34:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank35:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank36:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.Blank37:
 db $40,$40,$40,$40,$40,$40,$40,$40,$00
+.MysticStatue1:
 db $10,$05,$44,$6f,$6c,$6c,$00
+.MysticStatue2:
 db $10,$05,$44,$6f,$6c,$6c,$00
+.MysticStatue3:
 db $10,$05,$44,$6f,$6c,$6c,$00
+.MysticStatue4:
 db $10,$05,$44,$6f,$6c,$6c,$00
+.MysticStatue5:
 db $10,$05,$44,$6f,$6c,$6c,$00
+.MysticStatue6:
 db $10,$05,$44,$6f,$6c,$6c,$00
+.MysticStatue7:
 db $10,$05,$44,$6f,$6c,$6c,$00
+.MysticStatue8:
 db $10,$05,$44,$6f,$6c,$6c,$00
 }
 
@@ -6183,13 +6256,13 @@ db $40,$53,$68,$61,$64,$6F,$77,$00
 {
 Bg3_StatusBase:
 db $01 : dw $0048 
-db $03 : db $00 
+db $03 : db $14
 db $0c : db $01,02,$03,$04,$05 : db $ff 
 db $01 : dw $0084 
-db $03 : db $00 
+db $03 : db $08
 db $0A 
 db $01 : dw $009C 
-db $03 : db $00 
+db $03 : db $14
 db $05 : db $01 : dw $0AD8 
 db $01 : dw $00A2 
 db $0e : dw $0AD6 
@@ -6260,7 +6333,7 @@ db $00
 ;org $81e870
 Bg3_InvCondContents:
 db $01 : dw $0146 
-db $03 : db $01 
+db $03 : db $14 
 db $53,$54,$59,$4C,$45 
 db $03 : db $00 
 db $04 : dl $81E7CE : dw $0AD4 
@@ -6274,7 +6347,7 @@ db $53,$54,$52
 db $01 : dw $0286 
 db $44,$45,$46 
 db $01 : dw $01CE 
-db $03 : db $01 
+db $03 : db $00
 db $0e : dw $0ACE 
 db $1D 
 db $0e : dw $0ACA 
@@ -6640,7 +6713,7 @@ dw $EEF2    ; Lilly
 dw $EEF9    ; Lola's
 dw $EF01    ; Lola:
 dw $EF08    ; Mystery
-dw $EF11    ; Maybe
+dw $EF11    ; Maybe    ; $30
 dw $EF18    ; Moon
 dw $EF1E    ; Man:
 dw $EF24    ; Morris's
@@ -6656,7 +6729,7 @@ dw $EF68    ; Psycho
 dw $EF70    ; People
 dw $EF78    ; Prayer
 dw $EF80    ; Pyramid
-dw $EF89    ; Purification
+dw $EF89    ; Purification    ; $40
 dw $EF97    ; Plate
 dw $EF9E    ; Quit
 dw $EFA4    ; Rob:
@@ -6672,7 +6745,7 @@ dw $EFF2    ; Shadow's
 dw $EFFC    ; Someone
 dw $F005    ; This
 dw $F00B    ; Will:
-dw $F012    ; There's
+dw $F012    ; There's    ; $50
 dw $F01B    ; Will's
 dw $F023    ; There
 dw $F02A    ; That's
@@ -6688,7 +6761,7 @@ dw $F065    ; Will,
 dw $F06C    ; They're
 dw $F075    ; These
 dw $F07C    ; Vampire
-dw $F085    ; Village.
+dw $F085    ; Village.    ; $60
 dw $F08F    ; When
 dw $F095    ; What
 dw $F09B    ; Well,
@@ -6704,7 +6777,7 @@ dw $F0DC    ; anything
 dw $F0E6    ; around
 dw $F0EE    ; another
 dw $F0F7    ; ancient
-dw $F100    ; been
+dw $F100    ; been    ; $70
 dw $F106    ; become
 dw $F10E    ; body
 dw $F114    ; back
@@ -6720,7 +6793,7 @@ dw $F158    ; company
 dw $F161    ; children
 dw $F16B    ; constellation
 dw $F17A    ; changed
-dw $F183    ; came
+dw $F183    ; came    ; $80
 dw $F189    ; coming
 dw $F191    ; don't
 dw $F198    ; didn't
@@ -6736,7 +6809,7 @@ dw $F1EE    ; enemies
 dw $F1F7    ; exposed
 dw $F200    ; from
 dw $F206    ; found
-dw $F20D    ; find
+dw $F20D    ; find    ; $90
 dw $F213    ; feel
 dw $F219    ; father's
 dw $F223    ; going
@@ -6752,7 +6825,7 @@ dw $F25F    ; huge
 dw $F265    ; happened
 dw $F26F    ; hieroglyph
 dw $F27B    ; it's
-dw $F281    ; inventory
+dw $F281    ; inventory    ; $a0
 dw $F28C    ; into
 dw $F292    ; inside
 dw $F29A    ; just
@@ -6768,7 +6841,7 @@ dw $F2D7    ; leave
 dw $F2DE    ; labor
 dw $F2E5    ; left
 dw $F2EB    ; live
-dw $F2F1    ; life
+dw $F2F1    ; life    ; $b0
 dw $F2F7    ; living
 dw $F2FF    ; must
 dw $F305    ; made
@@ -6784,7 +6857,7 @@ dw $F343    ; next
 dw $F349    ; other
 dw $F350    ; over
 dw $F356    ; outside
-dw $F35F    ; original
+dw $F35F    ; original    ; $c0
 dw $F369    ; people
 dw $F371    ; power
 dw $F378    ; present.
@@ -6800,7 +6873,7 @@ dw $F3CC    ; seems
 dw $F3D3    ; same
 dw $F3D9    ; such
 dw $F3DF    ; someone
-dw $F3E8    ; some
+dw $F3E8    ; some    ; $d0
 dw $F3EE    ; save
 dw $F3F4    ; statues
 dw $F3FD    ; still
@@ -6816,7 +6889,7 @@ dw $F43E    ; through
 dw $F447    ; tried
 dw $F44E    ; terrible
 dw $F458    ; time
-dw $F45E    ; things
+dw $F45E    ; things    ; $e0
 dw $F466    ; their
 dw $F46D    ; town
 dw $F473    ; thing
@@ -6832,7 +6905,7 @@ dw $F4BD    ; village
 dw $F4C6    ; very
 dw $F4CC    ; voice
 dw $F4D3    ; will
-dw $F4D9    ; with
+dw $F4D9    ; with    ; $f0
 dw $F4DF    ; want
 dw $F4E5    ; were
 dw $F4EB    ; would
@@ -6847,7 +6920,7 @@ dw $F524    ; wouldn't
 dw $F52E    ; wanted
 dw $F536    ; waiting
 dw $F53F    ; your
-dw $F545    ; you're
+dw $F545    ; you're    ; $ff
 }
 ;org $81eda8
 {
@@ -7129,7 +7202,7 @@ dw $F743    ; Eric's
 dw $F74B    ; Everybody
 dw $F756    ; Flute:
 dw $F75E    ; First
-dw $F765    ; Firebird,
+dw $F765    ; Firebird,    ; $10
 dw $F770    ; From
 dw $F776    ; Gaia,
 dw $F77D    ; Gorgon
@@ -7145,7 +7218,7 @@ dw $F7C3    ; Man's
 dw $F7CA    ; Memory
 dw $F7D2    ; Mountain
 dw $F7DC    ; Morris
-dw $F7E4    ; Many
+dw $F7E4    ; Many    ; $20
 dw $F7EA    ; Native
 dw $F7F2    ; Native's
 dw $F7FC    ; Neil
@@ -7161,7 +7234,7 @@ dw $F844    ; Right
 dw $F84B    ; Russian
 dw $F854    ; Rofsky
 dw $F85C    ; Rearrange
-dw $F867    ; Special
+dw $F867    ; Special    ; $30
 dw $F870    ; Spin
 dw $F876    ; Seaside
 dw $F87F    ; She's
@@ -7177,7 +7250,7 @@ dw $F8BE    ; Uses
 dw $F8C4    ; Wind
 dw $F8CA    ; We'll
 dw $F8D1    ; We're
-dw $F8D8    ; With
+dw $F8D8    ; With    ; $40
 dw $F8DE    ; We've
 dw $F8E5    ; Wait
 dw $F8EB    ; Watermia.
@@ -7193,7 +7266,7 @@ dw $F940    ; birthday
 dw $F94A    ; best
 dw $F950    ; bring
 dw $F957    ; bouquet
-dw $F960    ; better
+dw $F960    ; better    ; $50
 dw $F968    ; behind
 dw $F970    ; change
 dw $F978    ; castle
@@ -7209,7 +7282,7 @@ dw $F9CD    ; dark
 dw $F9D3    ; ever
 dw $F9D9    ; elevator
 dw $F9E3    ; explorer.
-dw $F9EE    ; eyes
+dw $F9EE    ; eyes    ; $60
 dw $F9F4    ; first
 dw $F9FB    ; fish
 dw $FA01    ; followed
@@ -7225,7 +7298,7 @@ dw $FA4B    ; girl
 dw $FA51    ; gets
 dw $FA57    ; guess
 dw $FA5E    ; girl's
-dw $FA66    ; house
+dw $FA66    ; house    ; $70
 dw $FA6D    ; hope
 dw $FA73    ; home
 dw $FA79    ; here
@@ -7241,7 +7314,7 @@ dw $FAC3    ; list
 dw $FAC9    ; life.
 dw $FAD0    ; laborer
 dw $FAD9    ; letter
-dw $FAE1    ; looked
+dw $FAE1    ; looked    ; $80
 dw $FAE9    ; lose
 dw $FAEF    ; left-hand
 dw $FAFA    ; mushrooms
@@ -7257,7 +7330,7 @@ dw $FB3F    ; outskirts
 dw $FB4A    ; president
 dw $FB55    ; please
 dw $FB5D    ; probably
-dw $FB67    ; place
+dw $FB67    ; place    ; $90
 dw $FB6E    ; prison
 dw $FB76    ; pretty
 dw $FB7E    ; palace
@@ -7273,7 +7346,7 @@ dw $FBC5    ; rest
 dw $FBCB    ; stone
 dw $FBD2    ; seem
 dw $FBD8    ; scattered
-dw $FBE3    ; seemed
+dw $FBE3    ; seemed    ; $a0
 dw $FBEB    ; softly
 dw $FBF3    ; soldiers
 dw $FBFD    ; shape
@@ -7289,7 +7362,7 @@ dw $FC45    ; talk
 dw $FC4B    ; tell
 dw $FC51    ; townspeople
 dw $FC5E    ; taken
-dw $FC65    ; they're
+dw $FC65    ; they're    ; $b0
 dw $FC6E    ; travelling
 dw $FC7A    ; trying
 dw $FC82    ; turned
@@ -7305,7 +7378,7 @@ dw $FCC9    ; until
 dw $FCD0    ; village.
 dw $FCDA    ; vampire
 dw $FCE3    ; while
-dw $FCEA    ; water
+dw $FCEA    ; water    ; $c0
 dw $FCF1    ; went
 dw $FCF7    ; wondered
 dw $FD01    ; written
@@ -7522,104 +7595,168 @@ db $A9,$8E,$A5,$2A,$ac,$ca        ; 	you.
 Bg3_ItemGetText:
 .Pointers:
 {
-dw $FDA4    ; $00 = null
-dw $FDA7    ; 
-dw $FDBB    ; 
-dw $FDC2    ; 
-dw $FDCD    ; 
-dw $FDD8    ; 
-dw $FDE1    ; 
-dw $FDF1    ; 
-dw $FE12    ; 
-dw $FE17    ; 
-dw $FE1C    ; 
-dw $FE29    ; 
-dw $FE2B    ; 
-dw $FE2D    ; 
-dw $FE2F    ; 
-dw $FE45    ; 
-dw $FE47    ; $10 = Mu Palace Key
-dw $FE52    ; 
-dw $FE54    ; 
-dw $FE56    ; 
-dw $FE6B    ; 
-dw $FE7D    ; 
-dw $FE7D    ; 
-dw $FE7D    ; 
-dw $FE7D    ; 
-dw $FE7D    ; 
-dw $FE90    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; $20 = Hieroglyph $20
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; $30
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA6    ; 
-dw $FEA8    ; 
-dw $FEBC    ; 
-dw $FEC6    ; 
-dw $FED0    ; 
-dw $FEDA    ; 
-dw $FEE4    ; 
-dw $FEEE    ; 
-dw $FEF8    ; $3f
+dw .Null             ; $FDA4    ; $00 = null
+dw .RedJewel         ; $FDA7    ; You found a Red Jewel!
+dw .PrisonKey        ; $FDBB    ; Prison Key
+dw .IncaStatueA      ; $FDC2    ; Incan Statue A
+dw .IncaStatueB      ; $FDCD    ; Incan Statue B
+dw .IncaMelody       ; $FDD8    ; Incan Melody
+dw .Herb             ; $FDE1    ; You found an herb!
+dw .DiamondBlock     ; $FDF1    ; You found \nthe diamond-shaped block!
+dw .WindMelody       ; $FE12    ; Wind Melody
+dw .LolasMelody      ; $FE17    ; Lola's Melody
+dw .Meat             ; $FE1C    ; Large Roast
+dw .MineKeyA         ; $FE29    ; [blank]
+dw .MineKeyB         ; $FE2B    ; [blank]
+dw .MemoryMelody     ; $FE2D    ; [blank]
+dw .CrystalBall      ; $FE2F    ; You found\nthe Crystal Ball!
+dw .MineElevatorKey  ; $FE45    ; [blank]
+dw .MuPalaceKey      ; $FE47    ; $10 = "Palace Key"
+dw .PurifyStone      ; $FE52    ; [blank]
+dw .HopeStatue       ; $FE54    ; [blank]
+dw .RamaStatue       ; $FE56    ; You found Rama's Statue!
+dw .MagicPowder      ; $FE6B    ; You found Magic Dust!
+dw .BlueJournal      ; $FE7D    ; You found the Teapot!
+dw .LancesLetter     ; $FE7D    ; You found the Teapot!
+dw .Necklace         ; $FE7D    ; You found the Teapot!
+dw .RussianGlassWill ; $FE7D    ; You found the Teapot!
+dw .Teapot           ; $FE7D    ; You found the Teapot!
+dw .MushroomDrops    ; $FE90    ; It's the Mushroom Drops!
+dw .BagOfGold        ; $FEA6    ; [blank through Mystic Statues]
+dw .BlackGlasses     ; $FEA6    ; 
+dw .GorgonFlower     ; $FEA6    ; 
+dw .Hieroglyph1E     ; $FEA6    ; 
+dw .Hieroglyph1F     ; $FEA6    ; 
+dw .Hieroglyph20     ; $FEA6    ; $20 = Hieroglyph $20
+dw .Hieroglyph21     ; $FEA6    ; 
+dw .Hieroglyph22     ; $FEA6    ; 
+dw .Hieroglyph23     ; $FEA6    ; 
+dw .Aura             ; $FEA6    ; 
+dw .LolasLetter      ; $FEA6    ; 
+dw .FathersJournal   ; $FEA6    ; 
+dw .CrystalRing      ; $FEA6    ; 
+dw .Apple            ; $FEA6    ; 
+dw .Blank29          ; $FEA6    ; 
+dw .Blank2a          ; $FEA6    ; 
+dw .Blank2b          ; $FEA6    ; 
+dw .Blank2c          ; $FEA6    ; 
+dw .Blank2d          ; $FEA6    ; 
+dw .Blank2e          ; $FEA6    ; 
+dw .Blank2f          ; $FEA6    ; 
+dw .Blank30          ; $FEA6    ; $30
+dw .Blank31          ; $FEA6    ; 
+dw .Blank32          ; $FEA6    ; 
+dw .Blank33          ; $FEA6    ; 
+dw .Blank34          ; $FEA6    ; 
+dw .Blank35          ; $FEA6    ; 
+dw .Blank36          ; $FEA6    ; 
+dw .Blank37          ; $FEA6    ; 
+dw .MysticStatue1    ; $FEA8    ; It's a Mystic Statue!
+dw .MysticStatue2    ; $FEBC    ; Mystic Statue
+dw .MysticStatue3    ; $FEC6    ; Mystic Statue
+dw .MysticStatue4    ; $FED0    ; Mystic Statue
+dw .MysticStatue5    ; $FEDA    ; Mystic Statue
+dw .MysticStatue6    ; $FEE4    ; Mystic Statue
+dw .MysticStatue7    ; $FEEE    ; Mystic Statue
+dw .MysticStatue8    ; $FEF8    ; $3f = "Mystic Statue"
 }
 ;org $81fda4
 {
+.Null:
 db $AC,$AC,$ca
+.RedJewel:
 db $69,$8E,$A5,$AC,$D6,$8F,$80,$AC,$62,$84,$83,$AC,$49,$84,$A7,$84,$8B,$4F,$AC,$ca
+.PrisonKey:
 db $D7,$26,$4A,$84,$A9,$AC,$ca
+.IncaStatueA:
 db $48,$8D,$82,$80,$8D,$AC,$D6,$48,$40,$AC,$ca
+.IncaStatueB:
 db $48,$8D,$82,$80,$8D,$AC,$D6,$48,$41,$AC,$ca
+.IncaMelody:
 db $48,$8D,$82,$80,$8D,$AC,$D6,$34,$ca
+.Herb:
 db $69,$8E,$A5,$AC,$D6,$8F,$80,$8D,$AC,$87,$84,$A2,$81,$4F,$AC,$ca
+.DiamondBlock:
 db $69,$8E,$A5,$AC,$D6,$8F,$CB,$A4,$87,$84,$AC,$83,$88,$80,$8C,$8E,$8D,$83,$6D,$A3,$87,$80,$A0,$84,$83,$AC,$81,$8B,$8E,$82,$8A,$4F,$ca
+.WindMelody:
 db $D7,$3D,$D6,$34,$ca
+.LolasMelody:
 db $D6,$2D,$D6,$34,$ca
+.Meat:
 db $4B,$80,$A2,$86,$84,$AC,$62,$8E,$80,$A3,$A4,$AC,$ca
+.MineKeyA:
 db $AC,$ca
+.MineKeyB:
 db $AC,$ca
+.MemoryMelody:
 db $AC,$ca
+.CrystalBall:
 db $69,$8E,$A5,$AC,$85,$8E,$A5,$8D,$83,$CB,$A4,$87,$84,$AC,$D6,$07,$41,$80,$8B,$8B,$4F,$ca
+.MineElevatorKey:
 db $AC,$ca
+.MuPalaceKey:
 db $60,$80,$8B,$80,$82,$84,$AC,$4A,$84,$A9,$ca
+.PurifyStone:
 db $AC,$ca
+.HopeStatue:
 db $AC,$ca
+.RamaStatue:
 db $69,$8E,$A5,$AC,$D6,$8F,$62,$80,$8C,$80,$0E,$A3,$AC,$63,$A4,$80,$A4,$A5,$84,$4F,$ca
+.MagicPowder:
 db $69,$8E,$A5,$AC,$D6,$8F,$4C,$80,$86,$88,$82,$AC,$43,$A5,$A3,$A4,$4F,$ca
+.BlueJournal:
+.LancesLetter:
+.Necklace:
+.RussianGlassWill:
+.Teapot:
 db $69,$8E,$A5,$AC,$D6,$8F,$A4,$87,$84,$AC,$64,$84,$80,$A0,$8E,$A4,$4F,$AC,$ca
+.MushroomDrops:
 db $D6,$1D,$A4,$87,$84,$AC,$4C,$A5,$A3,$87,$A2,$8E,$8E,$8C,$AC,$43,$A2,$8E,$A0,$A3,$4F,$ca
+.BagOfGold:
+.BlackGlasses:
+.GorgonFlower:
+.Hieroglyph1E:
+.Hieroglyph1F:
+.Hieroglyph20:
+.Hieroglyph21:
+.Hieroglyph22:
+.Hieroglyph23:
+.Aura:
+.LolasLetter:
+.FathersJournal:
+.CrystalRing:
+.Apple:
+.Blank29:
+.Blank2a:
+.Blank2b:
+.Blank2c:
+.Blank2d:
+.Blank2e:
+.Blank2f:
+.Blank30:
+.Blank31:
+.Blank32:
+.Blank33:
+.Blank34:
+.Blank35:
+.Blank36:
+.Blank37:
 db $AC,$ca
+.MysticStatue1:
 db $D6,$1D,$80,$AC,$4C,$A9,$A3,$A4,$88,$82,$AC,$63,$A4,$80,$A4,$A5,$84,$4F,$AC,$ca
+.MysticStatue2:
 db $4C,$A9,$A3,$A4,$88,$82,$AC,$D6,$48,$ca
+.MysticStatue3:
 db $4C,$A9,$A3,$A4,$88,$82,$AC,$D6,$48,$ca
+.MysticStatue4:
 db $4C,$A9,$A3,$A4,$88,$82,$AC,$D6,$48,$ca
+.MysticStatue5:
 db $4C,$A9,$A3,$A4,$88,$82,$AC,$D6,$48,$ca
+.MysticStatue6:
 db $4C,$A9,$A3,$A4,$88,$82,$AC,$D6,$48,$ca
+.MysticStatue7:
 db $4C,$A9,$A3,$A4,$88,$82,$AC,$D6,$48,$ca
+.MysticStatue8:
 db $4C,$A9,$A3,$A4,$88,$82,$AC,$D6,$48,$ca
 }
 

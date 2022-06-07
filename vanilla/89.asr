@@ -2077,6 +2077,73 @@ rts
 }
 
 
+org $89bb17
+; The math below just iterates through every screen in the map
+;   to update tile solidity to match EffectLayer (except EffectLayer
+;   tile type $00, which is ignored). Special handling is required
+;   because the EffectLayer camera is offset from the MapLayer camera
+;   after the elevator scrolls, which doesn't actually change the
+;   EffectLayer tilemap; so we need to effectively offset the
+;   tilemap to match the EffectLayer camera offset.
+LR_PymdUpdateMapSolidityFromEffectLayer:
+phx
+phd
+phb
+php
+rep #$20
+lda #$0000 : tcd
+lda #$0100 : sta $3E
+sep #$20
+lda #$7E : pha : plb
+lda #$7F : sta $40    ; [$3E] now resolves to $7f0100, table of EffectLayer tile default solidities.
+lda $06BF : sec : sbc $06C1 : sta $18   ; $18 = screen diff between MapCameraX and EffectCameraX.
+lda $06C3 : sec : sbc $06C5 : sta $1C   ; $1C = screen diff between MapCameraY and EffectCameraY.
+stz $19
+stz $1D
+B_89BB46:   ; org $89bb46
+lda $19 : clc : adc $18 : bmi B_89BB89
+  cmp $0693 : bcs B_89BB93   ; cmp to MapLayerXSizeScreens
+lda $1D : clc : adc $1C : bmi B_89BB93
+  cmp $0697 : bcs .Done   ; cmp to MapLayerYSizeScreens
+lda $1D : xba
+lda $0695 : jsl LR_MultiplyBytesOfA : clc : adc $19
+xba   ; Ah = EffectLayerXSizeScreens * $1D + $19
+lda #$00 : tay   ; Yh = EffectLayerXSizeScreens * $1D + $19, Yl = 0
+lda $1D : clc : adc $1C
+xba   ; Ah = $1D + $1C, Al = EffectLayerXSizeScreens * $1D + $19 but will be discarded
+lda $0693 : jsl LR_MultiplyBytesOfA : clc : adc $19 : clc : adc $18
+xba   ; Ah = MapLayerXSizeScreens * ($1D + $1C) + $19 + $18
+lda #$00 : tax   ; Xh = MapLayerXSizeScreens * ($1D + $1C) + $19 + $18, Xl = 0
+jsr SR_PymdUpdateSingleScreenSolidityFromEffectLayer
+B_89BB89:   ; org $89bb89
+lda $19 : inc : sta $19
+cmp $0695 : bcc B_89BB46
+B_89BB93:   ; org $89bb93
+stz $19
+lda $1D : inc : sta $1D
+cmp $0699 : bcc B_89BB46
+.Done:   ; org $89bb9f
+plp
+plb
+pld
+plx
+rtl
+
+; If called with Xl = Yl = 0, Xh = Yh = screen number (counted L->R, T->B as usual),
+;   and $3E = $7f0100, updates solidity of the whole screen to EffectLayer
+;   tile solidities, but ignores EffectLayer tile type $00 so normal
+;   MapLayer solidity will still apply to those tiles.
+SR_PymdUpdateSingleScreenSolidityFromEffectLayer:   ; org $89bba4
+.NextTile:
+lda $C000,y : beq .IncCounter
+  sta $3E
+lda [$3E] : sta $7FC000,x
+.IncCounter:   ; org $89bbb1
+iny
+inx : txa : bne .NextTile
+rts
+warnpc $89bbb7
+
 
 org $89BBF7
 db $C1,$03,$06,$C7,$0D,$03,$C2,$01,$D6,$25,$D6,$1D,$A4,$84,$A2,$A2,$88,$81,$8B,$84,$4F,$AC,$CB,$4B,$84,$80,$A6,$84,$AC,$8C,$84,$AC,$80,$8B,$8E,$8D,$84,$4F,$AC,$47,$8E,$A7,$AC,$CB,$85,$80,$A2,$AC,$D6,$EF,$A9,$8E,$A5,$AC,$86,$8E,$0D,$4F,$C3,$00,$C0

@@ -339,13 +339,13 @@ dw $98b2    ; Mushroom Drops
 dw SR_UseItemGold    ; $995c Bag of Gold (unused)
 dw $997f    ; Black Glasses
 dw $99cd    ; Gorgon Flower
-dw $9aa0    ; Hieroglyph $1E
-dw $9aa0    ; Hieroglyph $1F
-dw $9aa0    ; Hieroglyph $20
-dw $9aa0    ; Hieroglyph $21
-dw $9aa0    ; Hieroglyph $22
-dw $9aa0    ; Hieroglyph $23
-dw $9caf    ; Aura
+dw SR_UseItemHieroglyph    ; $9aa0, Hieroglyph $1E
+dw SR_UseItemHieroglyph    ; $9aa0, Hieroglyph $1F
+dw SR_UseItemHieroglyph    ; $9aa0, Hieroglyph $20
+dw SR_UseItemHieroglyph    ; $9aa0, Hieroglyph $21
+dw SR_UseItemHieroglyph    ; $9aa0, Hieroglyph $22
+dw SR_UseItemHieroglyph    ; $9aa0, Hieroglyph $23
+dw SR_UseItemAura    ; $9caf Aura
 dw $9d09    ; Lola's Letter
 dw $9e15    ; Father's Journal
 dw $9f30    ; Crystal Ring
@@ -918,7 +918,9 @@ org $839A35
 db $D3,$47,$84,$AC,$A3,$A4,$80,$A2,$84,$A3,$AC,$80,$A4,$AC,$A4,$87,$84,$AC,$D7,$13,$CB,$45,$8B,$8E,$A7,$84,$A2,$2B,$AC,$81,$A5,$A4,$AC,$CB,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$A3,$4F,$AC,$C0
 ;org $839A63
 db $D3,$47,$84,$AC,$A0,$A5,$A4,$A3,$AC,$8E,$8D,$84,$AC,$A0,$84,$A4,$80,$8B,$AC,$8E,$85,$CB,$A4,$87,$84,$AC,$D7,$13,$45,$8B,$8E,$A7,$84,$A2,$AC,$88,$8D,$A4,$8E,$CB,$A4,$87,$84,$AC,$A3,$A4,$80,$A4,$A5,$84,$0E,$A3,$AC,$8C,$8E,$A5,$A4,$87,$2A,$AC,$C0
+
 ;org $839AA0
+SR_UseItemHieroglyph:
 
 
 org $839BA5
@@ -935,10 +937,23 @@ db $C8,$CA
 
 ;org $839C8B
 db $D3,$64,$87,$84,$A2,$84,$0E,$A3,$AC,$8D,$8E,$AC,$D7,$90,$A4,$8E,$AC,$A0,$A5,$A4,$CB,$A4,$87,$84,$AC,$D6,$9E,$A0,$8B,$80,$A4,$84,$2A,$C3,$00,$C0
+
 ;org $839CAF
+SR_UseItemAura:
+lda $09AE : bit #$1000 : bne .DoNothing
+  bit #$0100 : bne .DoNothing
+lda $09B2 : ora $09B4 : bne .DoNothing
+lda $0AD4 : cmp #$0002 : bne .ShowNothingHappenedText
+ldy $09AA
+lda #$0080 : sta $0002,y
+lda #$C557 : jsr SR_SetYActorPtrAndZeroWait   ; jsr $a0a0
+rts
+.ShowNothingHappenedText:   ; org $839cdc
+cop #$BF : dw $9CE1
+.DoNothing:   ; org $839ce0
+rts
 
-
-org $839CE1
+;org $839CE1
 db $D3,$47,$84,$AC,$87,$8E,$8B,$83,$A3,$AC,$A5,$A0,$AC,$A4,$87,$84,$AC,$40,$A5,$A2,$80,$2B,$CB,$81,$A5,$A4,$AC,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$A3,$2A,$2A,$2A,$C0
 ;org $839D09
 
@@ -1036,7 +1051,7 @@ EFluteSongPlayer_Die:    ; org $83a098
 lda #$0080 : trb $09EC
 cop #$E0
 
-SR_SetYActorPtrAndZeroWait:
+SR_SetYActorPtrAndZeroWait:   ; org $83a0a0
 sta $0000,y
 lda #$0000 : sta $0008,y
 rts
@@ -1061,7 +1076,7 @@ plx
 lda $0d58 : sta $24
   and #$001F : sta $0000
 cop #$C6 : dw .Finalize    ; $A341
-cop #$D9 : dw $0000,.ChoiceHandlerPointers    ; $b401
+cop #$D9 : dw $0000,WorldMap_ChoiceHandlerPointers    ; $b401
 .Finalize:    ; $83a341
 lda $0D5A : beq .Die
 sep #$20
@@ -5599,8 +5614,10 @@ lda $05,s
 jsr .SR_DrawHpPips    ; $eb71
 ply
 rts
+}
 ;org $83ec52
 .EndScript:    ; Card $00
+{
 pla
 plx
 plb
@@ -6000,8 +6017,8 @@ AND #$00FF
 SEC
 SBC #$0004  ; If $0AC8 is less than 4, set carry
 BMI +$EF ;(-$11)  ;   and return with $0AC8 - 4.
-ASL    ; If $0AC8 is greater than 4,
-TAX    ;   double it,
+ASL    ; If $0AC8 is at least 4,
+TAX    ;   subtract 4 and double it,
 LDA $83F177,x  ;   and read that index's value from this table.
 SEC
 SBC #$F177  ;   Remove its implicit offset,

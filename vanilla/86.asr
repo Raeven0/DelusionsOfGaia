@@ -493,6 +493,59 @@ db $D3,$C2,$03,$44,$A2,$88,$8A,$2F,$AC,$CB,$D6,$0D,$D7,$AD,$80,$8D,$A9,$8E,$8D,$
 db $D3,$C2,$03,$44,$A2,$88,$8A,$2F,$AC,$CB,$D6,$39,$80,$86,$80,$88,$8D,$AC,$67,$88,$8B,$8B,$AC,$87,$80,$A3,$AC,$CB,$A3,$80,$A6,$84,$83,$AC,$8C,$84,$2A,$2A,$2A,$C3,$00,$C0
 
 ;org $86A410
+db $24 : dw $1000
+cop #$A3 : dl C_86A69E : dw $0080, $00F0, $2B00
+cop #$0B
+cop #$0D : db $01, $00
+cop #$BC : db $08, $00
+lda #$0200 : tsb $12
+cop #$C0 : dw $A4C9
+B_86A431:    ; org $86a431
+cop #$80 : db $24
+cop #$89
+lda $0AEC : bne B_86A431
+lda $0AD4 : beq B_86A466
+ldy $09AA
+lda #$0088 : sta $0002,y
+lda #$F37D : sta $0000,y
+lda #$0000 : sta $0008,y
+lda #$0800 : tsb $09AE
+cop #$C1
+lda $09AE : bit #$0800 : beq B_86A466
+rtl
+B_86A466:    ; org $86a466
+cop #$32 : db $46
+cop #$33
+cop #$32 : db $47
+cop #$33
+cop #$CD : dw $0146
+cop #$CD : dw $0147
+B_86A478:    ; org $86a478
+cop #$80 : db $24
+cop #$89
+cop #$D0 : db $01, $00 : dw B_86A478
+lda #$CFF0 : tsb $065A
+cop #$04 : db $1B
+cop #$DA : db $77
+cop #$08 : db $2C, $2C
+cop #$C0 : dw $0000
+cop #$DA : db $3B
+cop #$CA : db $3C
+lda #$2000 : trb $10
+cop #$C2
+lda #$2000 : tsb $10
+cop #$CB
+cop #$BC : db $F8, $00
+cop #$0C
+cop #$0E : db $01, $00
+cop #$BF : dw $A57F
+cop #$CC : db $03
+cop #$32 : db $93
+cop #$33
+lda #$CFF0 : trb $065A
+cop #$E0
+warnpc $86a4c9
+
 
 org $86A4E9
 db $C2,$0E,$C2,$00,$64,$87,$84,$A2,$84,$0E,$A3,$AC,$80,$AC,$A2,$84,$83,$AC,$A7,$88,$A2,$84,$AC,$80,$8D,$83,$CB,$80,$AC,$81,$8B,$A5,$84,$AC,$A7,$88,$A2,$84,$AC,$A3,$A4,$88,$82,$8A,$88,$8D,$86,$CB,$8E,$A5,$A4,$AC,$8E,$85,$AC,$A4,$87,$84,$AC,$81,$8E,$8C,$81,$2A,$2A,$2A,$CF,$42,$A5,$A4,$AC,$A7,$87,$88,$82,$87,$AC,$8E,$8D,$84,$0D,$CB,$AC,$62,$84,$83,$AC,$8E,$8D,$84,$CB,$AC,$41,$8B,$A5,$84,$AC,$8E,$8D,$84,$CA
@@ -503,7 +556,49 @@ db $CE,$64,$87,$84,$AC,$81,$8B,$A5,$84,$AC,$A7,$88,$A2,$84,$AC,$88,$A3,$AC,$82,$
 
 ;org $86A57F
 
-org $86A719
+
+org $86a69e
+#C_86A69E:
+cop #$D2 : db $02, $01
+cop #$B7 : db $02
+lda #$0140 : sta $26
+lda #$0000 : sta $7F0010,x
+J_86A6B1:    ; org $86a6b1
+cop #$D0 : db $01, $01 : dw B_86A6F5
+cop #$CA : db $3C
+lda $26 : sta $0000
+jsl LR_StageBcdInManualOam
+cop #$CB
+cop #$D0 : db $01, $01 : dw B_86A6F5
+lda $09EC : bit #$2000 : beq B_86A6D7
+lda $26 : bra J_86A6E9
+B_86A6D7:    ; org $86a6d7
+cop #$07 : db $10
+sed
+lda $26 : sec : sbc #$0001 : sta $26
+cld : bpl J_86A6E9
+jmp J_86A6F7
+J_86A6E9:    ; org $86a6e9
+sta $0000
+jsl LR_StageBcdInManualOam
+cop #$C4 : dl J_86A6B1
+B_86A6F5:    ; org $86a6f5
+cop #$E0
+J_86A6F7:    ; org $86a6f7
+lda $0AEC : beq B_86A712
+cop #$0A : db $7F : stz $0688
+cop #$08 : db $15, $15 : sep #$20
+lda #$00 : sta $0ACE
+rep #$20
+cop #$C1
+rtl
+B_86A712:    ; org $86a712
+cop #$BF : dw $A719
+cop #$C1
+rtl
+
+
+;org $86A719
 db $D3,$C2,$00,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$2A,$CF,$48,$A4,$AC,$A7,$80,$A3,$AC,$80,$AC,$83,$A5,$83,$2A,$CB,$48,$0E,$8C,$AC,$A3,$80,$A6,$84,$83,$2A,$2A,$2A,$C3,$00,$C0
 
 ;org $86A745

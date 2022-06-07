@@ -1353,6 +1353,7 @@ lda $7F002A,x : ora #$0080 : sta $7F002A,x
 lda #$ABF0 : sta $7F0020,x
 lda #$0001 : sta $7F0026,x
 rtl
+
 ; org $8aa41c
 LR_PlaceSelfBetween04And06:
 phx
@@ -3304,7 +3305,138 @@ db $0f : dw $0000
 EAVSwoopBat:
 
 
-org $8af0c7
+org $8aef33
+db $15 : dw $0002
+EAVDraco:
+cop #$0B
+lda #$0001 : tsb $12
+cop #$57 : dl EAVDraco_OnDeath
+lda $14 : sta $7F100C,x
+lda $16 : sta $7F100E,x
+cop #$9C : dl EAVDracoBody : dw $0301
+lda #$0003 : sta $24
+-:    ; org $8aef5a
+cop #$9C : dl EAVDracoNeckPiece : dw $0202
+dec $24 : bpl -
+cop #$5B : dw $0020
+EAVDraco_Idle:    ; org $8aef69
+cop #$80 : db $12
+cop #$89
+cop #$C1
+cop #$21 : db $04 : dw EAVDraco_PlayerNear
+rtl
+EAVDraco_PlayerNear:    ; org $8aef76
+lda #$0002 : tsb $12
+cop #$2A : dw $0000, EAVDraco_PlayerNearWest, EAVDraco_PlayerNearWest, EAVDraco_PlayerNearEast
+EAVDraco_PlayerNearEast:    ; org $8aef85
+cop #$BB
+EAVDraco_PlayerNearWest:    ; org $8aef87
+cop #$80 : db $16
+cop #$89
+jsr SR_SetDracoWanderDest
+cop #$C8 : dw EAVDraco_DoWander
+jsr SR_SetDracoWanderDest
+cop #$C8 : dw EAVDraco_DoWander
+cop #$21 : db $04 : dw EAVDraco_Attack
+bra EAVDraco_Idle
+EAVDraco_Attack:    ; org $8aefa1
+ldy $09AA
+lda $0014,y : sta $7F0018,x
+lda $0016,y : sta $7F001A,x
+cop #$C8 : dw EAVDraco_DoAttack
+cop #$BA
+bra EAVDraco_Idle
+EAVDraco_DoAttack:    ; org $8aefba
+cop #$22 : db $13, $04
+bra EAVDraco_DoWaitAfterMove
+EAVDraco_DoWander:    ; org $8aefc0
+cop #$22 : db $13, $02
+EAVDraco_DoWaitAfterMove:    ; org $8aefc4
+cop #$84 : db $17, $02
+cop #$8A
+EAVDraco_DoReturnAfterMove:    ; org $8aefca
+lda $7F100C,x : sta $7F0018,x
+lda $7F100E,x : sta $7F001A,x
+cop #$22 : db $12, $03
+lda $7F100C,x : cmp $14 : bne EAVDraco_DoReturnAfterMove
+lda $7F100E,x : cmp $16 : bne EAVDraco_DoReturnAfterMove
+cop #$C5
+
+EAVDracoNeckPiece:    ; org $8aeff0
+cop #$80 : db $14
+cop #$89
+lda $0E : sta $26
+.Idle:    ; org $8aeff9
+cop #$C1
+jsl LR_PlaceSelfBetween04And06
+ldy $24
+lda $000E,y : sta $0E
+lda $0010,y : bit #$0080 : bne .IsHurt
+rtl
+.IsHurt:    ; org $8af00f
+cop #$C1
+jsl LR_PlaceSelfBetween04And06
+ldy $24
+lda $0010,y : bit #$0080 : beq .Idle
+lda $0036 : lsr : bcc ..WithNormalPalette
+..WithHurtPalette:
+lda $26 : ora #$0200 : sta $0E
+rtl
+..WithNormalPalette:    ; org $8af02d
+lda $26 : sta $0E
+rtl
+
+EAVDracoBody:    ; org $8af032
+cop #$80 : db $15
+cop #$89
+lda $0E : sta $26
+.Idle:    ; org $8af03b
+lda $26 : sta $0E
+cop #$C1
+ldy $24
+lda $0010,y : bit #$0080 : bne .IsHurt
+rtl
+.IsHurt:    ; org $8af04c
+cop #$C1
+ldy $24
+lda $0010,y : bit #$0080 : beq .Idle
+lda $0036 : lsr : bcc ..WithNormalPalette
+..WithHurtPalette:
+lda $26 : ora #$0200 : sta $0E
+rtl
+..WithNormalPalette:    ; org $8af066
+lda $26 : sta $0E
+rtl
+
+EAVDraco_OnDeath:    ; org $8af06b
+lda #$0004 : sta $000E
+ldy $06
+lda #$0004 : sta $0000
+-:    ; org $8af079
+  lda.w #EAVDracoPart_Explode : sta $0000,y
+  lda $0000 : sta $0008,y
+    clc : adc #$0008 : sta $0000
+  lda $0006,y : tay
+  dec $000E : bpl -
+lda $14 : pha
+  lda $16 : pha
+    lda $7F100C,x : sta $14
+    lda $7F100E,x : sta $16
+    cop #$0C
+  pla : sta $16
+pla : sta $14
+cop #$C7 : dl EBasicMonsterDeath    ; dl $80db8a
+
+EAVDracoPart_Explode:    ;org $8af0b4
+lda $26 : sta $0e
+cop #$07 : db $06
+cop #$88 : dl $8ee000
+cop #$80 : db $01
+cop #$89
+cop #$E0
+
+
+;org $8af0c7
 db $1a : dw $0000
 EAVFireballShooter:
 
@@ -4169,7 +4301,7 @@ db $C1,$03,$11,$C7,$0D,$04,$C2,$02,$66,$80,$8C,$A0,$88,$A2,$84,$2F,$AC,$69,$8E,$
 
 
 ;org $8AFD26
-; Unknown SR that changes our behavior based on distance to player.
+SR_SetDracoWanderDest:
 ldy $09AA
 lda $16 : sec : sbc $0016,y : bpl +
   sec : ror a
@@ -4178,16 +4310,16 @@ lda $16 : sec : sbc $0016,y : bpl +
 lsr a
 ++:
 clc : adc $16 : sta $7F001A,x
-cop #$23 : and #$001F
-pha
-lda $14 : cmp $09A2 : bpl +
-pla : eor #$FFFF : inc a : bra ++
+cop #$23 : and #$001F : pha
+  lda $14 : cmp $09A2 : bpl +
+    pla : eor #$FFFF : inc a
+    bra ++
 +:
 pla
 ++:
 clc : adc $14 : sta $7F0018,x
 rts
-
+warnpc $8afd5a
 
 org $8AFD87
 Bank8AFree:

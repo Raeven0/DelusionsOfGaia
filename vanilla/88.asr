@@ -628,12 +628,139 @@ db $D3,$44,$A8,$A0,$8B,$8E,$A2,$84,$A2,$2F,$AC,$64,$87,$84,$A2,$84,$AC,$80,$A2,$
 
 ;org $88C2DA
 
-org $88C7C9
+org $88c4ea
+db $1d : dw $0301
+EPymdKiller6ElevatorButton:
+lda #$0001 : sta $24
+cop #$28 : db $78, $03, $A0, $04 : dw B_88C4FC
+bra J_88C504
+B_88C4FC:   ; org $88c4fc
+lda $24 : eor #$FFFF : inc a : sta $24
+J_88C504:   ; org $88c504
+cop #$BC : db $00, $FE
+lda $0E : xba : sta $7F0010,x
+lda #$2000 : sta $0E
+jsl LR_PymdUpdateMapSolidityFromEffectLayer
+J_88C518:   ; org $88c518
+cop #$80 : db $1D
+cop #$89
+cop #$C1
+cop #$21 : db $01 : dw B_88C525
+rtl
+B_88C525:   ; org $88c525
+cop #$80 : db $1E
+cop #$89
+cop #$08 : db $2C, $2C
+jsr SR_PymdElevMakeSolidInMotion
+cop #$C8 : dw B_88C549
+cop #$C2
+jsl LR_PymdUpdateMapSolidityFromEffectLayer
+cop #$08 : db $15, $15
+cop #$C1
+cop #$21 : db $01 : dw B_88C548
+bra J_88C518
+B_88C548:   ; org $88c548
+rtl
+B_88C549:   ; org $88c549
+lda $7F0010,x : sta $26
+lda $24 : bpl B_88C564
+cop #$C1
+ldy #$1060
+lda $0026,y : dec : sta $0026,y
+dec $26 : beq B_88C575
+rtl
+B_88C564:   ; org $88c564
+cop #$C1
+ldy #$1060
+lda $0026,y : inc : sta $0026,y
+dec $26 : beq B_88C575
+rtl
+B_88C575:   ; org $88c575
+lda $24 : eor #$FFFF : inc a : sta $24
+cop #$C5
+warnpc $88c57f
+
+org $88c58a
+SR_PymdElevMakeSolidInMotion:
+phx
+php
+sep #$20
+ldx #$0000
+lda $0697 : dec : sta $000E
+J_88C598:   ; org $88c598
+ldy #$000F
+B_88C59B:   ; org $88c59b
+lda #$0F : sta $7FC103,x
+  sta $7FC20C,x
+rep #$20
+txa : clc : adc #$0010 : tax
+sep #$20
+dey : bpl B_88C59B
+dec $000E : bmi B_88C5C7
+rep #$20
+txa : clc : adc $0692 : clc : adc #$FF00 : tax
+sep #$20
+bra J_88C598
+B_88C5C7:   ; org $88c5c7
+plp
+plx
+rts
+warnpc $88c5ca
+
+org $88C77F
+db $00 : dw $3000
+EPymdHieroRoomHiero1:
+lda #$0100 : sta $06dc
+cop #$D0 : db $c2,$01 : dw .GotHiero
+lda #$0200 : tsb $12
+cop #$BC : db $00,$02
+cop #$C0 : dw .OnInteract
+cop #$D2 : db $c2,$01
+.GotHiero:
+cop #$32 : db $94
+cop #$33
+cop #$E0
+.OnInteract:    ; $c7a6
+cop #$D0 : db $c2,$01 : dw .Return
+cop #$BF : dw $c7c9
+cop #$D4 : db $1e : dw .ButInvFull
+cop #$CC : db $c2
+lda #$0080 : tsb $09ec
+cop #$19 : db $17 : dl $88c831
+.Return:
+rtl
+.ButInvFull:   ; $88c7c5
+jml $80c98e
+
+;org $88C7C9
 db $D3,$C2,$00,$64,$87,$84,$A2,$84,$0E,$A3,$AC,$80,$AC,$8B,$88,$A4,$87,$8E,$86,$A2,$80,$A0,$87,$AC,$8E,$8D,$CB,$D6,$D6,$A7,$80,$8B,$8B,$2A,$AC,$48,$AC,$D6,$99,$88,$8D,$CB,$43,$80,$8E,$AC,$D6,$D7,$88,$A4,$0E,$A3,$CB,$80,$AC,$87,$88,$84,$A2,$8E,$86,$8B,$A9,$A0,$87,$2A,$2A,$2A,$CF,$D6,$2B,$A4,$A2,$A9,$AC,$A4,$8E,$AC,$A2,$84,$8C,$8E,$A6,$84,$CB,$A4,$87,$84,$AC,$8B,$88,$A4,$87,$8E,$86,$A2,$80,$A0,$87,$2A,$C3,$00,$CF,$CA
 
 ;org $88C831
+db $CE,$D2,$00,$D5,$09,$D6,$67,$86,$8E,$A4,$AC,$A4,$87,$84,$AC,$CB,$D6,$1B,$63,$A4,$8E,$8D,$84,$4F,$C9,$78,$C0
 
-org $88C88C
+;org $88c84c
+db $00 : dw $3000
+EPymdHieroRoomHiero2:
+cop #$D0 : db $c3,$01 : dw .GotHiero
+lda #$0200 : tsb $12
+cop #$BC : db $00,$02
+cop #$C0 : dw .OnInteract
+cop #$D2 : db $C3,$01
+.GotHiero:   ; $c866
+cop #$32 : db $95
+cop #$33
+cop #$E0
+.OnInteract:   ; $c86d
+cop #$D0 : db $c3,$01 : dw .Return
+cop #$BF : dw $c88c
+cop #$D4 : db $1f : dw EPymdHieroRoomHiero1_ButInvFull
+cop #$CC : db $c3
+lda #$0080 : tsb $09ec
+cop #$19 : db $17 : dl $88c831
+.Return:
+rtl
+
+;org $88C88C
 db $D3,$C2,$00,$64,$87,$84,$A2,$84,$0E,$A3,$AC,$80,$AC,$8B,$88,$A4,$87,$8E,$86,$A2,$80,$A0,$87,$AC,$8E,$8D,$CB,$D6,$D6,$A7,$80,$8B,$8B,$2A,$AC,$48,$AC,$D6,$99,$88,$8D,$CB,$43,$80,$8E,$AC,$D6,$D7,$88,$A4,$0E,$A3,$CB,$80,$AC,$87,$88,$84,$A2,$8E,$86,$8B,$A9,$A0,$87,$2A,$2A,$2A,$CF,$D6,$2B,$A4,$A2,$A9,$AC,$A4,$8E,$AC,$A2,$84,$8C,$8E,$A6,$84,$CB,$A4,$87,$84,$AC,$8B,$88,$A4,$87,$8E,$86,$A2,$80,$A0,$87,$2A,$C3,$00,$CF,$CA
 
 ;org $88C8F4
@@ -671,8 +798,30 @@ org $88CDDA
 db $D3,$64,$87,$84,$AC,$8C,$A5,$8C,$8C,$88,$85,$88,$84,$83,$AC,$A1,$A5,$84,$84,$8D,$AC,$8E,$85,$CB,$A4,$87,$84,$AC,$D6,$3F,$80,$A0,$A0,$84,$80,$A2,$A3,$2A,$CB,$AC,$61,$A5,$88,$A4,$CB,$AC,$49,$A5,$8C,$A0,$AC,$88,$8D,$CA
 
 ;org $88CE10
+db $C8, $CA
 
-org $88CE60
+;org $88ce12
+db $00 : dw $3000
+EMummyQueenStatueAwarder:
+cop #$C1
+lda $0AEC : beq +
+rtl
++:    ; org $88ce1d
+lda #$FFF0 : tsb $065A
+cop #$DA : db $3B
+cop #$BF : dw $CE60
+lda #$0004 : sta $0AAC
+lda #$00CD : sta $0B12
+lda #$0007 : sta $0B08
+  sta $0B0A
+lda #$0009 : sta $0B0C
+  sta $0B0E
+lda #$0000 : sta $0B10
+cop #$26 : db $FD, $00, $00, $00, $00, $00, $00, $11
+lda #$0000 : sta $0AD4
+cop #$E0
+
+;org $88CE60
 db $D3,$C2,$00,$D7,$06,$A4,$87,$84,$AC,$A3,$A0,$88,$A2,$88,$A4,$CB,$8E,$85,$AC,$A4,$87,$84,$AC,$60,$A9,$A2,$80,$8C,$88,$83,$2B,$CB,$87,$84,$AC,$8E,$81,$A4,$80,$88,$8D,$84,$83,$CB,$80,$AC,$4C,$A9,$A3,$A4,$88,$82,$AC,$63,$A4,$80,$A4,$A5,$84,$4F,$4F,$C3,$00,$C0
 
 ;org $88CEA0

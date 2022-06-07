@@ -1312,6 +1312,11 @@ rts
 warnpc $8b9423
 
 
+org $8B983B
+db $00 : dw $0000
+EKressFlutist:
+
+
 org $8b9ba2
 db $03 : dw $0000
 EKressWavingSkullNorth:
@@ -1440,6 +1445,132 @@ bcc +
 rts
 
 ;org $8b9d0f
+db $02 : dw $0000
+EKressShootingSkullSouth:
+cop #$B7 : db $02
+lda #$0011 : tsb $12
+.SleepTenFramesFromWest:    ; org $8b9d1a
+cop #$27 : db $09
+.SleepOrActFromWest:    ; org $8b9d1d
+lda $10 : bit #$4000 : bne .SleepTenFramesFromWest
+cop #$2B : dw $0000, EKressShootingSkullNorth_PlayerIsNorthFromWest, .PlayerIsSouthFromWest, .PlayerIsSouthFromWest
+.PlayerIsSouthFromWest:    ; org $8b9d2e
+cop #$44 : db $FF, $00, $01, $08 : dw .FireFromWest
+.SwayEast:    ; org $8b9d36
+cop #$80 : db $02
+cop #$89
+cop #$85 : db $02, $02, $01
+cop #$8A
+bra .SleepOrActFromEast
+.FireFromWest:    ; org $8b9d44
+cop #$C8 : dw .DoFire
+cop #$84 : db $02, $02
+cop #$8A
+bra .SwayEast
+.SleepTenFramesFromEast:    ; org $8b9d50
+cop #$27 : db $0A
+.SleepOrActFromEast:    ; org $8b9d53
+lda $10 : bit #$4000 : bne .SleepTenFramesFromEast
+cop #$2B : dw $0000, EKressShootingSkullNorth_PlayerIsNorthFromEast, .PlayerIsSouthFromEast, .PlayerIsSouthFromEast
+.PlayerIsSouthFromEast:    ; org $8b9d64
+cop #$44 : db $FF, $00, $01, $08 : dw .FireFromEast
+.SwayWest:    ; org $8b9d6c
+cop #$80 : db $02
+cop #$89
+cop #$85 : db $02, $02, $02
+cop #$8A
+bra .SleepOrActFromWest
+.FireFromEast:    ; org $8b9d7a
+cop #$C8 : dw .DoFire
+cop #$84 : db $02, $02
+cop #$8A
+bra .SwayWest
+.DoFire:    ; org $8b9d86
+cop #$84 : db $1A, $06
+cop #$8A
+cop #$9E : dl EKressSkullBulletSouth : dw $FFFD, $FFF8, $0202
+cop #$9E : dl EKressSkullBulletSouth : dw $0004, $FFF8, $0202
+cop #$80 : db $02
+cop #$89
+cop #$C5
+EKressSkullBulletSouth:    ; org $8b9da9
+cop #$07 : db $1D
+cop #$B7 : db $02
+cop #$5B : dw $0010
+cop #$82 : db $20, $03
+cop #$89
+lda #$0002 : trb $10
+.KeepGoing:    ; org $8b9dbe
+cop #$82 : db $20, $03
+cop #$89
+lda $10 : bit #$4000 : beq .KeepGoing
+cop #$E0
+
+;org $8b9dcd
+db $03 : dw $0000
+EKressShootingSkullNorth:
+cop #$B7 : db $02
+lda #$0011 : tsb $12
+.SleepTenFramesFromWest:    ; org $8b9dd8
+cop #$27 : db $09
+.SleepOrActFromWest:    ; org $8b9ddb
+lda $10 : bit #$4000 : bne .SleepTenFramesFromWest
+cop #$2B : dw $0000, .PlayerIsNorthFromWest, .PlayerIsNorthFromWest, EKressShootingSkullSouth_PlayerIsSouthFromWest
+.PlayerIsNorthFromWest:    ; org $8b9dec
+cop #$44 : db $FF, $F8, $01, $00 : dw .FireFromWest
+.SwayEast:    ; org $8b9df4
+cop #$80 : db $03
+cop #$89
+cop #$85 : db $03, $02, $01
+cop #$8A
+bra .SleepOrActFromEast
+.FireFromWest:    ; org $8b9e02
+cop #$C8 : dw .DoFire
+cop #$84 : db $03, $02
+cop #$8A
+bra .SwayEast
+.SleepTenFramesFromEast:    ; org $8b9e0e
+cop #$27 : db $0A
+.SleepOrActFromEast:    ; org $8b9e11
+lda $10 : bit #$4000 : bne .SleepTenFramesFromEast
+cop #$2B : dw $0000, .PlayerIsNorthFromEast, .PlayerIsNorthFromEast, EKressShootingSkullSouth_PlayerIsSouthFromEast
+.PlayerIsNorthFromEast:    ; org $8b9e22
+cop #$44 : db $FF, $F8, $01, $00 : dw .FireFromEast
+.SwayWest:    ; org $8b9e2a
+cop #$80 : db $03
+cop #$89
+cop #$85 : db $03, $02, $02
+cop #$8A
+bra .SleepOrActFromWest
+.FireFromEast:    ; org $8b9e38
+cop #$C8 : dw .DoFire
+cop #$84 : db $03, $02
+cop #$8A
+bra .SwayWest
+.DoFire:    ; org $8b9e44
+cop #$84 : db $1B, $06
+cop #$8A
+cop #$9E : dl EKressSkullBulletNorth : dw $FFFD, $FFF8, $0200
+cop #$9E : dl EKressSkullBulletNorth : dw $0004, $FFF8, $0200
+cop #$80 : db $03
+cop #$89
+cop #$C5
+EKressSkullBulletNorth:    ; org $8b9e67
+cop #$07 : db $1D
+cop #$B7 : db $02
+cop #$5B : dw $0010
+cop #$82 : db $20, $04
+cop #$89
+lda #$0002 : trb $10
+.KeepGoing:    ; org $8b9e7c
+cop #$82 : db $20, $04
+cop #$89
+lda $10 : bit #$4000 : beq .KeepGoing
+cop #$E0
+
+warnpc $8b9e8b
+
+
 
 org $8b9e96
 #B_8B9E96:
@@ -3012,11 +3143,39 @@ B_8BC182:    ; org $8bc182
 cop #$C5
 
 
+org $8BC184
+db $0a : dw $0100
+EPymdWallMummy:
+
+
+org $8BC1A7
+db $07 : dw $0000
+EPymdLooseMummy:
+
+
+org $8BC39D
+db $00 : dw $0000
+EPymdSpearman:
+
 
 org $8bc5a3
 db $0f : dw $0000
-EPyramidOrb1:
+EPymdHorzWalkingOrb:
 
+
+org $8BC5FC
+db $0f : dw $0000
+EPymdVertWalkingOrb:
+
+
+org $8BC65F 
+db $0f : dw $0000
+EPymdStationaryOrb:
+
+
+org $8BC798
+db $1b : dw $0000
+EPymdInvisibleHead:
 
 
 
@@ -3453,7 +3612,7 @@ db $64,$47,$44,$63,$44,$57,$62,$65,$50,$55,$63,$57,$67,$56,$65,$53,$43,$cb
 db $41,$62,$50,$55,$46,$57,$40,$41,$56,$65,$64,$cb
 db $43,$50,$63,$40,$63,$64,$44,$62,$74,$74,$74,$ca
 
-warnpc $82d2ab
+warnpc $8bd2ab
 
 
 
@@ -3824,180 +3983,145 @@ cop #$0B
 cop #$C0 : dw .OnUse    ; $EE2C
 cop #$C1
 rtl
-   ; $8BEE2C
+.OnUse:   ; $8BEE2C
 lda #$0028 : sta $0ACA : sta $0ACE
 lda #$007F : sta $0ADE : sta $0ADC
 lda #$00FF : sta $0AA2
+.Menu1:
 cop #$BF : dw $F010
-
-cop #$BE : dw $0004, $EE4E, $EED0
-  dw $EE58, $EED5
-  dw $EEF3, $EEE4
-
+cop #$BE : dw $0004, ..Options
+..Options:
+  dw .Cancel
+  dw .Menu2, .GreatWall
+  dw .Ending, .EdwardsCastle
+.Menu2:
 cop #$BF : dw $F05C
-
-cop #$BE : dw $0004, $EE62, $EED0
-  dw $EE6C, $EF02
-  dw $EF11, $EF20
-
+cop #$BE : dw $0004, ..Options
+..Options:
+  dw .Cancel
+  dw .Menu3, .ItoryVillage
+  dw .MoonTribe, .EdwardsDungeon
+.Menu3:
 cop #$BF : dw $F095
-
-cop #$BE : dw $0004, $EE76, $EED0
-  dw $EE80, $EF2F
-  dw $EF3E, $EF4D
-
+cop #$BE : dw $0004, ..Options
+..Options:
+  dw .Cancel
+  dw .Menu4, .Euro
+  dw .NativesVillage, .Dao
+.Menu4:
 cop #$BF : dw $F0C3
-
-cop #$BE : dw $0004, $EE8A, $EED0
-  dw $EE94, $EF5C
-  dw $EF6B, $EF7A
-
+cop #$BE : dw $0004, ..Options
+..Options:
+  dw .Cancel
+  dw .Menu5, .Inca
+  dw .Freejia, .DiamondMine
+.Menu5:
 cop #$BF : dw $F0EC
-
-cop #$BE : dw $0004, $EE9E, $EED0
-  dw $EEA8, $EF89
-  dw $EF98, $EFA7
-
+cop #$BE : dw $0004, ..Options
+..Options:
+  dw .Cancel
+  dw .Menu6, .SkyGarden
+  dw .SeaPalace, .Mu
+.Menu6:
 cop #$BF : dw $F10D
-
-cop #$BE : dw $0004, $EEB2, $EED0
-  dw $EEBC, $EFB6
-  dw $EFC5, $EFD4
-
+cop #$BE : dw $0004, ..Options
+..Options:
+  dw .Cancel
+  dw .Menu7, .AngelVillage
+  dw .NativesVillageDupe, .DaoDupe
+.Menu7:
 cop #$BF : dw $F135
-
-cop #$BE : dw $0004, $EEC6, $EED0
-  dw $EED0, $EFE3
-  dw $EFF2, $F001
-
+cop #$BE : dw $0004, ..Options
+..Options:
+  dw .Cancel
+  dw .Cancel, .Pyramid
+  dw .Watermia, .AngkorWat
+.Cancel:
 cop #$BF : dw $F15A
-
 rtl 
-
+.GreatWall:
 cop #$BF : dw $F164
-
-cop #$26 : db $82
-  dw $0020,$0090 : db $07,$00,$18
+cop #$26 : db $82 : dw $0020,$0090 : db $07,$00,$18
 rtl 
-
+.EdwardsCastle:
 cop #$BF : dw $F164
-
-cop #$26 : db $0A
-  dw $01E3,$00A0 : db $03,$00,$45
+cop #$26 : db $0A : dw $01E3,$00A0 : db $03,$00,$45
 rtl 
-
+.Ending:
 cop #$BF : dw $F164
-
-cop #$26 : db $E5
-  dw $00A8,$00A0 : db $00,$00,$11
+cop #$26 : db $E5 : dw $00A8,$00A0 : db $00,$00,$11
 rtl 
-
+.Itory:
 cop #$BF : dw $F164
-
-cop #$26 : db $15
-  dw $0339,$01B0 : db $00,$00,$35
+cop #$26 : db $15 : dw $0339,$01B0 : db $00,$00,$35
 rtl 
-
+.MoonTribe:
 cop #$BF : dw $F164
-
-cop #$26 : db $1A
-  dw $0110,$00C3 : db $00,$00,$22
+cop #$26 : db $1A : dw $0110,$00C3 : db $00,$00,$22
 rtl 
-
+.EdwardsDungeon:
 cop #$BF : dw $F164
-
-cop #$26 : db $0F
-  dw $0078,$05D0 : db $00,$00,$61
+cop #$26 : db $0F : dw $0078,$05D0 : db $00,$00,$61
 rtl 
-
+.Euro:
 cop #$BF : dw $F164
-
-cop #$26 : db $91
-  dw $0370,$0430 : db $03,$00,$54
+cop #$26 : db $91 : dw $0370,$0430 : db $03,$00,$54
 rtl 
-
+.NativesVillage:
 cop #$BF : dw $F164
-
-cop #$26 : db $AC
-  dw $01C0,$01D0 : db $07,$00,$22
+cop #$26 : db $AC : dw $01C0,$01D0 : db $07,$00,$22
 rtl 
-
+.Dao:
 cop #$BF : dw $F164
-
-cop #$26 : db $C3
-  dw $0010,$00E8 : db $07,$00,$23
+cop #$26 : db $C3 : dw $0010,$00E8 : db $07,$00,$23
 rtl 
-
+.Inca:
 cop #$BF : dw $F164
-
-cop #$26 : db $1C
-  dw $006C,$0174 : db $07,$00,$22
+cop #$26 : db $1C : dw $006C,$0174 : db $07,$00,$22
 rtl 
-
+.Freejia:
 cop #$BF : dw $F164
-
-cop #$26 : db $32
-  dw $0138,$0360 : db $07,$00,$45
+cop #$26 : db $32 : dw $0138,$0360 : db $07,$00,$45
 rtl 
-
+.DiamondMine:
 cop #$BF : dw $F164
-
-cop #$26 : db $3E
-  dw $00B0,$03D0 : db $07,$00,$42
+cop #$26 : db $3E : dw $00B0,$03D0 : db $07,$00,$42
 rtl 
-
+.SkyGarden:
 cop #$BF : dw $F164
-
-cop #$26 : db $4C
-  dw $0100,$0136 : db $07,$00,$22
+cop #$26 : db $4C : dw $0100,$0136 : db $07,$00,$22
 rtl 
-
+.SeaPalace:
 cop #$BF : dw $F164
-
-cop #$26 : db $5A
-  dw $0088,$00A0 : db $07,$00,$64
+cop #$26 : db $5A : dw $0088,$00A0 : db $07,$00,$64
 rtl 
-
+.Mu:
 cop #$BF : dw $F164
-
-cop #$26 : db $5F
-  dw $0088,$0050 : db $07,$00,$44
+cop #$26 : db $5F : dw $0088,$0050 : db $07,$00,$44
 rtl 
-
+.AngelVillage:
 cop #$BF : dw $F164
-
-cop #$26 : db $69
-  dw $02A8,$00A0 : db $07,$00,$13
+cop #$26 : db $69 : dw $02A8,$00A0 : db $07,$00,$13
 rtl 
-
+.NativesVillageDupe:
 cop #$BF : dw $F164
-
-cop #$26 : db $AC
-  dw $01C8,$01E0 : db $07,$00,$22
+cop #$26 : db $AC : dw $01C8,$01E0 : db $07,$00,$22
 rtl 
-
+.DaoDupe:
 cop #$BF : dw $F164
-
-cop #$26 : db $C3
-  dw $0020,$00F0 : db $07,$00,$23
+cop #$26 : db $C3 : dw $0020,$00F0 : db $07,$00,$23
 rtl 
-
+.Pyramid:
 cop #$BF : dw $F164
-
-cop #$26 : db $CC
-  dw $002C,$00E0 : db $07,$00,$44
+cop #$26 : db $CC : dw $002C,$00E0 : db $07,$00,$44
 rtl 
-
+.Watermia:
 cop #$BF : dw $F164
-
-cop #$26 : db $78
-  dw $027E,$03A0 : db $07,$00,$45
+cop #$26 : db $78 : dw $027E,$03A0 : db $07,$00,$45
 rtl 
-
+.AngkorWat:
 cop #$BF : dw $F164
-
-cop #$26 : db $B0
-  dw $0200,$04D0 : db $07,$00,$54
+cop #$26 : db $B0 : dw $0200,$04D0 : db $07,$00,$54
 rtl 
 
 ;org $8BF010

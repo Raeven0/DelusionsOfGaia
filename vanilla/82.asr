@@ -3644,10 +3644,32 @@ cop #$C5    ; Goes to EPlayer_ParseAct under normal operation.
 
 ;org $82C4DD
 EPlayer_ActPressDown:
+lda $24 : bne B_82C4F9
+lda $040C : bmi B_82C4F9
+stz $040C
+lda #$0003 : sta $09B4
+stz $09B6
+stz $09B8
+cop #$C2
+cop #$C5
+B_82C4F9:    ; org $82c4f9
+cop #$8F : db $08
+jsr S_82C617
+B_82C4FF:    ; org $82c4ff
+cop #$8B
+lda $08
+  stz $08
+  inc a : sta $24
+cop #$C1
+lda $2A : beq B_82C4FF
+cop #$41 : dw $0400, B_82C615
+jsr S_82C5FF : bne B_82C51F
+cop #$40 : dw $0030, EPlayer_ActFaceSouthShield    ; $CA28
+B_82C51F:    ; org $82c51f
+dec $24 : bmi B_82C4FF
+rtl
 
-
-
-org $82C524
+;org $82C524
 EPlayer_ActPressUp:
 
 
@@ -3667,7 +3689,7 @@ lda #$000D : sta $040C
 rts
 
 ;org $82c61e
-EPlayer_StartFalling
+EPlayer_StartFalling:
 lda #$0008 : trb $10
 lda #$0200 : tsb $10
 lda #$4000 : tsb $065A
@@ -5345,22 +5367,22 @@ rts
 
 ;org $82e396
 db $00 : dw $2800
-EInventoryScreenManager:
+EInvScreenManager:
 .Init:
 cop #$88 : dl $908000
 cop #$BD : dl $81E869
 stz $0AFA
 lda #$000F : sta $24
-B_82E3AB:    ; org $82e3ab
-cop #$9C : dl C_82E8C7 : dw $1800
+.SpawnNextItemSprite:    ; org $82e3ab
+cop #$9C : dl EInventorySlot : dw $1800
 phy
   ldy $24
   lda $0AB4,y : and #$00FF
 ply
   sta $0028,y
-  dec $24 : bpl B_82E3AB
+  dec $24 : bpl .SpawnNextItemSprite
 tya : sta $7F0010,x
-cop #$9C : dl C_82E8E7 : dw $0802
+cop #$9C : dl EInventoryHand : dw $0802
 tya : sta $7F0012,x
 lda $0AC4 : sta $1A
 jsr S_82EA73
@@ -5391,8 +5413,11 @@ B_82E445:    ; org $82e445
 cop #$06 : db $0D
 lda $0AFA : sta $18
   sta $0000
-cop #$D9 : dw $0000, $E456 : dw B_82E45E, B_82E536 : dw B_82E657, B_82E719
-B_82E45E:    ; org $82e45e
+cop #$D9 : dw $0000, $E456
+  dw EInvScreenManager_ItemMenu, EInvScreenManager_OrderMenu
+  dw EInvScreenManager_RemoveMenu, EInvScreenManager_CondMenu
+
+EInvScreenManager_ItemMenu:    ; org $82e45e
 lda #$0004 : sta $0AE6
 cop #$BD : dl $81E90B
 cop #$BD : dl $81EA02
@@ -5446,7 +5471,7 @@ jmp .MainMenu
   sta $0AC6
 jmp .MainMenu
 
-B_82E536:    ; org $82e536
+EInvScreenManager_OrderMenu:    ; org $82e536
 jsr B_82EB0B
 cop #$9C : dl C_82E8F1 : dw $0802
 sty $20
@@ -5532,7 +5557,7 @@ cop #$A9
 lda #$4040 : tsb $0658
 jmp .MainMenu
 
-B_82E657:    ; org $82e657
+EInvScreenManager_RemoveMenu:    ; org $82e657
 lda #$0004 : sta $0AE6
 jsr B_82EB0B
 cop #$9C : dl C_82E8F1 : dw $0802
@@ -5559,7 +5584,7 @@ lda #$8000 : tsb $0658
 ldy $22
 lda $0AB4,y : and #$00FF : beq B_82E705
   sta $0AE8
-jsr S_82EA13 : bcs B_82E705
+jsr SR_ClcIfItemACanBeDropped : bcs B_82E705
 cop #$BD : dl $81E912
 cop #$BD : dl $81E9E2
 stz $28
@@ -5588,7 +5613,8 @@ lda #$4040 : tsb $0658
 cop #$A9
 jsr S_82EAF7
 jmp .MainMenu
-B_82E719:    ; org $82e719
+
+EInvScreenManager_CondMenu:    ; org $82e719
 lda #$0000 : sta $0AE6
 cop #$BD : dl $81E90B
 cop #$BD : dl $81EA39
@@ -5639,7 +5665,9 @@ lda $82E7BD,x : sta $0016,y
 plx
 rts
 ;org $82e7bb
-dw $0098, $0048, $0098, $0060, $0098, $0078
+dw $0098, $0048
+dw $0098, $0060
+dw $0098, $0078
 
 ;org $82e7c7
 B_82E7C7:
@@ -5657,6 +5685,7 @@ jsr S_82EAF7
 cop #$BD : dl $81E912
 cop #$BD : dl $81E954
 rtl
+; Text draw method when hovering over "Discard" option.
 B_82E7F7:    ; org $82e7f7
 jsr S_82EB1A
 jsr S_82EAF7
@@ -5708,22 +5737,22 @@ cop #$BD : dl $81EA63
 B_82E8C6:    ; org $82e8c6
 rtl
 
-C_82E8C7:    ; org $82e8c7
+EInventorySlot:    ; org $82e8c7
 inc $0AFA
 jsr S_82EB70
 cop #$C1
-lda $28 : bne B_82E8D9
+lda $28 : bne .IsOccupiedShowSprite
 lda #$2000 : tsb $10
 rtl
-B_82E8D9:    ; org $82e8d9
+.IsOccupiedShowSprite:    ; org $82e8d9
 lda #$2000 : trb $10
-B_82E8DE:    ; org $82e8de
+.RefreshSprite:    ; org $82e8de
 cop #$C1
 cop #$8B
-lda $2A : beq B_82E8DE
+lda $2A : beq .RefreshSprite
 rtl
 
-C_82E8E7:    ; org $82e8e7
+EInventoryHand:    ; org $82e8e7
 lda $0AC4 : bpl C_82E8F1
 lda #$2000 : tsb $10
 C_82E8F1:    ; org $82e8f1
@@ -5822,7 +5851,7 @@ lda #$E8CD : sta $0000,y
 lda #$0000 : sta $0028,y : sta $0008,y : sta $002A,y
 rts
 
-S_82EA13:    ; org $82ea13
+SR_ClcIfItemACanBeDropped:    ; org $82ea13
 phx : sta $0000
 lsr : lsr : lsr : tay
 lda #$0000

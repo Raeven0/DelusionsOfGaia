@@ -2094,9 +2094,9 @@ db $0E,$25,$00 : dl EAVSwoopBat-3 : db $2D,$1C,$00    ; $8AEE9F
 db $16,$25,$00 : dl EAVSwoopBat-3 : db $2D,$1D,$00    ; $8AEE9F 
 db $30,$24,$00 : dl EAVSwoopBat-3 : db $2D,$1E,$00    ; $8AEE9F 
 db $35,$23,$00 : dl EAVSwoopBat-3 : db $2D,$1F,$00    ; $8AEE9F 
-db $28,$09,$00 : dl $8AEF33 : db $2E,$20,$00 
-db $37,$08,$00 : dl $8AEF33 : db $2E,$21,$00 
-db $39,$29,$00 : dl $8AEF33 : db $2E,$22,$00 
+db $28,$09,$00 : dl EAVDraco-3 : db $2E,$20,$00    ; $8AEF33 
+db $37,$08,$00 : dl EAVDraco-3 : db $2E,$21,$00    ; $8AEF33 
+db $39,$29,$00 : dl EAVDraco-3 : db $2E,$22,$00    ; $8AEF33 
 db $FF,$CA
 ;org $8CB13E
 ActorList_Map6F:
@@ -2134,8 +2134,8 @@ db $1B,$19,$00 : dl EAVSkeleton-3 : db $2C,$30,$00    ; $8aea51
 db $1F,$12,$00 : dl EAVSwoopBat-3 : db $2D,$31,$00    ; $8AEE9F 
 db $17,$13,$00 : dl EAVSwoopBat-3 : db $2D,$32,$00    ; $8AEE9F 
 db $12,$14,$00 : dl EAVSwoopBat-3 : db $2D,$33,$00    ; $8AEE9F 
-db $27,$18,$00 : dl $8AEF33 : db $2E,$34,$00 
-db $2A,$18,$00 : dl $8AEF33 : db $2E,$35,$00 
+db $27,$18,$00 : dl EAVDraco-3 : db $2E,$34,$00    ; $8AEF33 
+db $2A,$18,$00 : dl EAVDraco-3 : db $2E,$35,$00    ; $8AEF33 
 db $12,$1C,$00 : dl EAVFireballShooter-3 : db $2E,$36,$00    ; $8AF0C7 
 db $26,$18,$09 : dl ESliderHoleToNorth-3 : db $00     ; $80d16a
 db $0A,$2E,$09 : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
@@ -2767,13 +2767,13 @@ db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $DF,$DF,$00 : dl $80E94D : db $00 
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
 db $00,$01,$00 : dl $87E75D : db $00 
-db $1E,$1C,$30 : dl $8B9C4E : db $3E,$01,$00 
-db $15,$1C,$30 : dl $8B9C4E : db $3E,$02,$00 
-db $08,$15,$30 : dl $8B9C4E : db $3E,$03,$00 
-db $10,$09,$30 : dl $8B9C4E : db $3E,$04,$00 
-db $20,$09,$30 : dl $8B9C4E : db $3E,$05,$00 
-db $25,$15,$30 : dl $8B9BAC : db $3E,$06,$00 
-db $17,$11,$30 : dl $8B9BAC : db $3E,$07,$00 
+db $1E,$1C,$30 : dl EKressWavingSkullEast-3 : db $3E,$01,$00    ; $8B9C4E 
+db $15,$1C,$30 : dl EKressWavingSkullEast-3 : db $3E,$02,$00    ; $8B9C4E 
+db $08,$15,$30 : dl EKressWavingSkullEast-3 : db $3E,$03,$00    ; $8B9C4E 
+db $10,$09,$30 : dl EKressWavingSkullEast-3 : db $3E,$04,$00    ; $8B9C4E 
+db $20,$09,$30 : dl EKressWavingSkullEast-3 : db $3E,$05,$00    ; $8B9C4E 
+db $25,$15,$30 : dl EKressWavingSkullSouth-3 : db $3E,$06,$00    ; $8B9BAC 
+db $17,$11,$30 : dl EKressWavingSkullSouth-3 : db $3E,$07,$00    ; $8B9BAC 
 db $07,$19,$30 : dl $8BA0CF : db $3C,$08,$00 
 db $0E,$05,$30 : dl $8BA0CF : db $3C,$09,$00 
 db $13,$0F,$30 : dl $8BA0CF : db $3C,$0A,$00 
@@ -2789,24 +2789,24 @@ db $16,$1E,$09 : dl ERampLauncherToNorth-3 : db $00    ; $80d3ba
 db $1A,$23,$11 : dl ERampLauncherToSouth-3 : db $00    ; $80d428
 db $10,$0C,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $1F,$30,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
-db $0B,$33,$30 : dl $8B983B : db $3F,$10,$00 
-db $28,$0C,$30 : dl $8B983B : db $3F,$11,$00 
-db $1B,$0B,$30 : dl $8B983B : db $3F,$12,$00 
+db $0B,$33,$30 : dl EKressFlutist-3 : db $3F,$10,$00    ; $8B983B 
+db $28,$0C,$30 : dl EKressFlutist-3 : db $3F,$11,$00    ; $8B983B 
+db $1B,$0B,$30 : dl EKressFlutist-3 : db $3F,$12,$00    ; $8B983B 
 db $31,$25,$30 : dl $8BA0CF : db $3C,$13,$00 
 db $09,$21,$30 : dl $8BA049 : db $3C,$14,$00 
 db $0B,$21,$30 : dl $8BA049 : db $3C,$15,$00 
 db $1A,$22,$30 : dl $8BA075 : db $3C,$16,$00 
 db $17,$1F,$30 : dl $8BA0A1 : db $3C,$17,$00 
-db $2E,$34,$30 : dl $8B9C4E : db $3E,$18,$00 
-db $30,$3C,$30 : dl $8B9C4E : db $3E,$19,$00 
-db $1E,$2A,$30 : dl $8B9C4E : db $3E,$1A,$00 
-db $1C,$1A,$30 : dl $8B9C4E : db $3E,$1B,$00 
-db $07,$11,$30 : dl $8B9BAC : db $3E,$1C,$00 
-db $0C,$11,$30 : dl $8B9BAC : db $3E,$1D,$00 
-db $26,$38,$30 : dl $8B9D0F : db $3D,$1E,$00 
-db $17,$27,$30 : dl $8B9D0F : db $3D,$1F,$00 
-db $21,$17,$30 : dl $8B9D0F : db $3D,$20,$00 
-db $24,$17,$30 : dl $8B9D0F : db $3D,$21,$00 
+db $2E,$34,$30 : dl EKressWavingSkullEast-3 : db $3E,$18,$00    ; $8B9C4E 
+db $30,$3C,$30 : dl EKressWavingSkullEast-3 : db $3E,$19,$00    ; $8B9C4E 
+db $1E,$2A,$30 : dl EKressWavingSkullEast-3 : db $3E,$1A,$00    ; $8B9C4E 
+db $1C,$1A,$30 : dl EKressWavingSkullEast-3 : db $3E,$1B,$00    ; $8B9C4E 
+db $07,$11,$30 : dl EKressWavingSkullSouth-3 : db $3E,$1C,$00    ; $8B9BAC 
+db $0C,$11,$30 : dl EKressWavingSkullSouth-3 : db $3E,$1D,$00    ; $8B9BAC 
+db $26,$38,$30 : dl EKressShootingSkullSouth-3 : db $3D,$1E,$00    ; $8B9D0F 
+db $17,$27,$30 : dl EKressShootingSkullSouth-3 : db $3D,$1F,$00    ; $8B9D0F 
+db $21,$17,$30 : dl EKressShootingSkullSouth-3 : db $3D,$20,$00    ; $8B9D0F 
+db $24,$17,$30 : dl EKressShootingSkullSouth-3 : db $3D,$21,$00    ; $8B9D0F 
 db $2A,$2A,$30 : dl $8B9F53 : db $3D,$22,$00 
 db $09,$1B,$30 : dl $8B9F53 : db $3D,$23,$00 
 db $0A,$16,$30 : dl $8B9F53 : db $3D,$24,$00 
@@ -2828,11 +2828,11 @@ db $07,$09,$30 : dl $8BA0CF : db $3C,$32,$00
 db $04,$30,$30 : dl $8BA0A1 : db $3C,$33,$00 
 db $15,$09,$30 : dl $8BA0A1 : db $3C,$34,$00 
 db $11,$2C,$30 : dl $8BA01D : db $3C,$35,$00 
-db $07,$2B,$30 : dl $8B9BAC : db $3E,$36,$00 
-db $18,$24,$30 : dl $8B9C4E : db $3E,$37,$00 
-db $18,$1A,$30 : dl $8B9C4E : db $3E,$38,$00 
-db $11,$1F,$30 : dl $8B9C44 : db $3E,$39,$00 
-db $11,$15,$30 : dl $8B9C44 : db $3E,$3A,$00 
+db $07,$2B,$30 : dl EKressWavingSkullSouth-3 : db $3E,$36,$00    ; $8B9BAC 
+db $18,$24,$30 : dl EKressWavingSkullEast-3 : db $3E,$37,$00    ; $8B9C4E 
+db $18,$1A,$30 : dl EKressWavingSkullEast-3 : db $3E,$38,$00    ; $8B9C4E 
+db $11,$1F,$30 : dl EKressWavingSkullWest-3 : db $3E,$39,$00    ; $8B9C44 
+db $11,$15,$30 : dl EKressWavingSkullWest-3 : db $3E,$3A,$00    ; $8B9C44 
 db $0C,$0F,$30 : dl $8B9F53 : db $3D,$3B,$00 
 db $13,$29,$30 : dl $8B9E8B : db $3D,$3C,$00 
 db $1B,$09,$30 : dl $8B9E8B : db $3D,$3D,$00 
@@ -2849,11 +2849,11 @@ db $47,$11,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0
 db $36,$11,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $25,$11,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $7C,$0B,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
-db $12,$09,$30 : dl $8B9C44 : db $3E,$40,$00 
-db $21,$09,$30 : dl $8B9C44 : db $3E,$41,$00 
-db $3D,$09,$30 : dl $8B9C44 : db $3E,$42,$00 
-db $54,$0E,$30 : dl $8B9C44 : db $3E,$43,$00 
-db $74,$09,$30 : dl $8B9C44 : db $3E,$44,$00 
+db $12,$09,$30 : dl EKressWavingSkullWest-3 : db $3E,$40,$00    ; $8B9C44 
+db $21,$09,$30 : dl EKressWavingSkullWest-3 : db $3E,$41,$00    ; $8B9C44 
+db $3D,$09,$30 : dl EKressWavingSkullWest-3 : db $3E,$42,$00    ; $8B9C44 
+db $54,$0E,$30 : dl EKressWavingSkullWest-3 : db $3E,$43,$00    ; $8B9C44 
+db $74,$09,$30 : dl EKressWavingSkullWest-3 : db $3E,$44,$00    ; $8B9C44 
 db $1B,$09,$30 : dl $8BA0CF : db $3C,$45,$00 
 db $23,$07,$30 : dl $8BA0CF : db $3C,$46,$00 
 db $7A,$0B,$30 : dl $8BA0CF : db $3C,$47,$00 
@@ -2866,9 +2866,9 @@ db $35,$14,$30 : dl $8BA075 : db $3C,$4D,$00
 db $58,$09,$30 : dl $8BA075 : db $3C,$4E,$00 
 db $2D,$0F,$30 : dl $8B9F53 : db $3D,$50,$00 
 db $30,$0F,$30 : dl $8B9E8B : db $3D,$51,$00 
-db $2E,$12,$30 : dl $8B9D0F : db $3D,$52,$00 
-db $3F,$0C,$30 : dl $8B9D0F : db $3D,$53,$00 
-db $6B,$07,$30 : dl $8B9D0F : db $3D,$55,$00 
+db $2E,$12,$30 : dl EKressShootingSkullSouth-3 : db $3D,$52,$00    ; $8B9D0F 
+db $3F,$0C,$30 : dl EKressShootingSkullSouth-3 : db $3D,$53,$00    ; $8B9D0F 
+db $6B,$07,$30 : dl EKressShootingSkullSouth-3 : db $3D,$55,$00    ; $8B9D0F 
 db $6A,$11,$01 : dl $80C1DF : db $00 
 db $4F,$11,$01 : dl $80C1DF : db $00 
 db $40,$11,$01 : dl $80C1DF : db $00 
@@ -2880,16 +2880,16 @@ ActorList_MapA4:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $DF,$DF,$00 : dl $80E94D : db $00 
-db $19,$16,$30 : dl $8B9C44 : db $3E,$60,$00 
-db $26,$16,$30 : dl $8B9C44 : db $3E,$61,$00 
-db $21,$3E,$30 : dl $8B9C4E : db $3E,$62,$00 
-db $09,$38,$30 : dl $8B9C4E : db $3E,$63,$00 
-db $2E,$06,$30 : dl $8B9C4E : db $3E,$64,$00 
-db $29,$06,$30 : dl $8B9C4E : db $3E,$65,$00 
-db $24,$06,$30 : dl $8B9C4E : db $3E,$66,$00 
-db $1F,$06,$30 : dl $8B9C4E : db $3E,$67,$00 
-db $32,$25,$30 : dl $8B9BAC : db $3E,$68,$00 
-db $0F,$1F,$30 : dl $8B9BAC : db $3E,$69,$00 
+db $19,$16,$30 : dl EKressWavingSkullWest-3 : db $3E,$60,$00    ; $8B9C44 
+db $26,$16,$30 : dl EKressWavingSkullWest-3 : db $3E,$61,$00    ; $8B9C44 
+db $21,$3E,$30 : dl EKressWavingSkullEast-3 : db $3E,$62,$00    ; $8B9C4E 
+db $09,$38,$30 : dl EKressWavingSkullEast-3 : db $3E,$63,$00    ; $8B9C4E 
+db $2E,$06,$30 : dl EKressWavingSkullEast-3 : db $3E,$64,$00    ; $8B9C4E 
+db $29,$06,$30 : dl EKressWavingSkullEast-3 : db $3E,$65,$00    ; $8B9C4E 
+db $24,$06,$30 : dl EKressWavingSkullEast-3 : db $3E,$66,$00    ; $8B9C4E 
+db $1F,$06,$30 : dl EKressWavingSkullEast-3 : db $3E,$67,$00    ; $8B9C4E 
+db $32,$25,$30 : dl EKressWavingSkullSouth-3 : db $3E,$68,$00    ; $8B9BAC 
+db $0F,$1F,$30 : dl EKressWavingSkullSouth-3 : db $3E,$69,$00    ; $8B9BAC 
 db $26,$38,$30 : dl $8B9E8B : db $3D,$6A,$00 
 db $11,$28,$30 : dl $8B9E8B : db $3D,$6B,$00 
 db $13,$1C,$30 : dl $8B9E8B : db $3D,$6C,$00 
@@ -2898,7 +2898,7 @@ db $34,$10,$30 : dl $8B9E8B : db $3D,$6E,$68
 db $1C,$2F,$30 : dl $8B9F53 : db $3D,$6F,$00 
 db $0C,$28,$30 : dl $8B9F53 : db $3D,$70,$00 
 db $0A,$1C,$30 : dl $8B9F53 : db $3D,$71,$00 
-db $1E,$2E,$30 : dl $8B9D0F : db $3D,$72,$00 
+db $1E,$2E,$30 : dl EKressShootingSkullSouth-3 : db $3D,$72,$00    ; $8B9D0F 
 db $28,$38,$30 : dl $8BA075 : db $3C,$73,$00 
 db $31,$38,$30 : dl $8BA0CF : db $3C,$74,$00 
 db $35,$38,$30 : dl $8BA0CF : db $3C,$75,$00 
@@ -2915,22 +2915,22 @@ db $DF,$DF,$00 : dl $80E94D : db $00
 db $14,$0F,$11 : dl ERampLauncherToSouth-3 : db $00    ; $80d428
 db $00,$01,$00 : dl $87E843 : db $00 
 db $00,$01,$00 : dl $87E896 : db $00 
-db $23,$3D,$30 : dl $8B983B : db $3F,$80,$00 
-db $15,$23,$30 : dl $8B983B : db $3F,$81,$00 
-db $0A,$19,$30 : dl $8B983B : db $3F,$82,$00 
-db $08,$33,$30 : dl $8B9D0F : db $3D,$83,$00 
-db $26,$23,$30 : dl $8B9D0F : db $3D,$84,$00 
-db $08,$3A,$30 : dl $8B9DCD : db $3D,$85,$00 
+db $23,$3D,$30 : dl EKressFlutist-3 : db $3F,$80,$00    ; $8B983B 
+db $15,$23,$30 : dl EKressFlutist-3 : db $3F,$81,$00    ; $8B983B 
+db $0A,$19,$30 : dl EKressFlutist-3 : db $3F,$82,$00    ; $8B983B 
+db $08,$33,$30 : dl EKressShootingSkullSouth-3 : db $3D,$83,$00    ; $8B9D0F 
+db $26,$23,$30 : dl EKressShootingSkullSouth-3 : db $3D,$84,$00    ; $8B9D0F 
+db $08,$3A,$30 : dl EKressShootingSkullNorth-3 : db $3D,$85,$00    ; $8B9DCD 
 db $29,$13,$30 : dl $8B9F53 : db $3D,$86,$00 
 db $0E,$07,$30 : dl $8B9E8B : db $3D,$87,$00 
 db $11,$07,$30 : dl $8B9E8B : db $3D,$88,$00 
-db $38,$13,$30 : dl $8B9BAC : db $3E,$89,$00 
-db $37,$2B,$30 : dl $8B9C44 : db $3E,$8A,$00 
-db $1C,$2B,$30 : dl $8B9C44 : db $3E,$8B,$00 
-db $19,$3A,$30 : dl $8B9C4E : db $3E,$8C,$00 
-db $05,$13,$30 : dl $8B9C4E : db $3E,$8D,$00 
-db $0C,$13,$30 : dl $8B9C4E : db $3E,$8E,$00 
-db $12,$13,$30 : dl $8B9C4E : db $3E,$8F,$00 
+db $38,$13,$30 : dl EKressWavingSkullSouth-3 : db $3E,$89,$00    ; $8B9BAC 
+db $37,$2B,$30 : dl EKressWavingSkullWest-3 : db $3E,$8A,$00    ; $8B9C44 
+db $1C,$2B,$30 : dl EKressWavingSkullWest-3 : db $3E,$8B,$00    ; $8B9C44 
+db $19,$3A,$30 : dl EKressWavingSkullEast-3 : db $3E,$8C,$00    ; $8B9C4E 
+db $05,$13,$30 : dl EKressWavingSkullEast-3 : db $3E,$8D,$00    ; $8B9C4E 
+db $0C,$13,$30 : dl EKressWavingSkullEast-3 : db $3E,$8E,$00    ; $8B9C4E 
+db $12,$13,$30 : dl EKressWavingSkullEast-3 : db $3E,$8F,$00    ; $8B9C4E 
 db $0E,$37,$30 : dl $8BA0CF : db $3C,$90,$00 
 db $12,$27,$30 : dl $8BA0CF : db $3C,$91,$00 
 db $0F,$03,$30 : dl $8BA0CF : db $3C,$92,$00 
@@ -2946,18 +2946,18 @@ ActorList_MapA6:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $DF,$DF,$00 : dl $80E94D : db $00 
-db $17,$2E,$30 : dl $8B983B : db $3F,$A0,$00 
-db $2B,$33,$30 : dl $8B983B : db $3F,$A1,$00 
-db $0D,$21,$30 : dl $8B983B : db $3F,$A2,$00 
-db $2E,$1C,$30 : dl $8B983B : db $3F,$A3,$00 
-db $35,$16,$30 : dl $8B983B : db $3F,$A4,$00 
-db $26,$0C,$30 : dl $8B983B : db $3F,$A5,$00 
+db $17,$2E,$30 : dl EKressFlutist-3 : db $3F,$A0,$00    ; $8B983B 
+db $2B,$33,$30 : dl EKressFlutist-3 : db $3F,$A1,$00    ; $8B983B 
+db $0D,$21,$30 : dl EKressFlutist-3 : db $3F,$A2,$00    ; $8B983B 
+db $2E,$1C,$30 : dl EKressFlutist-3 : db $3F,$A3,$00    ; $8B983B 
+db $35,$16,$30 : dl EKressFlutist-3 : db $3F,$A4,$00    ; $8B983B 
+db $26,$0C,$30 : dl EKressFlutist-3 : db $3F,$A5,$00    ; $8B983B 
 db $14,$1C,$30 : dl $8B9E8B : db $3D,$A6,$00 
 db $17,$1D,$30 : dl $8B9E8B : db $3D,$A7,$00 
 db $1A,$1C,$30 : dl $8B9E8B : db $3D,$A8,$00 
 db $1D,$1D,$30 : dl $8B9E8B : db $3D,$A9,$00 
-db $05,$07,$30 : dl $8B9D0F : db $3D,$AA,$00 
-db $22,$0B,$30 : dl $8B9C4E : db $3E,$AB,$00 
+db $05,$07,$30 : dl EKressShootingSkullSouth-3 : db $3D,$AA,$00    ; $8B9D0F 
+db $22,$0B,$30 : dl EKressWavingSkullEast-3 : db $3E,$AB,$00    ; $8B9C4E 
 db $38,$29,$30 : dl $8BA0CF : db $3C,$AC,$00 
 db $39,$2D,$30 : dl $8BA0CF : db $3C,$AD,$00 
 db $3C,$2B,$30 : dl $8BA0CF : db $3C,$AE,$00 
@@ -2979,9 +2979,9 @@ db $65,$2E,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0
 db $54,$2E,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $43,$2E,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $32,$2E,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
-db $06,$17,$30 : dl $8B983B : db $3F,$B3,$00 
-db $73,$14,$30 : dl $8B983B : db $3F,$B5,$00 
-db $59,$0F,$30 : dl $8B983B : db $3F,$B6,$00 
+db $06,$17,$30 : dl EKressFlutist-3 : db $3F,$B3,$00    ; $8B983B 
+db $73,$14,$30 : dl EKressFlutist-3 : db $3F,$B5,$00    ; $8B983B 
+db $59,$0F,$30 : dl EKressFlutist-3 : db $3F,$B6,$00    ; $8B983B 
 db $38,$33,$30 : dl $8BA0CF : db $3C,$B7,$00 
 db $3B,$31,$30 : dl $8BA0CF : db $3C,$B8,$00 
 db $40,$31,$30 : dl $8BA0CF : db $3C,$B9,$00 
@@ -2991,32 +2991,32 @@ db $3D,$28,$30 : dl $8BA0CF : db $3C,$BC,$00
 db $37,$22,$30 : dl $8BA0CF : db $3C,$BD,$00 
 db $62,$19,$30 : dl $8BA0CF : db $3C,$BE,$00 
 db $7A,$14,$30 : dl $8BA0CF : db $3C,$BF,$00 
-db $5B,$3A,$30 : dl $8B9D0F : db $3D,$C0,$00 
-db $5C,$3A,$30 : dl $8B9D0F : db $3D,$C1,$00 
-db $40,$0F,$30 : dl $8B9D0F : db $3D,$C2,$00 
-db $14,$03,$30 : dl $8B9D0F : db $3D,$C3,$00 
-db $18,$03,$30 : dl $8B9D0F : db $3D,$C4,$00 
-db $7B,$23,$30 : dl $8B9DCD : db $3D,$C5,$00 
-db $79,$24,$30 : dl $8B9DCD : db $3D,$C6,$00 
-db $77,$25,$30 : dl $8B9DCD : db $3D,$C7,$00 
-db $48,$14,$30 : dl $8B9DCD : db $3D,$C8,$00 
-db $12,$08,$30 : dl $8B9DCD : db $3D,$C9,$00 
-db $16,$08,$30 : dl $8B9DCD : db $3D,$CA,$00 
+db $5B,$3A,$30 : dl EKressShootingSkullSouth-3 : db $3D,$C0,$00    ; $8B9D0F 
+db $5C,$3A,$30 : dl EKressShootingSkullSouth-3 : db $3D,$C1,$00    ; $8B9D0F 
+db $40,$0F,$30 : dl EKressShootingSkullSouth-3 : db $3D,$C2,$00    ; $8B9D0F 
+db $14,$03,$30 : dl EKressShootingSkullSouth-3 : db $3D,$C3,$00    ; $8B9D0F 
+db $18,$03,$30 : dl EKressShootingSkullSouth-3 : db $3D,$C4,$00    ; $8B9D0F 
+db $7B,$23,$30 : dl EKressShootingSkullNorth-3 : db $3D,$C5,$00    ; $8B9DCD 
+db $79,$24,$30 : dl EKressShootingSkullNorth-3 : db $3D,$C6,$00    ; $8B9DCD 
+db $77,$25,$30 : dl EKressShootingSkullNorth-3 : db $3D,$C7,$00    ; $8B9DCD 
+db $48,$14,$30 : dl EKressShootingSkullNorth-3 : db $3D,$C8,$00    ; $8B9DCD 
+db $12,$08,$30 : dl EKressShootingSkullNorth-3 : db $3D,$C9,$00    ; $8B9DCD 
+db $16,$08,$30 : dl EKressShootingSkullNorth-3 : db $3D,$CA,$00    ; $8B9DCD 
 db $5F,$31,$30 : dl $8B9E8B : db $3D,$CB,$00 
 db $44,$10,$30 : dl $8B9E8B : db $3D,$CC,$00 
 db $5B,$31,$30 : dl $8B9F53 : db $3D,$CD,$00 
 db $57,$31,$30 : dl $8B9F53 : db $3D,$CE,$00 
-db $33,$1B,$30 : dl $8B9BA2 : db $3E,$CF,$00 
-db $7A,$1B,$30 : dl $8B9BA2 : db $3E,$D0,$00 
-db $5D,$25,$30 : dl $8B9C44 : db $3E,$D1,$00 
-db $56,$25,$30 : dl $8B9C44 : db $3E,$D2,$00 
-db $4F,$25,$30 : dl $8B9C44 : db $3E,$D3,$00 
-db $48,$25,$30 : dl $8B9C44 : db $3E,$D4,$00 
-db $1C,$05,$30 : dl $8B9C44 : db $3E,$D5,$00 
-db $46,$3D,$30 : dl $8B9C4E : db $3E,$D6,$00 
-db $4E,$3D,$30 : dl $8B9C4E : db $3E,$D7,$00 
-db $56,$3D,$30 : dl $8B9C4E : db $3E,$D8,$00 
-db $52,$07,$30 : dl $8B9C4E : db $3E,$D9,$00 
+db $33,$1B,$30 : dl EKressWavingSkullNorth-3 : db $3E,$CF,$00    ; $8B9BA2 
+db $7A,$1B,$30 : dl EKressWavingSkullNorth-3 : db $3E,$D0,$00    ; $8B9BA2 
+db $5D,$25,$30 : dl EKressWavingSkullWest-3 : db $3E,$D1,$00    ; $8B9C44 
+db $56,$25,$30 : dl EKressWavingSkullWest-3 : db $3E,$D2,$00    ; $8B9C44 
+db $4F,$25,$30 : dl EKressWavingSkullWest-3 : db $3E,$D3,$00    ; $8B9C44 
+db $48,$25,$30 : dl EKressWavingSkullWest-3 : db $3E,$D4,$00    ; $8B9C44 
+db $1C,$05,$30 : dl EKressWavingSkullWest-3 : db $3E,$D5,$00    ; $8B9C44 
+db $46,$3D,$30 : dl EKressWavingSkullEast-3 : db $3E,$D6,$00    ; $8B9C4E 
+db $4E,$3D,$30 : dl EKressWavingSkullEast-3 : db $3E,$D7,$00    ; $8B9C4E 
+db $56,$3D,$30 : dl EKressWavingSkullEast-3 : db $3E,$D8,$00    ; $8B9C4E 
+db $52,$07,$30 : dl EKressWavingSkullEast-3 : db $3E,$D9,$00    ; $8B9C4E 
 db $3B,$0B,$30 : dl $8BA075 : db $3C,$DA,$00 
 db $23,$09,$01 : dl $80C218 : db $00 
 db $28,$0F,$01 : dl $80C1DF : db $00 
@@ -3032,14 +3032,14 @@ ActorList_MapA8:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $DF,$DF,$00 : dl $80E94D : db $00 
-db $31,$18,$30 : dl $8B983B : db $3F,$E0,$00 
-db $1E,$0E,$30 : dl $8B983B : db $3F,$E1,$00 
-db $16,$0E,$30 : dl $8B983B : db $3F,$E2,$00 
-db $0A,$1D,$30 : dl $8B983B : db $3F,$E3,$00 
-db $21,$0F,$30 : dl $8B9D0F : db $3D,$E4,$00 
-db $1F,$0B,$30 : dl $8B9D0F : db $3D,$E5,$00 
-db $15,$0B,$30 : dl $8B9D0F : db $3D,$E6,$00 
-db $14,$0F,$30 : dl $8B9D0F : db $3D,$E7,$00 
+db $31,$18,$30 : dl EKressFlutist-3 : db $3F,$E0,$00    ; $8B983B 
+db $1E,$0E,$30 : dl EKressFlutist-3 : db $3F,$E1,$00    ; $8B983B 
+db $16,$0E,$30 : dl EKressFlutist-3 : db $3F,$E2,$00    ; $8B983B 
+db $0A,$1D,$30 : dl EKressFlutist-3 : db $3F,$E3,$00    ; $8B983B 
+db $21,$0F,$30 : dl EKressShootingSkullSouth-3 : db $3D,$E4,$00    ; $8B9D0F 
+db $1F,$0B,$30 : dl EKressShootingSkullSouth-3 : db $3D,$E5,$00    ; $8B9D0F 
+db $15,$0B,$30 : dl EKressShootingSkullSouth-3 : db $3D,$E6,$00    ; $8B9D0F 
+db $14,$0F,$30 : dl EKressShootingSkullSouth-3 : db $3D,$E7,$00    ; $8B9D0F 
 db $FF,$CA
 ;org $8CCA02
 ActorList_MapA9:
@@ -3467,8 +3467,8 @@ db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
 db $3B,$3C,$00 : dl $88B6A2 : db $00 
-db $1C,$1E,$00 : dl $8BC65F : db $4F,$01,$00 
-db $23,$1E,$00 : dl $8BC65F : db $4F,$02,$73 
+db $1C,$1E,$00 : dl EPymdStationaryOrb-3 : db $4F,$01,$00   ; $8BC65F 
+db $23,$1E,$00 : dl EPymdStationaryOrb-3 : db $4F,$02,$73   ; $8BC65F 
 db $27,$1B,$E7 : dl $88B668 : db $00 
 db $1C,$38,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $1F,$13,$00 : dl $88CD6C : db $00 
@@ -3491,18 +3491,18 @@ db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $31,$0E,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $24,$0E,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
-db $29,$3C,$00 : dl $8BC39D : db $4E,$03,$00 
-db $04,$14,$00 : dl $8BC5A3 : db $4F,$04,$00 
-db $0B,$14,$00 : dl $8BC5A3 : db $4F,$05,$00 
-db $1D,$2E,$00 : dl $8BC5A3 : db $4F,$06,$00 
-db $49,$2C,$00 : dl $8BC5A3 : db $4F,$07,$00 
-db $48,$2D,$00 : dl $8BC5A3 : db $4F,$08,$00 
-db $43,$11,$00 : dl $8BC5FC : db $4F,$09,$00 
-db $1A,$3C,$00 : dl $8BC5FC : db $4F,$0A,$00 
-db $22,$2F,$00 : dl $8BC5FC : db $4F,$0B,$00 
-db $0C,$29,$00 : dl $8BC5FC : db $4F,$0C,$00 
-db $03,$3D,$00 : dl $8BC5FC : db $4F,$0D,$00 
-db $10,$3D,$00 : dl $8BC5FC : db $4F,$0E,$00 
+db $29,$3C,$00 : dl EPymdSpearman-3 : db $4E,$03,$00    ; $8BC39D 
+db $04,$14,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$04,$00    ; $8BC5A3 
+db $0B,$14,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$05,$00    ; $8BC5A3 
+db $1D,$2E,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$06,$00    ; $8BC5A3 
+db $49,$2C,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$07,$00    ; $8BC5A3 
+db $48,$2D,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$08,$00    ; $8BC5A3 
+db $43,$11,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$09,$00    ; $8BC5FC 
+db $1A,$3C,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$0A,$00    ; $8BC5FC 
+db $22,$2F,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$0B,$00    ; $8BC5FC 
+db $0C,$29,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$0C,$00    ; $8BC5FC 
+db $03,$3D,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$0D,$00    ; $8BC5FC 
+db $10,$3D,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$0E,$00    ; $8BC5FC 
 db $FF,$CA
 ;org $8CD650
 ActorList_MapCF:
@@ -3511,34 +3511,34 @@ db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $31,$3C,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $24,$3C,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $04,$3C,$00 : dl $88B6A2 : db $00 
-db $42,$13,$00 : dl $8BC5FC : db $4F,$10,$00 
-db $07,$15,$00 : dl $8BC5FC : db $4F,$11,$00 
-db $55,$25,$00 : dl $8BC5FC : db $4F,$12,$00 
-db $5C,$24,$00 : dl $8BC5FC : db $4F,$13,$00 
-db $0D,$15,$00 : dl $8BC5A3 : db $4F,$14,$00 
-db $58,$24,$00 : dl $8BC5A3 : db $4F,$15,$00 
-db $2F,$14,$00 : dl $8BC65F : db $4F,$16,$00 
-db $30,$14,$00 : dl $8BC65F : db $4F,$17,$00 
-db $31,$14,$00 : dl $8BC65F : db $4F,$18,$00 
-db $2F,$15,$00 : dl $8BC65F : db $4F,$19,$00 
-db $30,$15,$00 : dl $8BC65F : db $4F,$1A,$00 
-db $31,$15,$00 : dl $8BC65F : db $4F,$1B,$00 
-db $33,$27,$00 : dl $8BC39D : db $4E,$1C,$00 
-db $48,$2F,$00 : dl $8BC39D : db $4E,$1D,$00 
+db $42,$13,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$10,$00    ; $8BC5FC 
+db $07,$15,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$11,$00    ; $8BC5FC 
+db $55,$25,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$12,$00    ; $8BC5FC 
+db $5C,$24,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$13,$00    ; $8BC5FC 
+db $0D,$15,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$14,$00    ; $8BC5A3 
+db $58,$24,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$15,$00    ; $8BC5A3 
+db $2F,$14,$00 : dl EPymdStationaryOrb-3 : db $4F,$16,$00   ; $8BC65F 
+db $30,$14,$00 : dl EPymdStationaryOrb-3 : db $4F,$17,$00   ; $8BC65F 
+db $31,$14,$00 : dl EPymdStationaryOrb-3 : db $4F,$18,$00   ; $8BC65F 
+db $2F,$15,$00 : dl EPymdStationaryOrb-3 : db $4F,$19,$00   ; $8BC65F 
+db $30,$15,$00 : dl EPymdStationaryOrb-3 : db $4F,$1A,$00   ; $8BC65F 
+db $31,$15,$00 : dl EPymdStationaryOrb-3 : db $4F,$1B,$00   ; $8BC65F 
+db $33,$27,$00 : dl EPymdSpearman-3 : db $4E,$1C,$00    ; $8BC39D 
+db $48,$2F,$00 : dl EPymdSpearman-3 : db $4E,$1D,$00    ; $8BC39D 
 db $FF,$CA
 ;org $8CD6F3
 ActorList_MapD0:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $26,$15,$01 : dl $88B592 : db $00 
-db $2B,$15,$00 : dl $8BC65F : db $4F,$20,$00 
-db $1E,$15,$00 : dl $8BC65F : db $4F,$21,$00 
-db $27,$12,$00 : dl $8BC5FC : db $4F,$22,$00 
-db $26,$10,$00 : dl $8BC5FC : db $4F,$23,$00 
-db $4B,$4D,$00 : dl $8BC5FC : db $4F,$24,$00 
-db $45,$4D,$00 : dl $8BC5FC : db $4F,$25,$00 
-db $38,$4C,$00 : dl $8BC5FC : db $4F,$26,$00 
-db $33,$4D,$00 : dl $8BC39D : db $4E,$27,$00 
+db $2B,$15,$00 : dl EPymdStationaryOrb-3 : db $4F,$20,$00   ; $8BC65F 
+db $1E,$15,$00 : dl EPymdStationaryOrb-3 : db $4F,$21,$00   ; $8BC65F 
+db $27,$12,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$22,$00    ; $8BC5FC 
+db $26,$10,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$23,$00    ; $8BC5FC 
+db $4B,$4D,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$24,$00    ; $8BC5FC 
+db $45,$4D,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$25,$00    ; $8BC5FC 
+db $38,$4C,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$26,$00    ; $8BC5FC 
+db $33,$4D,$00 : dl EPymdSpearman-3 : db $4E,$27,$00    ; $8BC39D 
 db $FF,$CA
 ;org $8CD752
 ActorList_MapD1:
@@ -3546,75 +3546,75 @@ db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $36,$19,$03 : dl $88B592 : db $00 
 db $32,$49,$00 : dl $88B6A2 : db $00 
-db $35,$19,$00 : dl $8BC65F : db $4F,$30,$00 
-db $36,$19,$00 : dl $8BC65F : db $4F,$31,$00 
-db $37,$19,$00 : dl $8BC65F : db $4F,$32,$00 
-db $38,$19,$00 : dl $8BC65F : db $4F,$33,$00 
-db $1E,$3A,$00 : dl $8BC65F : db $4F,$34,$00 
-db $1F,$3A,$00 : dl $8BC65F : db $4F,$35,$00 
-db $20,$3A,$00 : dl $8BC65F : db $4F,$36,$00 
-db $21,$3A,$00 : dl $8BC65F : db $4F,$37,$00 
-db $22,$3A,$00 : dl $8BC65F : db $4F,$38,$00 
-db $23,$3A,$00 : dl $8BC65F : db $4F,$39,$00 
-db $28,$16,$00 : dl $8BC5A3 : db $4F,$3A,$00 
-db $07,$2A,$00 : dl $8BC5A3 : db $4F,$3B,$00 
-db $05,$4A,$00 : dl $8BC5A3 : db $4F,$3C,$00 
-db $25,$17,$00 : dl $8BC5FC : db $4F,$3D,$00 
-db $0C,$2B,$00 : dl $8BC5FC : db $4F,$3E,$00 
-db $03,$4C,$00 : dl $8BC5FC : db $4F,$3F,$00 
-db $06,$2A,$00 : dl $8BC39D : db $4E,$40,$00 
-db $20,$5B,$00 : dl $8BC39D : db $4E,$41,$00 
-db $27,$5C,$00 : dl $8BC39D : db $4E,$42,$00 
+db $35,$19,$00 : dl EPymdStationaryOrb-3 : db $4F,$30,$00   ; $8BC65F 
+db $36,$19,$00 : dl EPymdStationaryOrb-3 : db $4F,$31,$00   ; $8BC65F 
+db $37,$19,$00 : dl EPymdStationaryOrb-3 : db $4F,$32,$00   ; $8BC65F 
+db $38,$19,$00 : dl EPymdStationaryOrb-3 : db $4F,$33,$00   ; $8BC65F 
+db $1E,$3A,$00 : dl EPymdStationaryOrb-3 : db $4F,$34,$00   ; $8BC65F 
+db $1F,$3A,$00 : dl EPymdStationaryOrb-3 : db $4F,$35,$00   ; $8BC65F 
+db $20,$3A,$00 : dl EPymdStationaryOrb-3 : db $4F,$36,$00   ; $8BC65F 
+db $21,$3A,$00 : dl EPymdStationaryOrb-3 : db $4F,$37,$00   ; $8BC65F 
+db $22,$3A,$00 : dl EPymdStationaryOrb-3 : db $4F,$38,$00   ; $8BC65F 
+db $23,$3A,$00 : dl EPymdStationaryOrb-3 : db $4F,$39,$00   ; $8BC65F 
+db $28,$16,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$3A,$00    ; $8BC5A3 
+db $07,$2A,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$3B,$00    ; $8BC5A3 
+db $05,$4A,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$3C,$00    ; $8BC5A3 
+db $25,$17,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$3D,$00    ; $8BC5FC 
+db $0C,$2B,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$3E,$00    ; $8BC5FC 
+db $03,$4C,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$3F,$00    ; $8BC5FC 
+db $06,$2A,$00 : dl EPymdSpearman-3 : db $4E,$40,$00    ; $8BC39D 
+db $20,$5B,$00 : dl EPymdSpearman-3 : db $4E,$41,$00    ; $8BC39D 
+db $27,$5C,$00 : dl EPymdSpearman-3 : db $4E,$42,$00    ; $8BC39D 
 db $FF,$CA
 ;org $8CD81B
 ActorList_MapD2:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $26,$15,$00 : dl $8BC184 : db $4C,$48,$00 
-db $2A,$15,$00 : dl $8BC184 : db $4C,$49,$00 
-db $2E,$15,$00 : dl $8BC184 : db $4C,$4A,$00 
-db $4E,$0F,$00 : dl $8BC184 : db $4C,$4B,$00 
-db $52,$0F,$00 : dl $8BC184 : db $4C,$4C,$00 
-db $56,$0F,$00 : dl $8BC184 : db $4C,$4D,$00 
-db $35,$26,$00 : dl $8BC184 : db $4C,$4E,$00 
-db $39,$26,$00 : dl $8BC184 : db $4C,$4F,$00 
-db $11,$28,$00 : dl $8BC184 : db $4C,$50,$00 
-db $15,$28,$00 : dl $8BC184 : db $4C,$51,$00 
-db $19,$28,$00 : dl $8BC184 : db $4C,$52,$00 
-db $30,$17,$00 : dl $8BC5A3 : db $4F,$53,$00 
-db $58,$11,$00 : dl $8BC5A3 : db $4F,$54,$00 
-db $50,$10,$00 : dl $8BC5FC : db $4F,$55,$00 
-db $54,$10,$00 : dl $8BC5FC : db $4F,$56,$00 
-db $3B,$27,$00 : dl $8BC5FC : db $4F,$57,$00 
-db $37,$27,$00 : dl $8BC5FC : db $4F,$58,$00 
-db $33,$27,$00 : dl $8BC5FC : db $4F,$59,$00 
-db $5D,$39,$00 : dl $8BC798 : db $51,$5A,$00 
-db $1B,$3B,$00 : dl $8BC798 : db $51,$5B,$00 
-db $07,$3B,$00 : dl $8BC798 : db $51,$5C,$00 
-db $10,$3B,$00 : dl $8BC39D : db $4E,$5D,$00 
+db $26,$15,$00 : dl EPymdWallMummy-3 : db $4C,$48,$00    ; $8BC184 
+db $2A,$15,$00 : dl EPymdWallMummy-3 : db $4C,$49,$00    ; $8BC184 
+db $2E,$15,$00 : dl EPymdWallMummy-3 : db $4C,$4A,$00    ; $8BC184 
+db $4E,$0F,$00 : dl EPymdWallMummy-3 : db $4C,$4B,$00    ; $8BC184 
+db $52,$0F,$00 : dl EPymdWallMummy-3 : db $4C,$4C,$00    ; $8BC184 
+db $56,$0F,$00 : dl EPymdWallMummy-3 : db $4C,$4D,$00    ; $8BC184 
+db $35,$26,$00 : dl EPymdWallMummy-3 : db $4C,$4E,$00    ; $8BC184 
+db $39,$26,$00 : dl EPymdWallMummy-3 : db $4C,$4F,$00    ; $8BC184 
+db $11,$28,$00 : dl EPymdWallMummy-3 : db $4C,$50,$00    ; $8BC184 
+db $15,$28,$00 : dl EPymdWallMummy-3 : db $4C,$51,$00    ; $8BC184 
+db $19,$28,$00 : dl EPymdWallMummy-3 : db $4C,$52,$00    ; $8BC184 
+db $30,$17,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$53,$00    ; $8BC5A3 
+db $58,$11,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$54,$00    ; $8BC5A3 
+db $50,$10,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$55,$00    ; $8BC5FC 
+db $54,$10,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$56,$00    ; $8BC5FC 
+db $3B,$27,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$57,$00    ; $8BC5FC 
+db $37,$27,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$58,$00    ; $8BC5FC 
+db $33,$27,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$59,$00    ; $8BC5FC 
+db $5D,$39,$00 : dl EPymdInvisibleHead-3 : db $51,$5A,$00    ; $8BC798 
+db $1B,$3B,$00 : dl EPymdInvisibleHead-3 : db $51,$5B,$00    ; $8BC798 
+db $07,$3B,$00 : dl EPymdInvisibleHead-3 : db $51,$5C,$00    ; $8BC798 
+db $10,$3B,$00 : dl EPymdSpearman-3 : db $4E,$5D,$00    ; $8BC39D 
 db $FF,$CA
 ;org $8CD8F1
 ActorList_MapD3:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $79,$25,$00 : dl $88B6A2 : db $00 
-db $24,$13,$00 : dl $8BC184 : db $4C,$60,$00 
-db $28,$13,$00 : dl $8BC184 : db $4C,$61,$00 
-db $2C,$13,$00 : dl $8BC184 : db $4C,$62,$00 
-db $4E,$0F,$00 : dl $8BC184 : db $4C,$63,$00 
-db $52,$0F,$00 : dl $8BC184 : db $4C,$64,$00 
-db $66,$0D,$00 : dl $8BC184 : db $4C,$65,$00 
-db $6A,$0D,$00 : dl $8BC184 : db $4C,$66,$00 
-db $72,$0D,$00 : dl $8BC184 : db $4C,$67,$00 
-db $76,$0D,$00 : dl $8BC184 : db $4C,$68,$00 
-db $2A,$14,$00 : dl $8BC5A3 : db $4F,$69,$00 
-db $2F,$14,$00 : dl $8BC5A3 : db $4F,$6A,$00 
-db $6D,$0E,$00 : dl $8BC5A3 : db $4F,$6B,$00 
-db $76,$0F,$00 : dl $8BC5A3 : db $4F,$6C,$00 
-db $6D,$0E,$00 : dl $8BC5FC : db $4F,$6D,$00 
-db $44,$27,$00 : dl $8BC798 : db $51,$6E,$00 
-db $53,$12,$00 : dl $8BC39D : db $4E,$6F,$00 
-db $44,$28,$00 : dl $8BC39D : db $4E,$70,$00 
+db $24,$13,$00 : dl EPymdWallMummy-3 : db $4C,$60,$00    ; $8BC184 
+db $28,$13,$00 : dl EPymdWallMummy-3 : db $4C,$61,$00    ; $8BC184 
+db $2C,$13,$00 : dl EPymdWallMummy-3 : db $4C,$62,$00    ; $8BC184 
+db $4E,$0F,$00 : dl EPymdWallMummy-3 : db $4C,$63,$00    ; $8BC184 
+db $52,$0F,$00 : dl EPymdWallMummy-3 : db $4C,$64,$00    ; $8BC184 
+db $66,$0D,$00 : dl EPymdWallMummy-3 : db $4C,$65,$00    ; $8BC184 
+db $6A,$0D,$00 : dl EPymdWallMummy-3 : db $4C,$66,$00    ; $8BC184 
+db $72,$0D,$00 : dl EPymdWallMummy-3 : db $4C,$67,$00    ; $8BC184 
+db $76,$0D,$00 : dl EPymdWallMummy-3 : db $4C,$68,$00    ; $8BC184 
+db $2A,$14,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$69,$00    ; $8BC5A3 
+db $2F,$14,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$6A,$00    ; $8BC5A3 
+db $6D,$0E,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$6B,$00    ; $8BC5A3 
+db $76,$0F,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$6C,$00    ; $8BC5A3 
+db $6D,$0E,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$6D,$00    ; $8BC5FC 
+db $44,$27,$00 : dl EPymdInvisibleHead-3 : db $51,$6E,$00    ; $8BC798 
+db $53,$12,$00 : dl EPymdSpearman-3 : db $4E,$6F,$00    ; $8BC39D 
+db $44,$28,$00 : dl EPymdSpearman-3 : db $4E,$70,$00    ; $8BC39D 
 db $FF,$CA
 ;org $8CD9A1
 ActorList_MapD4:
@@ -3628,22 +3628,22 @@ db $0C,$4B,$E7 : dl $88C6EA : db $00
 db $0E,$4B,$E7 : dl $88C6EA : db $00 
 db $0C,$4D,$E7 : dl $88C6EA : db $00 
 db $0E,$4D,$E7 : dl $88C6EA : db $00 
-db $21,$1B,$00 : dl $8BC5A3 : db $4F,$78,$00 
-db $21,$1D,$00 : dl $8BC5A3 : db $4F,$79,$00 
-db $4B,$0A,$00 : dl $8BC5A3 : db $4F,$7A,$00 
-db $1B,$2C,$00 : dl $8BC5A3 : db $4F,$7B,$00 
-db $0F,$1A,$00 : dl $8BC5FC : db $4F,$7C,$00 
-db $11,$1D,$00 : dl $8BC5FC : db $4F,$7D,$00 
-db $13,$1A,$00 : dl $8BC5FC : db $4F,$7E,$00 
-db $15,$1D,$00 : dl $8BC5FC : db $4F,$7F,$00 
-db $18,$2C,$00 : dl $8BC5FC : db $4F,$80,$00 
-db $31,$34,$00 : dl $8BC5FC : db $4F,$81,$00 
-db $1B,$0C,$00 : dl $8BC39D : db $4E,$82,$00 
-db $32,$0C,$00 : dl $8BC39D : db $4E,$83,$00 
-db $2C,$34,$00 : dl $8BC39D : db $4E,$84,$00 
-db $4D,$2C,$00 : dl $8BC798 : db $51,$85,$00 
-db $0B,$4B,$00 : dl $8BC798 : db $51,$86,$00 
-db $0B,$4D,$00 : dl $8BC798 : db $51,$87,$00 
+db $21,$1B,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$78,$00    ; $8BC5A3 
+db $21,$1D,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$79,$00    ; $8BC5A3 
+db $4B,$0A,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$7A,$00    ; $8BC5A3 
+db $1B,$2C,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$7B,$00    ; $8BC5A3 
+db $0F,$1A,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$7C,$00    ; $8BC5FC 
+db $11,$1D,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$7D,$00    ; $8BC5FC 
+db $13,$1A,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$7E,$00    ; $8BC5FC 
+db $15,$1D,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$7F,$00    ; $8BC5FC 
+db $18,$2C,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$80,$00    ; $8BC5FC 
+db $31,$34,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$81,$00    ; $8BC5FC 
+db $1B,$0C,$00 : dl EPymdSpearman-3 : db $4E,$82,$00    ; $8BC39D 
+db $32,$0C,$00 : dl EPymdSpearman-3 : db $4E,$83,$00    ; $8BC39D 
+db $2C,$34,$00 : dl EPymdSpearman-3 : db $4E,$84,$00    ; $8BC39D 
+db $4D,$2C,$00 : dl EPymdInvisibleHead-3 : db $51,$85,$00    ; $8BC798 
+db $0B,$4B,$00 : dl EPymdInvisibleHead-3 : db $51,$86,$00    ; $8BC798 
+db $0B,$4D,$00 : dl EPymdInvisibleHead-3 : db $51,$87,$00    ; $8BC798 
 db $42,$4C,$00 : dl $88B6A2 : db $00 
 db $FF,$CA
 ;org $8CDA80
@@ -3651,26 +3651,26 @@ ActorList_MapD5:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $04,$4C,$00 : dl $88B6A2 : db $00 
-db $33,$0B,$00 : dl $8BC5FC : db $4F,$90,$00 
-db $42,$0B,$00 : dl $8BC5A3 : db $4F,$91,$00 
-db $1B,$10,$00 : dl $8BC1A7 : db $4C,$92,$00 
-db $1D,$10,$00 : dl $8BC1A7 : db $4C,$93,$00 
-db $32,$0A,$00 : dl $8BC184 : db $4C,$94,$00 
-db $45,$0A,$00 : dl $8BC184 : db $4C,$95,$00 
-db $47,$0A,$00 : dl $8BC184 : db $4C,$96,$00 
-db $0A,$1A,$00 : dl $8BC184 : db $4C,$97,$00 
-db $08,$1A,$00 : dl $8BC184 : db $4C,$98,$00 
-db $06,$1A,$00 : dl $8BC184 : db $4C,$99,$00 
-db $23,$26,$00 : dl $8BC184 : db $4C,$9A,$00 
-db $21,$26,$00 : dl $8BC184 : db $4C,$9B,$00 
-db $1F,$26,$00 : dl $8BC184 : db $4C,$9C,$00 
-db $1D,$26,$00 : dl $8BC184 : db $4C,$9D,$00 
-db $14,$1D,$00 : dl $8BC39D : db $4E,$9E,$00 
-db $30,$34,$00 : dl $8BC39D : db $4E,$9F,$00 
-db $0C,$4C,$00 : dl $8BC39D : db $4E,$A0,$00 
-db $0C,$4D,$00 : dl $8BC39D : db $4E,$A1,$00 
-db $3D,$45,$00 : dl $8BC798 : db $51,$A2,$00 
-db $4D,$4B,$00 : dl $8BC798 : db $51,$A3,$00 
+db $33,$0B,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$90,$00    ; $8BC5FC 
+db $42,$0B,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$91,$00    ; $8BC5A3 
+db $1B,$10,$00 : dl EPymdLooseMummy-3 : db $4C,$92,$00    ; $8BC1A7 
+db $1D,$10,$00 : dl EPymdLooseMummy-3 : db $4C,$93,$00    ; $8BC1A7 
+db $32,$0A,$00 : dl EPymdWallMummy-3 : db $4C,$94,$00    ; $8BC184 
+db $45,$0A,$00 : dl EPymdWallMummy-3 : db $4C,$95,$00    ; $8BC184 
+db $47,$0A,$00 : dl EPymdWallMummy-3 : db $4C,$96,$00    ; $8BC184 
+db $0A,$1A,$00 : dl EPymdWallMummy-3 : db $4C,$97,$00    ; $8BC184 
+db $08,$1A,$00 : dl EPymdWallMummy-3 : db $4C,$98,$00    ; $8BC184 
+db $06,$1A,$00 : dl EPymdWallMummy-3 : db $4C,$99,$00    ; $8BC184 
+db $23,$26,$00 : dl EPymdWallMummy-3 : db $4C,$9A,$00    ; $8BC184 
+db $21,$26,$00 : dl EPymdWallMummy-3 : db $4C,$9B,$00    ; $8BC184 
+db $1F,$26,$00 : dl EPymdWallMummy-3 : db $4C,$9C,$00    ; $8BC184 
+db $1D,$26,$00 : dl EPymdWallMummy-3 : db $4C,$9D,$00    ; $8BC184 
+db $14,$1D,$00 : dl EPymdSpearman-3 : db $4E,$9E,$00    ; $8BC39D 
+db $30,$34,$00 : dl EPymdSpearman-3 : db $4E,$9F,$00    ; $8BC39D 
+db $0C,$4C,$00 : dl EPymdSpearman-3 : db $4E,$A0,$00    ; $8BC39D 
+db $0C,$4D,$00 : dl EPymdSpearman-3 : db $4E,$A1,$00    ; $8BC39D 
+db $3D,$45,$00 : dl EPymdInvisibleHead-3 : db $51,$A2,$00    ; $8BC798 
+db $4D,$4B,$00 : dl EPymdInvisibleHead-3 : db $51,$A3,$00    ; $8BC798 
 db $FF,$CA
 ;org $8CDB4B
 ActorList_MapD6:
@@ -3682,23 +3682,23 @@ db $32,$0C,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348
 db $3A,$2C,$00 : dl $88C2DA : db $00 
 db $3A,$4C,$00 : dl $88C3FD : db $00 
 db $33,$4D,$00 : dl $88C3FD : db $00 
-db $11,$0C,$00 : dl $8BC65F : db $4F,$A8,$00 
-db $15,$0D,$00 : dl $8BC65F : db $4F,$A9,$00 
-db $19,$0C,$00 : dl $8BC65F : db $4F,$AA,$00 
-db $1D,$0D,$00 : dl $8BC65F : db $4F,$AB,$00 
-db $03,$2B,$00 : dl $8BC5A3 : db $4F,$AC,$00 
-db $29,$0A,$00 : dl $8BC5FC : db $4F,$AD,$00 
-db $3B,$2C,$00 : dl $8BC5FC : db $4F,$AE,$00 
-db $3E,$4C,$00 : dl $8BC5FC : db $4F,$AF,$00 
-db $1C,$45,$00 : dl $8BC5FC : db $4F,$B0,$00 
-db $28,$0A,$00 : dl $8BC39D : db $4E,$B1,$00 
-db $0D,$2A,$00 : dl $8BC39D : db $4E,$B2,$00 
-db $1E,$46,$00 : dl $8BC39D : db $4E,$B3,$00 
-db $4C,$0B,$00 : dl $8BC798 : db $51,$B4,$00 
-db $29,$3A,$00 : dl $8BC798 : db $51,$B5,$00 
-db $29,$3B,$00 : dl $8BC798 : db $51,$B6,$00 
-db $29,$3C,$00 : dl $8BC798 : db $51,$B7,$00 
-db $29,$3D,$00 : dl $8BC798 : db $51,$B8,$00 
+db $11,$0C,$00 : dl EPymdStationaryOrb-3 : db $4F,$A8,$00   ; $8BC65F 
+db $15,$0D,$00 : dl EPymdStationaryOrb-3 : db $4F,$A9,$00   ; $8BC65F 
+db $19,$0C,$00 : dl EPymdStationaryOrb-3 : db $4F,$AA,$00   ; $8BC65F 
+db $1D,$0D,$00 : dl EPymdStationaryOrb-3 : db $4F,$AB,$00   ; $8BC65F 
+db $03,$2B,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$AC,$00    ; $8BC5A3 
+db $29,$0A,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$AD,$00    ; $8BC5FC 
+db $3B,$2C,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$AE,$00    ; $8BC5FC 
+db $3E,$4C,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$AF,$00    ; $8BC5FC 
+db $1C,$45,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$B0,$00    ; $8BC5FC 
+db $28,$0A,$00 : dl EPymdSpearman-3 : db $4E,$B1,$00    ; $8BC39D 
+db $0D,$2A,$00 : dl EPymdSpearman-3 : db $4E,$B2,$00    ; $8BC39D 
+db $1E,$46,$00 : dl EPymdSpearman-3 : db $4E,$B3,$00    ; $8BC39D 
+db $4C,$0B,$00 : dl EPymdInvisibleHead-3 : db $51,$B4,$00    ; $8BC798 
+db $29,$3A,$00 : dl EPymdInvisibleHead-3 : db $51,$B5,$00    ; $8BC798 
+db $29,$3B,$00 : dl EPymdInvisibleHead-3 : db $51,$B6,$00    ; $8BC798 
+db $29,$3C,$00 : dl EPymdInvisibleHead-3 : db $51,$B7,$00    ; $8BC798 
+db $29,$3D,$00 : dl EPymdInvisibleHead-3 : db $51,$B8,$00    ; $8BC798 
 db $FF,$CA
 ;org $8CDC1E
 ActorList_MapD7:
@@ -3713,63 +3713,63 @@ db $37,$3C,$07 : dl $88C57F : db $00
 db $08,$4C,$0B : dl $88C57F : db $00 
 db $34,$5D,$03 : dl $88C4EA : db $00 
 db $0B,$5D,$07 : dl $88C4EA : db $00 
-db $36,$1A,$00 : dl $8BC5FC : db $4F,$C0,$00 
-db $38,$1D,$00 : dl $8BC5FC : db $4F,$C1,$00 
-db $07,$2C,$00 : dl $8BC65F : db $4F,$C2,$00 
-db $09,$2C,$00 : dl $8BC65F : db $4F,$C3,$00 
-db $08,$2B,$00 : dl $8BC65F : db $4F,$C4,$00 
-db $08,$2D,$00 : dl $8BC65F : db $4F,$C5,$00 
-db $0C,$5C,$00 : dl $8BC65F : db $4F,$C6,$00 
-db $0D,$5D,$00 : dl $8BC65F : db $4F,$C7,$00 
-db $0E,$5C,$00 : dl $8BC65F : db $4F,$C8,$00 
-db $0F,$5D,$00 : dl $8BC65F : db $4F,$C9,$00 
-db $10,$5C,$00 : dl $8BC65F : db $4F,$CA,$00 
-db $11,$5D,$00 : dl $8BC65F : db $4F,$CB,$00 
-db $08,$4C,$00 : dl $8BC65F : db $4F,$CC,$00 
-db $33,$3A,$00 : dl $8BC798 : db $51,$CD,$00 
-db $3B,$3A,$00 : dl $8BC798 : db $51,$CE,$00 
-db $34,$5D,$00 : dl $8BC798 : db $51,$CF,$00 
+db $36,$1A,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$C0,$00    ; $8BC5FC 
+db $38,$1D,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$C1,$00    ; $8BC5FC 
+db $07,$2C,$00 : dl EPymdStationaryOrb-3 : db $4F,$C2,$00   ; $8BC65F 
+db $09,$2C,$00 : dl EPymdStationaryOrb-3 : db $4F,$C3,$00   ; $8BC65F 
+db $08,$2B,$00 : dl EPymdStationaryOrb-3 : db $4F,$C4,$00   ; $8BC65F 
+db $08,$2D,$00 : dl EPymdStationaryOrb-3 : db $4F,$C5,$00   ; $8BC65F 
+db $0C,$5C,$00 : dl EPymdStationaryOrb-3 : db $4F,$C6,$00   ; $8BC65F 
+db $0D,$5D,$00 : dl EPymdStationaryOrb-3 : db $4F,$C7,$00   ; $8BC65F 
+db $0E,$5C,$00 : dl EPymdStationaryOrb-3 : db $4F,$C8,$00   ; $8BC65F 
+db $0F,$5D,$00 : dl EPymdStationaryOrb-3 : db $4F,$C9,$00   ; $8BC65F 
+db $10,$5C,$00 : dl EPymdStationaryOrb-3 : db $4F,$CA,$00   ; $8BC65F 
+db $11,$5D,$00 : dl EPymdStationaryOrb-3 : db $4F,$CB,$00   ; $8BC65F 
+db $08,$4C,$00 : dl EPymdStationaryOrb-3 : db $4F,$CC,$00   ; $8BC65F 
+db $33,$3A,$00 : dl EPymdInvisibleHead-3 : db $51,$CD,$00    ; $8BC798 
+db $3B,$3A,$00 : dl EPymdInvisibleHead-3 : db $51,$CE,$00    ; $8BC798 
+db $34,$5D,$00 : dl EPymdInvisibleHead-3 : db $51,$CF,$00    ; $8BC798 
 db $FF,$CA
 ;org $8CDCFD
 ActorList_MapD8:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $44,$1C,$00 : dl $88B6A2 : db $00 
-db $40,$29,$00 : dl $8BC184 : db $4C,$D0,$00 
-db $3C,$29,$00 : dl $8BC184 : db $4C,$D1,$00 
-db $34,$19,$00 : dl $8BC184 : db $4C,$D2,$00 
-db $30,$19,$00 : dl $8BC184 : db $4C,$D3,$00 
-db $2C,$19,$00 : dl $8BC184 : db $4C,$D4,$00 
-db $25,$49,$00 : dl $8BC184 : db $4C,$D5,$00 
-db $21,$49,$00 : dl $8BC184 : db $4C,$D6,$00 
-db $1D,$49,$00 : dl $8BC184 : db $4C,$D7,$00 
-db $16,$39,$00 : dl $8BC184 : db $4C,$D8,$00 
-db $11,$39,$00 : dl $8BC184 : db $4C,$D9,$00 
-db $0C,$39,$00 : dl $8BC184 : db $4C,$DA,$00 
-db $46,$19,$00 : dl $8BC184 : db $4C,$DB,$00 
-db $37,$0C,$00 : dl $8BC5A3 : db $4F,$DC,$00 
-db $37,$0D,$00 : dl $8BC5A3 : db $4F,$DD,$00 
-db $30,$1D,$00 : dl $8BC5A3 : db $4F,$DE,$00 
-db $2C,$1B,$00 : dl $8BC5A3 : db $4F,$DF,$00 
-db $0F,$25,$00 : dl $8BC5FC : db $4F,$E0,$00 
-db $10,$26,$00 : dl $8BC5FC : db $4F,$E1,$00 
-db $11,$25,$00 : dl $8BC5FC : db $4F,$E2,$00 
-db $12,$26,$00 : dl $8BC5FC : db $4F,$E3,$00 
-db $13,$25,$00 : dl $8BC5FC : db $4F,$E4,$00 
-db $14,$26,$00 : dl $8BC5FC : db $4F,$E5,$00 
-db $15,$25,$00 : dl $8BC5FC : db $4F,$E6,$00 
-db $3E,$2A,$00 : dl $8BC5FC : db $4F,$E7,$00 
-db $41,$3A,$00 : dl $8BC1A7 : db $4C,$E8,$00 
-db $40,$3D,$00 : dl $8BC1A7 : db $4C,$E9,$00 
-db $4C,$3A,$00 : dl $8BC1A7 : db $4C,$EA,$00 
-db $4D,$3D,$00 : dl $8BC1A7 : db $4C,$EB,$00 
-db $22,$0D,$00 : dl $8BC39D : db $4E,$EC,$00 
-db $0E,$3B,$00 : dl $8BC39D : db $4E,$ED,$00 
-db $06,$3B,$00 : dl $8BC39D : db $4E,$EE,$00 
-db $0C,$4A,$00 : dl $8BC798 : db $51,$EF,$00 
-db $0D,$4D,$00 : dl $8BC798 : db $51,$F0,$00 
-db $03,$4A,$00 : dl $8BC798 : db $51,$F1,$00 
-db $02,$4D,$00 : dl $8BC798 : db $51,$F2,$00 
+db $40,$29,$00 : dl EPymdWallMummy-3 : db $4C,$D0,$00    ; $8BC184 
+db $3C,$29,$00 : dl EPymdWallMummy-3 : db $4C,$D1,$00    ; $8BC184 
+db $34,$19,$00 : dl EPymdWallMummy-3 : db $4C,$D2,$00    ; $8BC184 
+db $30,$19,$00 : dl EPymdWallMummy-3 : db $4C,$D3,$00    ; $8BC184 
+db $2C,$19,$00 : dl EPymdWallMummy-3 : db $4C,$D4,$00    ; $8BC184 
+db $25,$49,$00 : dl EPymdWallMummy-3 : db $4C,$D5,$00    ; $8BC184 
+db $21,$49,$00 : dl EPymdWallMummy-3 : db $4C,$D6,$00    ; $8BC184 
+db $1D,$49,$00 : dl EPymdWallMummy-3 : db $4C,$D7,$00    ; $8BC184 
+db $16,$39,$00 : dl EPymdWallMummy-3 : db $4C,$D8,$00    ; $8BC184 
+db $11,$39,$00 : dl EPymdWallMummy-3 : db $4C,$D9,$00    ; $8BC184 
+db $0C,$39,$00 : dl EPymdWallMummy-3 : db $4C,$DA,$00    ; $8BC184 
+db $46,$19,$00 : dl EPymdWallMummy-3 : db $4C,$DB,$00    ; $8BC184 
+db $37,$0C,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$DC,$00    ; $8BC5A3 
+db $37,$0D,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$DD,$00    ; $8BC5A3 
+db $30,$1D,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$DE,$00    ; $8BC5A3 
+db $2C,$1B,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$DF,$00    ; $8BC5A3 
+db $0F,$25,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$E0,$00    ; $8BC5FC 
+db $10,$26,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$E1,$00    ; $8BC5FC 
+db $11,$25,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$E2,$00    ; $8BC5FC 
+db $12,$26,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$E3,$00    ; $8BC5FC 
+db $13,$25,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$E4,$00    ; $8BC5FC 
+db $14,$26,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$E5,$00    ; $8BC5FC 
+db $15,$25,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$E6,$00    ; $8BC5FC 
+db $3E,$2A,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$E7,$00    ; $8BC5FC 
+db $41,$3A,$00 : dl EPymdLooseMummy-3 : db $4C,$E8,$00    ; $8BC1A7 
+db $40,$3D,$00 : dl EPymdLooseMummy-3 : db $4C,$E9,$00    ; $8BC1A7 
+db $4C,$3A,$00 : dl EPymdLooseMummy-3 : db $4C,$EA,$00    ; $8BC1A7 
+db $4D,$3D,$00 : dl EPymdLooseMummy-3 : db $4C,$EB,$00    ; $8BC1A7 
+db $22,$0D,$00 : dl EPymdSpearman-3 : db $4E,$EC,$00    ; $8BC39D 
+db $0E,$3B,$00 : dl EPymdSpearman-3 : db $4E,$ED,$00    ; $8BC39D 
+db $06,$3B,$00 : dl EPymdSpearman-3 : db $4E,$EE,$00    ; $8BC39D 
+db $0C,$4A,$00 : dl EPymdInvisibleHead-3 : db $51,$EF,$00    ; $8BC798 
+db $0D,$4D,$00 : dl EPymdInvisibleHead-3 : db $51,$F0,$00    ; $8BC798 
+db $03,$4A,$00 : dl EPymdInvisibleHead-3 : db $51,$F1,$00    ; $8BC798 
+db $02,$4D,$00 : dl EPymdInvisibleHead-3 : db $51,$F2,$00    ; $8BC798 
 db $FF,$CA
 ;org $8CDE4F
 ActorList_MapD9:
@@ -3777,29 +3777,29 @@ db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl $80EAC3 : db $00 
 db $00,$01,$00 : dl $88C5CA : db $00 
-db $33,$1A,$00 : dl $8BC65F : db $4F,$F3,$00 
-db $4A,$0B,$00 : dl $8BC65F : db $4F,$F4,$00 
-db $4B,$0B,$00 : dl $8BC65F : db $4F,$F4,$00 
-db $4A,$0C,$00 : dl $8BC65F : db $4F,$F4,$00 
-db $4B,$0C,$00 : dl $8BC65F : db $4F,$F4,$00 
-db $2B,$1A,$00 : dl $8BC5A3 : db $4F,$F8,$00 
-db $39,$1A,$00 : dl $8BC5A3 : db $4F,$F8,$00 
-db $4C,$2A,$00 : dl $8BC5FC : db $4F,$FA,$00 
-db $49,$2B,$00 : dl $8BC5FC : db $4F,$FA,$00 
-db $50,$2A,$00 : dl $8BC5FC : db $4F,$FA,$00 
-db $52,$2B,$00 : dl $8BC5FC : db $4F,$FA,$00 
-db $45,$0C,$00 : dl $8BC5FC : db $4F,$FA,$00 
-db $4E,$2A,$00 : dl $8BC798 : db $51,$FB,$00 
-db $4E,$2B,$00 : dl $8BC798 : db $51,$FB,$00 
-db $4E,$2C,$00 : dl $8BC798 : db $51,$FB,$00 
-db $4E,$2D,$00 : dl $8BC798 : db $51,$FB,$00 
-db $66,$1A,$00 : dl $8BC39D : db $4E,$FC,$00 
-db $73,$2A,$00 : dl $8BC1A7 : db $4C,$FD,$00 
-db $72,$2B,$00 : dl $8BC1A7 : db $4C,$FD,$00 
-db $72,$2D,$00 : dl $8BC1A7 : db $4C,$FD,$00 
-db $7C,$2A,$00 : dl $8BC1A7 : db $4C,$FD,$00 
-db $7D,$2B,$00 : dl $8BC1A7 : db $4C,$FD,$00 
-db $7D,$2D,$00 : dl $8BC1A7 : db $4C,$FD,$00 
+db $33,$1A,$00 : dl EPymdStationaryOrb-3 : db $4F,$F3,$00   ; $8BC65F 
+db $4A,$0B,$00 : dl EPymdStationaryOrb-3 : db $4F,$F4,$00   ; $8BC65F 
+db $4B,$0B,$00 : dl EPymdStationaryOrb-3 : db $4F,$F4,$00   ; $8BC65F 
+db $4A,$0C,$00 : dl EPymdStationaryOrb-3 : db $4F,$F4,$00   ; $8BC65F 
+db $4B,$0C,$00 : dl EPymdStationaryOrb-3 : db $4F,$F4,$00   ; $8BC65F 
+db $2B,$1A,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$F8,$00    ; $8BC5A3 
+db $39,$1A,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$F8,$00    ; $8BC5A3 
+db $4C,$2A,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$FA,$00    ; $8BC5FC 
+db $49,$2B,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$FA,$00    ; $8BC5FC 
+db $50,$2A,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$FA,$00    ; $8BC5FC 
+db $52,$2B,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$FA,$00    ; $8BC5FC 
+db $45,$0C,$00 : dl EPymdVertWalkingOrb-3 : db $4F,$FA,$00    ; $8BC5FC 
+db $4E,$2A,$00 : dl EPymdInvisibleHead-3 : db $51,$FB,$00    ; $8BC798 
+db $4E,$2B,$00 : dl EPymdInvisibleHead-3 : db $51,$FB,$00    ; $8BC798 
+db $4E,$2C,$00 : dl EPymdInvisibleHead-3 : db $51,$FB,$00    ; $8BC798 
+db $4E,$2D,$00 : dl EPymdInvisibleHead-3 : db $51,$FB,$00    ; $8BC798 
+db $66,$1A,$00 : dl EPymdSpearman-3 : db $4E,$FC,$00    ; $8BC39D 
+db $73,$2A,$00 : dl EPymdLooseMummy-3 : db $4C,$FD,$00    ; $8BC1A7 
+db $72,$2B,$00 : dl EPymdLooseMummy-3 : db $4C,$FD,$00    ; $8BC1A7 
+db $72,$2D,$00 : dl EPymdLooseMummy-3 : db $4C,$FD,$00    ; $8BC1A7 
+db $7C,$2A,$00 : dl EPymdLooseMummy-3 : db $4C,$FD,$00    ; $8BC1A7 
+db $7D,$2B,$00 : dl EPymdLooseMummy-3 : db $4C,$FD,$00    ; $8BC1A7 
+db $7D,$2D,$00 : dl EPymdLooseMummy-3 : db $4C,$FD,$00    ; $8BC1A7 
 db $FF,$CA
 ;org $8CDF3C
 ActorList_MapDA:
@@ -3819,10 +3819,10 @@ db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl $80EAC3 : db $00 
 db $00,$01,$00 : dl $88C5CA : db $00 
 db $7C,$0C,$00 : dl $88B6A2 : db $00 
-db $4E,$0D,$00 : dl $8BC798 : db $51,$FE,$00 
-db $4E,$0E,$00 : dl $8BC798 : db $51,$FE,$00 
-db $68,$0E,$00 : dl $8BC5A3 : db $4F,$BE,$00 
-db $6C,$0F,$00 : dl $8BC5A3 : db $4F,$BF,$00 
+db $4E,$0D,$00 : dl EPymdInvisibleHead-3 : db $51,$FE,$00    ; $8BC798 
+db $4E,$0E,$00 : dl EPymdInvisibleHead-3 : db $51,$FE,$00    ; $8BC798 
+db $68,$0E,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$BE,$00    ; $8BC5A3 
+db $6C,$0F,$00 : dl EPymdHorzWalkingOrb-3 : db $4F,$BF,$00    ; $8BC5A3 
 db $FF,$CA
 ;org $8CDFBF
 ActorList_MapDD:
@@ -3835,7 +3835,7 @@ db $1B,$0C,$30 : dl $8BADBE : db $00
 db $1B,$1B,$30 : dl $8BADCC : db $00 
 db $0F,$0C,$30 : dl EMummyQueen-3 : db $50,$00,$00    ; $8ba6b6
 db $00,$01,$01 : dl $8BA5DF : db $00 
-db $00,$01,$00 : dl $88CE12 : db $00 
+db $00,$01,$00 : dl EMummyQueenStatueAwarder-3 : db $00    ; $88CE12
 db $00,$01,$01 : dl EBossClearRewarder-3 : db $00    ; $80C2BB
 db $FF,$CA
 ;org $8CE010
@@ -4099,12 +4099,12 @@ db $00,$01,$00 : dl $8BC9AE : db $00
 db $FF,$CA
 ;org $8CE57D
 ActorList_MapFD:
-db $02,$03,$21 : dl $80CD59 : db $00 
-db $01,$05,$03 : dl $80CD59 : db $00 
-db $02,$08,$05 : dl $80CD59 : db $00 
-db $0C,$03,$27 : dl $80CD59 : db $00 
-db $0D,$05,$09 : dl $80CD59 : db $00 
-db $0C,$08,$0B : dl $80CD59 : db $00 
+db $02,$03,$21 : dl EStatueGetCutsceneStatue-3 : db $00    ; $80CD59 
+db $01,$05,$03 : dl EStatueGetCutsceneStatue-3 : db $00    ; $80CD59 
+db $02,$08,$05 : dl EStatueGetCutsceneStatue-3 : db $00    ; $80CD59 
+db $0C,$03,$27 : dl EStatueGetCutsceneStatue-3 : db $00    ; $80CD59 
+db $0D,$05,$09 : dl EStatueGetCutsceneStatue-3 : db $00    ; $80CD59 
+db $0C,$08,$0B : dl EStatueGetCutsceneStatue-3 : db $00    ; $80CD59 
 db $FF,$CA
 ;org $8CE5A9
 ActorList_MapFE:
@@ -4112,7 +4112,7 @@ db $00,$01,$00 : dl EWorldMapManager-3 : db $00    ; $83a2f1
 db $FF,$CA
 ;org $8CE5B2
 ActorList_MapFF:
-db $00,$01,$00 : dl EInventoryScreenManager-3 : db $00    ; $82e396
+db $00,$01,$00 : dl EInvScreenManager-3 : db $00    ; $82e396
 db $02,$03,$21 : dl $80CF29 : db $00 
 db $01,$05,$03 : dl $80CF29 : db $00 
 db $02,$08,$05 : dl $80CF29 : db $00 
@@ -5080,6 +5080,69 @@ rtl
 }
 
 
+org $8cec65
+TDGMouthLaser:
+{
+lda #$0004 : sta $7F000E,x
+lda #$0000 : sta $7F0000,x
+  sta $7F0002,x
+  sta $7F0006,x
+cop #$C1
+lda $7F0000,x : lsr : bcs B_8CEC89
+ldy #$0000
+bra J_8CEC8C
+B_8CEC89:    ; org $8cec89
+ldy #$0200
+J_8CEC8C:    ; org $8cec8c
+sep #$20
+phb
+lda #$7E : pha : plb
+rep #$20
+phd
+lda #$0000 : tcd
+lda $7F0002,x : inc a : inc a : sta $7F0002,x
+  sta $0E
+lda #$857A : sta $18
+lda #$00FF : sta $7C01,y
+sep #$20
+lda #$45 : sta $7C00,y
+iny : iny : iny
+B_8CECBB:    ; org $8cecbb
+lda #$04 : sta $7C00,y
+lda $18 : dec a : sta $18 : sta $7C01,y
+lda $19 : inc a : sta $19 : sta $7C02,y
+iny : iny : iny
+dec $0E : bpl B_8CECBB
+lda #$01 : sta $7C00,y
+rep #$20
+lda #$00FF : sta $7C01,y
+sep #$20
+lda #$00 : sta $7C03,y
+rep #$20
+pld
+plb
+lda $7F0000,x : lsr : bcs B_8CECFE
+cop #$02 : dl $7E7C00 : db $26   ; Engine does DMA to $2126 as HDMA 2-write-2-reg, so $2127 is included.
+bra J_8CED04
+B_8CECFE:    ; org $8cecfe
+cop #$02 : dl $7E7E00 : db $26
+J_8CED04:    ; org $8ced04
+lda $7F0000,x : inc a : sta $7F0000,x
+lda $7F0002,x : cmp #$0024 : bcs B_8CED17
+rtl
+B_8CED17:    ; org $8ced17
+lda #$0023 : sta $7F0002,x
+lda $7F0006,x : inc a : sta $7F0006,x
+cop #$CE : db $02
+cop #$C2
+cop #$C2
+lda #$00FF : sta $2126
+cop #$3D
+rtl
+}
+warnpc $8ced37
+
+
 org $8CEEAA
 db $00,$00,$21
 EComet:
@@ -5102,6 +5165,15 @@ cop #$06 : db $2c
 cop #$91 : db $1c,$00 : cop #$89
 lda #$0008 : tsb $10
 jml $82c3c8
+
+
+
+
+; Everything beyond $8cf61f is unused.
+org $8cf61f
+db $00 : dw $2000
+rtl
+
 
 
 org $8CFFFB
