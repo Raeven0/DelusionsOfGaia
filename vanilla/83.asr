@@ -323,7 +323,7 @@ dw $8d67    ; $0a = Meat
 dw $8e15    ; Mine Key A
 dw $8e96    ; Mine Key B
 dw SR_UseItemMemoryMelody    ; $8f17, Memory Melody
-dw $8ff3    ; Crystal Ball
+dw SR_UseItemCrystalBall    ; $8ff3, Crystal Ball
 dw $90ce    ; Mine Elevator Key
 dw $9144    ; $9144, Item $10 = Mu Palace Key
 dw $921a    ; Purification Stone
@@ -769,9 +769,41 @@ db $D3,$47,$84,$AC,$D6,$84,$87,$80,$A6,$84,$CB,$A4,$87,$84,$AC,$45,$8B,$A5,$A4,$
 db $D3,$67,$88,$8B,$8B,$AC,$81,$84,$86,$80,$8D,$AC,$D6,$C4,$A4,$87,$84,$AC,$CB,$D6,$B4,$87,$84,$AC,$A2,$84,$8C,$84,$8C,$81,$84,$A2,$84,$83,$2A,$AC,$CF,$41,$A5,$A4,$AC,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$84,$83,$2A,$C0
 ;org $838FCD
 db $D3,$CE,$67,$88,$8B,$8B,$AC,$81,$84,$86,$80,$8D,$AC,$D6,$C4,$A4,$87,$84,$AC,$CB,$D6,$B4,$87,$84,$AC,$A2,$84,$8C,$84,$8C,$81,$84,$A2,$84,$83,$2A,$AC,$C0
-;org $838FF3
 
-org $839057
+;org $838FF3
+SR_UseItemCrystalBall:
+lda $0644 : cmp #$004C : bne .WrongMapOrLocation
+cop #$45 : db $16, $0C, $18, $0F : dw .AtSlotNE
+cop #$45 : db $16, $10, $18, $13 : dw .AtSlotSE
+cop #$45 : db $08, $0A, $0B, $0D : dw .AtSlotNW
+cop #$45 : db $08, $0E, $0B, $11 : dw .AtSlotSW
+.WrongMapOrLocation:    ; org $83901b
+cop #$BF : dw $9057
+rts
+.AtSlotNE:    ; org $839020
+cop #$D0 : db $60, $01 : dw .SlotAlreadyUsed
+cop #$CC : db $60
+bra .BallPlacedSuccessfully
+.AtSlotSE:    ; org $83902b
+cop #$D0 : db $61, $01 : dw .SlotAlreadyUsed
+cop #$CC : db $61
+bra .BallPlacedSuccessfully
+.AtSlotNW:    ; org $839036
+cop #$D0 : db $62, $01 : dw .SlotAlreadyUsed
+cop #$CC : db $62
+bra .BallPlacedSuccessfully
+.AtSlotSW:    ; org $839041
+cop #$D0 : db $63, $01 : dw .SlotAlreadyUsed
+cop #$CC : db $63
+.BallPlacedSuccessfully:    ; org $83904a
+cop #$BF : dw $9083
+jsr SR_RemoveHeldItem
+rts
+.SlotAlreadyUsed:    ; org $839052
+cop #$BF : dw $90A5
+rts
+
+;org $839057
 db $D3,$47,$84,$AC,$A2,$80,$88,$A3,$84,$A3,$AC,$A4,$87,$84,$AC,$CB,$D6,$07,$41,$80,$8B,$8B,$2B,$AC,$81,$A5,$A4,$AC,$CB,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$84,$83,$2A,$2A,$2A,$AC,$C0
 ;org $839083
 db $D3,$64,$87,$84,$AC,$D6,$07,$41,$80,$8B,$8B,$AC,$88,$A3,$AC,$CB,$A3,$84,$A4,$AC,$88,$8D,$AC,$A4,$87,$84,$AC,$87,$8E,$8B,$84,$4F,$AC,$C0
@@ -898,9 +930,11 @@ db $D3,$47,$84,$AC,$A4,$A2,$88,$84,$A3,$AC,$A5,$A3,$88,$8D,$86,$AC,$CB,$A4,$87,$
 
 org $8398FC
 db $D3,$47,$84,$AC,$A4,$A2,$88,$84,$A3,$AC,$A5,$A3,$88,$8D,$86,$AC,$A4,$87,$84,$AC,$D7,$C0
-;org $839912
+db $CB,$D6,$8E,$A4,$87,$84,$AC,$8C,$A5,$A3,$87,$A2,$8E,$8E,$8C,$2A,$AC,$CF,$CA
+db $41,$A5,$A4,$AC,$D6,$B9,$87,$80,$A0,$A0,$84,$8D,$84,$83,$4F,$C0
+db $47,$84,$AC,$A0,$8E,$A5,$A2,$A3,$AC,$A4,$87,$84,$AC,$8C,$A5,$A3,$87,$A2,$8E,$8E,$8C,$CB,$D7,$C0,$8E,$8D,$AC,$A4,$87,$84,$AC,$A3,$A4,$84,$8C,$A3,$4F,$AC,$C0
 
-org $83995c
+;org $83995c
 SR_UseItemGold:
 {
 cop #$BF : dw .Text    ; $9961
@@ -1650,45 +1684,45 @@ warnpc $83ab86
 
 org $83AD77
 WorldMap:
-.MoveScriptPointers:
+.MoveScriptPointers:    ; These are 1-indexed, via cop #$67.
 {
-dw $adc3    ; Index $01
-dw $add8    ; Index $02
-dw $adf1    ; Index $03
-dw $ae06    ; Index $04
-dw $ae23    ; Index $05
-dw $ae38    ; Index $06
-dw $ae5d    ; Index $07
-dw $ae76    ; Index $08
-dw $ae9b    ; Index $09
-dw $aea0    ; Index $0a
-dw $aebd    ; Index $0b
-dw $aeda    ; Index $0c
-dw $aeeb    ; Index $0d
-dw $af10    ; Index $0e
-dw $af2d    ; Index $0f
-dw $af42    ; Index $10
-dw $af5f    ; Index $11
-dw $af9c    ; Index $12
-dw $afbd    ; Index $13
-dw $afce    ; Index $14
-dw $afeb    ; Index $15
-dw $b00c    ; Index $16
-dw $b02d    ; Index $17
-dw $b046    ; Index $18
-dw $b063    ; Index $19
-dw $b080    ; Index $1a
-dw $b09d    ; Index $1b
-dw $b0ae    ; Index $1c
-dw $b0c7    ; Index $1d
-dw $b0e0    ; Index $1e
-dw $b0f5    ; Index $1f
-dw $b10e    ; Index $20
-dw $b12f    ; Index $21
-dw $b154    ; Index $22
-dw $b17d    ; Index $23
-dw $b19e    ; Index $24
-dw $b1bf    ; Index $25
+dw $adc3    ; Index $01, Cape2Ed
+dw $add8    ; Index $02, Ed2Cape
+dw $adf1    ; Index $03, Cape2It
+dw $ae06    ; Index $04, It2Cape
+dw $ae23    ; Index $05, It2Moon
+dw $ae38    ; Index $06, Moon2Inca
+dw $ae5d    ; Index $07, It2Inca
+dw $ae76    ; Index $08, Inca2It
+dw $ae9b    ; Index $09, Coast2Frej
+dw $aea0    ; Index $0a, Frej2Mine
+dw $aebd    ; Index $0b, Mine2Frej
+dw $aeda    ; Index $0c, Frej2Neil
+dw $aeeb    ; Index $0d, Neil2Nazca
+dw $af10    ; Index $0e, Nazca2Frej
+dw $af2d    ; Index $0f, Frej2Nazca
+dw $af42    ; Index $10, Nazca2Mine
+dw $af5f    ; Index $11, Angl2Wtma
+dw $af9c    ; Index $12, Wtma2Angl
+dw $afbd    ; Index $13, Wtma2GtWl
+dw $afce    ; Index $14, GtWl2Wtma
+dw $afeb    ; Index $15, Wtma2Euro
+dw $b00c    ; Index $16, Euro2Wtma
+dw $b02d    ; Index $17, Euro2Kres
+dw $b046    ; Index $18, Kres2Euro
+dw $b063    ; Index $19, Euro2NtVl
+dw $b080    ; Index $1a, NtVl2Euro
+dw $b09d    ; Index $1b, NtVl2Ankr
+dw $b0ae    ; Index $1c, Ankr2NtVl
+dw $b0c7    ; Index $1d, NtVl2Dao
+dw $b0e0    ; Index $1e, Dao2Pymd
+dw $b0f5    ; Index $1f, Pymd2Dao
+dw $b10e    ; Index $20, Dao2NtVl
+dw $b12f    ; Index $21, Dao2Babl
+dw $b154    ; Index $22, Mu2Inca?
+dw $b17d    ; Index $23, Inca2Mu?
+dw $b19e    ; Index $24, Euro2Frej?
+dw $b1bf    ; Index $25, Frej2Euro?
 }
 .MoveScripts:
 {
@@ -3563,7 +3597,7 @@ rts
 lda #$E080 : sta $0422,y    ; Tile was off-screen. Set its coordinates to extreme values.
 bra ..NextTile
 
-.PlayerActor:
+.PlayerActor:    ; org $83c928
 jsr $CA19      ; Update $09cc, set #$0008 in $09ec (purpose unknown).
 lda $09AE : bpl ..UseBody    ; +$06
 lda $7F000E,x : bra ..UseAccumulator    ; +$09
@@ -4718,7 +4752,7 @@ rtl
 ;org $83d881
 LR_PushPlayerVram:
 {
-lda $09ec : bit #$80 : bne +
+lda $09ec : bit #$08 : bne +
   rtl
 +:
 and #$F7 : sta $09ec
@@ -5033,7 +5067,7 @@ stz $6c
 rtl
 
 ;org $83e157
-PrepareDMAOnNextAvailable:
+PrepareDMAOnNextAvailable:   ; actually HDMA, I think
 {
 PHP
 PHX
@@ -5051,7 +5085,7 @@ LDA $02,s  ; Arg3
 STA $4307,x  ; If HDMA, data source bank = Arg3
 BRA +$13
 ;org $83e173
-PrepareDMAOnSelected:
+PrepareDMAOnSelected:   ; actually non-H-DMA, I think
 PHP    ; COP #$02 starts here instead
 PHX
 SEP #$20

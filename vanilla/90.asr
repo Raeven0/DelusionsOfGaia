@@ -2,3 +2,140 @@ arch 65816
 hirom
 fillbyte $FF
 
+
+
+org $908000
+
+; Inventory sprite set.
+; Item number = anim number up to $28 (apple).
+; $29 - $39 are blanks. $3A and beyond are Mystic Statues
+; followed by inventory screen utility sprites.
+InvItemAnims:
+.Pointers:
+dw $809a    ; $00 = blank
+dw $80a0    ; $01 = Red Jewel
+dw $80b2    ; 
+dw $80b8    ; 
+dw $80be    ; 
+dw $80c4    ; 
+dw $80d6    ; 
+dw $80dc    ; 
+dw $80e2    ; 
+dw $80f4    ; 
+dw $8106    ; $0a = Meat
+dw $810c    ; 
+dw $8112    ; 
+dw $8118    ; 
+dw $812a    ; 
+dw $8130    ; 
+dw $8136    ; $10
+dw $8148    ; 
+dw $814e    ; 
+dw $816c    ; 
+dw $8172    ; 
+dw $8178    ; 
+dw $817e    ; 
+dw $8184    ; 
+dw $818a    ; 
+dw $8190    ; 
+dw $8196    ; 
+dw $819c    ; 
+dw $81a2    ; 
+dw $81d8    ; 
+dw $81de    ; 
+dw $81e4    ; 
+dw $81ea    ; $20
+dw $81f0    ; 
+dw $81f6    ; 
+dw $81fc    ; 
+dw $8202    ; 
+dw $8214    ; 
+dw $821a    ; 
+dw $8220    ; 
+dw $8226    ; $28 = Apple
+dw $822c    ; 
+dw $8232    ; 
+dw $8238    ; 
+dw $823e    ; 
+dw $8244    ; 
+dw $824a    ; 
+dw $8250    ; 
+dw $8256    ; $30
+dw $825c    ; 
+dw $8262    ; 
+dw $8268    ; 
+dw $826e    ; 
+dw $8274    ; 
+dw $827a    ; 
+dw $8280    ; 
+dw $8286    ; 
+dw $828c    ; 
+dw $8292    ; $3a = Mystic Statue
+dw $8298    ; 
+dw $829e    ; 
+dw $82a4    ; 
+dw $82aa    ; 
+dw $82b0    ; 
+dw $82b6    ; $40 = Pointing finger
+dw $82bc    ; 
+dw $82c2    ; 
+dw $82c8    ; 
+dw $82ce    ; 
+dw $82e4    ; 
+dw $830a    ; 
+dw $831c    ; 
+dw $832e    ; 
+dw $8340    ; 
+dw $8352    ; 
+dw $8364    ; 
+dw $8376    ; $4c
+
+
+
+
+org $90822c
+; Animations $29 - $39. Each points to a single 20-byte
+; invisible metasprite, totaling 300 unused bytes (noting that
+; $37, $38, and $39 all point to the same metasprite).
+dw $0000, $89b4
+dw $ffff
+dw $0000, $89c8
+dw $ffff
+dw $0000, $89dc
+dw $ffff
+dw $0000, $89f0
+dw $ffff
+dw $0000, $8a04
+dw $ffff
+dw $0000, $8a18
+dw $ffff
+dw $0000, $8a2c
+dw $ffff
+dw $0000, $8a40
+dw $ffff
+dw $0000, $8a54
+dw $ffff
+dw $0000, $8a68
+dw $ffff
+dw $0000, $8a7c
+dw $ffff
+dw $0000, $8a90
+dw $ffff
+dw $0000, $8aa4
+dw $ffff
+dw $0000, $8ab8
+dw $ffff
+dw $0000, $8acc
+dw $ffff
+dw $0000, $8acc
+dw $ffff
+dw $0000, $8acc
+dw $ffff
+
+
+
+
+
+
+
+

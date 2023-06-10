@@ -296,11 +296,11 @@ ActorList_Map01:
 db $29,$2F,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $20,$0E,$00 : dl $80C5F3 : db $00 
-db $29,$0E,$00 : dl $80C5F3 : db $00 
-db $22,$21,$00 : dl $80C5F3 : db $00 
-db $07,$25,$00 : dl $80C5F3 : db $00 
-db $12,$25,$00 : dl $80C5F3 : db $00 
+db $20,$0E,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $29,$0E,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $22,$21,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $07,$25,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $12,$25,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
 db $12,$1A,$30 : dl ECookingSmoke-3 : db $00    ; $848000
 db $07,$1B,$30 : dl ECookingSmoke-3 : db $00    ; $848000
 db $19,$1C,$30 : dl ECookingSmoke-3 : db $00    ; $848000
@@ -311,21 +311,21 @@ db $1E,$03,$30 : dl ECookingSmoke-3 : db $00    ; $848000
 db $00,$01,$00 : dl $848004 : db $00 
 db $00,$01,$00 : dl $848004 : db $00 
 db $00,$01,$00 : dl $848004 : db $00 
-db $07,$24,$00 : dl $8489F2 : db $00 
-db $23,$18,$00 : dl $8480A8 : db $00 
-db $29,$18,$00 : dl $848134 : db $00 
-db $2B,$17,$00 : dl $8481A8 : db $00 
+db $07,$24,$00 : dl $8489F2 : db $00    ; Jar flying out of Seth's door
+db $23,$18,$00 : dl $8480A8 : db $00    ; Counting girl on Erik's roof
+db $29,$18,$00 : dl $848134 : db $00    ; N walking girl on Erik's roof
+db $2B,$17,$00 : dl $8481A8 : db $00    ; S walking girl on Erik's roof
 db $2D,$0F,$00 : dl $8481ED : db $00    ; Salesman
-db $06,$2F,$00 : dl $84836F : db $00 
-db $04,$07,$00 : dl $848494 : db $00 
-db $19,$08,$00 : dl $848531 : db $00 
-db $2B,$0F,$00 : dl $848654 : db $00 
-db $24,$24,$00 : dl $848762 : db $00 
-db $15,$28,$00 : dl $84884F : db $00 
-db $0A,$26,$00 : dl $84893A : db $00 
+db $06,$2F,$00 : dl $84836F : db $00    ; Fisherman
+db $04,$07,$00 : dl $848494 : db $00    ; Schoolhouse roof person
+db $19,$08,$00 : dl $848531 : db $00    ; Town exit guardian
+db $2B,$0F,$00 : dl $848654 : db $00    ; "Strange merchants" (NE) idle person
+db $24,$24,$00 : dl $848762 : db $00    ; "Scarf" (SE) woman
+db $15,$28,$00 : dl $84884F : db $00    ; "My astronomer friend"
+db $0A,$26,$00 : dl $84893A : db $00    ; "I feel sorry for Seth"
 db $03,$1D,$01 : dl EJeweler-3 : db $00    ; $88cea0
-db $0D,$15,$00 : dl $84922C : db $00 
-db $00,$01,$00 : dl $84BC65 : db $00 
+db $0D,$15,$00 : dl $84922C : db $00    ; "Fast runner" (outside schoolhouse)
+db $00,$01,$00 : dl $84BC65 : db $00    ; Door text generator, and Will's house entrance
 db $0E,$06,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
 db $08,$0C,$03 : dl ERedJewelPickup-3 : db $00    ; $80C66F
@@ -633,7 +633,7 @@ ActorList_Map15:
 db $2D,$2B,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $21,$00,$00 : dl EParallax_ScaleEffectY-3 : db $00    ; $80EAA7
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $4C,$10,$00 : dl $84DE21 : db $00 
 db $43,$0E,$00 : dl $84DEB3 : db $00 
 db $44,$0E,$00 : dl $84DF0C : db $00 
@@ -681,7 +681,7 @@ ActorList_Map1A:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $21,$00,$00 : dl EParallax_ScaleEffectY-3 : db $00    ; $80EAA7
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $16,$1B,$00 : dl $84F441 : db $00 
 db $0F,$0B,$00 : dl $89D0F5 : db $00 
 db $0C,$07,$00 : dl $89D153 : db $00 
@@ -693,8 +693,8 @@ db $FF,$47,$8E,$8C,$84,$AC,$8E,$85,$AC,$D6,$31,$64,$A2,$88,$81,$84,$CA
 ActorList_Map1B:    ; Moon Tribe interior.
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $00,$01,$00 : dl $84F895 : db $00 
-db $0F,$10,$00 : dl $84FAC5 : db $00 
+db $00,$01,$00 : dl EMoonTribeFightManager-3 : db $00    ; $84F895
+db $0F,$10,$00 : dl EMoonTribeStatue-3 : db $00    ; $84FAC5
 db $09,$0B,$00 : dl EMPSlug-3 : db $0B,$00,$00    ; $8A8DB7
 db $0C,$0B,$00 : dl EMPSlug-3 : db $0B,$00,$00    ; $8A8DB7
 db $0F,$0B,$00 : dl EMPSlug-3 : db $0B,$00,$00    ; $8A8DB7
@@ -717,7 +717,7 @@ db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $00,$11,$00 : dl EParallax_ScaleEffectY-3 : db $00    ; $80EAA7
 db $00,$01,$00 : dl $89D02B : db $00 
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $00,$01,$00 : dl $89C579 : db $00 
 db $22,$19,$00 : dl EMPMudGolem-3 : db $0A,$01,$00    ; $8A8B1B 
 db $28,$1C,$00 : dl EMPMudGolem-3 : db $0A,$02,$00    ; $8A8B1B 
@@ -969,7 +969,7 @@ ActorList_Map2B:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $00,$01,$00 : dl $858027 : db $00 
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $20,$20,$00 : dl $858BB3 : db $00 
 db $25,$22,$00 : dl $858BB3 : db $00 
 db $22,$22,$00 : dl $858BB3 : db $00 
@@ -984,7 +984,7 @@ db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $00,$01,$00 : dl $858027 : db $00 
 db $00,$01,$00 : dl $85813A : db $00 
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $00,$01,$00 : dl $858179 : db $00 
 db $20,$20,$00 : dl $85824F : db $00 
 db $25,$22,$00 : dl $858284 : db $00 
@@ -1025,7 +1025,7 @@ db $FF,$CA
 ActorList_Map2F:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$01,$00 : dl $858027 : db $00 
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $0B,$0B,$30 : dl $85970F : db $00 
 db $00,$01,$00 : dl $8596FA : db $00 
 db $FF,$CA
@@ -1034,7 +1034,7 @@ ActorList_Map30:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $07,$06,$00 : dl $85AA6C : db $00 
 db $06,$06,$00 : dl $85AA9E : db $00 
 db $0F,$0A,$09 : dl ERedJewelPickup-3 : db $00    ; $80C66F
@@ -1053,12 +1053,12 @@ db $13,$36,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $01,$82,$00 : dl $80E9EC : db $00 
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $00,$01,$00 : dl $85B01E : db $00 
-db $07,$2B,$00 : dl $80C5F3 : db $00 
-db $16,$2D,$00 : dl $80C5F3 : db $00 
-db $21,$2B,$00 : dl $80C5F3 : db $00 
-db $41,$2C,$00 : dl $80C5F3 : db $00 
+db $07,$2B,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $16,$2D,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $21,$2B,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $41,$2C,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
 db $2F,$2B,$00 : dl $85CFBC : db $00 
 db $19,$0E,$00 : dl $80C62D : db $00 
 db $2F,$0F,$00 : dl $80C62D : db $00 
@@ -1291,7 +1291,7 @@ ActorList_Map43:
 db $05,$0A,$32 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $21,$21,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $00,$01,$30 : dl $8AA5A6 : db $00 
 db $28,$03,$00 : dl $8AA678 : db $00 
 db $15,$3D,$00 : dl $8AA699 : db $00 
@@ -1375,7 +1375,7 @@ ActorList_Map4C:
 db $0F,$14,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $41,$41,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $09,$06,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $13,$0E,$00 : dl $85F504 : db $00 
 db $13,$12,$00 : dl $85F533 : db $00 
@@ -1385,15 +1385,15 @@ db $1A,$0A,$00 : dl $85F356 : db $00
 db $18,$17,$00 : dl $85F3AE : db $00 
 db $0E,$14,$00 : dl $85F453 : db $00 
 db $00,$01,$00 : dl $85F99C : db $00 
-db $00,$01,$00 : dl $8AB496 : db $00 
+db $00,$01,$00 : dl ENazcaMapNameAutoDismisser-3 : db $00    ; $8AB496 
 db $FF,$63,$8A,$A9,$AC,$46,$80,$A2,$83,$84,$8D,$CA
 ;org $8C9DB3
 ActorList_Map4D:
 db $07,$08,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $41,$41,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $85F76B : db $00 
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl ESkGnFlipPlayerListener-3 : db $00    ; $85F76B 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $0A,$31,$00 : dl ENazcaRobotBlue-3 : db $1D,$01,$00     ; $8AB4B0
 db $18,$22,$00 : dl ENazcaRobotBlue-3 : db $1D,$02,$00     ; $8AB4B0
 db $1E,$22,$00 : dl ENazcaRobotBlue-3 : db $1D,$03,$00     ; $8AB4B0
@@ -1413,15 +1413,15 @@ db $28,$20,$00 : dl ENazcaTopWormB-3 : db $1B,$11,$00     ; $8AC533
 db $37,$1E,$00 : dl ENazcaTopWormB-3 : db $1B,$12,$00     ; $8AC533
 db $31,$38,$00 : dl ENazcaTopWormB-3 : db $1B,$13,$00     ; $8AC533
 db $3A,$33,$00 : dl $8AC0FE : db $00 
-db $00,$01,$00 : dl $8AB496 : db $00 
+db $00,$01,$00 : dl ENazcaMapNameAutoDismisser-3 : db $00    ; $8AB496 
 db $FF,$63,$8A,$A9,$AC,$46,$80,$A2,$83,$84,$8D,$CA
 ;org $8C9E92
 ActorList_Map4E:
 db $3C,$14,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $02,$02,$00 : dl $80E8D7 : db $00 
-db $00,$01,$00 : dl $85F76B : db $00 
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl ESkGnFlipPlayerListener-3 : db $00    ; $85F76B 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $09,$1A,$00 : dl ENazcaRobotRed-3 : db $1E,$20,$00     ; $8AB8B0
 db $14,$1A,$00 : dl ENazcaRobotRed-3 : db $1E,$21,$00     ; $8AB8B0
 db $1E,$0B,$00 : dl ENazcaRobotRed-3 : db $1E,$22,$00     ; $8AB8B0
@@ -1435,20 +1435,20 @@ db $20,$21,$00 : dl ENazcaBackWorm-3 : db $1C,$2B,$00     ; $8AC816
 db $2C,$38,$00 : dl ENazcaBackWorm-3 : db $1C,$2C,$00     ; $8AC816
 db $0D,$31,$00 : dl ENazcaBackWorm-3 : db $1C,$2D,$00     ; $8AC816
 db $11,$38,$00 : dl ENazcaBackWorm-3 : db $1C,$2E,$00     ; $8AC816
-db $39,$14,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $3B,$24,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $33,$27,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $00,$01,$00 : dl $8AB496 : db $00 
+db $39,$14,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $3B,$24,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $33,$27,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $00,$01,$00 : dl ENazcaMapNameAutoDismisser-3 : db $00    ; $8AB496 
 db $FF,$D7,$04,$8E,$85,$AC,$46,$80,$A2,$83,$84,$8D,$CA
 ;org $8C9F53
 ActorList_Map4F:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $41,$41,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $18,$35,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $27,$35,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
-db $00,$01,$00 : dl $85F76B : db $00 
+db $00,$01,$00 : dl ESkGnFlipPlayerListener-3 : db $00    ; $85F76B 
 db $0D,$1B,$00 : dl ENazcaRobotBlue-3 : db $1D,$40,$00     ; $8AB4B0
 db $11,$1B,$00 : dl ENazcaRobotBlue-3 : db $1D,$41,$00     ; $8AB4B0
 db $15,$1B,$00 : dl ENazcaRobotBlue-3 : db $1D,$42,$00     ; $8AB4B0
@@ -1464,15 +1464,15 @@ db $1A,$0B,$00 : dl ENazcaTopWormB-3 : db $1B,$4F,$00     ; $8AC533
 db $25,$0B,$00 : dl ENazcaTopWormB-3 : db $1B,$50,$00     ; $8AC533
 db $17,$36,$00 : dl $8AC150 : db $00 
 db $2E,$20,$00 : dl $8AC150 : db $00 
-db $00,$01,$00 : dl $8AB496 : db $00 
+db $00,$01,$00 : dl ENazcaMapNameAutoDismisser-3 : db $00    ; $8AB496 
 db $FF,$63,$8A,$A9,$AC,$46,$80,$A2,$83,$84,$8D,$CA
 ;org $8CA01A
 ActorList_Map50:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $02,$02,$00 : dl $80E8D7 : db $00 
-db $00,$01,$00 : dl $80C667 : db $00 
-db $00,$01,$00 : dl $85F76B : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
+db $00,$01,$00 : dl ESkGnFlipPlayerListener-3 : db $00    ; $85F76B 
 db $1F,$0B,$00 : dl ENazcaRobotRed-3 : db $1E,$60,$00     ; $8AB8B0
 db $2A,$1B,$00 : dl ENazcaRobotRed-3 : db $1E,$61,$00     ; $8AB8B0
 db $2E,$1B,$00 : dl ENazcaRobotRed-3 : db $1E,$62,$00     ; $8AB8B0
@@ -1485,16 +1485,16 @@ db $0B,$1C,$00 : dl ENazcaBackWorm-3 : db $1C,$68,$00     ; $8AC816
 db $0B,$1E,$00 : dl ENazcaBackWorm-3 : db $1C,$69,$00     ; $8AC816
 db $0B,$20,$00 : dl ENazcaBackWorm-3 : db $1C,$6A,$00     ; $8AC816
 db $37,$1C,$00 : dl ENazcaBackWorm-3 : db $1C,$6B,$00     ; $8AC816
-db $34,$06,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $3B,$06,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $00,$01,$00 : dl $8AB496 : db $00 
+db $34,$06,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $3B,$06,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $00,$01,$00 : dl ENazcaMapNameAutoDismisser-3 : db $00    ; $8AB496 
 db $FF,$D7,$04,$8E,$85,$AC,$46,$80,$A2,$83,$84,$8D,$CA
 ;org $8CA0CB
 ActorList_Map51:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $41,$41,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $27,$1F,$00 : dl ENazcaRobotBlue-3 : db $1D,$80,$24     ; $8AB4B0
 db $16,$07,$00 : dl ENazcaRobotBlue-3 : db $1D,$81,$00     ; $8AB4B0
 db $19,$07,$00 : dl ENazcaRobotBlue-3 : db $1D,$82,$00     ; $8AB4B0
@@ -1508,12 +1508,12 @@ db $25,$1D,$00 : dl ENazcaTopWormB-3 : db $1B,$89,$00     ; $8AC533
 db $28,$08,$00 : dl ENazcaTopWormB-3 : db $1B,$8A,$00     ; $8AC533
 db $23,$0C,$00 : dl ENazcaTopWormB-3 : db $1B,$8B,$00     ; $8AC533
 db $1A,$23,$00 : dl ENazcaTopWormB-3 : db $1B,$8C,$2C     ; $8AC533
-db $18,$22,$00 : dl $8ACCD4 : db $00 
+db $18,$22,$00 : dl ENazcaFireballTop-3 : db $00    ; $8ACCD4 
 db $30,$33,$00 : dl ESGPullableStatue-3 : db $00    ; $85F8C0
 db $30,$34,$00 : dl ESGPullableStatue-3 : db $00    ; $85F8C0
 db $03,$0B,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
-db $00,$01,$00 : dl $85F76B : db $00 
-db $00,$01,$00 : dl $8AB496 : db $00 
+db $00,$01,$00 : dl ESkGnFlipPlayerListener-3 : db $00    ; $85F76B 
+db $00,$01,$00 : dl ENazcaMapNameAutoDismisser-3 : db $00    ; $8AB496 
 db $FF,$63,$8A,$A9,$AC,$46,$80,$A2,$83,$84,$8D,$CA
 ;org $8CA192
 ActorList_Map52:    ; Sky Garden, SW, Bottom.
@@ -1528,17 +1528,17 @@ db $38,$23,$00 : dl ENazcaRobotRed-3 : db $1E,$A3,$00     ; $8AB8B0
 db $18,$1F,$00 : dl ENazcaRobotRed-3 : db $1E,$A5,$31     ; $8AB8B0
 db $25,$23,$00 : dl ENazcaBackWorm-3 : db $1C,$A6,$00     ; $8AC816
 db $29,$1D,$00 : dl ENazcaBackWorm-3 : db $1C,$A7,$00     ; $8AC816
-db $19,$34,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $1C,$23,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $15,$1C,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $0C,$09,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
+db $19,$34,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $1C,$23,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $15,$1C,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $0C,$09,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
 db $19,$0B,$00 : dl $85F5DE : db $00 
 db $23,$0A,$00 : dl $85F5DE : db $00 
 db $3D,$0C,$00 : dl $85F655 : db $00 
 db $25,$33,$00 : dl $85F6D0 : db $00 
-db $00,$01,$00 : dl $85F76B : db $00 
-db $00,$01,$00 : dl $80C667 : db $00 
-db $00,$01,$00 : dl $8AB496 : db $00 
+db $00,$01,$00 : dl ESkGnFlipPlayerListener-3 : db $00    ; $85F76B 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
+db $00,$01,$00 : dl ENazcaMapNameAutoDismisser-3 : db $00    ; $8AB496 
 db $FF,$D7,$04,$8E,$85,$AC,$46,$80,$A2,$83,$84,$8D,$CA
 ;org $8CA247
 ActorList_Map53:
@@ -1567,9 +1567,9 @@ db $10,$08,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348
 db $1A,$33,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $1A,$39,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $26,$18,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
-db $00,$01,$00 : dl $85F76B : db $00 
-db $00,$01,$00 : dl $80C667 : db $00 
-db $00,$01,$00 : dl $8AB496 : db $00 
+db $00,$01,$00 : dl ESkGnFlipPlayerListener-3 : db $00    ; $85F76B 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
+db $00,$01,$00 : dl ENazcaMapNameAutoDismisser-3 : db $00    ; $8AB496 
 db $FF,$63,$8A,$A9,$AC,$46,$80,$A2,$83,$84,$8D,$CA
 ;org $8CA335
 ActorList_Map54:
@@ -1577,7 +1577,7 @@ db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $02,$02,$00 : dl $80E8D7 : db $00 
 db $3A,$2F,$00 : dl $8AC409 : db $00 
-db $34,$2E,$00 : dl $85F749 : db $00 
+db $34,$2E,$00 : dl ENazcaButtonListenerNwBot-3 : db $00    ; $85F749
 db $1C,$2C,$00 : dl ENazcaRobotRed-3 : db $1E,$E0,$00     ; $8AB8B0
 db $08,$38,$00 : dl ENazcaRobotRed-3 : db $1E,$E1,$00     ; $8AB8B0
 db $2A,$33,$00 : dl ENazcaRobotRed-3 : db $1E,$E2,$00     ; $8AB8B0
@@ -1594,22 +1594,22 @@ db $16,$35,$00 : dl ENazcaBackWorm-3 : db $1C,$ED,$00     ; $8AC816
 db $16,$38,$00 : dl ENazcaBackWorm-3 : db $1C,$EE,$00     ; $8AC816
 db $31,$04,$00 : dl ENazcaBackWorm-3 : db $1C,$EF,$00     ; $8AC816
 db $36,$05,$00 : dl ENazcaBackWorm-3 : db $1C,$F0,$00     ; $8AC816
-db $0F,$06,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $18,$19,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $37,$18,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $32,$33,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $29,$34,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $3B,$0C,$00 : dl ENazcaFireball-3 : db $00     ; $8ACCF1
-db $00,$01,$00 : dl $85F76B : db $00 
-db $00,$01,$00 : dl $80C667 : db $00 
+db $0F,$06,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $18,$19,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $37,$18,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $32,$33,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $29,$34,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $3B,$0C,$00 : dl ENazcaFireballBot-3 : db $00     ; $8ACCF1
+db $00,$01,$00 : dl ESkGnFlipPlayerListener-3 : db $00    ; $85F76B 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $02,$06,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
-db $00,$01,$00 : dl $8AB496 : db $00 
+db $00,$01,$00 : dl ENazcaMapNameAutoDismisser-3 : db $00    ; $8AB496 
 db $FF,$D7,$04,$8E,$85,$AC,$46,$80,$A2,$83,$84,$8D,$CA
 ;org $8CA43B
 ActorList_Map55:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $07,$0D,$30 : dl EViperFallingPlatform-3 : db $00    ; $8acfe5
 db $07,$0E,$30 : dl EViperFallingPlatform-3 : db $00    ; $8acfe5
 db $07,$0F,$30 : dl EViperFallingPlatform-3 : db $00    ; $8acfe5
@@ -1989,22 +1989,22 @@ ActorList_Map6B:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $1B,$08,$01 : dl $86C6DA : db $00 
-db $0D,$0C,$01 : dl $86C755 : db $00 
-db $33,$17,$43 : dl $86C755 : db $00 
+db $1B,$08,$01 : dl EAVNpcHeartache-3 : db $00    ; $86C6DA
+db $0D,$0C,$01 : dl EAVNpcGenericBrown-3 : db $00    ; $86C755
+db $33,$17,$43 : dl EAVNpcGenericBrown-3 : db $00    ; $86C755
 db $09,$1B,$01 : dl EJeweler-3 : db $00    ; $88cea0
-db $39,$28,$07 : dl $86C755 : db $00 
-db $12,$26,$A9 : dl $86C755 : db $00 
-db $25,$0D,$01 : dl $86CACA : db $00 
+db $39,$28,$07 : dl EAVNpcGenericBrown-3 : db $00    ; $86C755
+db $12,$26,$A9 : dl EAVNpcGenericBrown-3 : db $00    ; $86C755
+db $25,$0D,$01 : dl EAVNpcWanderingBlue-3 : db $00    ; $86CACA
 db $32,$17,$61 : dl $86CBAF : db $00 
-db $38,$0D,$03 : dl $86CACA : db $00 
+db $38,$0D,$03 : dl EAVNpcWanderingBlue-3 : db $00    ; $86CACA
 db $33,$0D,$63 : dl $86CBAF : db $00 
 db $03,$1D,$00 : dl $86D0AB : db $00 
-db $03,$08,$00 : dl $86D55B : db $00 
-db $06,$08,$00 : dl $86D55B : db $00 
-db $1A,$05,$00 : dl $86D55B : db $00 
-db $2E,$14,$00 : dl $86D55B : db $00 
-db $0A,$15,$00 : dl $86D55B : db $00 
+db $03,$08,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
+db $06,$08,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
+db $1A,$05,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
+db $2E,$14,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
+db $0A,$15,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
 db $3A,$28,$00 : dl $86D745 : db $00 
 db $FF,$40,$8D,$86,$84,$8B,$AC,$66,$88,$8B,$8B,$80,$86,$84,$CA
 ;org $8CAEB6
@@ -2012,23 +2012,23 @@ ActorList_Map6C:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $27,$0A,$01 : dl $86CA10 : db $00 
-db $2C,$07,$03 : dl $86CA10 : db $00 
-db $21,$0C,$6B : dl $86C755 : db $00 
-db $28,$0A,$01 : dl $86CD47 : db $00 
-db $2D,$07,$03 : dl $86CD47 : db $00 
-db $32,$0A,$05 : dl $86CD47 : db $00 
+db $27,$0A,$01 : dl EAVNpcDancerGreen-3 : db $00    ; $86CA10
+db $2C,$07,$03 : dl EAVNpcDancerGreen-3 : db $00    ; $86CA10
+db $21,$0C,$6B : dl EAVNpcGenericBrown-3 : db $00    ; $86C755
+db $28,$0A,$01 : dl EAVNpcDancerBlue-3 : db $00    ; $86CD47
+db $2D,$07,$03 : dl EAVNpcDancerBlue-3 : db $00    ; $86CD47
+db $32,$0A,$05 : dl EAVNpcDancerBlue-3 : db $00    ; $86CD47
 db $06,$09,$21 : dl $86CBAF : db $00 
 db $17,$19,$00 : dl $86D04D : db $00 
-db $37,$08,$00 : dl $86D124 : db $00 
-db $3A,$09,$00 : dl $86D124 : db $00 
-db $3D,$0A,$00 : dl $86D124 : db $00 
-db $1A,$06,$00 : dl $86D55B : db $00 
-db $14,$16,$00 : dl $86D55B : db $00 
-db $1A,$16,$00 : dl $86D55B : db $00 
-db $04,$16,$00 : dl $86D55B : db $00 
-db $07,$16,$00 : dl $86D55B : db $00 
-db $0A,$16,$00 : dl $86D55B : db $00 
+db $37,$08,$00 : dl EAVNpcHarpistFacingWest-3 : db $00    ; $86D124
+db $3A,$09,$00 : dl EAVNpcHarpistFacingWest-3 : db $00    ; $86D124
+db $3D,$0A,$00 : dl EAVNpcHarpistFacingWest-3 : db $00    ; $86D124
+db $1A,$06,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
+db $14,$16,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
+db $1A,$16,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
+db $04,$16,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
+db $07,$16,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
+db $0A,$16,$00 : dl EAVFlameNotPointing-3 : db $00    ; $86D55B
 db $26,$06,$40 : dl $86D134 : db $00 
 db $2B,$05,$00 : dl $86D139 : db $00 
 db $2E,$05,$00 : dl $86D134 : db $00 
@@ -2041,7 +2041,7 @@ ActorList_Map6D:    ; Angel Village dungeon, entry hall
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $12,$07,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $1E,$05,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $29,$05,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
@@ -2071,7 +2071,7 @@ ActorList_Map6E:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $09,$05,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $10,$05,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $25,$06,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
@@ -2103,7 +2103,7 @@ ActorList_Map6F:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $0D,$06,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $14,$07,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $1A,$06,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
@@ -2120,7 +2120,7 @@ ActorList_Map70:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $12,$07,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $1D,$04,$00 : dl EAVFlamePointingEast-3 : db $00    ; $86D57E 
 db $2A,$05,$00 : dl EAVFlamePointingEast-3 : db $00    ; $86D57E 
@@ -2144,7 +2144,7 @@ db $FF,$CA
 ActorList_Map71:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $00,$01,$00 : dl $86D68D : db $00 
 db $1C,$09,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
 db $14,$07,$00 : dl EAVFlamePointingWest-3 : db $00    ; $86D56F 
@@ -2155,7 +2155,7 @@ db $FF,$D7,$3D,$64,$A5,$8D,$8D,$84,$8B,$CA
 ActorList_Map72:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $19,$0C,$00 : dl EAVSkeleton-3 : db $2C,$43,$00    ; $8aea51
 db $49,$0C,$00 : dl EAVSkeleton-3 : db $2C,$44,$00    ; $8aea51
 db $13,$05,$00 : dl EAVSwoopBat-3 : db $2D,$45,$00    ; $8AEE9F 
@@ -2205,7 +2205,7 @@ db $42,$1A,$09 : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
 db $4C,$1A,$0B : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
 db $5F,$1A,$0D : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
 db $69,$1A,$0F : dl EAVIshtarDoorManager-3 : db $00    ; $86D784
-db $00,$01,$00 : dl $86D8BC : db $00 
+db $00,$01,$00 : dl EAVIshtarPuzzleManager-3 : db $00    ; $86D8BC
 db $1D,$1D,$00 : dl EAVIshtarsApprentice-3 : db $00    ; $86DC50
 db $25,$08,$00 : dl EAVPortraitGreen-3 : db $00    ; $86D139
 db $29,$08,$00 : dl EAVPortraitDefault-3 : db $00    ; $86D141
@@ -2218,7 +2218,7 @@ db $25,$38,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
-db $00,$01,$00 : dl $80C667 : db $00 
+db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $00,$01,$00 : dl $878000 : db $00 
 db $00,$01,$00 : dl $8781BE : db $00 
 db $4C,$2E,$00 : dl $879F9E : db $00 
@@ -2352,12 +2352,12 @@ db $13,$2B,$00 : dl EGWArcherFacingEast-3 : db $33,$14,$00   ; $8B9165
 db $64,$1B,$00 : dl EGWArcherFacingEast-3 : db $33,$15,$00   ; $8B9165 
 db $62,$18,$00 : dl EGWArcherFacingEast-3 : db $33,$16,$00   ; $8B9165 
 db $5D,$1B,$00 : dl EGWArcherFacingEast-3 : db $33,$17,$00   ; $8B9165 
-db $1F,$04,$00 : dl $8B8C70 : db $35,$18,$00 
-db $2C,$04,$00 : dl $8B8C70 : db $35,$19,$00 
-db $30,$14,$00 : dl $8B8C70 : db $35,$1A,$00 
-db $30,$34,$00 : dl $8B8C70 : db $35,$1B,$00 
-db $5F,$13,$00 : dl $8B8C70 : db $35,$1C,$00 
-db $57,$03,$00 : dl $8B8C70 : db $35,$1D,$00 
+db $1F,$04,$00 : dl EGWFlyingFireball-3 : db $35,$18,$00    ; $8B8C70 
+db $2C,$04,$00 : dl EGWFlyingFireball-3 : db $35,$19,$00    ; $8B8C70 
+db $30,$14,$00 : dl EGWFlyingFireball-3 : db $35,$1A,$00    ; $8B8C70 
+db $30,$34,$00 : dl EGWFlyingFireball-3 : db $35,$1B,$00    ; $8B8C70 
+db $5F,$13,$00 : dl EGWFlyingFireball-3 : db $35,$1C,$00    ; $8B8C70 
+db $57,$03,$00 : dl EGWFlyingFireball-3 : db $35,$1D,$00    ; $8B8C70 
 db $0E,$38,$00 : dl EGWFloorFireball-3 : db $34,$1E,$00   ; $8B8DBE 
 db $17,$37,$00 : dl EGWFloorFireball-3 : db $34,$1F,$00   ; $8B8DBE 
 db $40,$39,$00 : dl EGWFloorFireball-3 : db $34,$20,$00   ; $8B8DBE 
@@ -2367,10 +2367,10 @@ db $76,$38,$00 : dl EGWFloorFireball-3 : db $34,$23,$00   ; $8B8DBE
 db $70,$1A,$00 : dl EGWFloorFireball-3 : db $34,$24,$00   ; $8B8DBE 
 db $51,$19,$00 : dl EGWFloorFireball-3 : db $34,$25,$00   ; $8B8DBE 
 db $4C,$1A,$00 : dl EGWFloorFireball-3 : db $34,$26,$00   ; $8B8DBE 
-db $5A,$08,$01 : dl $8B8C30 : db $00 
-db $5D,$08,$01 : dl $8B8C30 : db $00 
-db $60,$08,$01 : dl $8B8C30 : db $00 
-db $63,$08,$01 : dl $8B8C30 : db $00 
+db $5A,$08,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $5D,$08,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $60,$08,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $63,$08,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
 db $54,$28,$01 : dl $87B59E : db $00 
 db $3E,$09,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $40,$09,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
@@ -2390,22 +2390,22 @@ db $24,$6B,$00 : dl EGWArcherFacingEast-3 : db $33,$36,$00   ; $8B9165
 db $30,$49,$00 : dl EGWArcherFacingEast-3 : db $33,$37,$00   ; $8B9165 
 db $25,$19,$00 : dl EGWArcherFacingEast-3 : db $33,$38,$00   ; $8B9165 
 db $24,$1A,$00 : dl EGWArcherFacingEast-3 : db $33,$39,$00   ; $8B9165 
-db $31,$78,$00 : dl $8B8EFE : db $33,$40,$00 
-db $30,$04,$00 : dl $8B8C70 : db $35,$41,$00 
-db $37,$33,$00 : dl $8B8C70 : db $35,$42,$00 
+db $31,$78,$00 : dl EGWArcherStatueAwaitingProximity-3 : db $33,$40,$00    ; $8B8EFE 
+db $30,$04,$00 : dl EGWFlyingFireball-3 : db $35,$41,$00    ; $8B8C70 
+db $37,$33,$00 : dl EGWFlyingFireball-3 : db $35,$42,$00    ; $8B8C70 
 db $30,$6B,$00 : dl EGWFloorFireball-3 : db $34,$43,$00   ; $8B8DBE 
 db $30,$58,$00 : dl EGWFloorFireball-3 : db $34,$44,$00   ; $8B8DBE 
 db $34,$58,$00 : dl EGWFloorFireball-3 : db $34,$45,$00   ; $8B8DBE 
-db $27,$4B,$00 : dl $8B9423 : db $32,$46,$00 
-db $37,$3A,$00 : dl $8B9423 : db $32,$47,$00 
-db $34,$39,$00 : dl $8B9423 : db $32,$48,$00 
-db $37,$2B,$00 : dl $8B9423 : db $32,$49,$00 
-db $2B,$2B,$00 : dl $8B9423 : db $32,$4A,$00 
-db $29,$47,$01 : dl $8B8C30 : db $00 
-db $30,$08,$01 : dl $8B8C30 : db $00 
-db $31,$08,$11 : dl $8B8C30 : db $00 
-db $32,$08,$21 : dl $8B8C30 : db $00 
-db $33,$08,$31 : dl $8B8C30 : db $00 
+db $27,$4B,$00 : dl EGWSnake-3 : db $32,$46,$00    ; $8B9423 
+db $37,$3A,$00 : dl EGWSnake-3 : db $32,$47,$00    ; $8B9423 
+db $34,$39,$00 : dl EGWSnake-3 : db $32,$48,$00    ; $8B9423 
+db $37,$2B,$00 : dl EGWSnake-3 : db $32,$49,$00    ; $8B9423 
+db $2B,$2B,$00 : dl EGWSnake-3 : db $32,$4A,$00    ; $8B9423 
+db $29,$47,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $30,$08,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $31,$08,$11 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $32,$08,$21 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $33,$08,$31 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
 db $35,$1B,$03 : dl $80C9FB : db $00 
 db $35,$1B,$00 : dl $87BDA4 : db $00 
 db $35,$29,$03 : dl $87B59E : db $00 
@@ -2432,16 +2432,16 @@ db $40,$0B,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0
 db $52,$0B,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $64,$0B,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $6A,$0B,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
-db $15,$1D,$00 : dl $8B9423 : db $32,$50,$00 
-db $1C,$1A,$00 : dl $8B9423 : db $32,$51,$00 
-db $47,$1B,$00 : dl $8B9423 : db $32,$52,$00 
-db $4C,$1A,$00 : dl $8B9423 : db $32,$53,$00 
-db $4E,$1D,$00 : dl $8B9423 : db $32,$54,$00 
-db $53,$1B,$00 : dl $8B9423 : db $32,$55,$00 
-db $26,$2A,$00 : dl $8B9423 : db $32,$56,$00 
-db $6A,$2A,$00 : dl $8B9423 : db $32,$57,$00 
-db $6E,$2B,$00 : dl $8B9423 : db $32,$58,$00 
-db $75,$2A,$00 : dl $8B9423 : db $32,$59,$00 
+db $15,$1D,$00 : dl EGWSnake-3 : db $32,$50,$00    ; $8B9423 
+db $1C,$1A,$00 : dl EGWSnake-3 : db $32,$51,$00    ; $8B9423 
+db $47,$1B,$00 : dl EGWSnake-3 : db $32,$52,$00    ; $8B9423 
+db $4C,$1A,$00 : dl EGWSnake-3 : db $32,$53,$00    ; $8B9423 
+db $4E,$1D,$00 : dl EGWSnake-3 : db $32,$54,$00    ; $8B9423 
+db $53,$1B,$00 : dl EGWSnake-3 : db $32,$55,$00    ; $8B9423 
+db $26,$2A,$00 : dl EGWSnake-3 : db $32,$56,$00    ; $8B9423 
+db $6A,$2A,$00 : dl EGWSnake-3 : db $32,$57,$00    ; $8B9423 
+db $6E,$2B,$00 : dl EGWSnake-3 : db $32,$58,$00    ; $8B9423 
+db $75,$2A,$00 : dl EGWSnake-3 : db $32,$59,$00    ; $8B9423 
 db $27,$1D,$00 : dl EGWFloorFireball-3 : db $34,$60,$00   ; $8B8DBE 
 db $4C,$1C,$00 : dl EGWFloorFireball-3 : db $34,$61,$00   ; $8B8DBE 
 db $28,$2D,$00 : dl EGWFloorFireball-3 : db $34,$64,$00   ; $8B8DBE 
@@ -2450,16 +2450,16 @@ db $55,$2D,$00 : dl EGWFloorFireball-3 : db $34,$67,$00   ; $8B8DBE
 db $5C,$2D,$00 : dl EGWFloorFireball-3 : db $34,$68,$00   ; $8B8DBE 
 db $6D,$2D,$00 : dl EGWFloorFireball-3 : db $34,$69,$00   ; $8B8DBE 
 db $74,$2D,$00 : dl EGWFloorFireball-3 : db $34,$6A,$00   ; $8B8DBE 
-db $4B,$25,$00 : dl $8B8C70 : db $35,$6B,$00 
-db $5A,$25,$00 : dl $8B8C70 : db $35,$6C,$00 
+db $4B,$25,$00 : dl EGWFlyingFireball-3 : db $35,$6B,$00    ; $8B8C70 
+db $5A,$25,$00 : dl EGWFlyingFireball-3 : db $35,$6C,$00    ; $8B8C70 
 db $11,$1D,$00 : dl EGWArcherFacingEast-3 : db $33,$6D,$00   ; $8B9165 
 db $1D,$1C,$00 : dl EGWArcherFacingEast-3 : db $33,$6E,$00   ; $8B9165 
 db $20,$1B,$00 : dl EGWArcherFacingEast-3 : db $33,$6F,$00   ; $8B9165 
 db $23,$1C,$00 : dl EGWArcherFacingEast-3 : db $33,$70,$00   ; $8B9165 
 db $10,$2B,$00 : dl EGWArcherFacingEast-3 : db $33,$71,$00   ; $8B9165 
 db $17,$2B,$00 : dl EGWArcherFacingEast-3 : db $33,$72,$00   ; $8B9165 
-db $13,$29,$01 : dl $8B8C30 : db $00 
-db $1A,$29,$01 : dl $8B8C30 : db $00 
+db $13,$29,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $1A,$29,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
 db $12,$19,$00 : dl $87BCE8 : db $00 
 db $2C,$29,$00 : dl $87BD17 : db $00 
 db $34,$29,$00 : dl $87BD46 : db $00 
@@ -2478,15 +2478,15 @@ ActorList_Map86:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffectY-3 : db $00    ; $80EAA7
-db $17,$28,$00 : dl $8B8EFE : db $33,$80,$00 
-db $1B,$28,$00 : dl $8B8EFE : db $33,$81,$00 
-db $14,$1B,$00 : dl $8B9423 : db $32,$82,$00 
-db $0F,$1B,$00 : dl $8B9423 : db $32,$83,$00 
-db $1E,$1B,$00 : dl $8B9423 : db $32,$84,$00 
-db $26,$1B,$00 : dl $8B9423 : db $32,$85,$00 
-db $08,$5B,$00 : dl $8B9423 : db $32,$86,$00 
-db $1F,$5B,$00 : dl $8B9423 : db $32,$87,$00 
-db $24,$5B,$00 : dl $8B9423 : db $32,$88,$00 
+db $17,$28,$00 : dl EGWArcherStatueAwaitingProximity-3 : db $33,$80,$00    ; $8B8EFE 
+db $1B,$28,$00 : dl EGWArcherStatueAwaitingProximity-3 : db $33,$81,$00    ; $8B8EFE 
+db $14,$1B,$00 : dl EGWSnake-3 : db $32,$82,$00    ; $8B9423 
+db $0F,$1B,$00 : dl EGWSnake-3 : db $32,$83,$00    ; $8B9423 
+db $1E,$1B,$00 : dl EGWSnake-3 : db $32,$84,$00    ; $8B9423 
+db $26,$1B,$00 : dl EGWSnake-3 : db $32,$85,$00    ; $8B9423 
+db $08,$5B,$00 : dl EGWSnake-3 : db $32,$86,$00    ; $8B9423 
+db $1F,$5B,$00 : dl EGWSnake-3 : db $32,$87,$00    ; $8B9423 
+db $24,$5B,$00 : dl EGWSnake-3 : db $32,$88,$00    ; $8B9423 
 db $15,$47,$05 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $FF,$CA
 ;org $8CBB87
@@ -2499,20 +2499,20 @@ db $0D,$18,$00 : dl EGWArcherFacingEast-3 : db $33,$90,$00   ; $8B9165
 db $0C,$19,$00 : dl EGWArcherFacingEast-3 : db $33,$91,$00   ; $8B9165 
 db $0B,$1A,$00 : dl EGWArcherFacingEast-3 : db $33,$92,$00   ; $8B9165 
 db $0A,$1B,$00 : dl EGWArcherFacingEast-3 : db $33,$93,$00   ; $8B9165 
-db $08,$2A,$00 : dl $8B8F72 : db $46,$94,$00 
-db $14,$2A,$00 : dl $8B8F72 : db $46,$95,$00 
-db $1B,$2B,$00 : dl $8B8F72 : db $46,$96,$00 
-db $25,$2A,$00 : dl $8B8F72 : db $46,$97,$00 
-db $26,$2B,$00 : dl $8B8F72 : db $46,$98,$00 
-db $2F,$2B,$00 : dl $8B8F72 : db $46,$99,$00 
-db $28,$14,$00 : dl $8B8C70 : db $33,$9A,$00 
+db $08,$2A,$00 : dl EGWArcherStatueAwaitingButton-3 : db $46,$94,$00    ; $8B8F72 
+db $14,$2A,$00 : dl EGWArcherStatueAwaitingButton-3 : db $46,$95,$00    ; $8B8F72 
+db $1B,$2B,$00 : dl EGWArcherStatueAwaitingButton-3 : db $46,$96,$00    ; $8B8F72 
+db $25,$2A,$00 : dl EGWArcherStatueAwaitingButton-3 : db $46,$97,$00    ; $8B8F72 
+db $26,$2B,$00 : dl EGWArcherStatueAwaitingButton-3 : db $46,$98,$00    ; $8B8F72 
+db $2F,$2B,$00 : dl EGWArcherStatueAwaitingButton-3 : db $46,$99,$00    ; $8B8F72 
+db $28,$14,$00 : dl EGWFlyingFireball-3 : db $33,$9A,$00    ; $8B8C70 
 db $2F,$28,$1F : dl $80C9FB : db $00 
-db $27,$17,$01 : dl $8B8C30 : db $00 
-db $28,$17,$21 : dl $8B8C30 : db $00 
-db $29,$17,$41 : dl $8B8C30 : db $00 
-db $2D,$17,$41 : dl $8B8C30 : db $00 
-db $2E,$17,$21 : dl $8B8C30 : db $00 
-db $2F,$17,$01 : dl $8B8C30 : db $00 
+db $27,$17,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $28,$17,$21 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $29,$17,$41 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $2D,$17,$41 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $2E,$17,$21 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $2F,$17,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
 db $FF,$CA
 ;org $8CBC3B
 ActorList_Map88:
@@ -2528,17 +2528,17 @@ db $1E,$18,$00 : dl EGWArcherFacingWest-3 : db $33,$A2,$00   ; $8B9155
 db $3A,$1A,$00 : dl EGWArcherFacingWest-3 : db $33,$A3,$00   ; $8B9155 
 db $05,$18,$00 : dl EGWArcherFacingEast-3 : db $33,$A4,$00   ; $8B9165 
 db $0A,$1B,$00 : dl EGWArcherFacingEast-3 : db $33,$A5,$00   ; $8B9165 
-db $2F,$2B,$00 : dl $8B8F4F : db $33,$F8,$00 
-db $06,$2B,$00 : dl $8B8F4F : db $33,$F9,$00 
-db $11,$28,$00 : dl $8B8F4F : db $33,$FA,$00 
-db $15,$28,$00 : dl $8B8F4F : db $33,$FB,$00 
-db $27,$28,$00 : dl $8B8F4F : db $33,$FC,$00 
-db $36,$28,$00 : dl $8B8F4F : db $33,$FD,$00 
-db $19,$18,$00 : dl $8B9423 : db $32,$A8,$00 
+db $2F,$2B,$00 : dl EGWArcherStatueAwaitingAttack-3 : db $33,$F8,$00    ; $8B8F4F 
+db $06,$2B,$00 : dl EGWArcherStatueAwaitingAttack-3 : db $33,$F9,$00    ; $8B8F4F 
+db $11,$28,$00 : dl EGWArcherStatueAwaitingAttack-3 : db $33,$FA,$00    ; $8B8F4F 
+db $15,$28,$00 : dl EGWArcherStatueAwaitingAttack-3 : db $33,$FB,$00    ; $8B8F4F 
+db $27,$28,$00 : dl EGWArcherStatueAwaitingAttack-3 : db $33,$FC,$00    ; $8B8F4F 
+db $36,$28,$00 : dl EGWArcherStatueAwaitingAttack-3 : db $33,$FD,$00    ; $8B8F4F 
+db $19,$18,$00 : dl EGWSnake-3 : db $32,$A8,$00    ; $8B9423 
 db $28,$1B,$00 : dl EGWFloorFireball-3 : db $34,$A6,$00   ; $8B8DBE 
 db $35,$1B,$00 : dl EGWFloorFireball-3 : db $34,$A7,$00   ; $8B8DBE 
-db $2B,$17,$01 : dl $8B8C30 : db $00 
-db $32,$17,$01 : dl $8B8C30 : db $00 
+db $2B,$17,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
+db $32,$17,$01 : dl EGWWallSpear-3 : db $00    ; $8B8C30 
 db $07,$17,$01 : dl $8B8BF8 : db $00 
 db $17,$17,$01 : dl $8B8BF8 : db $00 
 db $FF,$CA
@@ -2597,17 +2597,17 @@ db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $00,$01,$00 : dl $87BE22 : db $00 
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
-db $14,$3B,$21 : dl $87C05B : db $00 
-db $14,$39,$43 : dl $87C05B : db $00 
-db $1B,$39,$61 : dl $87C05B : db $00 
-db $1B,$35,$07 : dl $87C05B : db $00 
-db $1B,$2C,$8F : dl $87C05B : db $00 
-db $1B,$2E,$0F : dl $87C05B : db $00 
-db $1B,$2F,$0F : dl $87C05B : db $00 
-db $14,$28,$A9 : dl $87C05B : db $00 
-db $14,$29,$AB : dl $87C05B : db $00 
-db $14,$2C,$D1 : dl $87C05B : db $00 
-db $1B,$20,$ED : dl $87C05B : db $00 
+db $14,$3B,$21 : dl EEuroMarketObject-3 : db $00    ; $87C05B 
+db $14,$39,$43 : dl EEuroMarketObject-3 : db $00    ; $87C05B 
+db $1B,$39,$61 : dl EEuroMarketObject-3 : db $00    ; $87C05B 
+db $1B,$35,$07 : dl EEuroMarketObject-3 : db $00    ; $87C05B 
+db $1B,$2C,$8F : dl EEuroMarketObject-3 : db $00    ; $87C05B 
+db $1B,$2E,$0F : dl EEuroMarketObject-3 : db $00    ; $87C05B 
+db $1B,$2F,$0F : dl EEuroMarketObject-3 : db $00    ; $87C05B 
+db $14,$28,$A9 : dl EEuroMarketObject-3 : db $00    ; $87C05B 
+db $14,$29,$AB : dl EEuroMarketObject-3 : db $00    ; $87C05B 
+db $14,$2C,$D1 : dl EEuroMarketObject-3 : db $00    ; $87C05B 
+db $1B,$20,$ED : dl EEuroMarketObject-3 : db $00    ; $87C05B 
 db $14,$20,$00 : dl $87E4BC : db $00 
 db $03,$41,$00 : dl $87C266 : db $00 
 db $01,$3F,$00 : dl $87C266 : db $00 
@@ -2630,25 +2630,25 @@ db $27,$21,$00 : dl $87D051 : db $00
 db $37,$31,$61 : dl $87C751 : db $00 
 db $15,$29,$43 : dl $87C751 : db $00 
 db $01,$2E,$65 : dl $87C751 : db $00 
-db $17,$1E,$01 : dl $87C92A : db $00 
-db $18,$0A,$03 : dl $87C92A : db $00 
+db $17,$1E,$01 : dl EEuroNpcWanderingGreen-3 : db $00    ; $87C92A
+db $18,$0A,$03 : dl EEuroNpcWanderingGreen-3 : db $00    ; $87C92A
 db $39,$39,$01 : dl EEuroNpcBlue-3 : db $00    ; $87ca65
 db $19,$31,$03 : dl EEuroNpcBlue-3 : db $00    ; $87ca65
 db $16,$1B,$05 : dl EEuroNpcBlue-3 : db $00    ; $87ca65
-db $22,$41,$01 : dl $87D252 : db $00 
-db $22,$42,$A3 : dl $87D252 : db $00 
-db $23,$42,$05 : dl $87D252 : db $00 
-db $24,$42,$A7 : dl $87D252 : db $00 
-db $25,$42,$A9 : dl $87D252 : db $00 
-db $2C,$42,$0B : dl $87D252 : db $00 
+db $22,$41,$01 : dl EEuroShopLineNpc-3 : db $00    ; $87D252
+db $22,$42,$A3 : dl EEuroShopLineNpc-3 : db $00    ; $87D252
+db $23,$42,$05 : dl EEuroShopLineNpc-3 : db $00    ; $87D252
+db $24,$42,$A7 : dl EEuroShopLineNpc-3 : db $00    ; $87D252
+db $25,$42,$A9 : dl EEuroShopLineNpc-3 : db $00    ; $87D252
+db $2C,$42,$0B : dl EEuroShopLineNpc-3 : db $00    ; $87D252
 db $22,$40,$01 : dl $87D5D5 : db $00 
-db $06,$40,$00 : dl $80C5F3 : db $00 
-db $0D,$40,$00 : dl $80C5F3 : db $00 
-db $33,$40,$00 : dl $80C5F3 : db $00 
-db $34,$31,$00 : dl $80C5F3 : db $00 
-db $31,$23,$00 : dl $80C5F3 : db $00 
-db $29,$23,$00 : dl $80C5F3 : db $00 
-db $23,$23,$00 : dl $80C5F3 : db $00 
+db $06,$40,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $0D,$40,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $33,$40,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $34,$31,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $31,$23,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $29,$23,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
+db $23,$23,$00 : dl ECityHouseDoor-3 : db $00    ; $80C5F3 
 db $27,$32,$15 : dl ERedJewelPickup-3 : db $00    ; $80C66F
 db $FF,$D6,$08,$8E,$85,$AC,$44,$A5,$A2,$8E,$CA
 ;org $8CBF65
@@ -2716,14 +2716,14 @@ db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
 db $0B,$0A,$01 : dl EDarkSpace-3 : db $00    ; $88D6A9
-db $04,$1A,$05 : dl $87C92A : db $00 
+db $04,$1A,$05 : dl EEuroNpcWanderingGreen-3 : db $00    ; $87C92A
 db $FF,$CA
 ;org $8CC0BE
 ActorList_Map9A:
 db $05,$0A,$02 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $07,$09,$00 : dl $87E604 : db $00 
+db $07,$09,$00 : dl EEuroFriezer-3 : db $00    ; $87E604
 db $05,$0A,$00 : dl $87E696 : db $00 
 db $0A,$0A,$00 : dl $87E713 : db $00 
 db $FF,$CA
@@ -2752,8 +2752,8 @@ db $08,$18,$03 : dl $87D099 : db $00
 db $0B,$18,$05 : dl $87D099 : db $00 
 db $12,$19,$07 : dl $87D099 : db $00 
 db $14,$19,$09 : dl $87D099 : db $00 
-db $03,$1A,$00 : dl $87D237 : db $00 
-db $05,$19,$00 : dl $87D237 : db $00 
+db $03,$1A,$00 : dl EEuroShrineSkeleton-3 : db $00    ; $87D237
+db $05,$19,$00 : dl EEuroShrineSkeleton-3 : db $00    ; $87D237
 db $0F,$08,$00 : dl $87E56D : db $00 
 db $1E,$1C,$17 : dl ERedJewelPickup-3 : db $00    ; $80C66F
 db $FF,$63,$87,$A2,$88,$8D,$84,$AC,$CA
@@ -2764,7 +2764,7 @@ db $FF,$CA
 ActorList_MapA0:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $DF,$DF,$00 : dl $80E94D : db $00 
+db $DF,$DF,$00 : dl EKressBgParallaxManager-3 : db $00    ; $80E94D 
 db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
 db $00,$01,$00 : dl $87E75D : db $00 
 db $1E,$1C,$30 : dl EKressWavingSkullEast-3 : db $3E,$01,$00    ; $8B9C4E 
@@ -2774,16 +2774,16 @@ db $10,$09,$30 : dl EKressWavingSkullEast-3 : db $3E,$04,$00    ; $8B9C4E
 db $20,$09,$30 : dl EKressWavingSkullEast-3 : db $3E,$05,$00    ; $8B9C4E 
 db $25,$15,$30 : dl EKressWavingSkullSouth-3 : db $3E,$06,$00    ; $8B9BAC 
 db $17,$11,$30 : dl EKressWavingSkullSouth-3 : db $3E,$07,$00    ; $8B9BAC 
-db $07,$19,$30 : dl $8BA0CF : db $3C,$08,$00 
-db $0E,$05,$30 : dl $8BA0CF : db $3C,$09,$00 
-db $13,$0F,$30 : dl $8BA0CF : db $3C,$0A,$00 
-db $18,$04,$30 : dl $8BA0CF : db $3C,$0B,$00 
+db $07,$19,$30 : dl EKressSpiderSouth-3 : db $3C,$08,$00    ; $8BA0CF 
+db $0E,$05,$30 : dl EKressSpiderSouth-3 : db $3C,$09,$00    ; $8BA0CF 
+db $13,$0F,$30 : dl EKressSpiderSouth-3 : db $3C,$0A,$00    ; $8BA0CF 
+db $18,$04,$30 : dl EKressSpiderSouth-3 : db $3C,$0B,$00    ; $8BA0CF 
 db $FF,$D7,$1E,$64,$84,$8C,$A0,$8B,$84,$CA
 ;org $8CC21C
 ActorList_MapA1:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $DF,$DF,$00 : dl $80E94D : db $00 
+db $DF,$DF,$00 : dl EKressBgParallaxManager-3 : db $00    ; $80E94D 
 db $36,$27,$09 : dl ERampLauncherToNorth-3 : db $00    ; $80d3ba
 db $16,$1E,$09 : dl ERampLauncherToNorth-3 : db $00    ; $80d3ba
 db $1A,$23,$11 : dl ERampLauncherToSouth-3 : db $00    ; $80d428
@@ -2792,11 +2792,11 @@ db $1F,$30,$03 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $0B,$33,$30 : dl EKressFlutist-3 : db $3F,$10,$00    ; $8B983B 
 db $28,$0C,$30 : dl EKressFlutist-3 : db $3F,$11,$00    ; $8B983B 
 db $1B,$0B,$30 : dl EKressFlutist-3 : db $3F,$12,$00    ; $8B983B 
-db $31,$25,$30 : dl $8BA0CF : db $3C,$13,$00 
-db $09,$21,$30 : dl $8BA049 : db $3C,$14,$00 
-db $0B,$21,$30 : dl $8BA049 : db $3C,$15,$00 
-db $1A,$22,$30 : dl $8BA075 : db $3C,$16,$00 
-db $17,$1F,$30 : dl $8BA0A1 : db $3C,$17,$00 
+db $31,$25,$30 : dl EKressSpiderSouth-3 : db $3C,$13,$00    ; $8BA0CF 
+db $09,$21,$30 : dl EKressSpiderAwaitingPlayerSouth-3 : db $3C,$14,$00    ; $8BA049 
+db $0B,$21,$30 : dl EKressSpiderAwaitingPlayerSouth-3 : db $3C,$15,$00    ; $8BA049 
+db $1A,$22,$30 : dl EKressSpiderWest-3 : db $3C,$16,$00    ; $8BA075 
+db $17,$1F,$30 : dl EKressSpiderEast-3 : db $3C,$17,$00    ; $8BA0A1 
 db $2E,$34,$30 : dl EKressWavingSkullEast-3 : db $3E,$18,$00    ; $8B9C4E 
 db $30,$3C,$30 : dl EKressWavingSkullEast-3 : db $3E,$19,$00    ; $8B9C4E 
 db $1E,$2A,$30 : dl EKressWavingSkullEast-3 : db $3E,$1A,$00    ; $8B9C4E 
@@ -2807,42 +2807,42 @@ db $26,$38,$30 : dl EKressShootingSkullSouth-3 : db $3D,$1E,$00    ; $8B9D0F
 db $17,$27,$30 : dl EKressShootingSkullSouth-3 : db $3D,$1F,$00    ; $8B9D0F 
 db $21,$17,$30 : dl EKressShootingSkullSouth-3 : db $3D,$20,$00    ; $8B9D0F 
 db $24,$17,$30 : dl EKressShootingSkullSouth-3 : db $3D,$21,$00    ; $8B9D0F 
-db $2A,$2A,$30 : dl $8B9F53 : db $3D,$22,$00 
-db $09,$1B,$30 : dl $8B9F53 : db $3D,$23,$00 
-db $0A,$16,$30 : dl $8B9F53 : db $3D,$24,$00 
-db $09,$11,$30 : dl $8B9F53 : db $3D,$25,$00 
-db $0A,$0C,$30 : dl $8B9F53 : db $3D,$26,$00 
-db $2D,$1A,$30 : dl $8B9F53 : db $3D,$27,$00 
+db $2A,$2A,$30 : dl EKressShootingSkullEast-3 : db $3D,$22,$00    ; $8B9F53 
+db $09,$1B,$30 : dl EKressShootingSkullEast-3 : db $3D,$23,$00    ; $8B9F53 
+db $0A,$16,$30 : dl EKressShootingSkullEast-3 : db $3D,$24,$00    ; $8B9F53 
+db $09,$11,$30 : dl EKressShootingSkullEast-3 : db $3D,$25,$00    ; $8B9F53 
+db $0A,$0C,$30 : dl EKressShootingSkullEast-3 : db $3D,$26,$00    ; $8B9F53 
+db $2D,$1A,$30 : dl EKressShootingSkullEast-3 : db $3D,$27,$00    ; $8B9F53 
 db $36,$28,$01 : dl $80C286 : db $00 
 db $FF,$CA
 ;org $8CC335
 ActorList_MapA2:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $DF,$DF,$00 : dl $80E94D : db $00 
+db $DF,$DF,$00 : dl EKressBgParallaxManager-3 : db $00    ; $80E94D 
 db $0C,$2D,$09 : dl ERampLauncherToNorth-3 : db $00    ; $80d3ba
 db $00,$01,$00 : dl $87E7F0 : db $00 
-db $0D,$1C,$30 : dl $8BA0CF : db $3C,$30,$00 
-db $0D,$18,$30 : dl $8BA0CF : db $3C,$31,$00 
-db $07,$09,$30 : dl $8BA0CF : db $3C,$32,$00 
-db $04,$30,$30 : dl $8BA0A1 : db $3C,$33,$00 
-db $15,$09,$30 : dl $8BA0A1 : db $3C,$34,$00 
-db $11,$2C,$30 : dl $8BA01D : db $3C,$35,$00 
+db $0D,$1C,$30 : dl EKressSpiderSouth-3 : db $3C,$30,$00    ; $8BA0CF 
+db $0D,$18,$30 : dl EKressSpiderSouth-3 : db $3C,$31,$00    ; $8BA0CF 
+db $07,$09,$30 : dl EKressSpiderSouth-3 : db $3C,$32,$00    ; $8BA0CF 
+db $04,$30,$30 : dl EKressSpiderEast-3 : db $3C,$33,$00    ; $8BA0A1 
+db $15,$09,$30 : dl EKressSpiderEast-3 : db $3C,$34,$00    ; $8BA0A1 
+db $11,$2C,$30 : dl EKressSpiderNorth-3 : db $3C,$35,$00    ; $8BA01D 
 db $07,$2B,$30 : dl EKressWavingSkullSouth-3 : db $3E,$36,$00    ; $8B9BAC 
 db $18,$24,$30 : dl EKressWavingSkullEast-3 : db $3E,$37,$00    ; $8B9C4E 
 db $18,$1A,$30 : dl EKressWavingSkullEast-3 : db $3E,$38,$00    ; $8B9C4E 
 db $11,$1F,$30 : dl EKressWavingSkullWest-3 : db $3E,$39,$00    ; $8B9C44 
 db $11,$15,$30 : dl EKressWavingSkullWest-3 : db $3E,$3A,$00    ; $8B9C44 
-db $0C,$0F,$30 : dl $8B9F53 : db $3D,$3B,$00 
-db $13,$29,$30 : dl $8B9E8B : db $3D,$3C,$00 
-db $1B,$09,$30 : dl $8B9E8B : db $3D,$3D,$00 
+db $0C,$0F,$30 : dl EKressShootingSkullEast-3 : db $3D,$3B,$00    ; $8B9F53 
+db $13,$29,$30 : dl EKressShootingSkullWest-3 : db $3D,$3C,$00    ; $8B9E8B 
+db $1B,$09,$30 : dl EKressShootingSkullWest-3 : db $3D,$3D,$00    ; $8B9E8B 
 db $0C,$2E,$01 : dl $80C286 : db $00 
 db $FF,$CA
 ;org $8CC3DF
 ActorList_MapA3:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $DF,$DF,$00 : dl $80E94D : db $00 
+db $DF,$DF,$00 : dl EKressBgParallaxManager-3 : db $00    ; $80E94D 
 db $69,$11,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $58,$11,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
 db $47,$11,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
@@ -2854,18 +2854,18 @@ db $21,$09,$30 : dl EKressWavingSkullWest-3 : db $3E,$41,$00    ; $8B9C44
 db $3D,$09,$30 : dl EKressWavingSkullWest-3 : db $3E,$42,$00    ; $8B9C44 
 db $54,$0E,$30 : dl EKressWavingSkullWest-3 : db $3E,$43,$00    ; $8B9C44 
 db $74,$09,$30 : dl EKressWavingSkullWest-3 : db $3E,$44,$00    ; $8B9C44 
-db $1B,$09,$30 : dl $8BA0CF : db $3C,$45,$00 
-db $23,$07,$30 : dl $8BA0CF : db $3C,$46,$00 
-db $7A,$0B,$30 : dl $8BA0CF : db $3C,$47,$00 
-db $76,$0E,$30 : dl $8BA0CF : db $3C,$48,$00 
-db $7B,$10,$30 : dl $8BA0CF : db $3C,$49,$00 
-db $28,$14,$30 : dl $8BA0A1 : db $3C,$4A,$00 
-db $3E,$0E,$30 : dl $8BA0A1 : db $3C,$4B,$00 
-db $51,$09,$30 : dl $8BA0A1 : db $3C,$4C,$00 
-db $35,$14,$30 : dl $8BA075 : db $3C,$4D,$00 
-db $58,$09,$30 : dl $8BA075 : db $3C,$4E,$00 
-db $2D,$0F,$30 : dl $8B9F53 : db $3D,$50,$00 
-db $30,$0F,$30 : dl $8B9E8B : db $3D,$51,$00 
+db $1B,$09,$30 : dl EKressSpiderSouth-3 : db $3C,$45,$00    ; $8BA0CF 
+db $23,$07,$30 : dl EKressSpiderSouth-3 : db $3C,$46,$00    ; $8BA0CF 
+db $7A,$0B,$30 : dl EKressSpiderSouth-3 : db $3C,$47,$00    ; $8BA0CF 
+db $76,$0E,$30 : dl EKressSpiderSouth-3 : db $3C,$48,$00    ; $8BA0CF 
+db $7B,$10,$30 : dl EKressSpiderSouth-3 : db $3C,$49,$00    ; $8BA0CF 
+db $28,$14,$30 : dl EKressSpiderEast-3 : db $3C,$4A,$00    ; $8BA0A1 
+db $3E,$0E,$30 : dl EKressSpiderEast-3 : db $3C,$4B,$00    ; $8BA0A1 
+db $51,$09,$30 : dl EKressSpiderEast-3 : db $3C,$4C,$00    ; $8BA0A1 
+db $35,$14,$30 : dl EKressSpiderWest-3 : db $3C,$4D,$00    ; $8BA075 
+db $58,$09,$30 : dl EKressSpiderWest-3 : db $3C,$4E,$00    ; $8BA075 
+db $2D,$0F,$30 : dl EKressShootingSkullEast-3 : db $3D,$50,$00    ; $8B9F53 
+db $30,$0F,$30 : dl EKressShootingSkullWest-3 : db $3D,$51,$00    ; $8B9E8B 
 db $2E,$12,$30 : dl EKressShootingSkullSouth-3 : db $3D,$52,$00    ; $8B9D0F 
 db $3F,$0C,$30 : dl EKressShootingSkullSouth-3 : db $3D,$53,$00    ; $8B9D0F 
 db $6B,$07,$30 : dl EKressShootingSkullSouth-3 : db $3D,$55,$00    ; $8B9D0F 
@@ -2879,7 +2879,7 @@ db $FF,$CA
 ActorList_MapA4:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $DF,$DF,$00 : dl $80E94D : db $00 
+db $DF,$DF,$00 : dl EKressBgParallaxManager-3 : db $00    ; $80E94D 
 db $19,$16,$30 : dl EKressWavingSkullWest-3 : db $3E,$60,$00    ; $8B9C44 
 db $26,$16,$30 : dl EKressWavingSkullWest-3 : db $3E,$61,$00    ; $8B9C44 
 db $21,$3E,$30 : dl EKressWavingSkullEast-3 : db $3E,$62,$00    ; $8B9C4E 
@@ -2890,28 +2890,28 @@ db $24,$06,$30 : dl EKressWavingSkullEast-3 : db $3E,$66,$00    ; $8B9C4E
 db $1F,$06,$30 : dl EKressWavingSkullEast-3 : db $3E,$67,$00    ; $8B9C4E 
 db $32,$25,$30 : dl EKressWavingSkullSouth-3 : db $3E,$68,$00    ; $8B9BAC 
 db $0F,$1F,$30 : dl EKressWavingSkullSouth-3 : db $3E,$69,$00    ; $8B9BAC 
-db $26,$38,$30 : dl $8B9E8B : db $3D,$6A,$00 
-db $11,$28,$30 : dl $8B9E8B : db $3D,$6B,$00 
-db $13,$1C,$30 : dl $8B9E8B : db $3D,$6C,$00 
-db $32,$0F,$30 : dl $8B9E8B : db $3D,$6D,$00 
-db $34,$10,$30 : dl $8B9E8B : db $3D,$6E,$68 
-db $1C,$2F,$30 : dl $8B9F53 : db $3D,$6F,$00 
-db $0C,$28,$30 : dl $8B9F53 : db $3D,$70,$00 
-db $0A,$1C,$30 : dl $8B9F53 : db $3D,$71,$00 
+db $26,$38,$30 : dl EKressShootingSkullWest-3 : db $3D,$6A,$00    ; $8B9E8B 
+db $11,$28,$30 : dl EKressShootingSkullWest-3 : db $3D,$6B,$00    ; $8B9E8B 
+db $13,$1C,$30 : dl EKressShootingSkullWest-3 : db $3D,$6C,$00    ; $8B9E8B 
+db $32,$0F,$30 : dl EKressShootingSkullWest-3 : db $3D,$6D,$00    ; $8B9E8B 
+db $34,$10,$30 : dl EKressShootingSkullWest-3 : db $3D,$6E,$68    ; $8B9E8B 
+db $1C,$2F,$30 : dl EKressShootingSkullEast-3 : db $3D,$6F,$00    ; $8B9F53 
+db $0C,$28,$30 : dl EKressShootingSkullEast-3 : db $3D,$70,$00    ; $8B9F53 
+db $0A,$1C,$30 : dl EKressShootingSkullEast-3 : db $3D,$71,$00    ; $8B9F53 
 db $1E,$2E,$30 : dl EKressShootingSkullSouth-3 : db $3D,$72,$00    ; $8B9D0F 
-db $28,$38,$30 : dl $8BA075 : db $3C,$73,$00 
-db $31,$38,$30 : dl $8BA0CF : db $3C,$74,$00 
-db $35,$38,$30 : dl $8BA0CF : db $3C,$75,$00 
-db $0D,$32,$30 : dl $8BA0CF : db $3C,$76,$00 
-db $10,$12,$30 : dl $8BA0CF : db $3C,$77,$00 
-db $13,$12,$30 : dl $8BA0CF : db $3C,$78,$00 
-db $16,$12,$30 : dl $8BA0CF : db $3C,$79,$00 
+db $28,$38,$30 : dl EKressSpiderWest-3 : db $3C,$73,$00    ; $8BA075 
+db $31,$38,$30 : dl EKressSpiderSouth-3 : db $3C,$74,$00    ; $8BA0CF 
+db $35,$38,$30 : dl EKressSpiderSouth-3 : db $3C,$75,$00    ; $8BA0CF 
+db $0D,$32,$30 : dl EKressSpiderSouth-3 : db $3C,$76,$00    ; $8BA0CF 
+db $10,$12,$30 : dl EKressSpiderSouth-3 : db $3C,$77,$00    ; $8BA0CF 
+db $13,$12,$30 : dl EKressSpiderSouth-3 : db $3C,$78,$00    ; $8BA0CF 
+db $16,$12,$30 : dl EKressSpiderSouth-3 : db $3C,$79,$00    ; $8BA0CF 
 db $FF,$CA
 ;org $8CC5F8
 ActorList_MapA5:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $DF,$DF,$00 : dl $80E94D : db $00 
+db $DF,$DF,$00 : dl EKressBgParallaxManager-3 : db $00    ; $80E94D 
 db $14,$0F,$11 : dl ERampLauncherToSouth-3 : db $00    ; $80d428
 db $00,$01,$00 : dl $87E843 : db $00 
 db $00,$01,$00 : dl $87E896 : db $00 
@@ -2921,9 +2921,9 @@ db $0A,$19,$30 : dl EKressFlutist-3 : db $3F,$82,$00    ; $8B983B
 db $08,$33,$30 : dl EKressShootingSkullSouth-3 : db $3D,$83,$00    ; $8B9D0F 
 db $26,$23,$30 : dl EKressShootingSkullSouth-3 : db $3D,$84,$00    ; $8B9D0F 
 db $08,$3A,$30 : dl EKressShootingSkullNorth-3 : db $3D,$85,$00    ; $8B9DCD 
-db $29,$13,$30 : dl $8B9F53 : db $3D,$86,$00 
-db $0E,$07,$30 : dl $8B9E8B : db $3D,$87,$00 
-db $11,$07,$30 : dl $8B9E8B : db $3D,$88,$00 
+db $29,$13,$30 : dl EKressShootingSkullEast-3 : db $3D,$86,$00    ; $8B9F53 
+db $0E,$07,$30 : dl EKressShootingSkullWest-3 : db $3D,$87,$00    ; $8B9E8B 
+db $11,$07,$30 : dl EKressShootingSkullWest-3 : db $3D,$88,$00    ; $8B9E8B 
 db $38,$13,$30 : dl EKressWavingSkullSouth-3 : db $3E,$89,$00    ; $8B9BAC 
 db $37,$2B,$30 : dl EKressWavingSkullWest-3 : db $3E,$8A,$00    ; $8B9C44 
 db $1C,$2B,$30 : dl EKressWavingSkullWest-3 : db $3E,$8B,$00    ; $8B9C44 
@@ -2931,42 +2931,42 @@ db $19,$3A,$30 : dl EKressWavingSkullEast-3 : db $3E,$8C,$00    ; $8B9C4E
 db $05,$13,$30 : dl EKressWavingSkullEast-3 : db $3E,$8D,$00    ; $8B9C4E 
 db $0C,$13,$30 : dl EKressWavingSkullEast-3 : db $3E,$8E,$00    ; $8B9C4E 
 db $12,$13,$30 : dl EKressWavingSkullEast-3 : db $3E,$8F,$00    ; $8B9C4E 
-db $0E,$37,$30 : dl $8BA0CF : db $3C,$90,$00 
-db $12,$27,$30 : dl $8BA0CF : db $3C,$91,$00 
-db $0F,$03,$30 : dl $8BA0CF : db $3C,$92,$00 
-db $2B,$09,$30 : dl $8BA049 : db $3C,$93,$00 
-db $1A,$31,$30 : dl $8BA075 : db $3C,$94,$00 
-db $29,$25,$30 : dl $8BA075 : db $3C,$95,$00 
-db $14,$37,$30 : dl $8BA0A1 : db $3C,$96,$00 
-db $24,$25,$30 : dl $8BA0A1 : db $3C,$97,$00 
+db $0E,$37,$30 : dl EKressSpiderSouth-3 : db $3C,$90,$00    ; $8BA0CF 
+db $12,$27,$30 : dl EKressSpiderSouth-3 : db $3C,$91,$00    ; $8BA0CF 
+db $0F,$03,$30 : dl EKressSpiderSouth-3 : db $3C,$92,$00    ; $8BA0CF 
+db $2B,$09,$30 : dl EKressSpiderAwaitingPlayerSouth-3 : db $3C,$93,$00    ; $8BA049 
+db $1A,$31,$30 : dl EKressSpiderWest-3 : db $3C,$94,$00    ; $8BA075 
+db $29,$25,$30 : dl EKressSpiderWest-3 : db $3C,$95,$00    ; $8BA075 
+db $14,$37,$30 : dl EKressSpiderEast-3 : db $3C,$96,$00    ; $8BA0A1 
+db $24,$25,$30 : dl EKressSpiderEast-3 : db $3C,$97,$00    ; $8BA0A1 
 db $14,$0E,$01 : dl $80C1DF : db $00 
 db $FF,$CA
 ;org $8CC703
 ActorList_MapA6:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $DF,$DF,$00 : dl $80E94D : db $00 
+db $DF,$DF,$00 : dl EKressBgParallaxManager-3 : db $00    ; $80E94D 
 db $17,$2E,$30 : dl EKressFlutist-3 : db $3F,$A0,$00    ; $8B983B 
 db $2B,$33,$30 : dl EKressFlutist-3 : db $3F,$A1,$00    ; $8B983B 
 db $0D,$21,$30 : dl EKressFlutist-3 : db $3F,$A2,$00    ; $8B983B 
 db $2E,$1C,$30 : dl EKressFlutist-3 : db $3F,$A3,$00    ; $8B983B 
 db $35,$16,$30 : dl EKressFlutist-3 : db $3F,$A4,$00    ; $8B983B 
 db $26,$0C,$30 : dl EKressFlutist-3 : db $3F,$A5,$00    ; $8B983B 
-db $14,$1C,$30 : dl $8B9E8B : db $3D,$A6,$00 
-db $17,$1D,$30 : dl $8B9E8B : db $3D,$A7,$00 
-db $1A,$1C,$30 : dl $8B9E8B : db $3D,$A8,$00 
-db $1D,$1D,$30 : dl $8B9E8B : db $3D,$A9,$00 
+db $14,$1C,$30 : dl EKressShootingSkullWest-3 : db $3D,$A6,$00    ; $8B9E8B 
+db $17,$1D,$30 : dl EKressShootingSkullWest-3 : db $3D,$A7,$00    ; $8B9E8B 
+db $1A,$1C,$30 : dl EKressShootingSkullWest-3 : db $3D,$A8,$00    ; $8B9E8B 
+db $1D,$1D,$30 : dl EKressShootingSkullWest-3 : db $3D,$A9,$00    ; $8B9E8B 
 db $05,$07,$30 : dl EKressShootingSkullSouth-3 : db $3D,$AA,$00    ; $8B9D0F 
 db $22,$0B,$30 : dl EKressWavingSkullEast-3 : db $3E,$AB,$00    ; $8B9C4E 
-db $38,$29,$30 : dl $8BA0CF : db $3C,$AC,$00 
-db $39,$2D,$30 : dl $8BA0CF : db $3C,$AD,$00 
-db $3C,$2B,$30 : dl $8BA0CF : db $3C,$AE,$00 
+db $38,$29,$30 : dl EKressSpiderSouth-3 : db $3C,$AC,$00    ; $8BA0CF 
+db $39,$2D,$30 : dl EKressSpiderSouth-3 : db $3C,$AD,$00    ; $8BA0CF 
+db $3C,$2B,$30 : dl EKressSpiderSouth-3 : db $3C,$AE,$00    ; $8BA0CF 
 db $FF,$CA
 ;org $8CC7A1
 ActorList_MapA7:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $DF,$DF,$00 : dl $80E94D : db $00 
+db $DF,$DF,$00 : dl EKressBgParallaxManager-3 : db $00    ; $80E94D 
 db $79,$31,$05 : dl EDarkSpace-3 : db $00    ; $88D6A9
 db $25,$09,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
 db $27,$0F,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0 
@@ -2982,15 +2982,15 @@ db $32,$2E,$03 : dl ERampLauncherToWest-3 : db $00    ; $80d2d0
 db $06,$17,$30 : dl EKressFlutist-3 : db $3F,$B3,$00    ; $8B983B 
 db $73,$14,$30 : dl EKressFlutist-3 : db $3F,$B5,$00    ; $8B983B 
 db $59,$0F,$30 : dl EKressFlutist-3 : db $3F,$B6,$00    ; $8B983B 
-db $38,$33,$30 : dl $8BA0CF : db $3C,$B7,$00 
-db $3B,$31,$30 : dl $8BA0CF : db $3C,$B8,$00 
-db $40,$31,$30 : dl $8BA0CF : db $3C,$B9,$00 
-db $41,$38,$30 : dl $8BA0CF : db $3C,$BA,$00 
-db $51,$28,$30 : dl $8BA0CF : db $3C,$BB,$00 
-db $3D,$28,$30 : dl $8BA0CF : db $3C,$BC,$00 
-db $37,$22,$30 : dl $8BA0CF : db $3C,$BD,$00 
-db $62,$19,$30 : dl $8BA0CF : db $3C,$BE,$00 
-db $7A,$14,$30 : dl $8BA0CF : db $3C,$BF,$00 
+db $38,$33,$30 : dl EKressSpiderSouth-3 : db $3C,$B7,$00    ; $8BA0CF 
+db $3B,$31,$30 : dl EKressSpiderSouth-3 : db $3C,$B8,$00    ; $8BA0CF 
+db $40,$31,$30 : dl EKressSpiderSouth-3 : db $3C,$B9,$00    ; $8BA0CF 
+db $41,$38,$30 : dl EKressSpiderSouth-3 : db $3C,$BA,$00    ; $8BA0CF 
+db $51,$28,$30 : dl EKressSpiderSouth-3 : db $3C,$BB,$00    ; $8BA0CF 
+db $3D,$28,$30 : dl EKressSpiderSouth-3 : db $3C,$BC,$00    ; $8BA0CF 
+db $37,$22,$30 : dl EKressSpiderSouth-3 : db $3C,$BD,$00    ; $8BA0CF 
+db $62,$19,$30 : dl EKressSpiderSouth-3 : db $3C,$BE,$00    ; $8BA0CF 
+db $7A,$14,$30 : dl EKressSpiderSouth-3 : db $3C,$BF,$00    ; $8BA0CF 
 db $5B,$3A,$30 : dl EKressShootingSkullSouth-3 : db $3D,$C0,$00    ; $8B9D0F 
 db $5C,$3A,$30 : dl EKressShootingSkullSouth-3 : db $3D,$C1,$00    ; $8B9D0F 
 db $40,$0F,$30 : dl EKressShootingSkullSouth-3 : db $3D,$C2,$00    ; $8B9D0F 
@@ -3002,10 +3002,10 @@ db $77,$25,$30 : dl EKressShootingSkullNorth-3 : db $3D,$C7,$00    ; $8B9DCD
 db $48,$14,$30 : dl EKressShootingSkullNorth-3 : db $3D,$C8,$00    ; $8B9DCD 
 db $12,$08,$30 : dl EKressShootingSkullNorth-3 : db $3D,$C9,$00    ; $8B9DCD 
 db $16,$08,$30 : dl EKressShootingSkullNorth-3 : db $3D,$CA,$00    ; $8B9DCD 
-db $5F,$31,$30 : dl $8B9E8B : db $3D,$CB,$00 
-db $44,$10,$30 : dl $8B9E8B : db $3D,$CC,$00 
-db $5B,$31,$30 : dl $8B9F53 : db $3D,$CD,$00 
-db $57,$31,$30 : dl $8B9F53 : db $3D,$CE,$00 
+db $5F,$31,$30 : dl EKressShootingSkullWest-3 : db $3D,$CB,$00    ; $8B9E8B 
+db $44,$10,$30 : dl EKressShootingSkullWest-3 : db $3D,$CC,$00    ; $8B9E8B 
+db $5B,$31,$30 : dl EKressShootingSkullEast-3 : db $3D,$CD,$00    ; $8B9F53 
+db $57,$31,$30 : dl EKressShootingSkullEast-3 : db $3D,$CE,$00    ; $8B9F53 
 db $33,$1B,$30 : dl EKressWavingSkullNorth-3 : db $3E,$CF,$00    ; $8B9BA2 
 db $7A,$1B,$30 : dl EKressWavingSkullNorth-3 : db $3E,$D0,$00    ; $8B9BA2 
 db $5D,$25,$30 : dl EKressWavingSkullWest-3 : db $3E,$D1,$00    ; $8B9C44 
@@ -3017,7 +3017,7 @@ db $46,$3D,$30 : dl EKressWavingSkullEast-3 : db $3E,$D6,$00    ; $8B9C4E
 db $4E,$3D,$30 : dl EKressWavingSkullEast-3 : db $3E,$D7,$00    ; $8B9C4E 
 db $56,$3D,$30 : dl EKressWavingSkullEast-3 : db $3E,$D8,$00    ; $8B9C4E 
 db $52,$07,$30 : dl EKressWavingSkullEast-3 : db $3E,$D9,$00    ; $8B9C4E 
-db $3B,$0B,$30 : dl $8BA075 : db $3C,$DA,$00 
+db $3B,$0B,$30 : dl EKressSpiderWest-3 : db $3C,$DA,$00    ; $8BA075 
 db $23,$09,$01 : dl $80C218 : db $00 
 db $28,$0F,$01 : dl $80C1DF : db $00 
 db $48,$1F,$01 : dl $80C218 : db $00 
@@ -3031,7 +3031,7 @@ db $FF,$CA
 ActorList_MapA8:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $DF,$DF,$00 : dl $80E94D : db $00 
+db $DF,$DF,$00 : dl EKressBgParallaxManager-3 : db $00    ; $80E94D 
 db $31,$18,$30 : dl EKressFlutist-3 : db $3F,$E0,$00    ; $8B983B 
 db $1E,$0E,$30 : dl EKressFlutist-3 : db $3F,$E1,$00    ; $8B983B 
 db $16,$0E,$30 : dl EKressFlutist-3 : db $3F,$E2,$00    ; $8B983B 
@@ -3045,7 +3045,7 @@ db $FF,$CA
 ActorList_MapA9:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $DF,$DF,$00 : dl $80E94D : db $00 
+db $DF,$DF,$00 : dl EKressBgParallaxManager-3 : db $00    ; $80E94D 
 db $FF,$CA
 ;org $8CCA19
 ActorList_MapAC:    ; Natives' exterior
@@ -3829,10 +3829,10 @@ ActorList_MapDD:
 db $05,$0A,$30 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $11,$11,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $04,$0C,$30 : dl $8BADBE : db $00 
-db $04,$1B,$30 : dl $8BADC7 : db $00 
-db $1B,$0C,$30 : dl $8BADBE : db $00 
-db $1B,$1B,$30 : dl $8BADCC : db $00 
+db $04,$0C,$30 : dl EMummyQueenArenaTopPortal-3 : db $00    ; $8BADBE 
+db $04,$1B,$30 : dl EMummyQueenArenaSWPortal-3 : db $00    ; $8BADC7 
+db $1B,$0C,$30 : dl EMummyQueenArenaTopPortal-3 : db $00    ; $8BADBE 
+db $1B,$1B,$30 : dl EMummyQueenArenaSEPortal-3 : db $00    ; $8BADCC 
 db $0F,$0C,$30 : dl EMummyQueen-3 : db $50,$00,$00    ; $8ba6b6
 db $00,$01,$01 : dl $8BA5DF : db $00 
 db $00,$01,$00 : dl EMummyQueenStatueAwarder-3 : db $00    ; $88CE12
@@ -4071,10 +4071,10 @@ ActorList_MapF6:    ; Babel, Mummy Queen
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $81,$02,$00 : dl $80E9EC : db $00 
-db $04,$0C,$30 : dl $8BADBE : db $00 
-db $04,$1B,$30 : dl $8BADC7 : db $00 
-db $1B,$0C,$30 : dl $8BADBE : db $00 
-db $1B,$1B,$30 : dl $8BADCC : db $00 
+db $04,$0C,$30 : dl EMummyQueenArenaTopPortal-3 : db $00    ; $8BADBE 
+db $04,$1B,$30 : dl EMummyQueenArenaSWPortal-3 : db $00    ; $8BADC7 
+db $1B,$0C,$30 : dl EMummyQueenArenaTopPortal-3 : db $00    ; $8BADBE 
+db $1B,$1B,$30 : dl EMummyQueenArenaSEPortal-3 : db $00    ; $8BADCC 
 db $0F,$0C,$30 : dl EBabelMummyQueen-3 : db $5E,$05,$00    ; $8ba61a
 db $00,$01,$01 : dl $8BA5DF : db $00 
 db $FF,$CA
@@ -4458,7 +4458,7 @@ ThinkerList_MapF0:
 ThinkerList_MapF1:
 ThinkerList_MapF8:
 ThinkerList_MapF9:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case.
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF
 }
 ThinkerList_Map04:
@@ -4517,14 +4517,14 @@ ThinkerList_MapC7:
 ThinkerList_MapC8:
 ThinkerList_MapC9:
 db $02 : dl $80B88B    ; BG scroll/parallax controller for some maps.
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case.
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF
 }
 ;org $8CE7FB
 ThinkerList_Map2A:
 db $00 : dl $80B6D2    ; Palette changer for yellow version of Will's house, for the Mom encounter.
 db $02 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $00 : dl $85FB32    ; HDMA spotlight effect. 
 db $FF 
 ;org $8CE80C
@@ -4536,13 +4536,13 @@ ThinkerList_Map01:
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $3F : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $02 : dl $80B5C0    ; South Cape context-sensitive palette switcher (day/night).
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE821
 ThinkerList_Map0A:
 db $00 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $05 : dl $80B631    ; Edward's Castle context-sensitive palette switcher.
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE82E
 ThinkerList_Map12:
@@ -4553,7 +4553,7 @@ db $00 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra 
 db $06 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $07 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $12 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE843
 ThinkerList_Map15:
@@ -4563,14 +4563,14 @@ db $00 : dl $80B818    ; Enables color math based on player Y-position for Itory
 ThinkerList_Map1C:
 ThinkerList_Map1A:
 db $01 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE850
 ThinkerList_Map23:
 db $30 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $31 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $00 : dl $80B65E    ; Sets COLDATA BGR = 2,6,6 once. (Make lower level of Inca look dark from upper level.)
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE861
 ThinkerList_Map1D:
@@ -4583,13 +4583,13 @@ ThinkerList_Map26:
 ThinkerList_Map28:
 ThinkerList_Map20:
 db $13 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE872
 ThinkerList_Map27:
 db $00 : dl $80B65E    ; Sets COLDATA BGR = 2,6,6 once. (Make lower level of Inca look dark from upper level.)
 db $13 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE87F
 ThinkerList_Map2B:
@@ -4599,14 +4599,14 @@ db $06 : dl $80B88B    ; BG scroll/parallax controller for some maps.
 ThinkerList_Map2C:
 db $05 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $00 : dl $80B671    ; Inca ship BG palette changer. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE890
 ThinkerList_Map2F:
 db $06 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $0E : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $00 : dl $80B671    ; Inca ship BG palette changer. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE8A1
 ThinkerList_Map2D:
@@ -4618,17 +4618,17 @@ ThinkerList_Map2E:
 db $08 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $05 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $00 : dl $80B671    ; Inca ship BG palette changer. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE8BA
 ThinkerList_Map32:
 db $00 : dl $80BE18    ; HDMA BG waving effect for Freejia and Mansion. 
 db $49 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE8C7
 ThinkerList_Map29:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $28 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $0A : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $FF 
@@ -4637,80 +4637,80 @@ ThinkerList_Map21:
 ThinkerList_Map22:
 db $30 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $31 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE8E1
 ThinkerList_Map40:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ThinkerList_MapUnusedAlpha:
 db $20 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE8EF
 ThinkerList_Map4B:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE8F4
 ThinkerList_Map4C:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE8F9
 ThinkerList_Map4D:
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $32 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE906
 ThinkerList_Map4E:
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $32 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE913
 ThinkerList_Map4F:
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $32 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE920
 ThinkerList_Map50:
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $32 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE92D
 ThinkerList_Map51:
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $32 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE93A
 ThinkerList_Map52:
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $32 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE947
 ThinkerList_Map53:
 db $32 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE950
 ThinkerList_Map54:
 db $32 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE959
 ThinkerList_Map55:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $3D : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $FF 
 ;org $8CE962
 ThinkerList_Map59:
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $1D : dl $80B88B    ; BG scroll/parallax controller for some maps. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE96F
 ThinkerList_Map5C:
@@ -4720,14 +4720,14 @@ db $1B : dl $80B88B    ; BG scroll/parallax controller for some maps.
 ;org $8CE977
 ThinkerList_Map5B:
 ThinkerList_Map5A:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $00 : dl $80BE83    ; Run wavy BG for Seaside Palace. 
 db $00 : dl $80B79D    ; Set COLDATA based on current Y coordinate; makes BG2 darker at deeper Seaside Palace levels.
 db $FF 
 ;org $8CE984
 ThinkerList_Map5D:
 db $00 : dl $80B71E    ; Change COLDATA based on specific map conditions.
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE98D
 ThinkerList_Map5F:
@@ -4736,24 +4736,24 @@ ThinkerList_Map64:
 ThinkerList_Map62:
 ThinkerList_Map61:
 ThinkerList_Map60:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $00 : dl $80BDCD    ; Set apparent water level in Mu. 
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $FF 
 ;org $8CE99A
 ThinkerList_Map67:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $00 : dl $85FB32    ; HDMA spotlight effect. 
 db $FF 
 ;org $8CE9A3
 ThinkerList_Map74:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $00 : dl $80B87B    ; HDMA disable BG2 2x per frame so Kara's portrait can enable itself only if active.
 db $FF 
 ;org $8CE9AC
 ThinkerList_Map7F:
 ThinkerList_Map78:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $48 : dl $80B754    ; Watermia daytime/nighttime palette changer. 
 db $FF 
 ;org $8CE9B5
@@ -4764,24 +4764,24 @@ ThinkerList_Map83:
 ThinkerList_Map86:
 ThinkerList_Map87:
 db $1E : dl $80B88B    ; BG scroll/parallax controller for some maps. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE9BE
 ThinkerList_Map84:
 db $1F : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $47 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE9CB
 ThinkerList_Map85:
 db $21 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE9D4
 ThinkerList_Map8A:
 db $1F : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $4F : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CE9E1
 ThinkerList_Map42:
@@ -4796,12 +4796,12 @@ ThinkerList_Map45:
 ThinkerList_Map41:
 ThinkerList_Map47:
 ThinkerList_Map43:
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ThinkerList_MapUnusedBeta:
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $32 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $0F : dl $80B88B    ; BG scroll/parallax controller for some maps.
 db $FF 
 ;org $8CE9FB
@@ -4818,12 +4818,12 @@ ThinkerList_MapA7:
 ThinkerList_MapA8:
 db $4D : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $4E : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEA08
 ThinkerList_MapAC:
 db $00 : dl $80BEF2    ; Wavy BG generator for Natives' Village. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEA11
 ThinkerList_Map6B:
@@ -4839,12 +4839,12 @@ ThinkerList_Map6A:
 db $3A : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $3B : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $3C : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEA26
 ThinkerList_Map6F:
 db $00 : dl $80BE83    ; Run wavy BG for Seaside Palace. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEA2F
 ThinkerList_MapDA:
@@ -4864,22 +4864,22 @@ ThinkerList_MapD8:
 ThinkerList_MapD9:
 db $44 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $45 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEA3C
 ThinkerList_MapCD:
 db $68 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ThinkerList_MapUnusedGamma:
 db $44 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $45 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEA52
 ThinkerList_MapDD:
 db $5E : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEA5B
 ThinkerList_MapF7:
@@ -4894,7 +4894,7 @@ db $00 : dl $80BED1    ; Wavy BG generator for Dao.
 db $20 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $01 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $00 : dl $80B7BE    ; Window settings generator for Dao. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEA81
 ThinkerList_MapE0:
@@ -4902,13 +4902,13 @@ ThinkerList_MapDF:
 ThinkerList_MapE3:
 db $02 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $23 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEA8E
 ThinkerList_MapE1:
 db $23 : dl $80B88B    ; BG scroll/parallax controller for some maps. 
 db $00 : dl $80B78F    ; Color math setter for Babel elevator. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEA9B
 ThinkerList_MapE5:
@@ -4925,7 +4925,7 @@ ThinkerList_MapEB:
 ThinkerList_MapEC:
 ThinkerList_MapED:
 db $00 : dl $80BF19    ; HDMA sine runner for space maps, Babel bosses, etc. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEAB5
 ThinkerList_MapE7:
@@ -4944,25 +4944,25 @@ db $FF
 ThinkerList_MapF3:
 db $00 : dl $80BF19    ; HDMA sine runner for space maps, Babel bosses, etc. 
 db $3D : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEAE0
 ThinkerList_MapF5:
 db $00 : dl $80BF19    ; HDMA sine runner for space maps, Babel bosses, etc. 
 db $79 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEAED
 ThinkerList_MapF6:
 db $00 : dl $80BF19    ; HDMA sine runner for space maps, Babel bosses, etc. 
 db $7B : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEAFA
 ThinkerList_MapF2:
 db $00 : dl $80BF78    ; Writes #$0017 to $212C/D, Mode 7 B+C; possibly for SpaceCastoth's BG?
 db $00 : dl $80BF19    ; HDMA sine runner for space maps, Babel bosses, etc. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEB07
 ThinkerList_MapEA:
@@ -4970,7 +4970,7 @@ ThinkerList_MapE9:
 db $00 : dl $80BE18    ; HDMA BG waving effect for Freejia and Mansion. 
 db $61 : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
 db $7E : dl $80B520    ; Parametrized palette bundle, cop #$36 : cop #$39 : bra -$06. 
-db $00 : dl $80BF89    ; Set player palette based on body. Usually not needed, but included just in case. 
+db $00 : dl TPlayerPalInitAndChatListener    ; $80BF89
 db $FF 
 ;org $8CEB18
 ThinkerList_MapFA:
@@ -5011,7 +5011,7 @@ db $FF
 }
 
 ;org $8CEB5B
-;Unknown thinker.
+;BG1 scroller for flying through space in map $E7.
 db $04,$08 
 cop #$C2
 lda $0720 : clc : adc #$FFF8 : sta $0720

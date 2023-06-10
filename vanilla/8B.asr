@@ -1009,7 +1009,130 @@ rts
 warnpc $8b8bf8
 
 
-org $8b8dbe
+
+db $1c : dw $0200
+EGWWallSpear:
+lda $0E : sta $08
+lda #$2000 : sta $0E
+cop #$C2
+.Main:    ; org $8b8c3e
+cop #$DA : db $3B
+lda $10 : bit #$4000 : bne .PostSound
+cop #$07 : db $1E   ; We'll animate if off-screen, but won't play a sound.
+.PostSound:    ; org $8b8c4b
+cop #$80 : db $1F
+cop #$89
+cop #$0B
+cop #$0D : db $00, $03
+cop #$DA : db $3B
+cop #$0C
+cop #$0E : db $00, $03
+lda #$0100 : tsb $10
+cop #$80 : db $20
+cop #$89
+lda #$0100 : trb $10
+bra .Main
+
+;org $8b8c70
+db $18 : dw $0000
+EGWFlyingFireball:
+cop #$5B : dw $0020
+cop #$57 : dl P_8B8DB9
+lda $14 : sta $7F100C,x
+lda $16 : sta $26
+B_8B8C86:    ; org $8b8c86
+cop #$68 : dw B_8B8C94
+cop #$27 : db $05
+J_8B8C8D:    ; org $8b8c8d
+lda $10 : bit #$4000 : bne B_8B8C86
+B_8B8C94:
+cop #$80 : db $18
+cop #$89
+cop #$2A : dw $0040, B_8B8CA3, B_8B8CD4, B_8B8CBB
+B_8B8CA3:    ; org $8b8ca3
+lda $7F100C,x : sec : sbc #$00C1 : cmp $14 : bpl B_8B8CBB
+lda #$FFC0 : jsr S_8B8D65
+cop #$22 : db $19, $02
+bra J_8B8C8D
+B_8B8CBB:    ; org $8b8cbb
+lda $7F100C,x : clc : adc #$00C1 : cmp $14 : bmi B_8B8CA3
+lda #$0040 : jsr S_8B8D65
+cop #$22 : db $99, $02
+jmp J_8B8C8D
+B_8B8CD4:    ; org $8b8cd4
+lda #$2000 : tsb $12
+cop #$2A : dw $0000, B_8B8CE3, B_8B8CE3, B_8B8CF4
+B_8B8CE3:    ; org $8b8ce3
+lda $7F100C,x : sec : sbc #$00B0 : cmp $14 : bpl B_8B8CF4
+cop #$8D : db $19
+bra J_8B8D08
+B_8B8CF4:    ; org $8b8cf4
+lda $7F100C,x : clc : adc #$00A1 : cmp $14 : bmi B_8B8CE3
+cop #$8D : db $99
+lda #$4000 : tsb $12
+J_8B8D08:    ; org $8b8d08
+cop #$63 : db $02, $0A, $00
+B_8B8D0D:    ; org $8b8d0d
+cop #$8B
+lda $08
+  stz $08
+  inc : sta $24
+cop #$C1
+cop #$64
+cop #$AA : db $02
+lda $16 : cmp $26 : bcc B_8B8D28
+dec $24 : bmi B_8B8D0D
+rtl
+B_8B8D28:    ; org $8b8d28
+lda #$6000 : trb $12
+stz $2C
+lda #$0000 : sta $7F002E,x
+lda $26 : cmp $16 : beq B_8B8D4E
+sta $7F001A,x
+lda $14 : sta $7F0018,x
+cop #$22 : db $19, $02
+lda $26 : sta $16
+B_8B8D4E:    ; org $8b8d4e
+lda $10 : bit #$4000 : beq B_8B8D58
+jmp J_8B8C8D
+B_8B8D58:    ; org $8b8d58
+cop #$9C : dl C_8B8D73 : dw $0201
+cop #$07 : db $21
+jmp J_8B8C8D
+S_8B8D65:    ; org $8b8d65
+clc : adc $14 : sta $7F0018,x
+lda $16 : sta $7F001A,x
+rts
+C_8B8D73:    ; org $8b8d73
+cop #$CA : db $04
+cop #$82 : db $04, $01
+cop #$89
+cop #$16 : dw B_8B8D82
+bra J_8B8D8A
+B_8B8D82:    ; org $8b8d82
+cop #$CB
+cop #$E0
+J_8B8D86:    ; org $8b8d86
+cop #$16 : dw B_8B8D91
+J_8B8D8A:    ; org $8b8d8a
+cop #$9C : dl C_8B8D99 : dw $0200
+B_8B8D91:    ; org $8b8d91
+cop #$84 : db $04, $04
+cop #$8A
+B_8B8D97:    ; org $8b8d97
+cop #$E0
+C_8B8D99:    ; org $8b8d99
+lda $10 : bit #$4000 : bne B_8B8D97
+cop #$07 : db $21
+lda $16 : clc : adc #$0008 : sta $7F001A,x
+lda $14 : sta $7F0018,x
+cop #$22 : db $04, $01
+bra J_8B8D86
+P_8B8DB9:    ; org $8b8db9
+cop #$C7 : dl EBossMonsterManualDeath    ; $8aa43f
+
+
+;org $8b8dbe
 db $00 : dw $0000
 EGWFloorFireball:
 cop #$27 : db $07
@@ -1107,6 +1230,370 @@ cop #$8A
 cop #$E0
 warnpc $8b8ef2
 
+
+org $8b8efe
+db $05 : dw $0300
+EGWArcherStatueAwaitingProximity:
+
+
+
+org $8b8f15
+J_8B8F15:
+cop #$1F : dw B_8B8F1B
+bra J_8B8F20
+B_8B8F1B:    ; org $8b8f1b
+cop #$C4 : dl J_8B8F15
+J_8B8F20:    ; org $8b8f20
+cop #$A9
+cop #$CA : db $1E
+cop #$B7 : db $06
+cop #$C2
+cop #$B7 : db $00
+cop #$CB
+cop #$CA : db $0F
+cop #$B7 : db $06
+cop #$C2
+cop #$C2
+cop #$B7 : db $00
+cop #$C2
+cop #$CB
+lda #$0010 : trb $12
+lda #$0300 : trb $10
+cop #$0C
+jmp B_8B917A
+
+;org $8B8F4F
+db $05 : dw $0100
+EGWArcherStatueAwaitingAttack:
+
+
+
+
+org $8b8f72
+db $05 : dw $0100
+EGWArcherStatueAwaitingButton:
+lda #$0020 : tsb $12
+cop #$B7 : db $06
+cop #$A2 : dl C_8B8FFB : dw $2700
+cop #$0B
+lda $7F0026,x : sta $26
+B_8B8F8C:    ; org $8b8f8c
+lda $14 : sta $7F0010,x
+lda $16 : sta $7F0012,x
+lda $26 : sta $7F0026,x
+cop #$C1
+lda $14 : cmp $7F0010,x : bne B_8B8FBF
+lda $16 : cmp $7F0012,x : bne B_8B8FBF
+lda $7F0026,x : cmp $26 : bne B_8B8F8C
+cop #$D0 : db $0F, $01 : dw B_8B8FDD
+rtl
+B_8B8FBF:    ; org $8b8fbf
+lda $14 : pha
+lda $16 : pha
+lda $7F0010,x : sta $14
+lda $7F0012,x : sta $16
+cop #$0C
+pla : sta $16
+pla : sta $14
+cop #$0B
+bra B_8B8F8C
+B_8B8FDD:    ; org $8b8fdd
+lda #$0200 : tsb $10
+lda #$0020 : trb $12
+lda #$ACBC : sta $7F0020,x
+lda $ACBC : and #$00FF : sta $7F0026,x
+jmp J_8B8F15
+
+C_8B8FFB:    ; org $8b8ffb
+cop #$C6 : dw C_8B8FFB
+cop #$C2
+ldy $24
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+lda $0010,y : bit #$0080 : beq B_8B9016
+rtl
+B_8B9016:    ; org $8b9016
+cop #$40 : dw $0031, $901D
+B_8B901C:    ; org $8b901c
+rtl
+B_8B901D:    ; org $8b901d
+cop #$21 : db $0F : dw B_8B9023
+rtl
+B_8B9023:    ; org $8b9023
+cop #$2A : dw $000F, B_8B90B0, B_8B902D, B_8B90B0
+B_8B902D:    ; org $8b902d
+ldy $09AA
+lda $0016,y : sec : sbc $16 : bpl B_8B9077
+  bpl B_8B903E
+    eor #$FFFF : inc a
+B_8B903E:    ; org $8b903e
+cmp #$0020 : bcc B_8B9075
+lda $0028,y : cmp #$003A : bne B_8B9075
+jsl S_83F0CA : cmp #$0000 : bne B_8B9075
+cop #$14 : db $00, $FF : dw B_8B9075
+jsr S_8B913D
+cop #$BC : db $00, $F0
+cop #$07 : db $2C
+cop #$CA : db $10
+ldy $04
+lda $0016,y : dec : sta $0016,y
+cop #$CB
+jsr S_8B9149
+B_8B9075:    ; org $8b9075
+cop #$C5
+B_8B9077:    ; org $8b9077
+cmp #$0020 : bcc B_8B90AE
+lda $0028,y : cmp #$003B : bne B_8B90AE
+jsl S_83F0CA : cmp #$0001 : bne B_8B90AE
+cop #$14 : db $00, $01 : dw B_8B90AE
+jsr S_8B913D
+cop #$BC : db $00, $10
+cop #$07 : db $2C
+cop #$CA : db $10
+ldy $04
+lda $0016,y : inc : sta $0016,y
+cop #$CB
+jsr S_8B9149
+B_8B90AE:    ; org $8b90ae
+cop #$C5
+B_8B90B0:    ; org $8b90b0
+cop #$2B : dw $000F, B_8B901C, B_8B90BA, B_8B901C
+B_8B90BA:    ; org $8b90ba
+ldy $09AA
+lda $0014,y : sec : sbc $14 : bpl B_8B9104
+  bpl B_8B90CB
+    eor #$FFFF : inc a
+B_8B90CB:    ; org $8b90cb
+cmp #$0020 : bcc B_8B9102
+lda $0028,y : cmp #$003D : bne B_8B9102
+jsl S_83F0CA : cmp #$0003 : bne B_8B9102
+cop #$14 : db $FF, $00 : dw B_8B9102
+jsr S_8B913D
+cop #$BC : db $F0, $00
+cop #$07 : db $2C
+cop #$CA : db $10
+ldy $04
+lda $0014,y : dec : sta $0014,y
+cop #$CB
+jsr S_8B9149
+B_8B9102:    ; org $8b9102
+cop #$C5
+B_8B9104:    ; org $8b9104
+cmp #$0020 : bcc B_8B913B
+lda $0028,y : cmp #$003C : bne B_8B913B
+jsl S_83F0CA : cmp #$0002 : bne B_8B913B
+cop #$14 : db $01, $00 : dw B_8B913B
+jsr S_8B913D
+cop #$BC : db $10, $00
+cop #$07 : db $2C
+cop #$CA : db $10
+ldy $04
+lda $0014,y : inc a : sta $0014,y
+cop #$CB
+jsr S_8B9149
+B_8B913B:    ; org $8b913b
+cop #$C5
+S_8B913D:    ; org $8b913d
+ldy $24
+lda $0012,y : ora #$0010 : sta $0012,y
+rts
+S_8B9149:    ; org $8b9149
+ldy $24
+lda $0012,y : and #$FFEF : sta $0012,y
+rts
+warnpc $8b9155
+
+org $8b917a
+#B_8B917A:
+cop #$27 : db $09
+cop #$C6 : dw B_8B918B
+cop #$2A : dw $0000, B_8B91AF, B_8B91AF, B_8B91C6
+B_8B918B:    ; org $8b918b
+lda $10 : bit #$4000 : bne B_8B917A
+cop #$C6 : dw B_8B918B
+cop #$21 : db $04 : dw B_8B91FF
+cop #$2B : dw $000E, B_8B91DD, B_8B91A5, B_8B91E9
+B_8B91A5:    ; org $8b91a5
+cop #$2A : dw $0000, B_8B91AF, B_8B91AF, B_8B91C6
+B_8B91AF:    ; org $8b91af
+cop #$80 : db $0B
+cop #$89
+cop #$9E : dl C_8B926C : dw $0000, $FFF5, $0300
+cop #$80 : db $0E
+cop #$89
+cop #$C5
+B_8B91C6:    ; org $8b91c6
+cop #$80 : db $8B
+cop #$89
+cop #$9E : dl C_8B9253 : dw $0000, $FFF5, $0300
+cop #$80 : db $8E
+cop #$89
+cop #$C5
+B_8B91DD:    ; org $8b91dd
+cop #$15 : dw J_8B91F5
+cop #$82 : db $09, $12
+cop #$89
+cop #$C5
+B_8B91E9:    ; org $8b91e9
+cop #$16 : dw J_8B91F5
+cop #$82 : db $08, $11
+cop #$89
+cop #$C5
+
+J_8B91F5:    ; org $8b91f5
+cop #$2A : dw $0000, B_8B91AF, B_8B91AF, B_8B91C6
+B_8B91FF:    ; org $8b91ff
+cop #$2A : dw $0000, B_8B922E, B_8B922E, B_8B9209
+B_8B9209:    ; org $8b9209
+cop #$CA : db $02
+cop #$17 : dw J_8B91F5
+cop #$8D : db $8A
+cop #$AA : db $04
+cop #$C1
+cop #$8C : db $02
+cop #$C2
+stz $2C
+cop #$17 : dw J_8B91F5
+cop #$AA : db $04
+cop #$C1
+cop #$89
+cop #$CB
+bra J_8B91F5
+B_8B922E:    ; org $8b922e
+cop #$CA : db $02
+cop #$18 : dw J_8B91F5
+cop #$8D : db $0A
+cop #$AA : db $03
+cop #$C1
+cop #$8C : db $02
+cop #$C2
+stz $2C
+cop #$18 : dw J_8B91F5
+cop #$AA : db $03
+cop #$C1
+cop #$89
+cop #$CB
+bra J_8B91F5
+C_8B9253:    ; org $8b9253
+cop #$5E : dw $92E9
+cop #$5B : dw $0010
+cop #$A2 : dl C_8B931A : dw $2000
+cop #$80 : db $8C
+cop #$89
+cop #$AA : db $05
+bra J_8B9283
+C_8B926C:    ; org $8b926c
+cop #$5E : dw $92F9
+cop #$5B : dw $0010
+cop #$A2 : dl C_8B9375 : dw $2000
+cop #$80 : db $0C
+cop #$89
+cop #$AA : db $06
+
+J_8B9283:    ; org $8b9283
+cop #$07 : db $1E
+lda #$0064 : sta $24
+cop #$C1
+cop #$62 : db $0F, $A8, $92
+dec $24 : bmi B_8B9297
+rtl
+B_8B9297:    ; org $8b9297
+cop #$C1
+cop #$62 : db $0F, $A8, $92
+lda $10 : bit #$4000 : bne B_8B92A6
+rtl
+B_8B92A6:    ; org $8b92a6
+cop #$E0
+warnpc $8b92a8
+
+org $8b931a
+#C_8B931A:
+ldy $09AA
+lda $0010,y : bit #$0040 : beq B_8B9328
+cop #$C1
+rtl
+B_8B9328:    ; org $8b9328
+bit #$2280 : beq B_8B932E
+rtl
+B_8B932E:    ; org $8b932e
+lda #$0000
+jsr S_8B9408 : clc : adc #$0008 : bpl B_8B933E : eor #$FFFF : inc a
+B_8B933E:    ; org $8b933e
+cmp #$0005 : bcc B_8B9344
+rtl
+B_8B9344:    ; org $8b9344
+lda $0016,y : sec : sbc #$0014 : sec : sbc $001C : bpl B_8B9355 : eor #$FFFF : inc a
+B_8B9355:    ; org $8b9355
+cmp #$000F : bcc B_8B935B
+rtl
+B_8B935B:    ; org $8b935b
+lda #$0F00 : tsb $065A
+phy
+lda #$0002
+ldy #$0003
+jsl S_80C397
+ply
+lda #$92DC
+jsr S_8B93FB : bra J_8B93C8
+C_8B9375:    ; org $8b9375
+ldy $09AA
+lda $0010,y : bit #$0040 : beq B_8B9383
+cop #$C1
+rtl
+B_8B9383:    ; org $8b9383
+bit #$2280 : beq B_8B9389
+rtl
+B_8B9389:    ; org $8b9389
+lda #$0010
+jsr S_8B9408 : sec : sbc #$0008 : bpl B_8B9399
+  eor #$FFFF : inc a
+B_8B9399:    ; org $8b9399
+cmp #$0005 : bcc B_8B939F
+rtl
+B_8B939F:    ; org $8b939f
+lda $0016,y : sec : sbc #$0014 : sec : sbc $001C : bpl B_8B93B0
+  eor #$FFFF : inc a
+B_8B93B0:    ; org $8b93b0
+cmp #$000F : bcc B_8B93B6
+rtl
+B_8B93B6:    ; org $8b93b6
+phy
+lda #$0002
+ldy #$0002
+jsl S_80C397
+ply
+lda #$92CF
+jsr S_8B93FB
+J_8B93C8:    ; org $8b93c8
+phx
+ldx $09AA
+lda $0014,y : sec : sbc $0014,x : sta $14
+lda $0016,y : sec : sbc $0016,x : sta $16
+plx
+cop #$C1
+phx
+ldx $09AA
+ldy $24
+lda $0014,x : clc : adc $14 : sta $0014,y
+lda $0016,x : clc : adc $16 : sta $0016,y
+plx
+rtl
+S_8B93FB:    ; org $8b93fb
+sta $0000,y
+lda #$0000 : sta $0008,y : sta $002C,y
+rts
+S_8B9408:    ; org $8b9408
+clc : adc $09A2 : sta $0018
+lda $09A4 : sec : sbc #$0001 : sta $001C
+ldy $24
+lda $0014,y : sec : sbc $0018
+rts
+warnpc $8b9423
+
+
+org $8b9423
+db $13 : dw $0000
+EGWSnake:
 
 
 
@@ -1568,8 +2055,9 @@ cop #$89
 lda $10 : bit #$4000 : beq .KeepGoing
 cop #$E0
 
-warnpc $8b9e8b
-
+;org $8b9e8b
+db $04 : dw $0000
+EKressShootingSkullWest:
 
 
 org $8b9e96
@@ -1633,7 +2121,11 @@ cop #$81 : db $20, $04
 cop #$89
 lda $10 : bit #$4000 : beq B_8B9F44
 cop #$E0
-warnpc $8b9f53
+
+;org $8b9f53
+db $04 : dw $0000
+EKressShootingSkullEast:
+
 
 org $8b9f60
 #B_8B9F60:
@@ -1696,15 +2188,74 @@ cop #$81 : db $20, $03
 cop #$89
 lda $10 : bit #$4000 : beq B_8BA00E
 cop #$E0
-warnpc $8ba01d
+
+
+;org $8ba01d
+db $06 : dw $0000
+EKressSpiderNorth:
+
+org $8ba049
+db $05 : dw $0000
+EKressSpiderAwaitingPlayerSouth:
+
+org $8ba075
+db $07 : dw $0000
+EKressSpiderWest:
+
+org $8ba0a1
+db $07 : dw $0000
+EKressSpiderEast:
+
+org $8ba0cf
+db $05 : dw $0000
+EKressSpiderSouth:
+
 
 
 org $8ba61a
 db $00 : dw $0000
 EBabelMummyQueen:
+lda #$8191 : tsb $12
+cop #$A5 : dl EBabelMummyQueenReturnListener : dw $0000, $2000
+lda $0AD4 : cmp #$0002 : bne .TransformPlayerToShadow
+  jmp EMummyQueen_FromBabel    ; jmp $8BA6CF
+.TransformPlayerToShadow:    ; org $8ba636
+ldy $09AA
+lda #$0088 : sta $0002,y
+lda #$F5F9 : sta $0000,y
+lda #$0000 : sta $0008,y
+lda #$0800 : tsb $09AE
+cop #$C1
+lda $09AE : bit #$0800 : beq +
+  rtl
++:    ; org $8ba65c
+jmp EMummyQueen_FromBabel    ; jmp $8BA6CF
 
+EBabelMummyQueenReturnListener:    ; org $8ba65f
+cop #$C1
+lda $0AEC : beq +
+  rtl
++:    ; org $8ba667
+cop #$D2 : db $01, $00
+lda $09AE : bit #$0800 : beq +
+  rtl
++:    ; org $8ba674
+ldy $09AA
+lda #$0088 : sta $0002,y
+lda #$F3B1 : sta $0000,y
+lda #$0000 : sta $0008,y
+lda #$0800 : tsb $09AE
+cop #$C1
+lda $09AE : bit #$0800 : beq +
+  rtl
++:    ; org $8ba69a
+cop #$CD : dw $0179
+lda #$0002 : sta $0648
+lda #$0403 : sta $064A
+cop #$26 : db $E3, $F8, $01, $A0, $03, $03, $30, $44
+cop #$E0
 
-org $8ba6b6
+;org $8ba6b6
 db $00 : dw $0000
 EMummyQueen:
 lda #$0004 : jsl LR_SecOnDefeatedBossA : bcc +
@@ -1713,12 +2264,13 @@ lda #$0004 : jsl LR_SecOnDefeatedBossA : bcc +
   cop #$E0
 +:
 lda #$8191 : tsb $12
+EMummyQueen_FromBabel:
 ldy $09AA
 lda $0012,y : ora #$0008 : sta $0012,y
 lda #$0A0A : sta $20
 lda #$1858 : sta $22
 lda #$0000 : sta $7F0010,x
-cop #$A2 : dl C_8AFD69 : dw $2000
+cop #$A2 : dl ERandomPosNearPlayerPerSecond : dw $2000    ; $8afd69
 tya : sta $7F1016,x
 cop #$57 : dl EMummyQueen_OnDeath
 
@@ -1790,50 +2342,50 @@ lda #$0008 : tsb $12
 lda #$0001 : sta $7F0018,x
 lda #$0001 : sta $7F001A,x
 cop #$C2
-lda $26 : beq B_8BA829
-jsr S_8BA842
-jsr S_8BA876
-lda $7F0018,x : sta $7F002C,x
-lda $7F001A,x : sta $7F002E,x
+lda $26 : beq .DoReappear
+jsr SR_MoveGhostWheelTargetX
+jsr SR_MoveGhostWheelTargetY
+lda $7F0018,x : sta $7F002C,x    ; Set engine speed X = intended speed X, which is +/-1.
+lda $7F001A,x : sta $7F002E,x    ; Set engine speed Y = intended speed Y, which is +/-1.
 rtl
-B_8BA829:    ; org $8ba829
+.DoReappear:    ; org $8ba829
 lda #$0008 : trb $12
 lda #$00FF : sta $24
 lda #$0007 : sta $0000
-lda.w #EConvergeOn26 : jsr SR_SetGhostPointersToA    ; pointers to #$ac7f
+lda.w #EGhostConvergeOn26 : jsr SR_SetGhostPointersToA    ; pointers to #$ac7f
 jmp EMummyQueen_Appear
 
-S_8BA842:    ; org $8ba842
-lda $7F0018,x : bpl B_8BA85F
-lda $14 : bmi B_8BA852
-  cmp #$0050 : bcc B_8BA852
+SR_MoveGhostWheelTargetX:    ; org $8ba842
+lda $7F0018,x : bpl .CurSpeedIsPos
+lda $14 : bmi .InvertBecauseTooFarWest
+  cmp #$0050 : bcc .InvertBecauseTooFarWest
 rts
-B_8BA852:
+.InvertBecauseTooFarWest:
 lda $7F0018,x : eor #$FFFF : inc : sta $7F0018,x
 rts
-B_8BA85F:
-lda $14 : bmi B_8BA868
-  cmp #$01B0 : bcs B_8BA869
-B_8BA868:
+.CurSpeedIsPos:
+lda $14 : bmi .StillReturningFromOffScreen
+  cmp #$01B0 : bcs .InvertBecauseTooFarEast
+.StillReturningFromOffScreen:
 rts
-B_8BA869:
+.InvertBecauseTooFarEast:
 lda $7F0018,x : eor #$FFFF : inc : sta $7F0018,x
 rts
 
-S_8BA876:    ; org $8ba876
-lda $7F001A,x : bpl B_8BA893
-lda $16 : bmi B_8BA886
-  cmp #$0080 : bcc B_8BA886
+SR_MoveGhostWheelTargetY:    ; org $8ba876
+lda $7F001A,x : bpl .CurSpeedIsPos
+lda $16 : bmi .InvertBecauseTooFarNorth
+  cmp #$0080 : bcc .InvertBecauseTooFarNorth
 rts
-B_8BA886:
+.InvertBecauseTooFarNorth:
 lda $7F001A,x : eor #$FFFF : inc : sta $7F001A,x
 rts
-B_8BA893:
-lda $16 : bmi B_8BA89C
-  cmp #$01B0 : bcs B_8BA89D
-B_8BA89C:
+.CurSpeedIsPos:
+lda $16 : bmi .StillReturningFromOffScreen
+  cmp #$01B0 : bcs .InvertBecauseTooFarSouth
+.StillReturningFromOffScreen:
 rts
-B_8BA89D:
+.InvertBecauseTooFarSouth:
 lda $7F001A,x : eor #$FFFF : inc : sta $7F001A,x
 rts
 
@@ -1853,14 +2405,14 @@ lda #$2000 : tsb $10
 lda $0B02 : xba : lsr : lsr : clc : adc #$0168 : sta $08
 cop #$C2
 lda #$0007 : sta $0000
-lda #$AC7D : jsr S_8BAA63
+lda.w #EGhostKillChaserAndConvergeOn26 : jsr SR_SetGhostPointersAndGetAvgPos    ; lda.w #$AC7D
 EMummyQueen_Appear:    ; org $8ba8fb
 cop #$C1
 lda $24 : beq +
   rtl
 +:
 lda #$0007 : sta $0000
-lda #$ACAF : jsr SR_SetGhostPointersToA
+lda.w #EGhostWaitAndDie : jsr SR_SetGhostPointersToA    ; lda #$acaf
 lda $7F0026,x
   cmp #$0014 : bcc .LowHealth
   cmp #$001E : bcc .MidHealth
@@ -1959,19 +2511,19 @@ dec $0000 : bpl .NextGhost
 pla
 rts
 
-S_8BAA63:    ; org $8baa63
+SR_SetGhostPointersAndGetAvgPos:    ; org $8baa63
 ldy $06
 stz $0018
 stz $001C
 pha
-B_8BAA6C:    ; org $8baa6c
+.NextGhost:    ; org $8baa6c
 lda #$0000 : sta $0008,y
 lda $01,s : sta $0000,y
 lda $0014,y : clc : adc $0018 : sta $0018
 lda $0016,y : clc : adc $001C : sta $001C
 lda $0006,y : tay
 lda $0006,y : tay
-dec $0000 : bpl B_8BAA6C
+dec $0000 : bpl .NextGhost
 lda $0018 : lsr : lsr : lsr : sta $14
 lda $001C : lsr : lsr : lsr : sta $16
 pla
@@ -1984,124 +2536,133 @@ lda #$00B9 : sta $12
 lda $26 : sta $7F0002,x
 lda $24 : sta $26
 cop #$8D : db $0E
-B_8BAAC4:    ; org $8baac4
+.AwaitQueenVanish:    ; org $8baac4
 cop #$DA : db $03
 cop #$07 : db $26
 ldy $26
-lda $0010,y : bit #$2000 : beq B_8BAAC4
+lda $0010,y : bit #$2000 : beq .AwaitQueenVanish
 lda $0026,y : and #$0007
 phx
 tax : inc : sta $0026,y
-lda $8BACB4,x
+lda.l Lut_MummyQueenGhostAngles,x    ; $8BACB4,x
 plx
 and #$00FF : sta $7F0010,x
 lda #$0002 : sta $7F0012,x
 lda #$0000 : sta $7F0000,x
-J_8BAAFA:    ; org $8baafa
+.RefreshExpandingSprite:    ; org $8baafa
 cop #$8B
-lda $2A : beq J_8BAAFA
+lda $2A : beq .RefreshExpandingSprite
 lda $08 : sta $24
 stz $08
-B_8BAB06:    ; org $8bab06
-jsr S_8BABAC
+.ContinueExpanding:    ; org $8bab06
+jsr SR_MummyQueenGhostOrbitAt26
 cop #$C2
-lda $7F0012,x : cmp #$0080 : bcs B_8BAB25 : clc : adc #$0003 : adc $0B02 : sta $7F0012,x
-dec $24 : bpl B_8BAB06
-bra J_8BAAFA
-B_8BAB25:    ; org $8bab25
-lda $7F0002,x : bne B_8BAB60
-J_8BAB2B:    ; org $8bab2b
+lda $7F0012,x : cmp #$0080 : bcs ..DoneExpanding
+  clc : adc #$0003 : adc $0B02 : sta $7F0012,x
+dec $24 : bpl .ContinueExpanding
+bra .RefreshExpandingSprite
+..DoneExpanding:    ; org $8bab25
+lda $7F0002,x : bne .BecomeVulGhost
+.RefreshInvulRevolvingSprite:    ; org $8bab2b
 cop #$8B
-lda $2A : beq J_8BAB2B
+lda $2A : beq .RefreshInvulRevolvingSprite
 lda $08
 stz $08 : sta $24
-jsr S_8BABAC
+jsr SR_MummyQueenGhostOrbitAt26
 cop #$C2
-J_8BAB3C:    ; org $8bab3c
+.RotateAndFlicker:    ; org $8bab3c
 lda $7F0010,x : clc : adc #$0002 : clc : adc $0B02 : sta $7F0010,x
-lda $0036 : lsr : bcc B_8BAB59
-lda #$2000 : tsb $10 : bra J_8BAB2B
-B_8BAB59:    ; org $8bab59
-lda #$2000 : trb $10 : bra J_8BAB2B
-B_8BAB60:    ; org $8bab60
+lda $0036 : lsr : bcc +
+lda #$2000 : tsb $10
+bra .RefreshInvulRevolvingSprite
++:    ; org $8bab59
+lda #$2000 : trb $10
+bra .RefreshInvulRevolvingSprite
+.BecomeVulGhost:    ; org $8bab60
 lda #$0200 : trb $10
-cop #$57 : dl P_8BAB98
+cop #$57 : dl .OnHit
 lda #$0000 : sta $7F0026,x
-J_8BAB71:    ; org $8bab71
+.RefreshVulRevolvingSprite:    ; org $8bab71
 cop #$8B
-lda $2A : beq J_8BAB71
+lda $2A : beq .RefreshVulRevolvingSprite
 lda $08
 stz $08 : sta $24
-B_8BAB7D:    ; org $8bab7d
-jsr S_8BABAC
+.RotateWithoutFlicker:    ; org $8bab7d
+jsr SR_MummyQueenGhostOrbitAt26
 cop #$C2
 lda $7F0010,x : clc : adc #$0002 : clc : adc $0B02 : sta $7F0010,x
-dec $24 : bpl B_8BAB7D
-bra J_8BAB71
-P_8BAB98:    ; org $8bab98
+dec $24 : bpl .RotateWithoutFlicker
+bra .RefreshVulRevolvingSprite
+.OnHit:    ; org $8bab98
 lda #$0200 : tsb $10
 lda #$0040 : trb $10
 ldy $26
-lda #$0000 : sta $0026,y : bra J_8BAB3C
-S_8BABAC:    ; org $8babac
+lda #$0000 : sta $0026,y
+bra .RotateAndFlicker
+SR_MummyQueenGhostOrbitAt26:    ; org $8babac
 ldy $26
 jsl LR_OrbitAtY    ; $80F3C9
 rts
+
 EMummyQueenScatterGhost:    ; org $8babb3
 cop #$DA : db $07
 lda #$2000 : trb $10
 cop #$8D : db $0E
-B_8BABBE:    ; org $8babbe
+.AwaitQueenVanish:    ; org $8babbe
 cop #$DA : db $03
 cop #$07 : db $26
 ldy $24
-lda $0010,y : bit #$2000 : beq B_8BABBE
+lda $0010,y : bit #$2000 : beq .AwaitQueenVanish
 cop #$80 : db $0E
 cop #$89
 ldy $24
 lda $0026,y : and #$0007
 phx : tax : inc : sta $0026,y
-lda $8BACB4,x
+lda.l Lut_MummyQueenGhostAngles,x    ; $8BACB4,x
 plx : and #$00FF : sta $7F0010,x
 lda #$000A : sta $7F0012,x
 lda $14 : sta $7F100C,x
 lda $16 : sta $7F100E,x
 lda #$0000 : sta $7F0000,x
-J_8BAC07:    ; org $8bac07
+.RefreshSprite:    ; org $8bac07
 cop #$8B
-lda $2A : beq J_8BAC07
+lda $2A : beq .RefreshSprite
 lda $08 : sta $26
 stz $08
-lda $7F0000,x : cmp #$0006 : bcs B_8BAC2D : inc : sta $7F0000,x
-B_8BAC21:    ; org $8bac21
-jsl S_80F3D3
+lda $7F0000,x : cmp #$0006 : bcs .StartChasing
+inc : sta $7F0000,x
+.ContinueExpanding:    ; org $8bac21
+jsl LR_Orbit    ; $80F3D3
 cop #$C2
-dec $26 : bpl B_8BAC21 : bra J_8BAC07
-B_8BAC2D:    ; org $8bac2d
+dec $26 : bpl .ContinueExpanding
+bra .RefreshSprite
+.StartChasing:    ; org $8bac2d
 cop #$80 : db $0E
 cop #$89
 lda $24 : sta $26
-cop #$A2 : dl C_80E6A6 : dw $2000
+cop #$A2 : dl EChaserWanderer : dw $2000    ; $80e6a6
 tya : sta $7F0012,x
 lda #$800E : sta $7F000A,x
 lda #$0001 : sta $7F0014,x
 lda $09AA : sta $0024,y
 cop #$C2
-J_8BAC58:    ; org $8bac58
+.ContinueChase:    ; org $8bac58
 lda $7F0012,x : tay
 lda $09AA : sta $0024,y
-cop #$C8 : dw B_8BBF64
+cop #$C8 : dw ESubKeepGoingForRandomTime
 lda $7F0012,x : tay
 phx
-ldx $26
-lda $7F1016,x
-plx : sta $0024,y
-cop #$C8 : dw B_8BBF64
-bra J_8BAC58
+  ldx $26
+  lda $7F1016,x
+plx
+  sta $0024,y
+cop #$C8 : dw ESubKeepGoingForRandomTime
+bra .ContinueChase
 
 ;org $8bac7d
+EGhostKillChaserAndConvergeOn26:
 cop #$A9   ; Kill Actor06
-EConvergeOn26:
+EGhostConvergeOn26:
 lda #$2000 : trb $10
 ldy $26
 lda $0014,y : sta $7F0018,x
@@ -2116,36 +2677,38 @@ cop #$89
 bra -
 
 ;org $8bacaf
+EGhostWaitAndDie:
 cop #$DA : db $07
 cop #$E0
 
 ;org $8bacb4
+Lut_MummyQueenGhostAngles:
 db $00,$20,$40,$60,$80,$A0,$C0,$E0
 
 ;org $8bacbc
 EMummyQueenQuake:
-cop #$A2 : dl C_8BACD8 : dw $2000
+cop #$A2 : dl EMummyQueenBrickSpawner : dw $2000
 stz $24
-B_8BACC5:    ; org $8bacc5
+.NotYetCancelled:    ; org $8bacc5
 cop #$37 : db $5F
 cop #$39
-lda $24 : beq B_8BACC5
+lda $24 : beq .NotYetCancelled
 ldy $06
-lda #$ACFE : sta $0000,y
+lda.w #EMummyQueenBrickSpawner_ShakeScreenAndDie : sta $0000,y    ; lda.w #$ACFE
 cop #$E0
 
-C_8BACD8:    ; org $8bacd8
+EMummyQueenBrickSpawner:    ; org $8bacd8
 lda #$0000 : sta $7F100C,x : sta $7F100E,x
 cop #$DA : db $0F
-lda $26 : inc : cmp #$0020 : bcc B_8BACF8
-cop #$9C : dl C_8BAD6B : dw $0202
-lda #$0000
-B_8BACF8:    ; org $8bacf8
+lda $26 : inc : cmp #$0020 : bcc +
+  cop #$9C : dl EMummyQueenFallingBrick : dw $0202
+  lda #$0000
++:    ; org $8bacf8
 sta $26
 jsr SR_MummyScreenShake
 rtl
-
 ;org $8bacfe
+.ShakeScreenAndDie:
 lda #$0000 : sta $7F100C,x
   sta $7F100E,x
 cop #$CA : db $78
@@ -2155,66 +2718,356 @@ cop #$E0
 
 ;org $8bad13
 SR_MummyScreenShake:
-lda $06EE : bit #$0200 : bne B_8BAD49
+lda $06EE : bit #$0200 : bne .SaveCameraLocation
 lda #$0000 : sta $7F100C,x
   sta $7F100E,x
-J_8BAD26:    ; org $8bad26
+.DoShake:    ; org $8bad26
 cop #$23
 pha
   and #$0003 : sec : sbc #$0001 : clc : adc $06BE : sta $06BE
 pla : lsr : lsr : and #$0003 : sec : sbc #$0001 : clc : adc $06C2 : sta $06C2
 rts
-B_8BAD49:    ; org $8bad49
-lda $7F100C,x : bne B_8BAD5F
+.SaveCameraLocation:    ; org $8bad49 ; I don't know what the purpose of this segment is.
+lda $7F100C,x : bne ..AndPreserveMapLayerX
 lda $06BE : sta $7F100C,x
 lda $06C2 : sta $7F100E,x
-bra J_8BAD26
-B_8BAD5F:    ; org $8bad5f
+bra .DoShake
+..AndPreserveMapLayerX:    ; org $8bad5f
 sta $06BE
 lda $7F100E,x : sta $06C2
-bra J_8BAD26
+bra .DoShake
 
-C_8BAD6B:    ; org $8bad6b
+EMummyQueenFallingBrick:    ; org $8bad6b
 cop #$8D : db $0D
 lda #$0002 : tsb $12
 cop #$23
 pha
   and #$001F : sta $16
 pla : asl : sta $14
-B_8BAD7F:    ; org $8bad7f
+.BeginFall:    ; org $8bad7f
 cop #$AA : db $01
-cop #$23 : lsr : bcc B_8BAD8E
-lda $12 : eor #$4000 : sta $12
-B_8BAD8E:    ; org $8bad8e
+cop #$23 : lsr : bcc +
+  lda $12 : eor #$4000 : sta $12
++:    ; org $8bad8e
 cop #$63 : db $02, $07, $05
 cop #$C1
 cop #$64
-cmp #$0000 : bmi B_8BAD9D
+cmp #$0000 : bmi .DoneThisFall
 rtl
-B_8BAD9D:    ; org $8bad9d
+.DoneThisFall:    ; org $8bad9d
 cop #$B8
-lda $10 : bit #$4000 : bne B_8BADB3
-cop #$07 : db $15
-lda #$0001 : clc : adc $06C2 : sta $06C2
-B_8BADB3:    ; org $8badb3
-lda $16 : bmi B_8BAD7F
-cmp #$0200 : bcc B_8BAD7F
+lda $10 : bit #$4000 : bne +    ; Off-screen bricks don't make noise or quakes.
+  cop #$07 : db $15
+  lda #$0001 : clc : adc $06C2 : sta $06C2
++:    ; org $8badb3
+lda $16 : bmi .BeginFall
+cmp #$0200 : bcc .BeginFall
 cop #$E0
-warnpc $8badbe
+
+;org $8badbe
+db $15 : dw $0701
+EMummyQueenArenaTopPortal:
+lda #$7fff : sta $08
+rtl
+
+;org $8badc7
+db $0f : dw $0701
+EMummyQueenArenaSWPortal:
+bra EMummyQueenArenaSEPortal
+
+;org $8badcc
+db $0f : dw $0701
+EMummyQueenArenaSEPortal:
+cop #$8D : db $0F
+cop #$C1
+ldy $09AA
+lda $0010,y : bit #$2000 : beq .PlayerIsVisible
+rtl
+.PlayerIsVisible:    ; org $8bade0
+lda $09AE : bit #$0002 : beq .PlayerIsAlive
+rtl
+.PlayerIsAlive:    ; org $8bade9
+cop #$21 : db $01 : dw .PlayerIsHere
+rtl
+.PlayerIsHere:    ; org $8badef
+cop #$CC : db $01    ; Ensure we don't return from Babel while flying.
+cop #$9C : dl EMummyQueenArenaPortalFlyer : dw $2700
+lda #$0001 : sta $24
+cop #$C2
+lda $24 : beq EMummyQueenArenaSEPortal
+phx
+  ldx $09AA
+  ldy $06
+  lda $0014,y : sta $0014,x
+  lda $0016,y : sta $0016,x
+plx
+rtl
+
+EMummyQueenArenaPortalFlyer:    ; org $8bae18
+lda #$0008 : tsb $12
+lda #$CFF0 : tsb $065A
+lda $14 : sta $7F0018,x
+lda $16 : sta $7F001A,x
+lda $09A2 : clc : adc #$0008 : sta $14
+lda $09A4 : clc : adc #$0010 : sta $16
+cop #$22 : db $FF, $04
+ldy $09AA
+lda $0010,y : ora #$2200 : sta $0010,y
+lda #$2000 : trb $10
+cop #$06 : db $0C
+cop #$80 : db $14
+cop #$89
+cop #$88 : dl $8EE000
+lda $04
+lda $0014,y : sta $7F0018,x
+lda $0016,y : sec : sbc #$00F0 : sta $7F001A,x
+cop #$22 : db $27, $08
+cop #$88 : dl $7E4000
+cop #$06 : db $0C
+cop #$80 : db $14
+cop #$89
+cop #$88 : dl $8EE000
+lda $14 : cmp #$0100 : bcc +
+  lda #$4000 : tsb $12   ; Invert movement if this is the east portal.
++:
+lda $14 : clc : adc #$0020 : sta $7F0018,x
+lda $16 : sta $7F001A,x
+cop #$22 : db $27, $04
+cop #$80 : db $1A
+cop #$89
+cop #$CE : db $01
+lda #$CFF0 : trb $065A
+ldy $09AA
+lda $0010,y : and #$DFFF : sta $0010,y
+phx
+  phd
+    tya
+    tcd
+    tax
+    lda $00 : pha
+      cop #$8F : db $00
+      jsl LR_AnimateSprite    ; jsl $83CA55
+      stz $2A
+      stz $08
+    pla : sta $00
+  pld
+plx
+ldy $04
+lda #$0000 : sta $0024,y
+lda #$2000 : tsb $10
+lda #$0028 : sta $24
+ldy $09AA
+lda $0010,y : ora #$0200 : sta $0010,y
+cop #$C1
+dec $24 : bmi B_8BAF2D
+ldy $09AA
+lda $0036 : lsr
+lda $0010,y : bcs B_8BAF1D
+ora #$0001 : sta $0010,y
+lda $000E,y : and #$CFFF
+bra J_8BAF29
+B_8BAF1D:    ; org $8baf1d
+and #$FFFE : sta $0010,y
+lda $000E,y : ora #$3000
+J_8BAF29:    ; org $8baf29
+sta $000E,y
+rtl
+B_8BAF2D:    ; org $8baf2d
+lda $065A : bit #$0F00 : bne B_8BAF41
+ldy $09AA
+lda $0010,y : and #$FDFF : sta $0010,y
+B_8BAF41:    ; org $8baf41
+ldy $09AA
+lda $000E,y : ora #$3000 : sta $000E,y
+cop #$E0
 
 
 
-
-
-
-
-
-
-
-
-org $8baf4f
+;org $8baf4f
 db $00 : dw $0000
 EAWZipFly:
+; If the fly's initial X or Y are less than #$0040, the below code hangs.
+cop #$B6 : db $30
+lda $14 : sta $7F100C,x
+lda $16 : sta $7F100E,x
+stz $24
+B_8BAF63:    ; org $8baf63
+cop #$68 : dw $AF71
+cop #$27 : db $0F
+B_8BAF6A:    ; org $8baf6a
+lda $10 : bit #$4000 : bne B_8BAF63
+cop #$C6 : dw B_8BAF6A
+lda $24 : inc : sta $24
+cop #$23 : and #$0007 : sta $0000
+cop #$D9 : dw $0000, $AF88
+  dw B_8BAF98, B_8BAFBF
+  dw B_8BB00D, B_8BAFE6
+  dw B_8BB034, B_8BB06B
+  dw B_8BB0A1, B_8BB0DA
+B_8BAF98:    ; org $8baf98
+lda $7F100C,x : sec : sbc #$0040 : cmp $14 : bcs B_8BAFBF
+cop #$85 : db $02, $04, $08
+cop #$8A
+lda $24 : and #$000F : bne B_8BAFBD
+stz $24
+cop #$84 : db $07, $0A
+cop #$8A
+jmp J_8BB113
+B_8BAFBD:    ; org $8bafbd
+cop #$C5
+B_8BAFBF:    ; org $8bafbf
+lda $7F100C,x : clc : adc #$0040 : cmp $14 : bcc B_8BAF98
+cop #$85 : db $82, $04, $07
+cop #$8A
+lda $24 : and #$000F : bne B_8BAFE4
+stz $24
+cop #$84 : db $07, $0A
+cop #$8A
+jmp J_8BB113
+B_8BAFE4:    ; org $8bafe4
+cop #$C5
+B_8BAFE6:    ; org $8bafe6
+lda $7F100E,x : sec : sbc #$0040 : cmp $16 : bcs B_8BB00D
+cop #$86 : db $01, $04, $08
+cop #$8A
+lda $24 : and #$000F : bne B_8BAFE4
+stz $24
+cop #$84 : db $06, $0A
+cop #$8A
+jmp J_8BB113
+;org $8bb00b
+cop #$C5    ; Inaccessible?
+;org $8bb00d
+#B_8BB00D:
+lda $7F100E,x : clc : adc #$0040 : cmp $16 : bcc B_8BAFE6
+cop #$86 : db $00, $04, $07
+cop #$8A
+lda $24 : and #$000F : bne B_8BB032
+stz $24
+cop #$84 : db $05, $0A
+cop #$8A
+jmp J_8BB113
+B_8BB032:    ; org $8bb032
+cop #$C5
+B_8BB034:    ; org $8bb034
+lda $7F100E,x : clc : adc #$0040 : cmp $16 : bcc B_8BB00D
+lda $7F100C,x : sec : sbc #$0040 : cmp $14 : bcc B_8BB04F
+jmp B_8BAFBF
+B_8BB04F:    ; org $8bb04f
+cop #$87 : db $03, $04, $06, $05
+cop #$8A
+lda $24 : and #$000F : bne B_8BB069
+stz $24
+cop #$84 : db $08, $0A
+cop #$8A
+jmp J_8BB113
+B_8BB069:    ; org $8bb069
+cop #$C5
+B_8BB06B:    ; org $8bb06b
+lda $7F100E,x : sec : sbc #$0040 : cmp $16 : bcs B_8BB00D
+lda $7F100C,x : sec : sbc #$0040 : cmp $14 : bcc B_8BB086
+jmp B_8BAFBF
+B_8BB086:    ; org $8bb086
+cop #$87 : db $04, $04, $06, $06
+cop #$8A
+lda $24 : and #$000F : bne B_8BB09F
+stz $24
+cop #$84 : db $09, $0A
+cop #$8A
+bra J_8BB113
+B_8BB09F:    ; org $8bb09f
+cop #$C5
+B_8BB0A1:    ; org $8bb0a1
+lda $7F100C,x : clc : adc #$0040 : cmp $14 : bcs B_8BB0B0
+jmp B_8BAF98
+B_8BB0B0:    ; org $8bb0b0
+lda $7F100E,x : clc : adc #$0040 : cmp $16 : bcs B_8BB0BF
+jmp B_8BAFE6
+B_8BB0BF:    ; org $8bb0bf
+cop #$87 : db $83, $04, $05, $05
+cop #$8A
+lda $24 : and #$000F : bne B_8BB0D8
+stz $24
+cop #$84 : db $88, $0A
+cop #$8A
+bra J_8BB113
+B_8BB0D8:    ; org $8bb0d8
+cop #$C5
+B_8BB0DA:    ; org $8bb0da
+lda $7F100C,x : clc : adc #$0040 : cmp $14 : bcs B_8BB0E9
+jmp B_8BAF98
+B_8BB0E9:    ; org $8bb0e9
+lda $7F100E,x : sec : sbc #$0040 : cmp $16 : bcc B_8BB0F8
+jmp B_8BB00D
+B_8BB0F8:    ; org $8bb0f8
+cop #$87 : db $84, $04, $05, $06
+cop #$8A
+lda $24 : and #$000F : bne B_8BB111
+stz $24
+cop #$84 : db $89, $0A
+cop #$8A
+bra J_8BB113
+B_8BB111:    ; org $8bb111
+cop #$C5
+J_8BB113:    ; org $8bb113
+cop #$21 : db $04 : dw B_8BB11A
+cop #$C5
+B_8BB11A:    ; org $8bb11a
+cop #$2D : and #$0007 : sta $0000
+cop #$D9 : dw $0000, $B128
+  dw B_8BB138, B_8BB147
+  dw B_8BB157, B_8BB166
+  dw B_8BB176, B_8BB185
+  dw B_8BB195, B_8BB1A4
+B_8BB138:    ; org $8bb138
+cop #$84 : db $01, $08
+cop #$8A
+cop #$86 : db $01, $06, $08
+cop #$8A
+cop #$C5
+B_8BB147:    ; org $8bb147
+cop #$84 : db $84, $08
+cop #$8A
+cop #$87 : db $84, $06, $05, $06
+cop #$8A
+cop #$C5
+B_8BB157:    ; org $8bb157
+cop #$84 : db $82, $08
+cop #$8A
+cop #$85 : db $82, $06, $07
+cop #$8A
+cop #$C5
+B_8BB166:    ; org $8bb166
+cop #$84 : db $83, $08
+cop #$8A
+cop #$87 : db $83, $06, $05, $05
+cop #$8A
+cop #$C5
+B_8BB176:    ; org $8bb176
+cop #$84 : db $00, $08
+cop #$8A
+cop #$86 : db $00, $06, $07
+cop #$8A
+cop #$C5
+B_8BB185:    ; org $8bb185
+cop #$84 : db $03, $08
+cop #$8A
+cop #$87 : db $03, $06, $06, $05
+cop #$8A
+cop #$C5
+B_8BB195:    ; org $8bb195
+cop #$84 : db $02, $08
+cop #$8A
+cop #$85 : db $02, $06, $08
+cop #$8A
+cop #$C5
+B_8BB1A4:    ; org $8bb1a4
+cop #$84 : db $04, $08
+cop #$8A
+cop #$87 : db $04, $06, $06, $06
+cop #$8A
+cop #$C5
+warnpc $8bb1b4
 
 
 org $8bb1d7
@@ -3088,18 +3941,18 @@ EAWFlyingSkull:
 
 
 org $8bbf64
-B_8BBF64:
+ESubKeepGoingForRandomTime:
 lda #$BF75 : sta $7F001E,x
 cop #$23 : and #$0001 : inc : sta $7F0014,x
-B_8BBF75:    ; org $8bbf75
+.RefreshSprite:    ; org $8bbf75
 cop #$8B
-lda $2A : beq B_8BBF75
+lda $2A : beq .RefreshSprite
 lda $08 : sta $24
 stz $08
 cop #$C2
-dec $24 : bmi B_8BBF88
+dec $24 : bmi .DoneOneIteration
 rtl
-B_8BBF88:    ; org $8bbf88
+.DoneOneIteration:    ; org $8bbf88
 cop #$CB
 cop #$C5
 warnpc $8bbf8c

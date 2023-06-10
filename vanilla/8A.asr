@@ -934,9 +934,19 @@ COP #$E0    ; Die.
 ; Data tables used by the HeadLaser shooter.
 ; HeadLaser isn't targeted; it has a few branches based on Will's location, and some randomness added on to that.
 Lut_HeadLaserTargetsOnRight:
-dw $0080,$00D6,$0070,$00D6,$0056,$00D6,$0038,$00C6,$001A,$00B0,$001A,$0098
+dw $0080,$00D6
+dw $0070,$00D6
+dw $0056,$00D6
+dw $0038,$00C6
+dw $001A,$00B0
+dw $001A,$0098
 Lut_HeadLaserTargetsOnLeft:
-dw $0080,$00D6,$0093,$00D6,$00AA,$00D6,$00CA,$00C6,$00E7,$00B8,$00E5,$0098
+dw $0080,$00D6
+dw $0093,$00D6
+dw $00AA,$00D6
+dw $00CA,$00C6
+dw $00E7,$00B8
+dw $00E5,$0098
 Lut_HeadLaserPositionsAndSprites:
 dw $000A,$001D,$0015,$001E,$0032,$001F,$0059,$0020,$005F,$0021,$005D,$0022
 
@@ -1406,7 +1416,8 @@ jsl LR_SecOnFlag10A : bcs B_8AA4E0   ; $80B4F6
 lda $7F0024,x : jsl LR_SetFlag10A   ; $80B4E0
 cop #$A5 : dl C_80DDF2 : dw $0000, $0342
 phx
-  lda $7F0024,x : tyx
+  lda $7F0024,x
+  tyx
   sta $7F0024,x
 plx
 #B_8AA4E0:    ; org $8aa4e0
@@ -2218,10 +2229,19 @@ lda #$0300 : trb $10
 cop #$0C
 cop #$23 : and #$0003 : sta $0000
 cop #$D9 : dw $0000, $B48E : dw B_8AB22A, B_8AB26E : dw B_8AB2BC, B_8AB300
-warnpc $8ab496
 
+;org $8ab496
+db $00 : dw $2800
+ENazcaMapNameAutoDismisser:
+lda $00b4 : beq .Die
+cop #$CA : db $3c
+  lda $0660 : bne .Die
+cop #$CB
+lda #$ffff : sta $09ac   ; i.e. artificially press all buttons
+.Die:
+cop #$E0
 
-org $8ab4b0
+;org $8ab4b0
 db $00 : dw $0000
 ENazcaRobotBlue:
 
@@ -2245,10 +2265,13 @@ org $8ac816
 db $25 : dw $0000
 ENazcaBackWorm:
 
+org $8accd4
+db $3b : dw $0200
+ENazcaFireballTop:
 
 org $8accf1
 db $3b : dw $0200
-ENazcaFireball:
+ENazcaFireballBot:
 
 
 J_8ACD1E:    ; org $8acd1e
@@ -3439,10 +3462,48 @@ cop #$E0
 ;org $8af0c7
 db $1a : dw $0000
 EAVFireballShooter:
+cop #$0B
+lda #$0011 : tsb $12
+cop #$5B : dw $0008   ; Might mean set tile solid to $0x on death...
+J_8AF0D5:    ; org $8af0d5
+cop #$27 : db $08
+cop #$80 : db $1A
+cop #$89
+cop #$84 : db $1B, $03
+cop #$8A
+cop #$A5 : dl C_8AF102 : dw $F4FC, $0200
+cop #$A5 : dl C_8AF0FD : dw $F404, $0200
+cop #$84 : db $1A, $02
+cop #$8A
+bra J_8AF0D5
+C_8AF0FD:    ; org $8af0fd
+lda #$4000 : tsb $12
+C_8AF102:    ; org $8af102
+cop #$5B : dw $0010
+cop #$A2 : dl C_8AF137 : dw $2200
+lda #$0002 : sta $0008,y
+cop #$A2 : dl C_8AF137 : dw $2200
+lda #$0004 : sta $0008,y
+cop #$07 : db $1E
+cop #$88 : dl $8EE000
+B_8AF128:    ; org $8af128
+cop #$81 : db $08, $04
+cop #$89
+lda $10 : bit #$4000 : beq B_8AF128
+cop #$E0
+C_8AF137:    ; org $8af137
+cop #$88 : dl $8EE000
+cop #$C2
+lda #$2000 : trb $10
+cop #$AC : db $04, $00
+J_8AF147:    ; org $8af147
+cop #$B1
+cop #$80 : db $26
+cop #$89
+bra J_8AF147
 
 
-
-org $8af150
+;org $8af150
 db $00 : dw $0000
 EBabelVampireJack:
 
@@ -4321,7 +4382,16 @@ clc : adc $14 : sta $7F0018,x
 rts
 warnpc $8afd5a
 
-org $8AFD87
+
+org $8afd69
+ERandomPosNearPlayerPerSecond:
+cop #$23 : sec : sbc #$0080 : clc : adc $09a2 : sta $14
+cop #$23 : sec : sbc #$0080 : clc : adc $09a4 : sta $16
+lda #$003C : sta $08
+rtl
+
+
+;org $8AFD87
 Bank8AFree:
 pad $8B0000
 

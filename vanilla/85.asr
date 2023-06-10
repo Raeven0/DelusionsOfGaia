@@ -949,14 +949,202 @@ org $85F4DC
 db $D3,$D6,$31,$64,$A2,$88,$81,$84,$2F,$AC,$CB,$40,$A4,$A4,$80,$82,$8A,$AC,$D6,$F6,$A4,$87,$84,$AC,$D6,$07,$CB,$41,$88,$A2,$83,$AC,$82,$A2,$88,$84,$A3,$2A,$AC,$C0
 
 ;org $85F504
+db $35 : dw $0301
+ENazcaBallPlatformNE:
+cop #$A0 : dl ENazcaBallSlotNE : dw $0168, $00e0, $2301
+cop #$D0 : db $60, $01 : dw ENazcaBallPlatformSlidingWest_DoArrive
+cop #$BC : db $08,$00
+cop #$D2 : db $60,$01
+bra ENazcaBallPlatformSlidingWest
+ENazcaBallSlotNE:    ; org $85f522
+cop #$80 : db $36
+cop #$89
+cop #$D2 : db $60, $01
+lda #$2000 : trb $10
+cop #$C1
+rtl
+
+;org $85f533
+db $35 : dw $0301
+ENazcaBallPlatformSE:
+cop #$A0 : dl ENazcaBallSlotSE : dw $0168, $0120, $2301
+cop #$D0 : db $61, $01 : dw ENazcaBallPlatformSlidingWest_DoArrive
+cop #$BC : db $08, $00
+cop #$D2 : db $61, $01
+ENazcaBallPlatformSlidingWest:    ; org $85f54f
+cop #$85 : db $35, $80, $12
+cop #$8A
+.DoArrive:
+lda #$0100 : sta $14
+cop #$11
+cop #$C1
+rtl
+ENazcaBallSlotSE:
+cop #$80 : db $36
+cop #$89
+cop #$D2 : db $61, $01
+lda #$2000 : trb $10
+cop #$C1
+rtl
+
+;org $85f571
+db $35 : dw $0301
+ENazcaBallPlatformNW:
+cop #$A0 : dl ENazcaBallSlotNW : dw $0098, $00c0, $2301
+cop #$D0 : db $62, $01 : dw ENazcaBallPlatformSlidingEast_DoArrive
+cop #$BC : db $08,$00
+cop #$D2 : db $62,$01
+bra ENazcaBallPlatformSlidingEast
+ENazcaBallSlotNW:    ; org $85c58f
+cop #$80 : db $36
+cop #$89
+cop #$D2 : db $62, $01
+lda #$2000 : trb $10
+cop #$C1
+rtl
+
+;org $85f5a0
+db $35 : dw $0301
+ENazcaBallPlatformSW:
+cop #$A0 : dl ENazcaBallSlotSW : dw $0098, $0100, $2301
+cop #$D0 : db $63, $01 : dw ENazcaBallPlatformSlidingEast_DoArrive
+cop #$BC : db $08, $00
+cop #$D2 : db $63, $01
+ENazcaBallPlatformSlidingEast:    ; org $85f5bc
+cop #$85 : db $35, $80, $11
+cop #$8A
+.DoArrive:    ; org $85f5c3
+lda #$0100 : sta $14
+cop #$11
+cop #$C1
+rtl
+ENazcaBallSlotSW:    ; org $85f5cd
+cop #$80 : db $36
+cop #$89
+cop #$D2 : db $63, $01
+lda #$2000 : trb $10
+cop #$C1
+rtl
+warnpc $85f5dd
+
+
+org $85F655
+db $0f : dw $0101
+ENazcaButtonSwBot:
+lda #$AD08 : sta $7F0020,x
+lda #$0031 : tsb $12
+cop #$88 : dl $8EE000
+cop #$D1 : dw $0127 : db $01 : dw .InAltState
+bra .InNormalState
+.TriggerAltState:    ; org $85f672
+cop #$80 : db $0F
+cop #$89
+cop #$32 : db $28
+cop #$33
+cop #$CD : dw $0127
+cop #$CD : dw $0128
+cop #$CF : dw $0129
+cop #$CF : dw $012A
+.InAltState:    ; org $85f68c
+cop #$80 : db $0F
+cop #$89
+cop #$0B
+lda #$00FF : sta $7F0026,x
+cop #$58 : dw .TriggerNormalState
+cop #$C1
+rtl
+.TriggerNormalState:    ; org $85f6a1
+cop #$80 : db $10
+cop #$89
+cop #$32 : db $2A
+cop #$33
+cop #$CD : dw $0129
+cop #$CD : dw $012A
+cop #$CF : dw $0127
+cop #$CF : dw $0128
+.InNormalState:    ; org $85f6bb
+cop #$80 : db $10
+cop #$89
+cop #$0B
+lda #$00FF : sta $7F0026,x
+cop #$58 : dw .TriggerAltState
+cop #$C1
+rtl
+warnpc $85f6d0
+
 
 org $85F71C
 db $D3,$D6,$61,$A9,$8E,$A5,$AC,$A3,$A4,$84,$A0,$AC,$8E,$8D,$AC,$A4,$87,$88,$A3,$CB,$A4,$88,$8B,$84,$AC,$88,$A4,$AC,$8C,$80,$8A,$84,$A3,$AC,$80,$AC,$A3,$8E,$A5,$8D,$83,$2A,$2A,$2A,$C0
 
+
 ;org $85F749
+db $00 : dw $2000
+ENazcaButtonListenerNwBot:
+cop #$D1 : dw $012f : db $01 : dw .Die
+cop #$C1
+cop #$29 : db $03 : dw $0348, $02e0, .DoActivate
+rtl
+.DoActivate:
+cop #$32 : db $2f
+cop #$33
+cop #$CD : dw $012f
+.Die:
+cop #$E0
+
+;org $85f76b
+db $00 : dw $2000
+ESkGnFlipPlayerListener:
+phx
+ldx #$0000
+.CheckNextLoc:
+lda.l .LutSpawnLocations,x : cmp #$ffff : beq .Die
+  cmp #$0644 : bne .PlayerNotAtThisLoc
+lda.l 2+.LutSpawnLocations,x : cmp $09a2 : bne .PlayerNotAtThisLoc
+lda.l 4+.LutSpawnLocations,x : cmp $09a4 : beq .DoFlipPlayer
+.PlayerNotAtThisLoc:
+txa : clc : adc #$0006 : tax
+bra .CheckNextLoc
+.DoFlipPlayer:
+ldy $09aa
+lda #$0080 : sta $0002,y
+lda #$c4d1 : sta $0000,y
+lda #$0000 : sta $0008,y
+  sta $002a,y
+lda #$0800 : tsb $09ae
+.Die:    ; org $85f7b8 
+plx
+cop #$E0
+.LutSpawnLocations:    ; org $85F7BB
+dw $004D : dw $0308, $0290
+dw $004D : dw $0258, $03D0
+dw $004D : dw $0098, $03D0
+dw $004E : dw $00E8, $0280
+dw $004E : dw $0198, $03C0
+dw $004E : dw $0358, $03C0
+dw $004F : dw $0338, $0110
+dw $004F : dw $0158, $00F0
+dw $004F : dw $01F8, $0280
+dw $0050 : dw $00B8, $0100
+dw $0050 : dw $0298, $00E0
+dw $0050 : dw $01F8, $0270
+dw $0051 : dw $02A8, $0140
+dw $0051 : dw $00E8, $0100
+dw $0051 : dw $0358, $03C0
+dw $0052 : dw $0148, $0130
+dw $0052 : dw $0308, $00F0
+dw $0052 : dw $0098, $03B0
+dw $0053 : dw $0208, $0290
+dw $0053 : dw $0068, $03E0
+dw $0053 : dw $02E8, $02E0
+dw $0053 : dw $00A8, $0100
+dw $0054 : dw $01E8, $0270
+dw $0054 : dw $0388, $03D0
+dw $0054 : dw $0108, $02F0
+dw $0054 : dw $0348, $00F0
+dw $FFFF
 
 
-org $85f859
+;org $85f859
 ECameraWaver:
 lda $06C2 : sta $16
 .Restart:
@@ -1025,14 +1213,17 @@ rtl
 
 ;org $85fb32
 ; HDMA spotlight effect. Vamps and credits use this.
-; Inputs seem to be $F6,$FA,$FE = X,Y,Radius.
-; The code internally uess $F4,$F8,$FC for scratch X,Y,Radius calculation.
+; Inputs are $F6,$FA,$FE = X,Y,Radius.
+; The code internally uses $F4,$F8,$FC for the "previous line's" (i.e. current) x, y, and radius.
+; I think this is an implementation of the midpoint circle algorithm,
+; which builds the W1 HDMA table arithmetically.
+; Note that HDMA to register $26 uses an indirect table.
 db $04,$08
-jsr S_85FE9A
+jsr SR_SpotlightClearLastFrameInputs
 cop #$C1
-jsr S_85FEA4 : bcs B_85FB44
-jsr S_85FC92
-jsr S_85FEBF
+jsr SR_SpotlightClcIfInputsChanged : bcs B_85FB44
+jsr SR_SpotlightProcessInputs
+jsr SR_SpotlightSaveInputs
 B_85FB44:    ; org $85fb44
 lda $7F000A,x : lsr : bcc B_85FB52
 cop #$01 : dl $7E7000 : db $26
@@ -1043,7 +1234,7 @@ rtl
 warnpc $85fb59
 
 org $85fc92
-#S_85FC92:
+SR_SpotlightProcessInputs:
 phx
 phd
 phb
@@ -1052,23 +1243,23 @@ sep #$20
   lda #$7E : pha : plb
 rep #$20
 jsr S_85FE2C : bcc B_85FCA9
-jmp J_85FDB7
+jmp B_85FDB7
 B_85FCA9:    ; org $85fca9
-ldy $02
+ldy $02   ; $02 = either $7000 or $7100 based on frame parity
 lda #$0001 : sta $0000,y
-lda $04 : sta $0001,y
+lda $04 : sta $0001,y   ; $04 = $7200
 lda #$0000 : sta $0003,y
-lda $FE : bpl B_85FCC3
-jmp J_85FDB7
+lda $FE : bpl B_85FCC3   ; $FE = radius input.
+jmp B_85FDB7
 B_85FCC3:    ; org $85fcc3
 and #$FFFE
   sta $FC
   sta $18
   sta $1A
-  bit #$FF00 : beq B_85FCD6
-lda #$00FE : sta $1A
+  bit #$FF00 : beq B_85FCD6   ; Maximum radius is #$00fe.
+    lda #$00FE : sta $1A
 B_85FCD6:    ; org $85fcd6
-lda $F8 : bmi B_85FCF3
+lda $F8 : bmi B_85FCF3   ; Prev frame Y.
   sec : sbc $18 : bcc B_85FCF3
 jsr J_85FDD7
 lda $18 : asl : eor #$FFFF : inc a : clc : adc $00 : sta $02
@@ -1099,8 +1290,9 @@ bit #$FF00 : beq B_85FD37
 B_85FD37:
 lda $1C : bit #$FF00 : bne B_85FD6A
 lda $1E : asl
-pha : clc : adc $00 : tax
-lda $00 : sec : sbc $01,s : tay
+pha
+  clc : adc $00 : tax
+  lda $00 : sec : sbc $01,s : tay
 pla
 sep #$20
 lda $1A : clc : adc $F4 : bcc B_85FD58
@@ -1111,12 +1303,14 @@ lda $F4 : sec : sbc $1A : bcs B_85FD62
   lda #$00
 B_85FD62:
 rep #$20
-sta $0000,x : sta $0000,y
+sta $0000,x
+sta $0000,y
 B_85FD6A:    ; org $85fd6a
 lda $18 : bit #$FF00 : bne B_85FD9D
 lda $1A : asl
-pha : clc : adc $00 : tax
-lda $00 : sec : sbc $01,s : tay
+pha
+  clc : adc $00 : tax
+  lda $00 : sec : sbc $01,s : tay
 pla
 sep #$20
 lda $1E : clc : adc $F4 : bcc B_85FD8B
@@ -1127,7 +1321,8 @@ lda $F4 : sec : sbc $1E : bcs B_85FD95
   lda #$00
 B_85FD95:
 rep #$20
-sta $0000,x : sta $0000,y
+sta $0000,x
+sta $0000,y
 B_85FD9D:    ; org $85fd9d
 lda $1C : asl : dec
   eor #$FFFF : inc
@@ -1152,20 +1347,20 @@ bra J_85FDAC
 
 ;org $85fdd7
 J_85FDD7:
-bne B_85FDDA
+bne B_85FDDA   ; Quit if input is 0.
 rts
 ; org $85fdda
 B_85FDDA:
 pha
-  cmp #$0080 : bcc B_85FDE3
-  lda #$007F
+  cmp #$0080 : bcc B_85FDE3   ; Max clamped input value is #$007f.
+    lda #$007F
 B_85FDE3:
-  pha
-    lda $03,s : sec : sbc $01,s : sta $03,s
-  pla : sta $0000,y
+  pha   ; Stack is now $01,s = clamped input, $03,s = unclamped input.
+    lda $03,s : sec : sbc $01,s : sta $03,s   ; Set $03,s = unclamped input - min(#$007f, clamped input).
+  pla : sta $0000,y   ; Write clamped input to $0000,y.
   lda $04 : sta $0001,y
   iny : iny : iny
-pla
+pla   ; Feed input residual (unclamped input - min(#$007f, clamped input)) into next iteration.
 bra J_85FDD7
 
 ;org $85fdfa
@@ -1176,7 +1371,7 @@ rts
 B_85FDFD:
 pha
   cmp #$0080 : bcc B_85FE06
-  lda #$007F
+    lda #$007F
 B_85FE06:
   pha
     lda $03,s : sec : sbc $01,s : sta $03,s
@@ -1207,31 +1402,36 @@ lda $7F000A,x : inc a : sta $7F000A,x
 lda #$7600 : sta $0000
 lda #$7000 : sta $0002
 lda #$00FF : sta $7E7200
-lda #$7200 : sta $04 : clc
+lda #$7200 : sta $04
+clc
 rts
 B_85FE7E:    ; org $85fe7e
 lda #$7A00 : sta $0000
 lda #$7100 : sta $0002
 lda #$00FF : sta $7E7200
-lda #$7200 : sta $04 : clc
+lda #$7200 : sta $04
+clc
 rts
 J_85FE98:    ; org $85fe98
 sec
 rts
-S_85FE9A:    ; org $85fe9a
+
+SR_SpotlightClearLastFrameInputs:    ; org $85fe9a
 stz $00f4
 stz $00f8
 stz $00fc
 rts
-S_85FEA4:    ; org $85fea4
-lda $00F4 : cmp $00F6 : bne B_85FEBD
-lda $00F8 : cmp $00FA : bne B_85FEBD
-lda $00FC : cmp $00FE : bne B_85FEBD
+
+SR_SpotlightClcIfInputsChanged:    ; org $85fea4
+lda $00F4 : cmp $00F6 : bne .ClcAndReturn
+lda $00F8 : cmp $00FA : bne .ClcAndReturn
+lda $00FC : cmp $00FE : bne .ClcAndReturn
 rts
-B_85FEBD:
+.ClcAndReturn:
 clc
 rts
-S_85FEBF:    ; org $85febf
+
+SR_SpotlightSaveInputs:    ; org $85febf
 lda $00F6 : sta $00F4
 lda $00FA : sta $00F8
 lda $00FE : sta $00FC

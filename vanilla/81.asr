@@ -57,110 +57,117 @@ dw .Index2E    ; $822a
 }
 {
 ; Format:
-; .byte MainScreenAndWindowEnable
-; .byte SubScreenAndWindowEnable
-; .byte ColorMathControl2130
-; .byte ColorMathControl2131
+; .byte MainScreenAndWindowEnable --> $212C/E
+; .byte SubScreenAndWindowEnable  --> $212D/F
+; .byte ColorMathControl2130      --> $2130
+; .byte ColorMathControl2131      --> $2131
 ; .byte UnknownSpriteMaskDefault
-; .byte MapLayerOrderAndSize
-; .byte BgModeAndTileSize2105
+; .byte MapLayerOrderAndSize*
+; .byte BgModeAndTileSize2105     --> $2105
 ; .byte MiscRenderingEngineSettings
 ; .byte Dummy
 ; .byte Dummy
+; *Feeds $2107/8 oddly, as this bitfield:
+;   OxxxBBAA
+;   AA = low two bits of $2107
+;   BB = low two bits of $2108
+;    O = if 0, BG1 tilemap is at VRAM word $1000 (byte addr $2000),
+;          BG2 at $1800 ($3000), and MapLayer is BG1;
+;          if 1, vice versa, and MapLayer is BG2
 .Index00:    ; $805e
-db $00,$17 : db $00,$80 : db $24,$85,$09 : db $00,$00,$00
+db $17,$00 : db $80,$00 : db $24,$85,$09 : db $00,$00,$00
 .Index01:
-db $00,$17 : db $a3,$80 : db $64,$05,$09 : db $00,$00,$00
+db $17,$00 : db $80,$a3 : db $64,$05,$09 : db $00,$00,$00
 .Index02:
-db $00,$17 : db $a3,$80 : db $e4,$01,$09 : db $00,$00,$00
+db $17,$00 : db $80,$a3 : db $e4,$01,$09 : db $00,$00,$00
 .Index03:
-db $02,$17 : db $01,$82 : db $24,$05,$09 : db $00,$00,$00
+db $17,$02 : db $82,$01 : db $24,$05,$09 : db $00,$00,$00
 .Index04:
-db $03,$17 : db $00,$82 : db $64,$05,$09 : db $00,$00,$00
+db $17,$03 : db $82,$00 : db $64,$05,$09 : db $00,$00,$00
 .Index05:
-db $00,$15 : db $a1,$80 : db $64,$05,$09 : db $00,$00,$00
+db $15,$00 : db $80,$a1 : db $64,$05,$09 : db $00,$00,$00
 .Index06:    ; $809a
-db $00,$17 : db $83,$80 : db $24,$85,$09 : db $01,$00,$00
+db $17,$00 : db $80,$83 : db $24,$85,$09 : db $01,$00,$00
 .Index07:
-db $00,$17 : db $a0,$80 : db $65,$05,$09 : db $00,$00,$00
+db $17,$00 : db $80,$a0 : db $65,$05,$09 : db $00,$00,$00
 .Index08:
-db $00,$15 : db $a1,$80 : db $24,$05,$09 : db $00,$00,$00
+db $15,$00 : db $80,$a1 : db $24,$05,$09 : db $00,$00,$00
 .Index09:
-db $00,$15 : db $a1,$80 : db $a4,$05,$09 : db $00,$00,$00
+db $15,$00 : db $80,$a1 : db $a4,$05,$09 : db $00,$00,$00
 .Index0A:
-db $00,$17 : db $a2,$80 : db $24,$05,$09 : db $00,$00,$00
+db $17,$00 : db $80,$a2 : db $24,$05,$09 : db $00,$00,$00
 .Index0B:
-db $00,$15 : db $01,$80 : db $64,$05,$09 : db $00,$00,$00
+db $15,$00 : db $80,$01 : db $64,$05,$09 : db $00,$00,$00
 .Index0C:    ; $80d6
-db $02,$15 : db $31,$02 : db $64,$05,$09 : db $04,$00,$00
+db $15,$02 : db $02,$31 : db $64,$05,$09 : db $04,$00,$00
 .Index0D:
-db $00,$17 : db $22,$80 : db $e4,$05,$09 : db $00,$00,$00
+db $17,$00 : db $80,$22 : db $e4,$05,$09 : db $00,$00,$00
 .Index0E:
-db $16,$17 : db $01,$82 : db $66,$84,$09 : db $04,$00,$00
+db $17,$16 : db $82,$01 : db $66,$84,$09 : db $04,$00,$00
 .Index0F:
-db $12,$17 : db $41,$82 : db $e4,$85,$09 : db $00,$00,$00
+db $17,$12 : db $82,$41 : db $e4,$85,$09 : db $00,$00,$00
 .Index10:
-db $02,$17 : db $00,$00 : db $a4,$05,$09 : db $00,$00,$00
+db $17,$02 : db $00,$00 : db $a4,$05,$09 : db $00,$00,$00
 .Index11:
-db $00,$17 : db $21,$80 : db $24,$85,$09 : db $00,$00,$00
+db $17,$00 : db $80,$21 : db $24,$85,$09 : db $00,$00,$00
 .Index12:
-db $02,$17 : db $00,$00 : db $a4,$05,$09 : db $00,$00,$00
+db $17,$02 : db $00,$00 : db $a4,$05,$09 : db $00,$00,$00
 .Index13:
-db $00,$17 : db $83,$80 : db $24,$01,$09 : db $04,$00,$00
+db $17,$00 : db $80,$83 : db $24,$01,$09 : db $04,$00,$00
 .Index14:
-db $00,$17 : db $81,$80 : db $a4,$85,$09 : db $01,$00,$00
+db $17,$00 : db $80,$81 : db $a4,$85,$09 : db $01,$00,$00
 .Index15:
-db $00,$17 : db $a2,$80 : db $e4,$05,$09 : db $00,$00,$00
+db $17,$00 : db $80,$a2 : db $e4,$05,$09 : db $00,$00,$00
 .Index16:
-db $12,$17 : db $41,$82 : db $e4,$85,$09 : db $00,$00,$00
+db $17,$12 : db $82,$41 : db $e4,$85,$09 : db $00,$00,$00
 .Index17:
-db $11,$17 : db $00,$00 : db $a5,$85,$09 : db $00,$00,$00
+db $17,$11 : db $00,$00 : db $a5,$85,$09 : db $00,$00,$00
 .Index18:
-db $00,$15 : db $a1,$80 : db $e4,$05,$09 : db $00,$00,$00
+db $15,$00 : db $80,$a1 : db $e4,$05,$09 : db $00,$00,$00
 .Index19:
-db $00,$15 : db $a1,$80 : db $14,$00,$07 : db $1c,$00,$00
+db $15,$00 : db $80,$a1 : db $14,$00,$07 : db $1c,$00,$00
 .Index1A:
-db $12,$17 : db $41,$82 : db $a4,$85,$09 : db $00,$00,$00
+db $17,$12 : db $82,$41 : db $a4,$85,$09 : db $00,$00,$00
 .Index1B:
-db $12,$15 : db $b1,$82 : db $e4,$05,$09 : db $00,$00,$00
+db $15,$12 : db $82,$b1 : db $e4,$05,$09 : db $00,$00,$00
 .Index1C:
-db $12,$17 : db $01,$82 : db $e4,$85,$09 : db $00,$00,$00
+db $17,$12 : db $82,$01 : db $e4,$85,$09 : db $00,$00,$00
 .Index1D:
-db $02,$17 : db $21,$12 : db $e4,$01,$09 : db $00,$00,$00
+db $17,$02 : db $12,$21 : db $e4,$01,$09 : db $00,$00,$00
 .Index1E:
-db $11,$17 : db $72,$02 : db $e4,$05,$09 : db $00,$00,$00
+db $17,$11 : db $02,$72 : db $e4,$05,$09 : db $00,$00,$00
 .Index1F:
-db $00,$17 : db $a3,$80 : db $e4,$05,$09 : db $00,$00,$00
+db $17,$00 : db $80,$a3 : db $e4,$05,$09 : db $00,$00,$00
 .Index20:
-db $02,$17 : db $21,$12 : db $a4,$05,$09 : db $00,$00,$00
+db $17,$02 : db $12,$21 : db $a4,$05,$09 : db $00,$00,$00
 .Index21:
-db $11,$17 : db $72,$02 : db $a4,$01,$09 : db $00,$00,$00
+db $17,$11 : db $02,$72 : db $a4,$01,$09 : db $00,$00,$00
 .Index22:
-db $16,$15 : db $61,$02 : db $a4,$85,$09 : db $04,$00,$00
+db $15,$16 : db $02,$61 : db $a4,$85,$09 : db $04,$00,$00
 .Index23:
-db $12,$17 : db $41,$82 : db $a4,$85,$09 : db $04,$00,$00
+db $17,$12 : db $82,$41 : db $a4,$85,$09 : db $04,$00,$00
 .Index24:
-db $00,$15 : db $21,$80 : db $24,$05,$09 : db $00,$00,$00
+db $15,$00 : db $80,$21 : db $24,$05,$09 : db $00,$00,$00
 .Index25:
-db $00,$17 : db $03,$80 : db $e4,$80,$09 : db $00,$00,$00
+db $17,$00 : db $80,$03 : db $e4,$80,$09 : db $00,$00,$00
 .Index26:
-db $00,$17 : db $a3,$80 : db $a6,$85,$09 : db $00,$00,$00
+db $17,$00 : db $80,$a3 : db $a6,$85,$09 : db $00,$00,$00
 .Index27:
-db $03,$17 : db $44,$82 : db $e4,$81,$09 : db $00,$00,$00
+db $17,$03 : db $82,$44 : db $e4,$81,$09 : db $00,$00,$00
 .Index28:
-db $00,$17 : db $a3,$80 : db $a4,$05,$09 : db $00,$00,$00
+db $17,$00 : db $80,$a3 : db $a4,$05,$09 : db $00,$00,$00
 .Index29:
-db $02,$17 : db $61,$12 : db $24,$05,$09 : db $00,$00,$00
+db $17,$02 : db $12,$61 : db $24,$05,$09 : db $00,$00,$00
 .Index2A:
-db $03,$13 : db $a1,$80 : db $64,$05,$09 : db $10,$00,$00
+db $13,$03 : db $80,$a1 : db $64,$05,$09 : db $10,$00,$00
 .Index2B:
-db $01,$11 : db $10,$82 : db $24,$05,$09 : db $10,$00,$00
+db $11,$01 : db $82,$10 : db $24,$05,$09 : db $10,$00,$00
 .Index2C:
-db $02,$17 : db $41,$82 : db $a4,$05,$09 : db $00,$00,$00
+db $17,$02 : db $82,$41 : db $a4,$05,$09 : db $00,$00,$00
 .Index2D:
-db $01,$11 : db $10,$82 : db $14,$00,$07 : db $1c,$00,$00
+db $11,$01 : db $82,$10 : db $14,$00,$07 : db $1c,$00,$00
 .Index2E:
-db $11,$17 : db $83,$00 : db $a4,$01,$09 : db $04,$00,$00
+db $17,$11 : db $00,$83 : db $a4,$01,$09 : db $04,$00,$00
 }
 
 ;org $818234
@@ -428,7 +435,7 @@ dw .None    ; $8432
 dw .None    ; $8432 
 dw .None    ; $8432 
 dw .None    ; $8432 
-dw .MapFF    ; $A95C 
+dw .MapFE    ; $A95C 
 }
 ;org $818432
 {
@@ -1772,7 +1779,7 @@ db $FF
 .MapEB:
 db $FF
 db $FF
-.MapFF:
+.MapFE:
 db $FF
 db $FF
 }
@@ -2548,7 +2555,7 @@ dw $C304    ; Index $54 = Bounce ->+ then repeat
 Table_MovePatternsAndSteps:
 {
 MoveStepB130:
-dw  $0000 : dw MoveStep0000 
+dw  $0000 : dw MoveStepB130 
 MoveStepB134:
 dw  $0001 : dw MoveStepB134 
 MoveStepB138:
@@ -5489,6 +5496,9 @@ db $02,$03,$03,$05,$05
 db $64,$00,$FF,$7f,$ff,$7f,$ff,$7f
 
 ;org $81D90B
+; Used by ramp launchers E and W to set soar height + distance.
+; Note ERampLauncherToEast/West permit only params $01 (fast, high, long)
+; or $03 (slow, low, short).
 Table_SoaringSpeeds:    ; Format: dw addr, db numSteps
 dw .Fast : db $40    ; $D911
 dw .Slow : db $20    ; $D951

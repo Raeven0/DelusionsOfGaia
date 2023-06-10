@@ -706,6 +706,7 @@ db $15 : db $03
 db $00
 }
 
+; org $8d8898
 Map2CHeaderCards:   ; $2C Gold Ship, exterior
 {
 db $2C : db $00
@@ -727,6 +728,7 @@ db $10 : db $91,$0A,$00 : dl IncaSpTlDA554C
 db $00
 }
 
+; org $8d88f0
 Map2DHeaderCards:   ; $2D Ghost Ship, interior
 {
 db $2D : db $00

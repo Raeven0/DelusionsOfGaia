@@ -7,7 +7,7 @@ padbyte $FF
 org $848000
 db $01,$00,$03
 ECookingSmoke:
-
+rtl
 
 
 
@@ -76,10 +76,41 @@ db $D3,$4C,$A9,$AC,$80,$A3,$A4,$A2,$8E,$8D,$8E,$8C,$84,$A2,$AC,$85,$A2,$88,$84,$
 
 org $84899E
 db $D3,$48,$AC,$D6,$91,$A3,$8E,$A2,$A2,$A9,$CB,$85,$8E,$A2,$AC,$63,$84,$A4,$87,$2A,$CF,$48,$AC,$D6,$E9,$A7,$87,$A9,$2A,$AC,$AC,$CB,$47,$84,$AC,$87,$80,$A4,$84,$A3,$AC,$A4,$8E,$AC,$A3,$84,$84,$CB,$87,$88,$A3,$AC,$A0,$80,$A2,$84,$8D,$A4,$A3,$AC,$85,$88,$86,$87,$A4,$88,$8D,$86,$CB,$84,$A6,$84,$A2,$A9,$AC,$83,$80,$A9,$2A,$C0
+
 ;org $8489EE
+db $05 : dw $1000
+rtl
 
+;org $8489F2
+db $00 : dw $1000
+ESethHouseDoorPot:
+cop #$B2
+cop #$4B : db $2C, $0E, $F8
+cop #$4B : db $15, $24, $F8
+cop #$D0 : db $11, $01 : dw .Die
+cop #$C1
+cop #$28 : db $78, $00, $5E, $02 : dw .OnPlayerApproach
+rtl
+.OnPlayerApproach:    ; org $848a12
+cop #$CC : db $11
+lda #$CFF0 : tsb $065A
+cop #$DA : db $1D
+cop #$07 : db $1E
+cop #$82 : db $3F, $21
+cop #$89
+lda #$CFF0 : trb $065A
+cop #$B4
+cop #$BF : dw $8A48
+cop #$CA : db $10
+lda #$2000 : tsb $10
+cop #$C2
+lda #$2000 : trb $10
+cop #$C2
+cop #$CB
+.Die:    ; org $848a46
+cop #$E0
 
-org $848A48
+;org $848A48
 db $C2,$10,$C2,$00,$4D,$8E,$AC,$A3,$8E,$8E,$8D,$84,$A2,$AC,$A7,$80,$A3,$AC,$A4,$87,$84,$AC,$83,$8E,$8E,$A2,$CB,$A4,$8E,$AC,$63,$84,$A4,$87,$0E,$A3,$AC,$D7,$70,$8E,$A0,$84,$8D,$84,$83,$CB,$D7,$B5,$80,$AC,$89,$80,$A2,$AC,$D6,$80,$85,$8B,$A9,$88,$8D,$86,$CB,$8E,$A5,$A4,$4F,$C0
 ;org $848A8C
 
@@ -970,6 +1001,70 @@ db $C1,$03,$11,$C7,$0D,$04,$D6,$31,$64,$A2,$88,$81,$84,$2F,$AC,$CB,$48,$8D,$AC,$
 db $C1,$03,$11,$C7,$0D,$03,$D6,$31,$64,$A2,$88,$81,$84,$2F,$CB,$D6,$1C,$87,$84,$A9,$4F,$AC,$46,$8E,$8E,$83,$AC,$81,$8E,$A9,$4F,$CB,$4A,$A5,$AC,$8A,$A5,$AC,$8A,$A5,$2A,$2A,$2A,$CF,$64,$87,$84,$8D,$AC,$D6,$1F,$D6,$97,$A9,$8E,$A5,$AC,$CB,$A4,$87,$84,$AC,$48,$8D,$82,$80,$8D,$AC,$63,$A4,$80,$A4,$A5,$84,$2A,$AC,$C0
 
 ;org $84FAB2
+db $00 : dw $3000
+EMoonTribeFightManager:
+cop #$D1 : dw $011C : db $01 : dw .AlreadyDoneSoDie
+lda #$CFF0 : tsb $065A
+cop #$DA : db $1D
+cop #$BF : dw $F941
+lda #$CFF0 : trb $065A
+lda #$2200 : sta $0E
+lda #$0020 : sta $7F0010,x
+lda #$003C : sta $7F0012,x
+cop #$C1
+lda $0AEC : beq .TimeOverOrAllDead
+lda $7F0012,x : dec : beq .DecrementVisibleTimer
+  sta $7F0012,x
+  bra .DrawVisibleTimer
+.DecrementVisibleTimer:    ; org $84f8d9
+lda #$003C : sta $7F0012,x
+sed
+  lda $7F0010,x : sec : sbc #$0001
+cld
+sta $7F0010,x
+beq .TimeOverOrAllDead
+cop #$07 : db $10
+.DrawVisibleTimer:    ; org $84f8f3
+jsr SR_MoonTribeTimerPlaceSelfAbovePlayer
+lda $7F0010,x : sta $0000
+jsl LR_StageBcdInManualOam
+rtl
+.AlreadyDoneSoDie:    ; org $84f902
+cop #$E0
+.TimeOverOrAllDead:    ; org $84f904
+jsr SR_MoonTribeTimerPlaceSelfAbovePlayer
+lda $7F0010,x : sta $0000
+jsl LR_StageBcdInManualOam
+lda $0AEC : beq .AllMonstersDead
+.TimeOver:
+cop #$BF : dw $FA25
+cop #$C1
+rtl
+.AllMonstersDead:    ; org $84f91e
+lda #$FFF0 : tsb $065A
+cop #$DA : db $1D
+cop #$BF : dw $FA65
+lda #$FFF0 : trb $065A
+cop #$08 : db $0F, $0F
+cop #$32 : db $1C
+cop #$33
+cop #$CD : dw $011C
+cop #$C1
+rtl
+
+;org $84f941
+db $C1,$03,$06,$C7,$0D,$04,$D6,$31,$64,$A2,$88,$81,$84,$2F,$AC,$64,$87,$88,$A3,$CB,$88,$A3,$AC,$A4,$87,$84,$AC,$85,$88,$8D,$80,$8B,$AC,$A3,$87,$80,$A0,$84,$CB,$8E,$85,$AC,$A4,$87,$8E,$A3,$84,$AC,$A4,$8E,$A5,$82,$87,$84,$83,$CB,$81,$A9,$AC,$A4,$87,$84,$AC,$D7,$55,$8B,$88,$86,$87,$A4,$2A,$CF,$64,$87,$84,$A9,$AC,$80,$A2,$84,$AC,$87,$8E,$A2,$A2,$88,$81,$8B,$84,$CB,$82,$A2,$84,$80,$A4,$A5,$A2,$84,$A3,$AC,$A7,$87,$8E,$A3,$84,$AC,$87,$84,$80,$A2,$A4,$A3,$AC,$CB,$80,$A2,$84,$AC,$85,$88,$8B,$8B,$84,$83,$AC,$D6,$F0,$CB,$87,$80,$A4,$A2,$84,$83,$AC,$80,$8D,$83,$AC,$83,$84,$A3,$A4,$A2,$A5,$82,$A4,$88,$8E,$8D,$2A,$CF,$48,$85,$AC,$A9,$8E,$A5,$AC,$82,$80,$8D,$AC,$D6,$88,$D6,$E6,$CB,$A7,$88,$A4,$87,$88,$8D,$AC,$22,$20,$AC,$A3,$84,$82,$8E,$8D,$83,$A3,$2B,$AC,$D6,$1F,$CB,$D6,$97,$A9,$8E,$A5,$AC,$A4,$87,$84,$AC,$48,$8D,$82,$80,$8D,$AC,$CB,$63,$A4,$80,$A4,$A5,$84,$2A,$AC,$4A,$A5,$AC,$8A,$A5,$AC,$8A,$A5,$2A,$2A,$2A,$AC,$C0
+;org $84fa25
+db $C1,$03,$11,$C7,$0D,$04,$D6,$31,$64,$A2,$88,$81,$84,$2F,$AC,$CB,$48,$8D,$AC,$D6,$D7,$82,$80,$A3,$84,$2B,$AC,$48,$AC,$D6,$78,$CB,$D6,$97,$A9,$8E,$A5,$AC,$A4,$87,$84,$AC,$A3,$A4,$80,$A4,$A5,$84,$2A,$AC,$CB,$4A,$A5,$AC,$8A,$A5,$AC,$8A,$A5,$2A,$2A,$2A,$AC,$C0
+;org $84fa65
+db $C1,$03,$11,$C7,$0D,$03,$D6,$31,$64,$A2,$88,$81,$84,$2F,$CB,$D6,$1C,$87,$84,$A9,$4F,$AC,$46,$8E,$8E,$83,$AC,$81,$8E,$A9,$4F,$CB,$4A,$A5,$AC,$8A,$A5,$AC,$8A,$A5,$2A,$2A,$2A,$CF,$64,$87,$84,$8D,$AC,$D6,$1F,$D6,$97,$A9,$8E,$A5,$AC,$CB,$A4,$87,$84,$AC,$48,$8D,$82,$80,$8D,$AC,$63,$A4,$80,$A4,$A5,$84,$2A,$AC,$C0
+
+;org $84fab2
+SR_MoonTribeTimerPlaceSelfAbovePlayer:
+lda $09a2 : clc : adc #$0007 : sta $14
+lda $09a4 : sec : sbc #$0020 : sta $16
+rts
+
 
 org $84fac5
 db $00 : dw $3000

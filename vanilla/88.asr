@@ -439,8 +439,52 @@ org $88AE0E
 db $D3,$D7,$14,$A9,$8E,$A5,$AC,$D7,$5D,$A0,$8B,$80,$A9,$84,$83,$CB,$63,$8D,$80,$8A,$84,$AC,$60,$80,$8D,$88,$82,$0D,$AC,$48,$0E,$8C,$AC,$A3,$A4,$88,$8B,$8B,$CB,$88,$8D,$AC,$A4,$A2,$80,$88,$8D,$88,$8D,$86,$AC,$85,$8E,$A2,$AC,$88,$A4,$2A,$C0
 
 ;org $88AE49
+db $1f : dw $1000
+EDaoSnakeGameNpc:
+lda #$0200 : tsb $12
+cop #$9E : dl EDaoSnakeGamePot : dw $FFD0, $0010, $0300
+cop #$9E : dl EDaoSnakeGamePot : dw $0000, $0010, $0300
+cop #$9E : dl EDaoSnakeGamePot : dw $0030, $0010, $0300
+cop #$0B
+cop #$CE : db $04
+cop #$C0 : dw $AEA4
+cop #$D2 : db $01, $01
+cop #$C0 : dw $AECA
+cop #$9C : dl EDaoSnakeGameManager : dw $2000
+cop #$CE : db $03
+J_88AE8D:    ; org $88ae8d
+cop #$D0 : db $04, $01 : dw B_88AE99
+cop #$C1
+cop #$89
+bra J_88AE8D
+B_88AE99:    ; org $88ae99
+cop #$C0 : dw $AECF
+cop #$C1
+cop #$C1
+cop #$89
+rtl
+;org $88aea4
+cop #$BF : dw $aed4
+cop #$BE : db $02,$02 : dw $aeae
+  dw $aeb4
+  dw $aeb9, $aeb4
+;org $88aeb4
+cop #$BF : dw $AEF7
+rtl
+; org $88aeb9
+cop #$BF : dw $AF16
+cop #$CC : db $01
+stz $0AAC
+lda #$0008 : trb $09AE
+rtl
+;org $88aeca
+cop #$BF : dw $AF94
+rtl
+;org $88aecf
+cop #$BF : dw $B0B3
+rtl
 
-org $88AED4
+;org $88AED4
 db $D3,$D7,$27,$A4,$87,$84,$AC,$86,$80,$8C,$84,$CB,$D6,$F0,$A4,$87,$84,$AC,$A3,$8D,$80,$8A,$84,$A3,$0D,$CB,$AC,$69,$84,$A3,$CB,$AC,$4D,$8E,$CA
 ;org $88AEF7
 db $CE,$64,$8E,$8E,$AC,$81,$80,$83,$2A,$AC,$D6,$09,$D6,$73,$88,$85,$CB,$A9,$8E,$A5,$AC,$D7,$52,$D6,$FE,$8C,$88,$8D,$83,$2A,$C0
@@ -450,8 +494,43 @@ db $CE,$64,$87,$84,$AC,$A2,$A5,$8B,$84,$A3,$AC,$80,$A2,$84,$AC,$A3,$88,$8C,$A0,$
 db $D3,$D6,$1C,$87,$84,$A9,$2A,$AC,$64,$87,$84,$A2,$84,$0E,$A3,$CB,$A0,$8B,$84,$8D,$A4,$A9,$AC,$8E,$85,$AC,$A4,$87,$84,$8C,$2A,$C0
 
 ;org $88AFB4
+EDaoSnakeGameManager:
+cop #$D2 : db $02, $01
+phx
+ldx #$0000
+-:
+stz $0410,x
+inx : inx : cpx #$0010 : bne -
+plx
+lda #$0055 : sta $041E
+cop #$23
+cop #$23 : cop #$23 : cop #$23 : cop #$23
+cop #$23 : cop #$23 : cop #$23 : cop #$23
+stz $24
+cop #$C1
+lda $24 : cmp #$0E10 : beq .OutOfTime
+inc $24
+rtl
+.OutOfTime:    ; org $88afed
+cop #$D0 : db $E7, $01 : dw .YouLoseOrAlreadyGotPrize
+lda $0AAC : cmp #$0051 : bcs .YouWinAndGetPrize
+.YouLoseOrAlreadyGotPrize:    ; org $88affb
+cop #$BF : dw $B025
+.SetPostGameFlags:    ; org $88afff
+cop #$CE : db $01
+cop #$CE : db $02
+cop #$CC : db $03
+lda #$0008 : tsb $09AE
+cop #$E0
+.YouWinAndGetPrize:    ; org $88b010
+cop #$CC : db $E7
+cop #$BF : dw $B052
+sed
+  lda $0AB0 : clc : adc #$0002 : sta $0AB0
+cld
+bra .SetPostGameFlags
 
-org $88B025
+;org $88B025
 db $C2,$0A,$D5,$02,$4E,$4A,$4F,$AC,$63,$A4,$8E,$A0,$4F,$CB,$D6,$67,$87,$88,$A4,$AC,$C6,$03,$00,$AC,$0A,$AC,$A3,$8D,$80,$8A,$84,$A3,$2A,$CB,$64,$A2,$A9,$AC,$80,$86,$80,$88,$8D,$4F,$C0
 ;org $88B052
 db $C2,$0A,$D5,$02,$67,$8E,$A7,$AC,$C6,$03,$00,$AC,$0A,$AC,$A3,$8D,$80,$8A,$84,$A3,$2A,$AC,$66,$84,$A2,$A9,$CB,$86,$8E,$8E,$83,$4F,$CF,$45,$8E,$A2,$AC,$D6,$FE,$A0,$A2,$88,$AA,$84,$2B,$AC,$D6,$1F,$D6,$97,$CB,$A9,$8E,$A5,$AC,$A4,$A7,$8E,$AC,$62,$84,$83,$AC,$49,$84,$A7,$84,$8B,$A3,$2A,$AC,$CF,$D6,$1F,$A3,$84,$8D,$83,$AC,$D6,$E6,$A4,$8E,$CB,$A4,$87,$84,$AC,$49,$84,$A7,$84,$8B,$84,$A2,$2A,$C0
@@ -459,6 +538,46 @@ db $C2,$0A,$D5,$02,$67,$8E,$A7,$AC,$C6,$03,$00,$AC,$0A,$AC,$A3,$8D,$80,$8A,$84,$
 db $C2,$0A,$D6,$67,$87,$88,$A4,$AC,$C6,$03,$00,$AC,$0A,$AC,$A3,$8D,$80,$8A,$84,$A3,$2A,$CB,$64,$A2,$A9,$AC,$80,$86,$80,$88,$8D,$4F,$C0
 
 ;org $88B0D4
+EDaoSnakeGamePot:
+lda #$ABF0 : sta $7F0020,x
+lda #$0031 : tsb $12
+cop #$0B
+.AwaitGameStart:    ; org $88b0e2
+cop #$8D : db $24
+cop #$D2 : db $01, $01
+lda #$0200 : trb $10
+lda #$00FF : sta $7F0026,x
+cop #$58 : dw .DoStartGame
+cop #$D2 : db $02, $01
+.DoStartGame:    ; org $88b0fd
+cop #$CC : db $02
+cop #$58 : dw .OnHitWhileGameActive
+.WaitAndRaiseSnake:    ; org $88b104
+cop #$D0 : db $03, $01 : dw .EndGame
+lda #$00FF : sta $7F0026,x
+cop #$23 : and #$000F : asl : asl : asl : sta $08
+cop #$C2
+lda #$0200 : trb $10
+cop #$80 : db $24
+cop #$89
+.LowerSnake:    ; org $88b127
+cop #$80 : db $25
+cop #$89
+lda #$0200 : tsb $10
+bra .WaitAndRaiseSnake
+.EndGame:    ; org $88b133
+cop #$CC : db $04
+bra .AwaitGameStart
+.OnHitWhileGameActive:    ; org $88b138
+cop #$07 : db $0D
+sed
+  lda $0AAC : clc : adc #$0001 : sta $0AAC
+cld
+lda #$0200 : tsb $10
+cop #$58 : dw .OnHitWhileGameActive
+bra .LowerSnake
+warnpc $88b152
+
 
 org $88B1CD
 db $D3,$64,$87,$88,$A3,$AC,$88,$A3,$AC,$80,$AC,$87,$8E,$A4,$84,$8B,$AC,$85,$8E,$A2,$CB,$D7,$B1,$8C,$84,$A2,$82,$87,$80,$8D,$A4,$A3,$2A,$C0

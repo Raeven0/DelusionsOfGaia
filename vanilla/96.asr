@@ -12,7 +12,7 @@ PaletteBundles:
 {
 dw .Index00:    ; $8100
 dw .Index01:    ; $818D
-dw .Index02:    ; $8204
+dw .Index02:    ; $8204 South Cape exterior night
 dw .Index03:    ; $82AB
 dw .Index04:    ; $82D2
 dw .Index05:    ; $8319
@@ -29,7 +29,7 @@ dw .Index0F:    ; $868B
 dw .Index10:    ; $8792 Player dying (any form)
 dw .Index11:    ; $8899
 dw .Index12:    ; $88E0
-dw .Index13:    ; $8927
+dw .Index13:    ; $8927 Inca mud golem
 dw .Index14:    ; $89AE
 dw .Index15:    ; $8A3F
 dw .Index16:    ; $8B46
@@ -86,7 +86,7 @@ dw .Index48:    ; $AFF6
 dw .Index49:    ; $B06D
 dw .Index4A:    ; $B08A Freedan using Friar
 dw .Index4B:    ; $B1AB Freedan charge, slow
-dw .Index4C:    ; $B2F0
+dw .Index4C:    ; $B2F0 South Cape interior night (unused due to bug?)
 dw .Index4D:    ; $B305
 dw .Index4E:    ; $B3F2
 dw .Index4F:    ; $B4DF
@@ -102,8 +102,8 @@ dw .Index58:    ; $BE36
 dw .Index59:    ; $BF57
 dw .Index5A:    ; $C078
 dw .Index5B:    ; $C1BD Freedan using Aura Barrier (*Friar is raw at $998070)
-dw .Index5C:    ; $C26E
-dw .Index5D:    ; $C293
+dw .Index5C:    ; $C26E Mummy Queen first color change
+dw .Index5D:    ; $C293 Mummy Queen second color change
 dw .Index5E:    ; $C2B8
 dw .Index5F:    ; $C2E7
 dw .Index60:    ; $C30E
@@ -143,6 +143,14 @@ dw .Index7F:    ; $D6FB
 
 
 
+org $968927
+.Index13:
+db $04 : dw $892e : db $c0, $1f, $09
+db $00
+dw $0000,$0c63,$00ee,$0d51,$1dd5,$2a58,$3adc,$088a,$08ad,$0cf1,$0d34,$2108,$6ada,$0000,$0000,$0000
+dw $0000,$1084,$3adc,$00ee,$0d51,$1dd5,$2a58,$1178,$088a,$08ad,$0cf1,$2108,$5df7,$0000,$0000,$0000
+dw $0000,$1084,$2a58,$3adc,$00ee,$0d51,$1dd5,$0d34,$1178,$088a,$08ad,$2108,$4cf3,$0000,$0000,$0000
+dw $0000,$1084,$1dd5,$2a58,$3adc,$00ee,$0d51,$0cf1,$0d34,$1178,$088a,$2108,$286a,$0000,$0000,$0000
 
 org $969bee
 .Index2A:    ; $9bee, Will charge flash, slow

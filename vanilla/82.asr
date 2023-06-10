@@ -410,29 +410,29 @@ rtl
 ;org $828416
 .CardHandlerPtrs:
 {
-dw SR_HandleMapCardEnd    ; $00 @ $845c [RTS]
-dw SR_HandleMapCardEnd    ; $01 @ $845c [RTS]
+dw SR_HandleMapCardFiller    ; $00 @ $845c [RTS]
+dw SR_HandleMapCardFiller    ; $01 @ $845c [RTS]
 dw SR_HandleMapCardScreenSettings    ; Card $02 @ $8a6d
 dw SR_HandleMapCardVram    ; Card $03 @ $845d
 dw SR_HandleMapCard04    ; Card $04 @ $86c3
 dw SR_HandleMapCard05    ; Card $05 @ $8712
 dw SR_HandleMapCard06    ; Card $06 @ $87bc
-dw SR_HandleMapCardEnd    ; $845c [RTS]
-dw SR_HandleMapCardEnd    ; $845c [RTS]
-dw SR_HandleMapCardEnd    ; $845c [RTS]
-dw SR_HandleMapCardEnd    ; $845c [RTS]
-dw SR_HandleMapCardEnd    ; $845c [RTS]
-dw SR_HandleMapCardEnd    ; $845c [RTS]
-dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCardFiller    ; $845c [RTS]
+dw SR_HandleMapCardFiller    ; $845c [RTS]
+dw SR_HandleMapCardFiller    ; $845c [RTS]
+dw SR_HandleMapCardFiller    ; $845c [RTS]
+dw SR_HandleMapCardFiller    ; $845c [RTS]
+dw SR_HandleMapCardFiller    ; $845c [RTS]
+dw SR_HandleMapCardFiller    ; $845c [RTS]
 dw SR_HandleMapCard0E    ; Card $0e @ $8b69
-dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCardFiller    ; $845c [RTS]
 dw SR_HandleMapCardMetasprite    ; Card $10 @ $8be4
 dw SR_HandleMapCardMusic    ; Card $11 @ $8b6d
-dw SR_HandleMapCard12    ; $845c [RTS]
+dw SR_HandleMapCardFiller    ; $845c [RTS]
 dw SR_HandleMapCardCondBranch    ; Card $13 @ $8446
 dw SR_HandleMapCardBranchLabel    ; Card $14 @ $845b [INY; RTS]
 dw SR_HandleMapCardBranch    ; Card $15 @ $8d3d
-dw SR_HandleMapCardEnd    ; $845c [RTS]
+dw SR_HandleMapCardFiller    ; $845c [RTS]
 dw SR_HandleMapCard17    ; Card $17 @ $8c03
 }
 ;org $828446
@@ -455,7 +455,7 @@ rts
 ;org $82845b
 SR_HandleMapCardBranchLabel:    ; Card $14
 iny
-SR_HandleMapCardEnd:
+SR_HandleMapCardFiller:
 rts
 ;org $82845d
 SR_HandleMapCardVram:
@@ -1369,8 +1369,20 @@ rtl
 warnpc $82a3a8
 
 
+org $82a5dd
+LR_CheckExitsAndChests:
+php
+rep #$20
+jsr SR_CheckExits   ; $a97b
+bcs +
+  jsr SR_CheckChestCollide   ; $a65d
+  bcs +    ; yes, it really is bcs $00 and four nops
++:
+nop : nop : nop : nop
+plp
+rtl
 
-org $82a5f0
+;org $82a5f0
 LR_UpdateTilemapOpenChests:
 php
 rep #$20
@@ -3961,20 +3973,56 @@ lda $09B4 : bpl +
 +:
 cmp #$0003 : bcc .NoSlide
 pla
-jmp J_82CBFF
+jmp EPlayer_DoSlideNS
+warnpc $82cbd9
+
+
+org $82cbff
+EPlayer_DoSlideNS:
+lda #$0001 : jsr SR_LoadBonusDamageWill
+cop #$8E : db $04
+lda $09B4 : bmi .ToNorth
+.ToSouth:
+jsr SR_SetFlagsForSlider
+lda #$0100 : trb $10
+cop #$80 : db $0C
+cop #$89
+stz $09B4
+cop #$86 : db $0D, $02, $44
+cop #$8A
+cop #$80 : db $0E
+cop #$89
+jsr SR_ClearFlagsAfterSlider
+cop #$C5
+.ToNorth:    ; org $82cc2e
+jsr SR_SetFlagsForSlider
+cop #$AE : db $01
+cop #$80 : db $0F
+cop #$89
+stz $09B4
+lda #$0100 : trb $10
+cop #$86 : db $10, $02, $44
+cop #$8A
+cop #$80 : db $11
+cop #$89
+jsr SR_ClearFlagsAfterSlider
+cop #$C5
+warnpc $82cc52
+
 
 
 org $82cca5
 SR_SetFlagsForPsychoDash:
 lda #$0100 : trb $10
 lda #$0200 : tsb $06EE
-; SR_???: org $82ccb0
+SR_SetFlagsForSlider:
 lda #$0200 : tsb $10
 lda #$8000 : tsb $0658
 lda #$0802 : tsb $09AE
 rts
 SR_ClearFlagsAfterPsychoDash:    ;org $82ccc2
 lda #$0200 : trb $06EE
+SR_ClearFlagsAfterSlider:
 lda #$0200 : trb $10
 lda #$8000 : tsb $0658
 lda #$0002 : trb $09AE

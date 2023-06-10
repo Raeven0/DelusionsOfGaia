@@ -56,7 +56,7 @@ jsl LR_SetNoNmiNoIrqAutoJoypad    ; $8281A2
 jsl LR_ThinkThinkersA    ; $83D12D
 jsl LR_CheckAndProcessMapTransition    ; $83D9E8
 ;org $8080C5
-jsl $82A5DD
+jsl LR_CheckExitsAndChests    ; $82A5DD
 jsl LR_CheckSpecialButtons    ; $838000
 jsr SR_UpdatePlayerCanRunTimer    ; $82DE
 jsl LR_ActActors    ; $83CAF5
@@ -801,7 +801,16 @@ warnpc $8087de
 ;Cop_0C:
 ;Cop_0D:
 
-org $8088c8
+org $808876
+tyx
+lda $14 : sta $0018
+lda $16 : sta $001C
+stz $0000
+jsr S_80B29F
+lda $0A : sta $02,s
+rti
+
+;org $8088c8
 Cop_0E:
 {
 TYX
@@ -1957,19 +1966,107 @@ rti
 ;org $80adcf
 
 
+org $80a5f7
+Cop_E0:
+tyx
+phd
+lda $12 : bit #$0040 : beq .DieThisOnly
+pea.w .DoneAndReturn-1
+bra .DieWithChildren
+.DieThisOnly:    ; org $80a605
+jsr SR_RemoveSelfFromActorList
+.DoneAndReturn:    ; org $80a608
+pla : tax : tcd
+pla
+pla
+rtl
+.DieWithChildren:    ; org $80a60e
+stx $0000
+lda $0004,x : tax
+beq ..FoundPrevNotChild
+..CheckPrevActor:    ; org $80a617
+lda $7F001C,x : cmp $0000 : bne ..FoundPrevNotChild
+lda $0004,x : tax
+bne ..CheckPrevActor
+..FoundPrevNotChild:    ; org $80a626
+stx $0002
+ldx $0000
+lda $0006,x : tax
+beq ..FoundNextNotChild
+..CheckNextActor:    ; org $80a632
+lda $7F001C,x : cmp $0000 : bne ..FoundNextNotChild
+lda $0006,x : tax
+bne ..CheckNextActor
+..FoundNextNotChild:    ; org $80a641
+stx $0004                                    ; $0004 = last non-child actor, or 0 if all later actors are children
+ldx $0002 : bne ..ReturnNextActorIdToPool    ; $0002 = first non-child actor, or 0 if all previous actors are children
+ldx $0056
+jsr SR_ReturnMyActorIdToPool
+..ReturnNextActorIdToPool:    ; org $80a64f
+lda $0006,x : cmp $0004 : beq ..DoneReturningActorIdsToPool
+tax
+jsr SR_ReturnMyActorIdToPool
+bra ..ReturnNextActorIdToPool
+..DoneReturningActorIdsToPool:    ; org $80a65d
+lda $0002 : bne ..MustRelinkFirstNonChildActor
+ldx $0004 : stx $0056
+stz $0004,x
+lda $03,s : tax : tcd
+lda $0004 : sta $06
+rts
+..MustRelinkFirstNonChildActor:    ; org $80a675
+lda $0004 : bne ...AndLast
+ldx $0002 : stx $0058
+stz $0006,x
+lda $03,s : tax : tcd
+stz $06
+rts
+...AndLast:    ; org $80a68a
+ldy $0004
+lda $0002 : sta $0004,y
+tax
+tya : sta $0006,x
+tay
+lda $03,s : tax
+tcd
+tya : sta $06
+rts
+warnpc $80a6a1
 
-org $80AF6D
+
+org $80af40
+SR_RemoveSelfFromActorList:
+ldy $0004,x : bne .GotPrevActor
+.WasFirstActor:
+ldy $0006,x : sty $0056
+beq .DoneFixingActorList
+lda #$0000 : sta $0004,y
+bra .DoneFixingActorList
+.GotPrevActor:    ; org $80af55
+lda $0006,x : sta $0006,y
+bne ..AndNextActor
+sty $0058
+bra .DoneFixingActorList
+..AndNextActor:    ; org $80af62
+tay
+lda $0004,x : sta $0004,y
+.DoneFixingActorList:    ; org $80af69
+jsr SR_ReturnMyActorIdToPool
+rts
+
+
+;org $80AF6D
 SR_SetSpriteDataOnPlayerBody:
 {
 lda $0AD4 : asl
   clc : adc $0AD4 : asl : tay    ; .Y = 6*Body
 lda.w Table_PlayerSpriteSources,y : sta $7F0006,x    ; $D971
-lda.w Table_PlayerSpriteSources,y : and #$00FF : sta $7F0008,x    ; $D973
+lda.w 2+Table_PlayerSpriteSources,y : and #$00FF : sta $7F0008,x    ; $D973
 lda #$8000 : trb $09AE    ; Clear !FPlayerSpecialSprite.
 rts
 }
 
-org $80AF8F
+;org $80AF8F
 Dep_StoreRelativeTile:
 {
 LDA [$0A]
@@ -2177,7 +2274,88 @@ rts
 ;org $80b157
 
 
-org $80b345; $0000, $0018, $001C
+org $80b1b5
+SR_ReturnMyActorIdToPool:
+lda #$0000 : tcd
+sep #$20
+  dec $004E
+  dec $004E
+  dec $0DBC
+rep #$20
+txa : sta [$4E]
+tcd
+rts
+warnpc $80b1cb
+
+
+org $80b29f
+#S_80B29F:
+phb
+phd
+phx
+lda #$0000 : tcd
+lda $7F000C,x : tay
+sep #$20
+  lda $7F0008,x : pha : plb
+rep #$20
+lda $0000,y : ora #$FF00 : clc : adc $18
+  lsr : lsr : lsr : lsr : sta $18
+lda $0002,y : and #$00FF : sta $1A
+lda $0001,y : ora #$FF00 : clc : adc $1C
+  lsr : lsr : lsr : lsr : sta $1C
+lda $0003,y : and #$00FF : sta $1E
+ldx #$0000
+jsl LR_GetTileTableIndex82 : cpx #$4000 : bcs B_80B325    ; jsl $82b0a3
+lda $1A : sta $18
+txa : sta $1C
+#J_80B2F6:    ; org $80b2f6
+sep #$20
+  tax
+  lda $7FC000,x : ora #$F0 : sta $7FC000,x
+  dec $18 : beq B_80B316
+rep #$20
+txa : inc : bit #$000F : bne J_80B2F6
+clc : adc #$00F0
+bra J_80B2F6
+#B_80B316:    ; org $80b316
+; Here to $80b345 is buggy.
+; If a monster of size at least 2x2 calls this (i.e. cop #$0B),
+; while on a tile whose X coordinate is $xF for any x,
+; the solid mask will be applied correctly for only the first row,
+; and incorrectly applied 1 screen to the right for the next row,
+; 2 screens for the row after that, and so forth.
+; This is because moving from X coordinate $xF to $(x+1)0 places us
+; on the next screen, and so we increment the high byte of the TileIndex,
+; tracked in the .X register. When we later go to process the next
+; row of tiles, we erroneously don't reset the high byte to its original value.
+; Effectively, the logic below requires that we be in rep #$20 for both
+; `lda $1C` calls, but instead we are in sep #$20 for both.
+dec $1E : beq B_80B325
+lda $1A : sta $18
+jsr S_80B32B
+lda $1C
+bra J_80B2F6
+#B_80B325:    ; org $80b325
+rep #$20
+plx
+pld
+plb
+rts
+#S_80B32B:    ; org $80b32b
+php
+sep #$20
+lda $1C : clc : adc #$10 : bcs B_80B339
+sta $1C
+plp
+rts
+#B_80B339:    ; org $80b339
+xba : clc : adc $0693 : xba
+rep #$20
+sta $1C
+plp
+rts
+
+;org $80b345; $0000, $0018, $001C
 MaskTileTypesUnderObject:
 {
 PHB; =
@@ -2451,7 +2629,24 @@ cop #$37 : db $0E
 cop #$39
 cop #$3D
 rtl
-warnpc $80b5c0
+
+;org $80b5c0
+db $00,$08
+TCapeNightPaletteSetter:
+cop #$D0 : db $1c,$01 : dw .Die   ; $b5dc
+cop #$D0 : db $16,$00 : dw .Die   ; $b5dc
+-:
+cop #$37 : db $02
+cop #$39
+cop #$CC : db $ff
+cop #$D2 : db $ff,$00
+bra -
+.Die:    ; org $80b5dc
+cop #$3D
+rtl
+
+;org $80b5df
+
 
 org $80b7cc
 db $00, $08
@@ -2802,11 +2997,177 @@ db $04,$08
 
 org $80bf89
 db $00,$08
-TPlayerChatListener:
+TPlayerPalInitAndChatListener:
+cop #$D9 : dw $0AD4, $BF91
+  dw B_80BF99, B_80BFA0
+  dw B_80BFA7, B_80BFAE
+B_80BF99:    ; org $80bf99
+cop #$37 : db $0B
+cop #$39
+bra J_80BFB5
+B_80BFA0:    ; org $80bfa0
+cop #$37 : db $0C
+cop #$39
+bra J_80BFB5
+B_80BFA7:    ; org $80bfa7
+cop #$37 : db $23
+cop #$39
+bra J_80BFB5
+B_80BFAE:    ; org $80bfae
+cop #$37 : db $0C
+cop #$39
+bra J_80BFB5
+J_80BFB5:    ; org $80bfb5
+lda $7F000E,x : and #$F7FF : sta $7F000E,x
+cop #$C2
+phd
+lda #$0000 : tcd
+lda $0656 : bit #$8000 : beq B_80BFD2
+jmp J_80BFD4
+B_80BFD2:    ; org $80bfd2
+pld
+rtl
+J_80BFD4:    ; org $80bfd4
+jsl LR_GetPlayerFacingDirection : bcc B_80BFDC
+pld
+rtl
+B_80BFDC:    ; org $80bfdc
+sta $09EE
+ldy $09AA
+php
+rep #$20
+and #$00FF : beq B_80BFF2
+  dec : beq B_80C00C
+  dec : beq B_80C026
+bra J_80C040
+B_80BFF2:    ; org $80bff2
+lda $0014,y : sta $18
+lda $0016,y : inc : sta $1C
+jsr S_80C133 : beq B_80C05A
+lda $0016,x : sec : sbc $1C : bmi B_80C05D
+bra J_80C06A
+B_80C00C:    ; org $80c00c
+lda $0014,y : sta $18
+lda $0016,y : dec : sta $1C
+jsr S_80C133 : beq B_80C05A
+lda $1C : sec : sbc $0016,x : bmi B_80C05D
+bra J_80C06A
+B_80C026:    ; org $80c026
+lda $0014,y : dec : sta $18
+lda $0016,y : sta $1C
+jsr S_80C133 : beq B_80C05A
+lda $18 : sec : sbc $0014,x : bmi B_80C05D
+bra J_80C06A
+J_80C040:    ; org $80c040
+lda $0014,y : inc : sta $18
+lda $0016,y : sta $1C
+jsr S_80C133 : beq B_80C05A
+lda $0014,x : sec : sbc $18 : bmi B_80C05D
+bra J_80C06A
+B_80C05A:    ; org $80c05a
+plp
+pld
+rtl
+B_80C05D:    ; org $80c05d
+lda $7F000A,x : bne B_80C066
+jmp J_80C0DE
+B_80C066:    ; org $80c066
+txa : tcd
+bra J_80C07F
+J_80C06A:    ; org $80c06a
+lda #$8000 : tsb $0658
+lda $7F000A,x : beq B_80C0EA
+txa : tcd
+lda $12 : bit #$0200 : beq B_80C097
+J_80C07F:    ; org $80c07f
+sep #$20
+phk
+pea $C0DD
+lda $02 : pha
+rep #$20
+lda $7F000A,x : dec : pha
+lda #$8000 : tsb $0658
+rtl
+B_80C097:    ; org $80c097
+sep #$20
+lda #$7E : sta $0404
+ldy #$3410
+lda #$00 : sta $0405
+rep #$20
+lda #$002F
+jsr $0402
+tdc : tax
+sep #$20
+lda #$7F : sta $0405
+rep #$20
+lda #$002F
+jsr $0402
+tdc : tax
+jsr S_80C182
+sta $28
+stz $2A
+jsl LR_AnimateSprite
+sep #$20
+phk
+pea $C0EC
+lda $02 : pha
+rep #$20
+lda $7F000A,x : dec : pha
+rtl
+J_80C0DE:    ; org $80c0de
+lda #$8000 : trb $0656
+lda #$8000 : tsb $0658
+B_80C0EA:    ; org $80c0ea
+plp
+pld
+rtl
+warnpc $80c0ed
+
+
+org $80c133
+S_80C133:
+lda #$0020 : sta $02
+  stz $00
+  stz $04
+lda $0056
+bra J_80C144
+J_80C141:    ; org $80c141
+lda $0006,x
+J_80C144:    ; org $80c144
+tax : beq B_80C17F
+lda $0010,x : bit #$1000 : beq J_80C141
+lda $0014,x : sec : sbc $18 : bpl B_80C15B
+  eor #$FFFF : inc a
+B_80C15B:    ; org $80c15b
+cmp #$0010 : bcs J_80C141
+sta $00
+lda $0016,x : sec : sbc $1C : bpl B_80C16E
+  eor #$FFFF : inc a
+B_80C16E:    ; org $80c16e
+cmp #$0010 : bcs J_80C141
+adc $00 : cmp $02 : bcs J_80C141
+sta $02
+stx $04
+bra J_80C141
+B_80C17F:    ; org $80c17f
+ldx $04
+rts
+
+S_80C182:    ; org $80c182
+lda $09EE : and #$00FF : bit #$0002 : bne B_80C193
+inc : and #$0001
+bra J_80C199
+B_80C193:    ; org $80c193
+inc : and #$0001
+inc : inc
+J_80C199:    ; org $80c199
+sta $09EE
+lda $28 : dec : dec : and #$FFF8 : inc : inc : clc : adc $09EE
+rts
 
 
 
-org $80c1aa
+;org $80c1aa
 db $00 : dw $2800
 EShiraDreamSpotlightBuilder:
 cop #$D2 : db $0E, $01
@@ -2819,11 +3180,89 @@ cmp #$0040 : bcc +
   rtl
 +:    ; org $80c1dd
 cop #$E0
-warnpc $80c1df
 
 
+;org $80c1df
+; This set of actors pushes the player at high speed if they're near.
+; Used in e.g. Kress to ensure that player can't softlock in a ramp pit.
+; Amusingly, PusherWest is accidentally used in Kress where PusherSouth should be.
+db $00 : dw $2000
+EPlayerStrongPusherWest:
+ldy $09aa
+lda $14 : clc : adc #$0008 : sec : sbc $0014,y : bpl +
+  eor #$ffff : inc a
++:
+cmp #$0010 : bcc +
+rtl
++:
+lda $16 : clc : adc #$0008 : sec : sbc $0016,y : bpl +
+  eor #$ffff : inc a
++:
+cmp #$0010 : bcc +
+rtl
++:
+lda #$fff9 : sta $09b2
+rtl
 
-org $80c2bb
+;org $80c218
+db $00 : dw $2000
+EPlayerStrongPusherEast:
+ldy $09aa
+lda $14 : clc : adc #$0008 : sec : sbc $0014,y : bpl +
+  eor #$ffff : inc a
++:
+cmp #$0010 : bcc +
+rtl
++:
+lda $16 : clc : adc #$0008 : sec : sbc $0016,y : bpl +
+  eor #$ffff : inc a
++:
+cmp #$0010 : bcc +
+rtl
++:
+lda #$0007 : sta $09b2
+rtl
+
+;org $80c251
+db $00 : dw $2000
+EPlayerStrongPusherSouth:
+ldy $09AA
+lda $14 : clc : adc #$0008 : sec : sbc $0014,y : bpl +
+  eor #$FFFF : inc a
++:
+cmp #$0010 : bcc +
+rtl
++:
+lda $16 : sec : sbc $0016,y : bpl +
+  eor #$FFFF : inc a
++:
+cmp #$0004 : bcc +
+rtl
++:
+lda #$0007 : sta $09B4
+rtl
+
+;org $80c286
+db $00 : dw $2000
+EPlayerStrongPusherNorth:
+ldy $09AA
+lda $14 : clc : adc #$0008 : sec : sbc $0014,y : bpl +
+  eor #$FFFF : inc a
++:   ; org $80c29c
+cmp #$0010 : bcc +
+rtl
++:   ; org $80c2a2
+lda $16 : sec : sbc $0016,y : bpl +
+  eor #$FFFF : inc a
++:   ; org $80c2ae
+cmp #$0004 : bcc +
+rtl
++:   ; org $80c2b4
+lda #$FFF9 : sta $09B4
+rtl
+
+
+;org $80c2bb
 db $00 : dw $2000
 EBossClearRewarder:
 {
@@ -2919,14 +3358,50 @@ rts
 }
 
 ;org $80c397
+LR_DamagePlayerByAWithRecoilDirY:
+phx
+phd
+stz $0002
+sty $0000
+asl : bcc B_80C3AA
+  pha
+    lda #$FFC4 : sta $0002
+  pla
+B_80C3AA:    ; org $80c3aa
+lsr : eor #$FFFF : inc : clc : adc $0ACE : bpl +
+  lda #$0000
++:    ; org $80c3b8
+sta $0ACE
+lda $09AA : tcd : tax
+lda #$0080 : tsb $10
+lda $0002 : bne +
+  lda #$003C
++:    ; org $80c3cd
+sta $7F0028,x
+lda $09AE : bit #$0800 : bne B_80C410
+cop #$A5 : dl EDamageReactionHandler : db $00,$00 : dw $2400
+cpy #$1FC0 : bne B_80C3ED
+lda #$0F00 : trb $065A
+B_80C3ED:    ; org $80c3ed
+lda $7F002A,x : and #$0020
+phx
+  tyx
+  sta $7F002A,x
+plx
+lda $0000 : sta $0028,y
+lda #$0000 : sta $002C,y
+  sta $002E,y
+J_80C40A:    ; org $80c40a
+cop #$06 : db $07
+pld
+plx
+rtl
+B_80C410:    ; org $80c410
+lda #$0F00 : trb $065A
+bra J_80C40A
 
 
-
-org $80C3D9
-cop #$A5 : dl EDamageReactionHandler : db $00,$00 : dw $2400    ; $80d877
-
-
-org $80c418
+;org $80c418
 EObjectDeathWithSparkle:
 cop #$A5 : dl EObjectDeathSparkle : dw $0000, $0302
 cop #$E0
@@ -3013,21 +3488,53 @@ lda #$0200 : trb $10
 stz $08
 jml EPlayer_ParseAct
 }
-warnpc $80c5f3
+
+;org $80c5f3
+db $01 : dw $1000
+ECityHouseDoor:
+cop #$88 : dl $8EDA00
+cop #$80 : db $01
+cop #$89
+cop #$0B
+cop #$21 : db $01 : dw B_80C623
+cop #$27 : db $0A
+J_80C60A:    ; org $80c60a
+cop #$21 : db $01 : dw B_80C610
+rtl
+B_80C610:    ; org $80c610
+cop #$CA : db $08
+cop #$40 : dw $0800, $C61E
+cop #$C4 : dl J_80C60A
+B_80C61E:    ; org $80c61e
+cop #$CB
+cop #$06 : db $0E
+B_80C623:    ; org $80c623
+cop #$0C
+cop #$80 : db $00
+cop #$89
+cop #$C1
+rtl
+
+;org $80c62d
 
 
+org $80c667
+db $00 : dw $1000
+EFlagZeroSetter:    ; Sets "wind" flag and then dies.
+cop #$CC : db $00
+cop #$E0
 
-org $80C66F
+;org $80C66F
 db $00,$00,$30
 ERedJewelPickup:
-cop #$C0 : db .OnUse    ; $C681
+cop #$C0 : dw .OnUse    ; $C681
 cop #$88 : dl $8EE000
 cop #$8D : db $00
 cop #$C1
 rtl
 .OnUse:    ; $C681
 lda $0E : clc : adc #$0080 : jsl LR_SecOnFlag20A : bcs .Done
-cop #$D4 : db $01 : dw ..OnFullInv    ; $C6A1
+cop #$D4 : db $01 : dw .OnFullInv    ; $C6A1
 cop #$BF : dw .TextGet    ; $C6A6
 lda $0E : clc : adc #$0080 : jsl LR_SetFlag20A    ; $80B481
 rtl
@@ -3043,11 +3550,24 @@ db $c1,$03,$11,$c7,$0d,$03,$69,$8e,$a5,$ac,$d6,$8f,$80,$ac,$62,$84,$83,$ac,$49,$
 db $c1,$03,$11,$c7,$0d,$03,$69,$8e,$a5,$ac,$d6,$8f,$80,$ac,$49,$84,$a7,$84,$8b,$ac,$81,$a5,$a4
 db $cb,$d6,$fe,$d6,$a0,$88,$a3,$ac,$85,$a5,$8b,$8b,$2a,$c0
 
+;org $80c6e4
+
+
+org $80c718
+LR_WanderingNpcSavePos:
+lda $14 : sta $7f0010,x
+lda $16 : sta $7f0012,x
+rtl
+LR_WanderingNpcDoWander:    ; org $80c725
 
 
 
-
-org $80C993
+org $80c98e
+; Generic "Your inventory is full" message.
+J_80C98E:
+cop #$BF : dw $c993
+rtl
+;org $80C993
 db $D3,$CE,$C2,$00,$D6,$68,$D6,$A0,$88,$A3,$AC,$85,$A5,$8B,$8B,$2A,$CB,$69,$8E,$A5,$AC,$D6,$78,$82,$80,$A2,$A2,$A9,$AC,$8C,$8E,$A2,$84,$2A,$C3,$00,$C0
 
 ;org $80c9b8
@@ -3099,12 +3619,12 @@ cmp #$001c : bne +$03 : jmp .HandleMap1C    ; $cb5f
 cmp #$0032 : bne +$03 : jmp .HandleMap32    ; $cb78
 cmp #$003e : bne +$03 : jmp .HandleMap3E    ; $cba7
 cmp #$0069 : bne +$03 : jmp .HandleMap69    ; $cbc0
-cmp #$0071 : bne +$03 : jmp .HandleMap71    ; $cbef
-cmp #$0083 : bne +$03 : jmp .HandleMap83    ; $cc34
-cmp #$0092 : bne +$03 : jmp .HandleMap92    ; $cc4d
-cmp #$00a1 : bne +$03 : jmp .HandleMapA1    ; $cc92
-cmp #$00ad : bne +$03 : jmp .HandleMapAD    ; $ccab
-cmp #$00b1 : bne +$03 : jmp .HandleMapB1    ; $ccf0
+cmp #$0078 : bne +$03 : jmp .HandleMap78    ; $cbef
+cmp #$0082 : bne +$03 : jmp .HandleMap82    ; $cc34
+cmp #$0091 : bne +$03 : jmp .HandleMap91    ; $cc4d
+cmp #$00a0 : bne +$03 : jmp .HandleMapA0    ; $cc92
+cmp #$00ac : bne +$03 : jmp .HandleMapAC    ; $ccab
+cmp #$00b0 : bne +$03 : jmp .HandleMapB0    ; $ccf0
 cmp #$00c3 : bne +$03 : jmp .HandleMapC3    ; $cd09
 cmp #$00cc : bne +$03 : jmp .HandleMapCC    ; $cd38
 rtl
@@ -3185,7 +3705,7 @@ jmp .Done    ; $cac1
 lda #$0000 : sta $0D60
 cop #$66 : dw $0384,$0164 : db $0A
 jmp .Done    ; $cac1
-.HandleMap71:
+.HandleMap78:
 cop #$45 : db $27,$3D,$29,$40 : dw ..InArea
 rtl
 ..InArea:
@@ -3202,14 +3722,14 @@ jmp .Done    ; $cac1
 lda #$0000 : sta $0D60
 cop #$66 : dw $02D4,$01A4 : db $0E
 jmp .Done    ; $cac1
-.HandleMap83:
+.HandleMap82:
 cop #$45 : db $00,$08,$01,$0B : dw ..InArea
 rtl
 ..InArea:
 lda #$0000 : sta $0D60
 cop #$66 : dw $02A4,$0124 : db $0D
 jmp .Done    ; $cac1
-.HandleMap92:
+.HandleMap91:
 cop #$45 : db $3F,$42,$40,$48 : dw ..InArea
 rtl
 ..InArea:
@@ -3226,14 +3746,14 @@ jmp .Done    ; $cac1
 lda #$0000 : sta $0D60
 cop #$66 : dw $01D4,$0134 : db $1A
 jmp .Done    ; $cac1
-.HandleMapA1:
+.HandleMapA0:
 cop #$45 : db $2F,$1B,$30,$1C : dw ..InArea
 rtl
 ..InArea:
 lda #$0000 : sta $0D60
 cop #$66 : dw $0214,$00B4 : db $11
 jmp .Done    ; $cac1
-.HandleMapAD:
+.HandleMapAC:
 cop #$45 : db $1F,$1B,$20,$20 : dw ..InArea
 rtl
 ..InArea:
@@ -3250,7 +3770,7 @@ jmp .Done    ; $cac1
 lda #$0000 : sta $0D60
 cop #$66 : dw $0124,$01A4 : db $19
 jmp .Done    ; $cac1
-.HandleMapB1:
+.HandleMapB0:
 cop #$45 : db $1D,$4F,$24,$50 : dw ..InArea
 rtl
 ..InArea:
@@ -3484,6 +4004,7 @@ ESliderHoleToSouth:
 org $80d2d0
 db $00 : dw $2000
 ERampLauncherToWest:
+{
 cop #$C1
 .Listen:
 lda $14 : clc : adc #$0008 : sta $0018
@@ -3522,6 +4043,7 @@ lda #$D4D2 : sta $0000,y
 lda #$0080 : sta $0002,y
 jsr SR_StartSoaringPlayer    ; $d496
 cop #$C4 : dl .Listen
+}
 
 ;org $80d348
 db $00 : dw $2000
@@ -3531,9 +4053,45 @@ ERampLauncherToEast:
 org $80d3ba
 db $00 : dw $2000
 ERampLauncherToNorth:
+cop #$C1
+J_80D3BF:
+lda $09B4 : jsr SR_ClcIfFastAndNotSpecialMove : bcc +
+  rtl
++:
+ldy $09AA
+lda $0014,y : sec : sbc $14 : bpl +
+  eor #$FFFF : inc
++:
+cmp #$0011 : bmi +
+  rtl
++:
+lda $0016,y : sec : sbc #$0010 : sec : sbc $16 : bmi +
+  rtl
++:
+bpl +
+  eor #$FFFF : inc a
++:
+cmp #$000F : bcc +
+  rtl
++:    ; org $80d3f6
+cop #$C1
+ldy $09AA
+lda $0016,y : sec : sbc $16 : beq ++
+  bpl +
+    eor #$FFFF : inc a
++:
+cmp #$0010 : bcs +
+  rtl
++:
+cop #$C4 : dl J_80D3BF
+++:
+lda #$D518 : sta $0000,y
+lda #$0080 : sta $0002,y
+jsr SR_StartSoaringPlayer
+cop #$C4 : dl J_80D3BF
 
 
-org $80d428
+;org $80d428
 db $00 : dw $2000
 ERampLauncherToSouth:
 
@@ -3567,7 +4125,7 @@ rts
 warnpc $80d4d2
 
 org $80d4f5
-EPlayer_Soaring:
+EPlayer_Soaring:    ; Soaring east?
 cop #$9B : dl ESoaringPlayerMover    ; $80d5c0
 phx
   ldx $06
@@ -4038,29 +4596,29 @@ cop #$E0
 
 ;org $80db8a
 EBasicMonsterDeath:
-lda $7F0020,x : cmp #$ABF0 : bne +$03
-  jmp ++    ; $DBB6
-+:
-lda $7F002A,x : bit #$0080 : bne +
+lda $7F0020,x : cmp #$ABF0 : bne +
+  jmp .DoneUpdatingMonsterCounter    ; $DBB6
++:    ; Subtract 1 from monster count if this is a real monster and not omitted from counting.
+lda $7F002A,x : bit #$0080 : bne .DoneUpdatingMonsterCounter
 sed
   lda $0AEE : sec : sbc #$0001 : sta $0AEE
 cld
 lda $0AEC : dec a : sta $0AEC
-  sta $7F0010,x
-++:    ; $DBB6
+  sta $7F0010,x    ; Dying monster stores the new monster count in its $7f:10.
+.DoneUpdatingMonsterCounter:    ; $DBB6
 lda #$0000
   sta $2C
   sta $2E
   sta $7F002C,x
   sta $7F002E,x
 cop #$07 : db $06
-cop #$A5 : dl $80df15 : db $00,$00 : dw $0302
+cop #$A5 : dl $80df15 : db $00,$00 : dw $0302    ; dl EExplosionSprite
 lda $0012,y : ora #$1000 : sta $0012,y
 cop #$DA : db $02
-lda $7F0020,x : cmp #$ABF0 : bne +$03
+lda $7F0020,x : cmp #$ABF0 : bne +
   jmp $DC5F
 +:
-lda $7F002A,x : bit #$0080 : bne +$6D     [$80DC5F] 
+lda $7F002A,x : bit #$0080 : bne +++
 cop #$D8      ; Flag as killed.
 lda $0644 : jsl LR_SecOnFlag30A
 bcs +
@@ -4068,36 +4626,37 @@ bcs +
 +:
 lda $7F0020,x : tay
 lda $0003,y : and #$00FF : beq ++
-  jmp $DD5B                    [$80DD5B] 
-++:
-$80DC13 lda #$2000 : tsb $10                      
-$80DC18 lda $7F002A,x : bit #$0008 : beq +
-$80DC21 cop #$0C              ; Clear temp type type here.
+  jmp $DD5B
+++:    ; org $80DC13
+lda #$2000 : tsb $10                      
+lda $7F002A,x : bit #$0008 : beq +
+  cop #$0C
++:    ; org $80DC23 
+lda $7F0024,x : beq ++
+jsl $80B4F6 : bcs ++    ; jsl LR_SecOnFlag10A
+lda $7F0024,x
+jsl $80B4E0    ; jsl LR_SetFlag10A
+cop #$A5 : dl $80ddf2 : db $00,$00 : dw $0342
+lda $0012,y : ora #$1000 : sta $0012,y
+phx
+  lda $7F0024,x
+  tyx
+  sta $7F0024,x
+plx
+++:    ; org $80DC54
+lda $7F0010,x : bne +
+  jmp $DD87    ; i.e. jmp ERoomClearRewarder
++:    ; org $80DC5D
+cop #$E0
++++:    ; org $80DC5F
+cop #$DA : db $02
+lda #$2000 : tsb $10
+lda $7F002A,x : bit #$0008 : beq +
+  cop #$0C
 +:
-$80DC23 lda $7F0024,x : beq +$2B                     [$80DC54] 
-$80DC29 jsl $80B4F6                  [$80B4F6] 
-$80DC2D bcs +$25                     [$80DC54] 
-$80DC2F lda $7F0024,x                
-$80DC33 jsl $80B4E0                  [$80B4E0] 
-$80DC37 cop #$A5 $F2,$DD,$80,$00,$00,$42,$03    [Child: $80DDF2] 
-$80DC40 lda $0012,y : ora #$1000 : sta $0012,y
-$80DC49 phx                          
-$80DC4A lda $7F0024,x : tyx                          
-$80DC4F sta $7F0024,x                
-$80DC53 plx                          
-$80DC54 lda $7F0010,x                <--Branch
-$80DC58 bne +$03                     [$80DC5D] 
-$80DC5A jmp $DD87                    [$80DD87] 
-
-$80DC5D cop #$E0                     <--Branch
-
-$80DC5F cop #$DA : db $02                 <--Branch
-$80DC62 lda #$2000 : tsb $10                      
-$80DC67 lda $7F002A,x : bit #$0008 : beq +$02                     [$80DC72] 
-$80DC70 cop #$0C                     
-$80DC72 cop #$DA : db $05                 <--Branch
-$80DC75 cop #$E0                     
-
+cop #$DA : db $05
+cop #$E0
+warnpc $80dc77
 
 org $80dcb4
 EMonsterDamageCounter:
@@ -4186,7 +4745,84 @@ cop #$E0
 cop #$A5 : dl EStatJewel_DEF : dw $0000, $1000
 lda $0012,y : ora #$1000 : sta $0012,y
 cop #$E0
-warnpc $80ddf2
+
+;org $80ddf2
+EMonsterDeathDoorOpener:
+cop #$B7 : db $00
+lda #$0342 : sta $10
+lda #$6000 : trb $12
+cop #$88 : dl $8EE000
+cop #$82 : db $29, $02
+cop #$89
+cop #$82 : db $29, $12
+cop #$89
+cop #$82 : db $29, $14
+cop #$89
+cop #$84 : db $29, $02
+cop #$8A
+cop #$B6 : db $30
+lda $7F0024,x : asl : asl : asl : tay
+lda $D3D1,y : and #$00FF : sta $0000
+  lsr : sta $7F0010,x
+lda $D3D3,y : and #$00FF : asl
+  clc : adc $0000 : asl : asl : asl : sta $7F0018,x
+lda $D3D2,y : and #$00FF : sta $0000
+  lsr : sta $7F0012,x
+lda $D3D4,y : and #$00FF : asl
+  clc : adc $0000 : asl : asl : asl : sta $7F001A,x
+cop #$52 : db $29, $04, $FF
+cop #$53
+cop #$9C : dl C_80DF0A : dw $0302
+lda $0012,y : ora #$1000 : sta $0012,y
+cop #$DA : db $01
+lda #$2000 : tsb $10
+cop #$CA : db $0A
+cop #$9C : dl C_80DEB8 : dw $0302
+lda $0012,y : ora #$1000 : sta $0012,y
+lda $7F0010,x : and #$00FF : sta $0020,y
+lda $7F0012,x : and #$00FF : sta $0022,y
+cop #$DA : db $03
+cop #$CB
+cop #$34
+cop #$33
+cop #$E0
+C_80DEB8:     ; org $80deb8
+cop #$23
+ldy $20 : cpy #$0004 : bcs B_80DECC
+  cpy #$0002 : bcs B_80DED2
+    lsr : and #$000F
+    bra J_80DED6
+B_80DECC:    ; org $80decc
+  lsr : and #$003F
+  bra J_80DED6
+B_80DED2:    ; org $80ded2
+  lsr : and #$001F
+J_80DED6:    ; org $80ded6
+bcc +
+  eor #$FFFF : inc a
++:
+clc : adc $14 : sta $14
+cop #$23
+ldy $22 : cpy #$0003 : bcs B_80DEF5
+  cpy #$0002 : beq B_80DEFB
+    lsr : and #$000F
+    bra J_80DEFF
+B_80DEF5:    ; org $80def5
+  lsr : and #$003F
+  bra J_80DEFF
+B_80DEFB:    ; org $80defb
+  lsr : and #$001F
+J_80DEFF:    ; org $80deff
+bcc +
+  eor #$FFFF : inc a
++:
+clc : adc $16 : sta $16
+C_80DF0A:    ; org $80df0a
+cop #$08 : db $06, $06
+cop #$80 : db $25
+cop #$89
+cop #$E0
+warnpc $80df15
 
 org $80df15
 EExplosionSprite:
@@ -4560,7 +5196,7 @@ B_80E4FA:
 cop #$E0
 
 ;org $80e4fc
-EChaserAlt:
+EChaserAlt:    ; I think this one doesn't change direction once it's moving.
 {
 txy
 ldx $0004,y
@@ -4659,6 +5295,53 @@ warnpc $80e655
 
 org $80e683
 EChaser:
+txy
+ldx $0004,y
+lda $7f0014,x : sta $0000
+lda $7f000a,x : sta $0002
+tyx
+lda $0000 : sta $7f0014,x
+lda $0002 : sta $7f000a,x
+bra EChaserCommon    ; to $80e6ce
+
+;org $80e6a6
+EChaserWanderer:    ; Like MQ ghosts, chasing but with deviations from the direct path.
+txy
+ldx $0004,y
+lda $7f0014,x : sta $0000
+lda $7f000a,x : sta $0002
+tyx
+lda $0000 : sta $7f0014,x
+lda $0002 : sta $7f000a,x
+lda #$ffff : sta $7f000e,x
+;org $80e6ce
+EChaserCommon:
+
+
+org $80E8D7
+db $00 : dw $2c00
+EEffectLayerAutoScroller:
+
+
+org $80e94d
+; This isn't really Kress-specific, but it's only used in Kress,
+; and always set at X = Y = $DF.
+db $00 : dw $2c00
+EKressBgParallaxManager:
+lda #$1000 : tsb $12
+lda $14 : sec : sbc #$0008 : jsr SR_SplitNibblesAsY : sta $14
+lda $16 : sec : sbc #$0010 : jsr SR_SplitNibblesAsY : sta $16
+cop #$CA : db $03
+  jsr SR_ScaleEffectLayerByCoordinates
+  lda $06C4 : sta $0690
+cop #$CB
+cop #$C1
+jsr SR_ScaleEffectLayerByCoordinates
+lda $06C0 : ora #$8000 : sta $06C8
+stz $06C0
+rtl
+warnpc $80e98b
+
 
 
 org $80EA96
