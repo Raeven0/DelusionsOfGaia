@@ -458,7 +458,7 @@ dw $9381    ; COP #$38
 dw $93aa    ; COP #$39
 dw $93ce    ; COP #$3A
 dw $9400    ; COP #$3B
-dw $943c    ; COP #$3C
+dw Cop_3C    ; $943c    ; COP #$3C
 dw $9443    ; COP #$3D
 dw $9485    ; COP #$3E
 dw $94ad    ; COP #$3F
@@ -470,7 +470,7 @@ dw Cop_44    ; $956b COP #$44
 dw Cop_45    ; $95ea COP #$45
 dw $9647    ; COP #$46
 dw $964c    ; COP #$47
-dw $965e    ; COP #$48
+dw Cop_48    ; $965e COP #$48
 dw $9668    ; COP #$49
 dw $8e19    ; COP #$4A
 dw $9685    ; COP #$4B
@@ -610,10 +610,10 @@ dw $ab7f    ; COP #$D0
 dw $ab8e    ; COP #$D1
 dw $abc2    ; COP #$D2
 dw $abd7    ; COP #$D3
-dw $ac05    ; COP #$D4
-dw $ac27    ; COP #$D5
-dw $ac38    ; COP #$D6
-dw $ac5a    ; COP #$D7
+dw Cop_D4   ; $ac05    ; COP #$D4
+dw Cop_D5   ; $ac27    ; COP #$D5
+dw Cop_D6   ; $ac38    ; COP #$D6
+dw Cop_D7   ; $ac5a    ; COP #$D7
 dw $ac82    ; COP #$D8
 dw $ac94    ; COP #$D9
 dw $acc1    ; COP #$DA
@@ -661,7 +661,7 @@ tay; Y = Arg1-2
 lda [$0a]
 inc $0a
 inc $0a
-jsl $83e173
+jsl PrepareDMAOnSelected   ; jsl $83e173
 lda $0a
 sta $02,s
 rti
@@ -810,7 +810,7 @@ jsr S_80B29F
 lda $0A : sta $02,s
 rti
 
-;org $8088c8
+org $8088c8
 Cop_0E:
 {
 TYX
@@ -1325,6 +1325,38 @@ pla
 bra -
 }
 ;...
+
+org $809400
+Cop_3B:
+phy
+jsr SR_ReserveNewThinkerId
+tyx
+lda [$0a]
+  inc $0a
+  and #$00ff : sta $7f0002,x
+-:    ; org $809410
+lda [$0a]
+  inc $0a : inc $0a
+sta $0000,x
+lda [$0a]
+  inc $0a
+  and #$00ff : sta $0002,x
+txy
+lda $01,s : tax
+lda $7f000e,x
+tyx
+sta $7f000e,x
+lda #$0000 : sta $000e,x
+plx
+lda $0a : sta $02,s
+rti
+Cop_3C:    ; org $80943c
+phy
+jsr SR_ReserveNewThinkerId
+tyx
+bra -
+;warnpc $809443
+
 org $80956b
 Cop_44:
 {
@@ -1384,6 +1416,201 @@ lda $0A : clc : adc #$0006 : sta $02,s
 rti
 }
 warnpc $809647
+; ...
+org $80965e
+Cop_48:
+tyx
+lda $0a : sta $02,s
+jsl $83f0ca
+rti
+warnpc $809668
+; ...
+org $809685
+Cop_4B:
+tyx
+jsr SR_SecAndRestoreActorPtrIfAdHocTileDrawQueued : bcc B_80968E
+pla
+pla
+rtl
+B_80968E:    ; org $80968e
+lda [$0A] : inc $0A : and #$00FF : sta $0018
+  asl : asl : asl : asl : sta $001A
+lda [$0A] : inc $0A : and #$00FF : sta $001C
+  asl : asl : asl : asl : sta $001E
+lda [$0A] : inc $0A : and #$00FF : sta $0000
+phy
+  phd
+    lda #$0000 : tcd
+    jsr SR_QueueAdHocTileDraw
+  pld
+plx
+lda $0A
+sta $02,s
+rti
+;org $8096ca
+Cop_4C:
+tyx
+jsr SR_SecAndRestoreActorPtrIfAdHocTileDrawQueued : bcc B_8096D3
+pla
+pla
+rtl
+B_8096D3:
+phy
+phd
+lda [$0A] : inc $0A : and #$00ff : sta $0000
+lda #$0000 : tcd
+lda $0014,x : sta $18
+  asl : asl : asl : asl : sta $1a
+lda $0016,x : sta $1C
+  asl : asl : asl : asl : sta $1E
+jsr SR_QueueAdHocTileDraw
+pld
+plx
+lda $0A : sta $02,s
+rti
+;org $809703
+Cop_4D:
+tyx
+jsr SR_SecAndRestoreActorPtrIfAdHocTileDrawQueued : bcc B_80970C
+pla
+pla
+rtl
+B_80970C:
+lda $7F002A,x : bit #$0002 : bne B_809720
+  ora #$0002 : sta $7F002A,x
+lda [$0A] : sta $24
+B_809720:    ; org $809720
+phx
+phd
+phb
+sep #$20
+  lda $02 : pha : plb
+rep #$20
+lda $24 : tax
+  inc : inc : inc : sta $24
+jsr S_8097EF : bcs B_80975B
+plb
+jsr SR_QueueAdHocTileDraw
+pld
+plx
+lda $7F002A,x : bit #$0004 : beq B_809752
+sep #$20
+  lda $7F0010,x : sta $06F9
+rep #$20
+B_809752:    ; org $809752
+lda $0A : dec : dec : sta $00
+pla
+pla
+rtl
+B_80975B:    ; org $80975b
+rep #$20
+plb
+pld
+plx
+lda $7F002A,x : and #$FFFD : sta $7F002A,x
+lda $0A : clc : adc #$0002 : sta $02,s
+rti
+;org $809774
+Cop_4E:
+tyx
+jsr SR_SecAndRestoreActorPtrIfAdHocTileDrawQueued : bcc B_80977D
+pla
+pla
+rtl
+B_80977D:
+lda $7F002A,x : bit #$0002 : bne B_809791
+  ora #$0002 : sta $7F002A,x
+lda [$0A] : sta $24
+B_809791:    ; org $809791
+phx
+phd
+phb
+sep #$20
+  lda $02 : pha : plb
+rep #$20
+lda $24 : tax
+  clc : adc #$0004 : sta $24
+jsr S_8097EF : bcs B_8097D6
+lda $0003,x : and #$00FF : sta $0008,y
+plb
+jsr SR_QueueAdHocTileDraw
+pld
+plx
+lda $7F002A,x : bit #$0004 : beq B_8097CD
+sep #$20
+  lda $7F0010,x : sta $06F9
+rep #$20
+B_8097CD:    ; org $8097cd
+lda $0A : dec : dec : sta $00
+pla
+pla
+rtl
+B_8097D6:    ; org $8097d6
+rep #$20
+plb
+pld
+plx
+lda $7F002A,x : and #$FFFD : sta $7F002A,x
+lda $0A : clc : adc #$0002 : sta $02,s
+rti
+;org $8097ef
+S_8097EF:
+lda #$0000 : tcd
+sep #$20
+  lda $0000,x : bmi B_809827
+    sta $18
+  lda $0001,x : sta $1C
+  lda $0002,x
+rep #$20
+  and #$00FF : sta $00
+lda $18 : and #$00FF : sta $18
+  asl : asl : asl : asl : sta $1A
+lda $1C : and #$00FF : sta $1C
+  asl : asl : asl : asl : sta $1E : clc
+rts
+B_809827:    ; org $809827
+sec
+rts
+;org $809829
+SR_QueueAdHocTileDraw:
+ldx #$0000 : jsl LR_GetTileTableIndex82    ; jsl $82b0a3
+lda $00
+phx
+tax
+sep #$20
+  lda $7F0000,x : sta $02
+  txa
+plx
+  sta $7EA000,x
+  lda $02 : sta $7FC000,x
+rep #$20
+lda $1A : clc : adc #$0010 : sec : sbc $068A : cmp #$0111 : bcs B_8098A8
+lda $068E : sec : sbc #$0010 : and #$FFF0 : pha
+lda $1E : sec : sbc $01,s : bmi B_8098A7
+  cmp #$00F1 : bcs B_8098A7
+pla
+lda $7EA000,x : and #$00FF : asl : asl : asl : tax
+lda $7E2000,x : sta $0904
+lda $7E2002,x : sta $0906
+lda $7E2004,x : sta $090A
+lda $7E2006,x : sta $090C
+jsl S_82B0CF : sta $0902
+  clc : adc #$0020 : sta $0908
+rts
+B_8098A7:    ; org $8098a7
+pla
+B_8098A8:    ; org $8098a8
+rts
+
+SR_SecAndRestoreActorPtrIfAdHocTileDrawQueued:    ; org $8098a9
+clc
+lda $0902 : bne B_8098B0
+rts
+B_8098B0:    ; org $8098b0
+lda $0A : dec : dec : sta $00
+sec
+rts
+warnpc $8098b8
 ;...
 org $8099f5
 Cop_56:    ; Advance sprite animation, subject to global variable states?
@@ -1602,6 +1829,36 @@ lda $0A : sta $00
 rti
 }
 ;...
+
+org $809f5f ; Usage: High bit of new sprite index is artificial,
+SR_SetSpriteIndexMaybeMirror:
+{
+STZ $2A    ;   used to set/clear X-mirror sprite flag #$4000.
+CMP #$00FF ; If the requested sprite index
+BNE +$01   ; is #$FF, 
+RTS        ; give up and return.
+BIT #$0080 ; If the requested sprite index is negative,
+BEQ .NoMirror  ; +$13   ; then
+AND #$FF7F ;   clear the negative bit
+STA $28    ;   and store the new value.
+LDA $12    ;   If the physics flags
+BIT #$0002 ;   do include this one,
+BEQ +$01   ;     stop processing
+RTS        ;     and return.
+LDA #$4000 ;   If not,
+TSB $0E    ;     set #$4000 in the sprite properties
+RTS        ;     and return.
+.NoMirror:
+STA $28    ; The requested sprite index was not negative.
+LDA $12    ; Store it in $28 directly, and again check
+BIT #$0002 ; whether the physics flags include #$0002.
+BEQ +$01   ; If so,
+RTS        ;   stop processing and return.
+LDA #$4000 ; If not,
+TRB $0E    ;   clear #$4000 from the sprite properties
+RTS        ;   and return.
+}
+;...
 org $80a01e
 Cop_8D:    ; $a01e
 {
@@ -1726,6 +1983,72 @@ rtl
 }
 ;org $80a24b
 
+org $80a5f7
+Cop_E0:
+tyx
+phd
+lda $12 : bit #$0040 : beq .DieThisOnly
+pea.w .DoneAndReturn-1
+bra .DieWithChildren
+.DieThisOnly:    ; org $80a605
+jsr SR_RemoveSelfFromActorList
+.DoneAndReturn:    ; org $80a608
+pla : tax : tcd
+pla
+pla
+rtl
+.DieWithChildren:    ; org $80a60e
+stx $0000
+lda $0004,x : tax
+beq ..FoundPrevNotChild
+..CheckPrevActor:    ; org $80a617
+lda $7F001C,x : cmp $0000 : bne ..FoundPrevNotChild
+lda $0004,x : tax
+bne ..CheckPrevActor
+..FoundPrevNotChild:    ; org $80a626
+stx $0002
+ldx $0000
+lda $0006,x : tax
+beq ..FoundNextNotChild
+..CheckNextActor:    ; org $80a632
+lda $7F001C,x : cmp $0000 : bne ..FoundNextNotChild
+lda $0006,x : tax
+bne ..CheckNextActor
+..FoundNextNotChild:    ; org $80a641
+stx $0004                                    ; $0004 = last non-child actor, or 0 if all later actors are children
+ldx $0002 : bne ..ReturnNextActorIdToPool    ; $0002 = first non-child actor, or 0 if all previous actors are children
+ldx $0056
+jsr SR_ReturnMyActorIdToPool
+..ReturnNextActorIdToPool:    ; org $80a64f
+lda $0006,x : cmp $0004 : beq ..DoneReturningActorIdsToPool
+tax
+jsr SR_ReturnMyActorIdToPool
+bra ..ReturnNextActorIdToPool
+..DoneReturningActorIdsToPool:    ; org $80a65d
+lda $0002 : bne ..MustRelinkFirstNonChildActor
+ldx $0004 : stx $0056
+stz $0004,x
+lda $03,s : tax : tcd
+lda $0004 : sta $06
+rts
+..MustRelinkFirstNonChildActor:    ; org $80a675
+lda $0004 : bne ...AndLast
+ldx $0002 : stx $0058
+stz $0006,x
+lda $03,s : tax : tcd
+stz $06
+rts
+...AndLast:    ; org $80a68a
+ldy $0004
+lda $0002 : sta $0004,y
+tax
+tya : sta $0006,x
+tay
+lda $03,s : tax
+tcd
+tya : sta $06
+rts
+warnpc $80a6a1
 
 
 ;...
@@ -1774,35 +2097,6 @@ rti
 }
 ;org $80ab60
 
-org $809f5f ; Usage: High bit of new sprite index is artificial,
-SR_SetSpriteIndexMaybeMirror:
-{
-STZ $2A    ;   used to set/clear X-mirror sprite flag #$4000.
-CMP #$00FF ; If the requested sprite index (NB: NOT the
-BNE +$01   ; cop argument, which if #$FF is ignored)
-RTS        ; is #$FF, give up and return.
-BIT #$0080 ; If the requested sprite index is negative,
-BEQ .NoMirror  ; +$13   ; then
-AND #$FF7F ;   clear the negative bit
-STA $28    ;   and store the new value.
-LDA $12    ;   If the physics flags
-BIT #$0002 ;   do include this one,
-BEQ +$01   ;     stop processing
-RTS        ;     and return.
-LDA #$4000 ;   If not,
-TSB $0E    ;     set #$4000 in the sprite properties
-RTS        ;     and return.
-.NoMirror:
-STA $28    ; The requested sprite index was not negative.
-LDA $12    ; Store it in $28 directly, and again check
-BIT #$0002 ; whether the physics flags include #$0002.
-BEQ +$01   ; If so,
-RTS        ;   stop processing and return.
-LDA #$4000 ; If not,
-TRB $0E    ;   clear #$4000 from the sprite properties
-RTS        ;   and return.
-}
-
 
 org $80a9ae
 Cop_6D:
@@ -1842,9 +2136,56 @@ rti
 lda [$0A] : inc $0A : inc $0A : sta $02,s
 rti
 }
-warnpc $80ac27
-
-
+;org $80ac27
+Cop_D5:
+{
+tyx
+lda [$0A]
+  inc $0a
+  and #$00ff : jsl LR_RemoveItemA    ; = jsl $83f08d
+lda $0a : sta $02,s
+rti
+}
+;org $80ac38
+Cop_D6:
+{
+tyx
+lda [$0a]
+  inc $0a
+  and #$00ff : jsl LR_ClcIfPlayerHasItemA : bcc .HasItem    ; = jsl $83f0b3
+lda [$0a]
+  inc $0a : inc $0a
+lda $0a : sta $02,s
+rti
+.HasItem:    ; org $80ac51
+lda [$0a]
+  inc $0a : inc $0a
+sta $02,s
+rti
+}
+;org $80ac5a
+Cop_D7:
+{
+tyx
+lda [$0a]
+  inc $0a
+  and #$00ff
+sep #$20
+ldy $0ac4
+cmp $0ab4,y
+rep #$20
+beq .IsEquipped
+lda [$0a]
+  inc $0a : inc $0a
+lda $0a : sta $02,s
+rti
+.IsEquipped:    ; org $80ac79
+lda [$0a]
+  inc $0a : inc $0a
+  sta $02,s
+rti
+}
+;org $80ac82
 
 
 org $80acdf
@@ -1966,72 +2307,6 @@ rti
 ;org $80adcf
 
 
-org $80a5f7
-Cop_E0:
-tyx
-phd
-lda $12 : bit #$0040 : beq .DieThisOnly
-pea.w .DoneAndReturn-1
-bra .DieWithChildren
-.DieThisOnly:    ; org $80a605
-jsr SR_RemoveSelfFromActorList
-.DoneAndReturn:    ; org $80a608
-pla : tax : tcd
-pla
-pla
-rtl
-.DieWithChildren:    ; org $80a60e
-stx $0000
-lda $0004,x : tax
-beq ..FoundPrevNotChild
-..CheckPrevActor:    ; org $80a617
-lda $7F001C,x : cmp $0000 : bne ..FoundPrevNotChild
-lda $0004,x : tax
-bne ..CheckPrevActor
-..FoundPrevNotChild:    ; org $80a626
-stx $0002
-ldx $0000
-lda $0006,x : tax
-beq ..FoundNextNotChild
-..CheckNextActor:    ; org $80a632
-lda $7F001C,x : cmp $0000 : bne ..FoundNextNotChild
-lda $0006,x : tax
-bne ..CheckNextActor
-..FoundNextNotChild:    ; org $80a641
-stx $0004                                    ; $0004 = last non-child actor, or 0 if all later actors are children
-ldx $0002 : bne ..ReturnNextActorIdToPool    ; $0002 = first non-child actor, or 0 if all previous actors are children
-ldx $0056
-jsr SR_ReturnMyActorIdToPool
-..ReturnNextActorIdToPool:    ; org $80a64f
-lda $0006,x : cmp $0004 : beq ..DoneReturningActorIdsToPool
-tax
-jsr SR_ReturnMyActorIdToPool
-bra ..ReturnNextActorIdToPool
-..DoneReturningActorIdsToPool:    ; org $80a65d
-lda $0002 : bne ..MustRelinkFirstNonChildActor
-ldx $0004 : stx $0056
-stz $0004,x
-lda $03,s : tax : tcd
-lda $0004 : sta $06
-rts
-..MustRelinkFirstNonChildActor:    ; org $80a675
-lda $0004 : bne ...AndLast
-ldx $0002 : stx $0058
-stz $0006,x
-lda $03,s : tax : tcd
-stz $06
-rts
-...AndLast:    ; org $80a68a
-ldy $0004
-lda $0002 : sta $0004,y
-tax
-tya : sta $0006,x
-tay
-lda $03,s : tax
-tcd
-tya : sta $06
-rts
-warnpc $80a6a1
 
 
 org $80af40
@@ -2288,7 +2563,21 @@ rts
 warnpc $80b1cb
 
 
-org $80b29f
+org $80b27b
+SR_ReserveNewThinkerId:
+phd
+lda #$0000 : tcd
+jsl LR_AllocThinker : bcs +     ; jsl $83CE8F
+ldx $005c : txa : sta $0004,y
+lda #$0000 : sta $0008,y
+  sta $0006,y
+tya : sta $0006,x
+sty $005c
++:
+pld
+rts
+
+;org $80b29f
 #S_80B29F:
 phb
 phd
@@ -2694,7 +2983,7 @@ sep #$20
 lda $0002 : xba
 lda $0060
 ldy $005E
-jsl PrepareDMAOnSelected
+jsl PrepareDMAOnSelected   ; jsl $83e173
 lda #$01 : sta $0060
 rep #$20
 stz $005E
@@ -2725,8 +3014,7 @@ lda $0003,x : bit #$0080 : beq +
   lda $068E : sta $1C
   lda $068C : sta $18
 +:
-lda $0012
-lsr : bcs +
+lda $0012 : lsr : bcs +
   lda $0002,x : sta $64 : sta $60
   lda $0000,x : sta $62 : sta $5E : bra ++
 +:
@@ -2993,45 +3281,57 @@ rtl
 db $04,$08
 ;org $80bd98
 
+org $80be18
+db $04,$08
+-:
+lda #$0008 : sta $7f0008,x
+cop #$5F : dw $8800 : db $40
+cop #$C2
+cop #$D0 : db $ff,$00 : dw -
+cop #$60 : db $01,$02
+cop #$61 : dl $7e8800 : db $0d
+rtl
+warnpc $80be39
 
 
 org $80bf89
 db $00,$08
 TPlayerPalInitAndChatListener:
-cop #$D9 : dw $0AD4, $BF91
-  dw B_80BF99, B_80BFA0
-  dw B_80BFA7, B_80BFAE
-B_80BF99:    ; org $80bf99
+cop #$D9 : dw $0AD4, .InitBodyOptions
+.InitBodyOptions:    ; org $80bf91
+  dw ..InitAsWill, ..InitAsFreedan
+  dw ..InitAsShadow, ..InitAsFreedanDupe
+..InitAsWill:    ; org $80bf99
 cop #$37 : db $0B
 cop #$39
-bra J_80BFB5
-B_80BFA0:    ; org $80bfa0
+bra ..Done
+..InitAsFreedan:    ; org $80bfa0
 cop #$37 : db $0C
 cop #$39
-bra J_80BFB5
-B_80BFA7:    ; org $80bfa7
+bra ..Done
+..InitAsShadow:    ; org $80bfa7
 cop #$37 : db $23
 cop #$39
-bra J_80BFB5
-B_80BFAE:    ; org $80bfae
+bra ..Done
+..InitAsFreedanDupe:    ; org $80bfae
 cop #$37 : db $0C
 cop #$39
-bra J_80BFB5
-J_80BFB5:    ; org $80bfb5
+bra ..Done
+..Done:    ; org $80bfb5
 lda $7F000E,x : and #$F7FF : sta $7F000E,x
 cop #$C2
 phd
 lda #$0000 : tcd
-lda $0656 : bit #$8000 : beq B_80BFD2
-jmp J_80BFD4
-B_80BFD2:    ; org $80bfd2
+lda $0656 : bit #$8000 : beq .NotChatting
+  jmp .MaybeChatting
+.NotChatting:    ; org $80bfd2
 pld
 rtl
-J_80BFD4:    ; org $80bfd4
-jsl LR_GetPlayerFacingDirection : bcc B_80BFDC
+.MaybeChatting:    ; org $80bfd4
+jsl LR_GetPlayerFacingDirection : bcc .IsChatting
 pld
 rtl
-B_80BFDC:    ; org $80bfdc
+.IsChatting:    ; org $80bfdc
 sta $09EE
 ldy $09AA
 php
@@ -3155,8 +3455,8 @@ rts
 
 S_80C182:    ; org $80c182
 lda $09EE : and #$00FF : bit #$0002 : bne B_80C193
-inc : and #$0001
-bra J_80C199
+  inc : and #$0001
+  bra J_80C199
 B_80C193:    ; org $80c193
 inc : and #$0001
 inc : inc
@@ -3434,8 +3734,47 @@ bra .Animate
 .FromFlute:    ;org $80c455
 lda #$0200 : trb $10
 PlayerUnfreezePointer:
-jml EPlayer_FromCastothFreeze    ; $82C3C8
+jml EPlayer_ParseAct    ; $82C3C8
+
 ;org $80c45e
+cop #$8E : db $04
+cop #$C1
+cop #$80 : db $20
+cop #$89
+rtl
+
+;org $80c469
+jml EPlayer_ParseAct   ; = $82c3c8
+
+;org $80c46d
+cop #$8E : db $04
+cop #$80 : db $20
+cop #$89
+jml EPlayer_ParseAct   ; = $82c3c8
+
+;org $80c479
+lda #$cff0 : tsb $065a
+lda #$0008 : tsb $09ae
+lda #$0008 : trb $10
+lda #$2200 : tsb $10
+lda #$0200 : tsb $06ee
+cop #$DA : db $03
+cop #$BC : db $00, $80
+lda #$2000 : trb $10
+cop #$CA : db $08
+  cop #$91 : db $19, $07
+  cop #$89
+cop #$CB
+cop #$06 : db $2c
+cop #$91 : db $1c, $00
+cop #$89
+lda #$0008 : tsb $10
+lda #$0200 : trb $10
+lda #$0200 : trb $06ee
+lda #$cff0 : trb $065a
+stz $08
+jml EPlayer_ParseAct   ; = $82c3c8
+;org $80c4d1
 
 org $80c557
 EPlayer_TryAura:
@@ -3559,7 +3898,63 @@ lda $14 : sta $7f0010,x
 lda $16 : sta $7f0012,x
 rtl
 LR_WanderingNpcDoWander:    ; org $80c725
-
+cop #$23 : and #$0007 : sta $0000
+cop #$D9 : dw $0000, .Options    ; $C733
+.Options:
+  dw .LookNorth, .LookSouth
+  dw .LookWest, .LookEast
+  dw .TryMoveNorth, .TryMoveSouth
+  dw .TryMoveWest, .TryMoveEast
+.LookSouth:    ; org $80c743
+lda $7F0026,x : clc : adc #$0000
+bra .DoLookAnim
+.LookNorth:    ; org $80c74d
+lda $7F0026,x : clc : adc #$0001
+bra .DoLookAnim
+.LookWest:    ; org $80c757
+lda $7F0026,x : clc : adc #$0002
+bra .DoLookAnim
+.LookEast:    ; org $80c761
+lda $7F0026,x : clc : adc #$0003
+bra .DoLookAnim
+.DoLookAnim:    ; org $80c76b
+sta $28
+stz $2A
+jsl LR_AnimateSprite
+lda #$0078 : sta $08
+cop #$0B
+rtl
+.TryMoveSouth:    ; org $80c77b
+lda $7F0012,x : clc : adc #$0030 : cmp $16 : bcc .LookSouth
+cop #$16 : dw .LookSouth
+cop #$AB : db $11
+lda $7F0026,x : clc : adc #$0004
+bra .DoMoveAnim
+.TryMoveNorth:    ; org $80c798
+lda $7F0012,x : sec : sbc #$0030 : cmp $16 : bcs .LookNorth
+cop #$15 : dw .LookNorth
+cop #$AB : db $12
+lda $7F0026,x : clc : adc #$0005
+bra .DoMoveAnim
+.TryMoveWest:    ; org $80c7b5
+lda $7F0010,x : sec : sbc #$0030 : cmp $14 : bcs .LookWest
+cop #$17 : dw .LookWest
+cop #$AA : db $12
+lda $7F0026,x : clc : adc #$0006
+bra .DoMoveAnim
+.TryMoveEast:    ; org $80c7d2
+lda $7F0010,x : clc : adc #$0030 : cmp $14 : bcc .LookEast
+cop #$18 : dw .LookEast
+cop #$AA : db $11
+lda $7F0026,x : clc : adc #$0007
+bra .DoMoveAnim
+.DoMoveAnim:    ; org $80c7ef
+sta $28
+stz $2A
+jsl LR_AnimateSprite
+cop #$0C
+rtl
+warnpc $80c7fa
 
 
 org $80c98e
@@ -3830,8 +4225,7 @@ B_80CDBB:    ; org $80cdbb
 lda $80CE99,x : and #$00FF : cmp $0AAC : beq B_80CDCA
 jmp J_80CE93
 B_80CDCA:    ; org $80cdca
-lda $80CE97,x : and #$00FF
-jsl LR_SetFlagA
+lda $80CE97,x : and #$00FF : jsl LR_SetFlagA
 lda $80CE98,x : and #$00FF : sta $28
 stz $2A
 plx
@@ -3931,14 +4325,12 @@ warnpc $80cf29
 
 
 
-
-
-
 org $80cf8e
 ESimpleScreenShake:
 
 
-C_80CFEF:    ; org $80cfef
+org $80cfef
+C_80CFEF:
 cop #$23 : sta $28
 lda #$0002 : sta $2A
 cop #$C1
@@ -5196,7 +5588,7 @@ B_80E4FA:
 cop #$E0
 
 ;org $80e4fc
-EChaserAlt:    ; I think this one doesn't change direction once it's moving.
+EChaserAlt:    ; This one doesn't change direction once it's moving.
 {
 txy
 ldx $0004,y
@@ -5293,6 +5685,11 @@ rtl
 warnpc $80e655
 }
 
+; EChase requires:
+;   - Caller is Actor04 (i.e. previous in list)
+;   - Caller sets Chaser's $24 = target, $7F:0E = duration if nonzero
+;   - Caller has $7F:14 = speed, $7F:0A = sprite | $8000
+;   - Caller kills this via cop #$A9 or similar when it's done
 org $80e683
 EChaser:
 txy

@@ -2328,9 +2328,60 @@ cop #$8A
 bra J_8ACDA2
 
 
-
-
-org $8ACF0E
+org $8ACE34
+db $00 : dw $3000
+EViperStatueAwardListener:
+cop #$C1
+lda $0aec : beq +
+  rtl
++:
+cop #$D0 : db $f9,$01 : dw .PostStatueGetSpawnNeil
+lda #$fff0 : tsb $065a
+cop #$DA : db $3b
+cop #$BF : dw $cf0e
+lda #$0001 : sta $0aac
+lda #$0055 : sta $0b12
+lda #$0010 : sta $0b08
+  sta $0b0a
+lda #$0008 : sta $0b0c
+  sta $0b0e
+lda #$2200 : sta $0b10
+cop #$26 : db $fd : dw $0000,$0000 : db $00,$00,$11
+rtl
+.PostStatueGetSpawnNeil:    ; org $8ace81
+cop #$9A : dl $80e98b : dw $2800
+lda #$0201 : sta $0014,y
+lda #$000c : sta $0016,y
+cop #$9A : dl $8ad034 : dw $2800
+cop #$DA : db $3b
+lda $0ad4 : beq +
+  ldy $09aa
+  lda #$0088 : sta $0002,y
+  lda #$f37d : sta $0000,y
+  lda #$0000 : sta $0008,y
+  lda #$0800 : tsb $09ae
+  cop #$C1
+  lda $09ae : bit #$0800 : beq +
+    rtl
++:
+cop #$DA : db $3b
+cop #$BF : dw $cf4a
+cop #$CA : db $30
+  lda $06dc : inc : sta $06dc
+cop #$CB
+lda #$0170 : sta $06dc
+cop #$42 : db $07,$0c,$08
+cop #$C1
+lda $09a8 : cmp #$0018 : beq +
+  rtl
++:
+lda #$0000 : sta $0aa6
+  sta $0688
+lda #$0404 : sta $064a
+cop #$26 : db $58 : dw $0000,$0000 : db $03,$00,$11
+cop #$C1
+rtl
+;org $8ACF0E
 db $D3,$C2,$00,$69,$8E,$A5,$AC,$D6,$98,$83,$84,$85,$84,$80,$A4,$84,$83,$AC,$A4,$87,$84,$2B,$AC,$CB,$D6,$9C,$83,$84,$8C,$8E,$8D,$4F,$AC,$CB,$4B,$8E,$8E,$8A,$4F,$AC,$40,$AC,$4C,$A9,$A3,$A4,$88,$82,$AC,$63,$A4,$80,$A4,$A5,$84,$4F,$4F,$C3,$00,$C0
 ;org $8ACF4A
 db $D3,$C2,$00,$40,$AC,$D6,$C7,$8D,$8E,$88,$A3,$84,$AC,$85,$88,$8B,$8B,$A3,$AC,$CB,$A4,$87,$84,$AC,$80,$88,$A2,$AC,$D6,$6D,$D7,$C7,$CB,$D7,$11,$8E,$A5,$A4,$AC,$8E,$85,$AC,$8D,$8E,$A7,$87,$84,$A2,$84,$2B,$CB,$A9,$8E,$A5,$AC,$D6,$9B,$D6,$37,$A6,$8E,$88,$82,$84,$4F,$CF,$C2,$06,$D6,$36,$CB,$67,$88,$8B,$8B,$4F,$AC,$D6,$69,$85,$80,$8B,$8B,$88,$8D,$86,$AC,$CB,$A4,$8E,$AC,$A4,$87,$84,$AC,$86,$A2,$8E,$A5,$8D,$83,$4F,$4F,$4F,$4F,$AC,$CF,$46,$A2,$80,$81,$AC,$A4,$87,$84,$AC,$80,$88,$A2,$A0,$8B,$80,$8D,$84,$2B,$AC,$80,$8D,$83,$CB,$A7,$84,$0E,$8B,$8B,$AC,$85,$8B,$A9,$AC,$8E,$A5,$A4,$AC,$8E,$85,$AC,$87,$84,$A2,$84,$4F,$C3,$00,$C0

@@ -102,6 +102,7 @@ db $C2,$09,$C2,$00,$64,$87,$84,$AC,$45,$8B,$A5,$A4,$84,$AC,$48,$AC,$87,$80,$83,$
 
 ;org $899972
 
+
 org $899A70
 db $C2,$0A,$C2,$00,$D6,$4B,$D7,$A0,$A4,$8E,$CB,$85,$80,$8B,$8B,$AC,$D6,$8E,$A4,$87,$84,$AC,$45,$8B,$A5,$A4,$84,$2A,$2A,$2A,$C3,$00,$C0
 ;org $899A91
@@ -135,6 +136,45 @@ db $C2,$0A,$C2,$01,$67,$80,$88,$A4,$2A,$2A,$2A,$2A,$C3,$00,$C0
 db $C2,$0B,$C2,$00,$D5,$00,$67,$88,$8B,$8B,$2F,$AC,$CB,$4A,$80,$A2,$80,$4F,$4F,$4F,$0D,$AC,$CF,$C2,$01,$D6,$25,$48,$0E,$8C,$AC,$A3,$8E,$A2,$A2,$A9,$2A,$AC,$CB,$48,$AC,$D6,$A3,$D6,$91,$A4,$87,$80,$A4,$2B,$AC,$88,$85,$AC,$CB,$A7,$84,$AC,$A0,$80,$A2,$A4,$AC,$8D,$8E,$A7,$2B,$AC,$A7,$84,$0E,$8B,$8B,$AC,$CB,$D6,$BB,$D7,$87,$80,$86,$80,$88,$8D,$2A,$2A,$2A,$AC,$CF,$C2,$00,$67,$88,$8B,$8B,$2F,$AC,$CB,$41,$A5,$A4,$AC,$4A,$80,$A2,$80,$2B,$AC,$A7,$87,$A9,$AC,$D6,$98,$A9,$8E,$A5,$AC,$CB,$D6,$79,$87,$84,$A2,$84,$0D,$AC,$CF,$69,$8E,$A5,$AC,$D6,$78,$D6,$79,$87,$84,$A2,$84,$CB,$A5,$8D,$8B,$84,$A3,$A3,$AC,$A9,$8E,$A5,$AC,$D6,$98,$A4,$87,$84,$CB,$D6,$07,$62,$88,$8D,$86,$2A,$2A,$2A,$CF,$C2,$01,$D6,$25,$42,$8E,$A5,$8B,$83,$AC,$D6,$D7,$CB,$81,$84,$AC,$A4,$87,$84,$AC,$A2,$88,$8D,$86,$2A,$2A,$2A,$AC,$CB,$D7,$07,$A9,$8E,$A5,$AC,$D6,$90,$88,$A4,$AC,$CB,$88,$8D,$AC,$A4,$87,$84,$AC,$48,$8D,$82,$80,$8D,$AC,$D6,$19,$63,$87,$88,$A0,$0D,$AC,$CF,$C2,$00,$64,$87,$88,$A3,$AC,$D6,$07,$62,$88,$8D,$86,$AC,$88,$A3,$CB,$D7,$5C,$81,$8B,$A5,$84,$2A,$2A,$2A,$CF,$64,$87,$84,$AC,$A2,$88,$8D,$86,$AC,$A9,$8E,$A5,$AC,$D6,$98,$88,$A3,$CB,$D6,$A8,$81,$8B,$A5,$84,$2A,$2A,$2A,$CF,$40,$AC,$D6,$A8,$8E,$8D,$84,$CB,$80,$8D,$83,$AC,$80,$AC,$D7,$5C,$8E,$8D,$84,$2A,$2A,$2A,$CF,$67,$88,$8B,$8B,$2F,$AC,$48,$AC,$A5,$8D,$83,$84,$A2,$A3,$A4,$80,$8D,$83,$2A,$2A,$AC,$CB,$4D,$8E,$AC,$D6,$B8,$D6,$F7,$87,$80,$A0,$A0,$84,$8D,$A3,$2B,$AC,$CB,$D6,$82,$D6,$AC,$8C,$84,$2A,$C3,$00,$C0
 
 ;org $89A090
+EDarkSpaceGaiaEyes:
+cop #$80 : db $00
+cop #$89
+rtl
+;org $89a096
+EDarkSpaceGaiaMouth:
+cop #$8D : db $01
+lda #$0000 : sta $24
+.Idle:
+cop #$C1
+lda $24 : bne +
+  rtl
++:
+lda $06f8 : bne +
+  rtl
++:    ; org $89a0ab
+cop #$23 : and #$0003
+  dec : beq .AnimType2
+  dec : beq .AnimType3
+cop #$80 : db $01
+cop #$89
+cop #$C1
+cop #$8B
+bra .Idle
+.AnimType2:
+cop #$80 : db $02
+cop #$89
+cop #$C1
+cop #$8B
+bra .Idle
+.AnimType3:
+cop #$80 : db $03
+cop #$89
+cop #$C1
+cop #$8B
+bra .Idle
+
+;org $89a0d7
+
 
 org $89A179
 db $D3,$C0
@@ -2343,7 +2383,40 @@ EMPFallingBlockShadow:    ; org $89c333
 cop #$84 : db $1F, $03
 cop #$8A
 cop #$E0
-warnpc $89c33b
+
+;org $89c33b
+db $18 : dw $2300
+EMPFallingBlockInDiamondBlockRoom:
+cop #$BC : db $08, $00
+cop #$D0 : db $2F, $01 : dw .DoneFalling
+cop #$D2 : db $2F, $01
+lda #$CFF0 : tsb $065A
+cop #$DA : db $3B
+cop #$08 : db $15, $15
+cop #$9C : dl ESimpleScreenShake : dw $2000
+cop #$DA : db $B3
+cop #$23 : sta $08
+cop #$C2
+lda $16 : sec : sbc #$0100 : sta $16
+lda #$2000 : trb $10
+cop #$B2
+cop #$86 : db $18, $02, $0F
+cop #$8A
+cop #$08 : db $15, $15
+cop #$B4
+cop #$82 : db $18, $35
+cop #$89
+bra .DoneFalling    ; yes, really bra $00
+.DoneFalling:
+lda #$2000 : trb $10
+cop #$B3
+cop #$11
+lda #$CFF0 : trb $065A
+cop #$C1
+rtl
+warnpc $89c39f
+
+
 
 org $89C410
 db $D3,$63,$A4,$84,$A0,$A0,$88,$8D,$86,$AC,$8E,$8D,$AC,$80,$AC,$86,$8E,$8B,$83,$AC,$CB,$A4,$88,$8B,$84,$AC,$84,$8C,$88,$A4,$A3,$AC,$80,$AC,$A3,$8E,$A5,$8D,$83,$2A,$AC,$CF,$64,$87,$84,$A2,$84,$AC,$80,$A2,$84,$CB,$85,$8E,$A5,$A2,$AC,$86,$8E,$8B,$83,$AC,$A4,$88,$8B,$84,$A3,$2A,$AC,$CF,$63,$A4,$80,$8D,$83,$AC,$8E,$8D,$AC,$84,$80,$82,$87,$AC,$8E,$85,$AC,$A4,$87,$84,$CB,$85,$8E,$A5,$A2,$AC,$A4,$88,$8B,$84,$A3,$AC,$80,$A4,$AC,$A4,$87,$84,$AC,$A3,$80,$8C,$84,$CB,$A4,$88,$8C,$84,$2A,$AC,$C0
@@ -2414,9 +2487,25 @@ db $C1,$03,$11,$C7,$0D,$03,$69,$8E,$A5,$AC,$82,$80,$8D,$AC,$D6,$9B,$A4,$87,$84,$
 ;org $89C66E
 db $00,$00,$23
 EGoldenTileListener:
+cop #$D1 : dw $0112 : db $01 : dw .Die
+.WaitLoop:
+lda #$0258 : sta $7f0010,x
+cop #$C1
+cop #$45 : db $14,$17, $17,$1a : dw .DecCounter
+cop #$C4 : dl .WaitLoop
+.DecCounter:
+lda $7f0010,x : dec : beq .OpenDoor
+  sta $7f0010,x
+  rtl
+.OpenDoor:
+cop #$08 : db $0f,$0f
+cop #$32 : db $12
+cop #$33
+cop #$CD : dw $0112
+.Die:
+cop #$E0
 
-
-org $89c6a9
+;org $89c6a9
 db $00 : dw $2000
 EMP28TileListener:
 cop #$C1

@@ -126,8 +126,7 @@ lsr : lsr : lsr : lsr : beq B_8381AD
 B_8381AD: ; Manual draw of radar borders etc.
 lda $0AEE : and #$000F : ora #$34F0 : sta $7F060E
 lda #$2AE7 : sta $7F0608
-lda $0644
-jsl S_80B496 : bcs B_838248
+lda $0644 : jsl S_80B496 : bcs B_838248
 ldx $0644
 lda $81AADE,x : and #$00FF : beq B_838248
 lda #$2EE1 : sta $7F0406
@@ -317,7 +316,7 @@ dw $87a7    ; Inca Statue B
 dw $881d    ; Inca Melody (unused)
 dw $888a    ; Herb
 dw SR_UseItemDiamondBlock    ; $8917, Diamond Block
-dw $899a    ; Wind Melody
+dw SR_UseItemWindMelody    ; $899a, Wind Melody
 dw SR_UseItemLolasMelody    ; $8ba4, Lola's Melody
 dw $8d67    ; $0a = Meat
 dw $8e15    ; Mine Key A
@@ -437,14 +436,37 @@ lda $7F0012,x : cmp #$00FF : beq +
 +:
 cop #$E0
 }
-
-SR_UseItemPrisonKey:    ; $85C2
-
-
-
-
-
-org $83861F
+; org $8385c2
+SR_UseItemPrisonKey:
+lda $0644 : cmp #$000b : bne .WrongLocation
+cop #$45 : db $0e,$10, $10,$11 : dw .ForNorthDoor
+cop #$45 : db $0a,$17, $0c,$18 : dw .ForWestDoor
+bra .WrongLocation
+.ForNorthDoor:    ; org $8385dc
+cop #$D0 : db $24,$01 : dw .AlreadyUsed
+cop #$BF : dw $861f
+cop #$32 : db $06
+cop #$33
+cop #$CD : dw $0106
+cop #$CC : db $24
+cop #$08 : db $0e,$0e
+cop #$10 : db $0e,$11
+cop #$10 : db $0f,$11
+rts
+.ForWestDoor:
+cop #$D0 : db $42,$01 : dw .AlreadyUsed
+cop #$BF : dw $861f
+cop #$CC : db $42
+cop #$08 : db $0e,$0e
+cop #$12 : db $09,$17
+rts
+.AlreadyUsed:
+cop #$BF : dw $8680
+rts
+.WrongLocation:
+cop #$BF : dw $865d
+rts
+;org $83861F
 db $D3 ; Format-default.
 ; "As he turns the \nprison key, the steel \ndoor opens with a \ndull sound. \0"
 db $40,$A3,$AC,$87,$84,$AC,$A4,$A5,$A2,$8D,$A3,$AC,$A4,$87,$84,$AC,$CB,$D7,$91,$8A,$84,$A9,$2B,$AC,$A4,$87,$84,$AC,$A3,$A4,$84,$84,$8B,$AC,$CB,$D7,$58,$8E,$A0,$84,$8D,$A3,$AC,$D6,$F0,$80,$AC,$CB,$83,$A5,$8B,$8B,$AC,$A3,$8E,$A5,$8D,$83,$2A,$AC,$C0
@@ -955,9 +977,80 @@ db $D3,$47,$84,$AC,$A0,$A5,$A4,$A3,$AC,$8E,$8D,$84,$AC,$A0,$84,$A4,$80,$8B,$AC,$
 
 ;org $839AA0
 SR_UseItemHieroglyph:
+lda $0644 : cmp #$00cd : beq ++
+  cop #$BF : dw $9c8b
+  rts
+-:    ; org $839aad
+cop #$BF : dw $9c60
+rts
+++:    ; org $839ab2
+cop #$D0 : db $0f,$01 : dw -
+cop #$45 : db $04,$09, $0c,$0b : dw $9ac2
+bra -
+; org $839ac2
+cop #$BF : dw $9ba5
+cop #$BE : db $63,$01 : dw $9acc
+  dw $9ada
+  dw $9adf, $9ae7, $9aef
+  dw $9af7, $9aff, $9b07
+; org $839ada
+lda #$0000 : sta $0aac
+bra +
+lda #$0001 : sta $0aac
+bra +
+lda #$0002 : sta $0aac
+bra +
+lda #$0003 : sta $0aac
+bra +
+lda #$0004 : sta $0aac
+bra +
+lda #$0005 : sta $0aac
+bra +
++:    ; org $839b0f
+ldy $0ac4
+lda $0ab4,y : and #$00ff : sec : sbc #$001e : sta $0aa6
+jsr $9fb2
+phx
+  ldx #$0000
+  cop #$A5 : dl $839b70 : dw $0000, $2000
+  lda $0aa6 : sta $0024,y
+  lda $0aac : clc : adc #$0005 : sta $0014,y
+  lda #$0006 : sta $0016,y
+plx
+lda $0aac : asl : tay
+lda $0b28,y : bmi +
+  clc : adc #$001e
+  phy
+  jsl LR_GiveItemAOrSec   ; $83ef97
+  ply
+  lda $0aa6 : sta $0b28,y
+  cop #$BF : dw $9c19
+  rts
++:    ; org $839b65
+lda $0aa6 : sta $0b28,y
+cop #$BF : dw $9c39
+rts
+;org $839b70
+C_839B70:
+lda $24 : sta $0000
+cop #$D9 : dw $0000, $9b7b
+  dw $9B87, $9B8C
+  dw $9B91, $9B96
+  dw $9B9B, $9BA0
+cop #$4C : db $84
+cop #$E0
+cop #$4C : db $85
+cop #$E0
+cop #$4C : db $86
+cop #$E0
+cop #$4C : db $8c
+cop #$E0
+cop #$4C : db $8d
+cop #$E0
+cop #$4C : db $8e
+cop #$E0
 
-
-org $839BA5
+;org $839BA5
 db $D3,$C2,$00,$64,$87,$84,$A2,$84,$AC,$80,$A2,$84,$AC,$A3,$88,$A8,$AC,$87,$8E,$8B,$8B,$8E,$A7,$A3,$AC,$CB,$D6,$F4,$80,$AC,$A4,$88,$8B,$84,$AC,$82,$80,$8D,$AC,$85,$88,$A4,$2A,$AC,$CF,$60,$A5,$A4,$AC,$88,$A4,$AC,$A7,$87,$84,$A2,$84,$0D,$CB,$AC,$21,$A3,$A4,$AC,$D6,$8E,$4B,$2A,$AC,$24,$A4,$87,$AC,$D6,$8E,$4B,$2A,$CB,$AC,$22,$8D,$83,$AC,$D6,$8E,$4B,$2A,$AC,$25,$A4,$87,$AC,$D6,$8E,$4B,$2A,$CB,$AC,$23,$A2,$83,$AC,$D6,$8E,$4B,$2A,$AC,$26,$A4,$87,$AC,$D6,$8E,$4B,$2A,$CA
 ;org $839C19
 db $CE,$C2,$00,$47,$84,$AC,$84,$A8,$82,$87,$80,$8D,$86,$84,$A3,$AC,$A4,$87,$84,$AC,$CB,$D6,$9E,$A0,$8B,$80,$A4,$84,$4F,$C3,$00,$C0
@@ -1142,7 +1235,7 @@ lda $0D58 : beq +
   rtl
 +:
 lda $0D6F : and #$00FF : sta $0000
-cop #$9A : dl C_8BCF52 : dw $2000
+cop #$9A : dl EWorldMapTextWriter : dw $2000    ; dl $8BCF52
 jsr S_83A692
 tya
 ldy $04 : sta $0026,y
@@ -1326,7 +1419,7 @@ jmp .ParseNextScriptLine    ; $a541
 stz $0D5A
 stz $0D58
 lda $0D6E : and #$00FF : sta $0000
-cop #$9C : dl C_8BCF52 : dw $2000
+cop #$9C : dl EWorldMapTextWriter : dw $2000    ; dl $8BCF52
 jsr S_83A692 : tya
 ldy $06 : sta $0026,y
 cop #$DA : db $3B
@@ -1479,6 +1572,7 @@ lda $0D56 : sta $00CC
 stz $00B6
 stz $00BC
 lda #$0400 : sta $00B8
+#TAttractMapRenderer:    ; org $83A985
 phx
 phd
 lda #$0000 : tcd
@@ -1672,7 +1766,7 @@ lsr $18
 lsr $1C
 lsr $04
 bra SR_CheckAndApplyExtremeZoom
-warnpc $83ab86
+warnpc $83ab88
 
 
 
@@ -4823,10 +4917,59 @@ plx
 plp
 rtl
 }
-warnpc $83d954
 
+;org $83d954
+LR_ImportSaveFileToWram:
+php
+phx
+phb
+rep #$20
+and #$0003 : xba : asl : tax
+jsl LR_CalculateSramChecksum
+lda $0018 : cmp $3063FC,x : bne B_83D98F
+lda $001C : cmp $3063FE,x : bne B_83D98F
+ldy #$0000
+phx
+B_83D979:    ; org $83d979
+lda $306200,x : sta $0A00,y
+inx : inx
+iny : iny
+cpy #$01FC : bne B_83D979
+plx
+plb
+plx
+plp
+clc
+rtl
+B_83D98F:    ; org $83d98f
+plb
+plx
+plp
+sec
+rtl
 
-org $83d9b8
+;org $83d994
+LR_ClearSaveFileA:
+php
+phx
+phb
+rep #$20
+and #$0003 : xba : asl : tax
+ldy #$0000
+phx
+lda #$0000
+-:    ; org $83d9a6
+sta $306200,x
+inx : inx
+iny : cpy #$0100 : bne -
+plx
+plb
+plx
+plp
+sec
+rtl
+
+;org $83d9b8
 LR_CalculateSramChecksum:
 {
 php
@@ -5212,8 +5355,8 @@ clc : adc #$0010 : sta $7f0240,x
 inx : inx : stx $0998
 lda $0654 : beq .NextToken
 lda $00 : pha
-lda #$0001 : tsb $09ec
-jsr $e7ba
+  lda #$0001 : tsb $09ec
+  jsr S_83E7BA
 pla : cmp #$00ac : beq .NextToken
 lda $06f8 : and #$FF00 : ora $0996 : sta $06f8
 bra .NextToken
@@ -5221,27 +5364,27 @@ bra .NextToken
 .FunctionPointers:
 {
 dw .HoldClearReturn    ; $C0 at $e2f5, awaits + clears screen + ends text
-dw $e30f    ; @$e30f set text box pos, db $c1 : db PosX,PosY; minimum 1,1
-dw $e335    ; @$e335 1-byte color+sound template from $81CA95
-dw $e35b    ; @$e35b set palette, db $c3 : db Pal
-dw $e36b    ; Card $C4 at $e36b
+dw .SetBoxPos    ; Card $C1 @$e30f set text box pos, db $c1 : db PosX,PosY; minimum 1,1
+dw $e335    ; Card $C2 @$e335 1-byte color+sound template from $81CA95
+dw $e35b    ; Card $C3 @$e35b set palette, db $c3 : db Pal; use with $D4
+dw $e36b    ; Card $C4 at $e36b, hangs the game by running nop : nop : bra $FC; in J ver. this scrolled the text page, but the U ver. lacks text scrolling
 dw .IncludeIndexed    ; db $c5 : dw PtrList,Index
-dw .CardC6    ; Card $C6 at $e393
-dw $e43f    ; @$e43f set text box size, db $c7 : db SizeX,SizeY
+dw .CardC6    ; Card $C6 at $e393, draw numbers, db $c6 : dw NumDigits, AddrOfNumber; Number is assumed little-endian
+dw $e43f    ; Card $C7 @$e43f set box size, db $c7 : db SizeX,SizeY; J ver. takes 1 more arg that's 0 for normal box border and 1 for frumpy box border
 dw .Clear    ; Card $C8 at $e579
 dw .Delay    ; @$e5eb, db $c9 : db Delay
 dw .Return    ; $CA at $e307
-dw $e5f8    ; Card $CB at $e5f8, "new-line"
-dw $e61e    ; Card $CC at $e61e, "moves the text down"
+dw $e5f8    ; Card $CB at $e5f8, newline (as CRLF)
+dw $e61e    ; Card $CC at $e61e, advance by arg/2 letters
 dw .IncludeLong    ; @$e636, db $cd : dl IncAddr
 dw $e656    ; Card $CE at $e656, "page-auto"
 dw $e6a4    ; Card $CF at $e6a4, "page-prompt"
 dw .Hold    ; Card $D0 at $e6d2, "pause-input"
-dw .Jump    ; Card $D1 at $e6e7, "text pointer"
-dw $e6ec    ; Card $D2 at $e6ec, "changes the sound"
-dw $e6f7    ; Card $D3 at $e6f7, "default"
-dw $e721    ; Card $D4 at $e721
-dw $e736    ; Card $D5 at $e736, "delay speed"
+dw .Jump    ; Card $D1 at $e6e7, db $d1 : dw Addr, jump parser immediately to Addr
+dw $e6ec    ; Card $D2 at $e6ec, db $d2 : db SoundId, sets the speech sound
+dw $e6f7    ; Card $D3 at $e6f7, creates a default size and position box
+dw $e721    ; Card $D4 at $e721, sets palette; args are db PalWord : dw NewValue, should set words $11 (letter centers) and $12 (letter tops+bottoms) then do db $c3,$04
+dw $e736    ; Card $D5 at $e736, db $d5 : db Delay, waits 1+Delay frames after each character
 dw $e743    ; Card $D6 at $e743, dict key 1
 dw $e769    ; Card $D7 at $e769, dict key 2
 dw $e78f    ; Card $D8 at $e78f, begin block of literals, end with $00
@@ -5258,7 +5401,20 @@ plx
 pld
 plp
 rtl
+
 ;org $83e30f
+.SetBoxPos:
+phy
+lda $0000,y : pha
+and #$00ff : sta $097a
+pla : xba : and #$00ff : sta $097c
+xba : lsr : lsr : clc : adc $097a : clc : adc $097a : tax
+  sta $0998
+ply
+iny : iny
+rts
+
+; org $83e335
 
 
 org $83e36f
@@ -5318,7 +5474,7 @@ lda $09,s : bne +
   lda $05,s : dec : beq ++
 +:
 lda $07,s : inc : sta $07,s
-jsr $e7ba
+jsr S_83E7BA
 bra --
 ++:    ; $e420
 ldx $0998
@@ -5349,7 +5505,7 @@ org $83e5eb
 {
 phy
 lda $0000,y : and #$00ff
-jsr $e7b5
+jsr SR_DialogueDelayAFrames
 ply
 iny
 rts
@@ -5376,6 +5532,21 @@ rts
 }
 ;org $83e656
 
+org $83e61e
+.CardCC:
+{
+phy
+lda $0000,y : and #$00ff : lsr : beq +
+asl : pha
+  txa : clc : adc $01,s : tax
+  sta $0998
+pla
++:
+ply
+iny
+rts
+}
+
 org $83e6d2
 .Hold:
 {
@@ -5389,23 +5560,24 @@ lda $0000,y : tay
 rts
 }
 
-org $83e7b5
+org $83e7b2
+SR_DialogueDelayOneFrame:
+lda #$0001
+SR_DialogueDelayAFrames:    ; org $83e7b5
 php
 sep #$20
 bra +
-;org $83e7ba
+S_83E7BA:    ; org $83e7ba
 php
 sep #$20
 lda $007e : beq ++
-+:
-;org $83e7c2
++:    ; org $83e7c2
 pha
 lda $0654 : bne +
 pla
 plp
 rts
-;org $83e7cb
--:
+-:    ; org $83e7cb
 pha
 +:
 jsl $80811e    ; i.e. delay frame
@@ -5413,9 +5585,196 @@ pla : dec : bne -
 ++:
 plp
 rts
+warnpc $83e7d6
 
 
-org $83ea62
+org $83e849
+LR_HandleBg3Menu:
+phd
+phx
+pha
+lda #$0000 : tcd
+  pha
+  sta $0994
+.AwaitInput:
+jsr $e983
+jsr SR_DialogueDelayOneFrame
+lda $0656 : bit #$CF80 : beq .AwaitInput
+LR_HandleBg3MenuInput:    ; org $83e862
+; $01,s is the index of the selected menu option.
+; $03,s high nibble is option count, low nibble is left column size.
+pha
+  lda #$CFF0 : tsb $0658
+pla : bit #$0800 : bne .PressedUp
+  bit #$0400 : beq +
+    jmp .PressedDown
++:    ; org $83e877
+bit #$0300 : beq .CheckSpecialButtons
+jmp .PressedLeftOrRight
+.CheckSpecialButtons:    ; org $83e87f
+bit #$8080 : bne .PressedConfirm
+bit #$4000 : beq LR_HandleBg3MenuInput
+.PressedCancel:
+jsr S_83EA2A
+pla
+lda #$0000
+bra .Done
+.PressedConfirm:    ; org $83e892
+lda $000A : pha
+lda $000C : pha
+sep #$20
+  lda #$11 : sta $06F9    ; Plays confirmation sound
+rep #$20
+pla : sta $000C
+pla : sta $000A
+stz $0994
+jsr S_83E983
+pla : inc
+.Done:    ; org $83e8b3
+pha
+  jsr SR_DialogueDelayOneFrame
+pla
+stz $0994
+stz $0990
+stz $0992
+ply
+plx
+pld
+sec
+rtl
+.PressedUp:    ; org $83e8c6
+sep #$20
+  lda #$10 : sta $06F9
+rep #$20
+stz $0994
+sep #$20
+lda $03,s : and #$0F : sta $1C   ; Left column option count
+lda $03,s : lsr : lsr : lsr : lsr : sta $18   ; Total number of options
+lda $01,s : dec : bmi ..DidUnderflow
+  sta $01,s
+  rep #$20
+  jmp LR_HandleBg3MenuInput
+..DidUnderflow:    ; org $83e8ee
+lda $18 : bne ...PostOptionCountCheck
+  lda $1C    ; Caller only defined the left column's size.
+...PostOptionCountCheck:    ; org $83e8f4
+dec : sta $01,s
+rep #$20
+jmp LR_HandleBg3MenuInput
+.PressedDown:    ; org $83e8fc
+sep #$20
+lda #$10 : sta $06F9
+rep #$20
+stz $0994
+sep #$20
+lda $03,s : and #$0F : sta $1C   ; Left column option count
+lda $03,s : lsr : lsr : lsr : lsr : sta $18   ; Total number of options
+lda $01,s : cmp $1C : bcs ..InRightColumn
+..InLeftColumn:
+  inc : cmp $1C : bcs ...DidOverflow
+    bra ...PostOverflowCheck
+...DidOverflow:    ; org $83e925
+lda #$00
+...PostOverflowCheck:    ; org $83e927
+sta $01,s
+rep #$20
+jmp LR_HandleBg3MenuInput
+..InRightColumn:    ; org $83e92e
+inc : cmp $18 : bcc ...PostOverflowCheck
+  lda $1C    ; Did overflow, so set pos to first right-column option
+...PostOverflowCheck:    ; org $83e935
+sta $01,s
+rep #$20
+jmp LR_HandleBg3MenuInput
+.PressedLeftOrRight:    ; org $83e93c
+stz $0994
+sep #$20
+lda $03,s : and #$0F : sta $1C   ; Left column option count
+lda $03,s : lsr : lsr : lsr : lsr : sta $18   ; Total number of options
+lda $01,s : cmp $1C : bcs ..InRightColumn
+..InLeftColumn:
+  clc : adc $1C : cmp $18 : bcc ...PostColumnSizeCheck
+    lda $01,s    ; Don't switch cols if new pos would exceed number of options (i.e. this line has no right col)
+...PostColumnSizeCheck:    ; org $83e95e
+sta $01,s
+cmp $1C
+rep #$20
+bcs ..DidSwitchColumns
+jmp LR_HandleBg3MenuInput
+..InRightColumn:    ; org $83e969
+sec : sbc $1C : sta $01,s
+cmp $1C
+rep #$20
+bcc ..DidSwitchColumns
+jmp LR_HandleBg3MenuInput
+..DidSwitchColumns:    ; org $83e977
+sep #$20
+lda #$10 : sta $06F9
+rep #$20
+jmp LR_HandleBg3MenuInput
+
+S_83E983:    ; org $83e983
+lda $0994 : inc : sta $0994
+  bit #$0010 : bne B_83E99B
+lda #$212C : sta $00
+lda #$213C : sta $02
+bra J_83E9A2
+B_83E99B:    ; org $83e99b
+lda #$21AC : sta $00
+  sta $02
+J_83E9A2:    ; org $83e9a2
+lda $0990 : beq B_83E9B8
+ldx $098E
+lda $0990 : sta $7F0200,x
+lda $0992 : sta $7F0240,x
+B_83E9B8:    ; org $83e9b8
+sep #$20
+lda $05,s : and #$0F : sta $1C
+lda $05,s : lsr : lsr : lsr : lsr : sta $18
+lda $03,s : cmp $1C : bcc B_83E9DC
+  sec : sbc $1C : sta $1C
+stz $1D
+ldx #$0018 : stx $18
+bra J_83E9E5
+B_83E9DC:    ; org $83e9dc
+sta $1C
+stz $1D
+ldx #$0000 : stx $18
+J_83E9E5:    ; org $83e9e5
+rep #$20
+lda $06,s : and #$00FF
+  clc : adc $1C
+  asl
+  clc : adc $0980
+  asl : asl : asl : asl : asl
+  clc : adc $097E
+  asl
+  clc : adc $18
+  tax
+lda $7F0200,x : pha
+  lda $00 : sta $7F0200,x
+  lda $7F0240,x : pha
+    lda $02 : sta $7F0240,x
+    stx $098E
+  pla : sta $0992
+pla : sta $0990
+lda #$0001 : tsb $09EC
+rts
+
+S_83EA2A:    ; org $83ea2a
+phy
+ldx $098E
+lda $0990 : sta $7F0200,x
+  and #$03FF : asl : asl : asl : ora #$6000 : sta $090E
+lda $0992 : sta $7F0240,x
+  and #$03FF : asl : asl : asl : ora #$6000 : sta $0910
+stz $0990
+stz $0992
+lda #$0001 : tsb $09EC
+ply
+rts
+
+;org $83ea62
 LR_ParseBg3Script:
 php
 phb
@@ -6016,10 +6375,44 @@ plp
 sec
 rtl
 }
+
 ;org $83f08d
+LR_RemoveItemA:
+php
+sep #$20
+ldy #$0000
+.CheckNextInvSlot:
+cmp $0ab4,y : beq .FoundItem
+  iny : cpy #$0010 : bne .CheckNextInvSlot
+  bra .Done
+.FoundItem:
+lda #$00 : sta $0ab4,y
+rep #$20
+lda #$0000 : sta $0ac6
+  dec : sta $0ac4
+.Done:
+plp
+rtl
 
+;org $83f0b3
+LR_ClcIfPlayerHasItemA:
+{
+php
+sep #$20
+ldy #$0000
+.CheckNextInvSlot:
+cmp $0ab4,y : beq .HasItem
+iny : cpy #$0010 : bne .CheckNextInvSlot
+plp
+sec
+rtl
+.HasItem:
+plp
+clc
+rtl
+}
 
-org $83f0ca
+;org $83f0ca
 LR_GetPlayerFacingDirection:
 {
 PHP
@@ -6060,7 +6453,7 @@ CLC
 ADC $0028,y  ;   and add the calling event's sprite index.
 TAX
 PLY
-LDA $83F177,x  ;   Then read THAT new index's value from the same
+LDA $83F177,x  ;   Then read that new index's value from the same
 AND #$00FF  ;   table. If it's above 4,
 CMP #$0004  ;  set the carry and return.
 BPL +$CF ;(-$31)
@@ -6086,7 +6479,10 @@ db $00,$01,$02,$03,$04,$04,$04,$04
 
 ;org $83f177
 .SpecialLutPointers:
-dw $f17f,$f19a,$f1c6,$f1ca
+dw $f17f   ; For body $04
+dw $f19a   ; For body $05
+dw $f1c6   ; For body $06
+dw $f1ca   ; For body $07
 
 ;org $83f17f
 db $00,$01,$02,$03,$00,$01,$02,$03

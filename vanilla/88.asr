@@ -195,6 +195,34 @@ dw $ffff
 db $00 : dw $2300
 
 
+org $8898da
+db $00 : dw $3000
+EAWOuterDropFloorOpener:
+cop #$D1 : dw $016e : db $01 : dw .Die
+cop #$C1
+cop #$45 : db $6a,$0c, $6f,$0d : dw .DoOpen
+rtl
+.DoOpen:
+cop #$CA : db $14
+  lda #$cff0 : tsb $065a
+cop #$CB
+cop #$08 : db $0f,$0f
+cop #$32 : db $6e
+cop #$33
+cop #$CD : dw $016e
+ldy $09aa
+sep #$20
+  lda #$82 : sta $0002,y
+rep #$20
+lda #$c61e : sta $0000,y
+lda #$0000 : sta $0008,y
+  sta $002a,y
+lda #$0800 : tsb $09ae
+.Die:
+cop #$E0
+warnpc $88992a
+
+
 
 org $8899af
 db $03 : dw $0000
@@ -692,7 +720,7 @@ lda $0010,y : and #$FFF7 : ora #$0200 : sta $0010,y
 sep #$20
   lda #$82 : sta $0002,y    ; i.e. BankOf(EPlayer)
 rep #$20
-lda.w EPlayer_StartFall : sta $0000,y    ; #$C61E
+lda.w #EPlayer_StartFall : sta $0000,y    ; #$C61E
 lda #$0000 : sta $0008,y
   sta $002A,y
 .Die:
@@ -701,11 +729,45 @@ cop #$E0
 ;org $88b668
 
 
-
-org $88B70D
+org $88B6A2
+db $1c : dw $1001
+EPymdPortalToFoyer:
+lda #$0200 : tsb $12
+cop #$C0 : dw .OnInteract
+cop #$C1
+rtl
+.OnInteract:    ; org $88b6b1
+cop #$BF : dw $b70d
+cop #$BE : db $02,$02 : dw ..Options ;$b6bb
+..Options:
+  dw ..ChooseNo
+  dw ..ChooseNo, ..ChooseYes
+..ChooseNo:
+cop #$BF : dw $b74b
+rtl
+..ChooseYes:
+cop #$BF : dw $b74b
+ldy $09aa
+lda $0010,y : ora #$2000 : sta $0010,y
+cop #$9C : dl $88b6f4 : dw $1800
+lda #$0303 : sta $0648
+lda #$0303 : sta $064a
+cop #$26 : db $CC : dw $01f8, $0130 : db $03,$00,$44
+rtl
+;org $88b6f4
+ldy $09aa
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+cop #$88 : dl $8ee000
+cop #$80 : db $1c
+cop #$89
+cop #$E0
+;org $88B70D
 db $C2,$0B,$64,$87,$84,$AC,$D7,$58,$A4,$8E,$AC,$A4,$87,$84,$AC,$60,$A9,$A2,$80,$8C,$88,$83,$CB,$80,$A0,$A0,$84,$80,$A2,$A3,$AC,$88,$8D,$AC,$A4,$87,$84,$AC,$8B,$88,$86,$87,$A4,$2A,$2A,$2A,$CB,$AC,$61,$A5,$88,$A4,$CB,$AC,$49,$A5,$8C,$A0,$AC,$88,$8D,$CA
-
 ;org $88B74B
+db $C8,$CA
+;org $88b74d
+
 
 org $88BA11
 db $C2,$09,$C2,$04,$D5,$00,$67,$80,$8B,$8A,$AC,$A4,$8E,$AC,$A4,$87,$84,$AC,$8B,$84,$85,$A4,$CB,$D6,$F8,$80,$AC,$A3,$8E,$A5,$8D,$83,$4F,$4F,$C3,$00,$C0
@@ -903,8 +965,92 @@ org $88CB2C
 db $D3,$C2,$00,$64,$87,$84,$A2,$84,$0E,$A3,$AC,$80,$AC,$8B,$88,$A4,$87,$8E,$86,$A2,$80,$A0,$87,$AC,$8E,$8D,$CB,$D6,$D6,$A7,$80,$8B,$8B,$2A,$AC,$48,$AC,$D6,$99,$88,$8D,$CB,$43,$80,$8E,$AC,$D6,$D7,$88,$A4,$0E,$A3,$CB,$80,$AC,$87,$88,$84,$A2,$8E,$86,$8B,$A9,$A0,$87,$2A,$2A,$2A,$CF,$D6,$2B,$A4,$A2,$A9,$AC,$A4,$8E,$AC,$A2,$84,$8C,$8E,$A6,$84,$CB,$A4,$87,$84,$AC,$8B,$88,$A4,$87,$8E,$86,$A2,$80,$A0,$87,$2A,$C3,$00,$CF,$CA
 
 ;org $88CB94
+db $84,$85,$86,$8c,$8d,$8e
+;org $88cb9a
+db $00 : dw $3000
+EPyramidPuzzleChecker:
+phx
+ldy #$0000
+.DrawNextTileForMapInit:    ; org $88cba1
+lda $0B28,y : bmi ..DoneThisTile
+  tax
+sep #$20
+lda $88CB94,x
+phx
+pha
+tya : lsr : tax
+pla : sta $7EA065,x
+plx
+rep #$20
+..DoneThisTile:    ; org $88cbba
+iny : iny
+cpy #$000C : bne .DrawNextTileForMapInit
+plx
+.AwaitAllTilesPlaced:    ; org $88cbc2
+cop #$D0 : db $D1, $01 : dw .Die
+cop #$C1
+ldy #$0000
+..CheckNextSlotOccupied:    ; org $88cbcd
+lda $0B28,y : bmi ..NotAllSlotsOccupied
+iny : iny
+cpy #$000C : bne ..CheckNextSlotOccupied
+bra .DoCheckTiles
+..NotAllSlotsOccupied:    ; org $88cbdb
+rtl
+.DoCheckTiles:    ; org $88cbdc
+ldy #$0000
+lda #$0000
+..CheckNextTile:    ; org $88cbe2
+cmp $0B28,y : bne .TilesPlacedWrongOrder
+iny : iny
+inc : cmp #$0006 : bne ..CheckNextTile
+cop #$CC : db $D1
+cop #$08 : db $0F, $0F
+lda #$CFF0 : tsb $065A
+cop #$DA : db $3B
+cop #$BF : dw $CD0B
+lda #$CFF0 : trb $065A
+.Die:    ; org $88cc09
+cop #$E0
+.TilesPlacedWrongOrder:    ; org $88cc0b
+cop #$07 : db $12
+lda #$EFF0 : tsb $065A
+cop #$DA : db $1D
+cop #$BF : dw $CCC4
+lda $0B28 : clc : adc #$001E : jsl S_83EF97
+  bcc +
+jmp ..AndNotEnoughInvSpace
++:    ; org $88cc2b
+lda #$FFFF : sta $0B28
+cop #$4B : db $05, $06, $87
+lda $0B2A : clc : adc #$001E : jsl S_83EF97
+  bcs ..AndNotEnoughInvSpace
+lda #$FFFF : sta $0B2A
+cop #$4B : db $06, $06, $87
+lda $0B2C : clc : adc #$001E : jsl S_83EF97
+  bcs ..AndNotEnoughInvSpace
+lda #$FFFF : sta $0B2C
+cop #$4B : db $07, $06, $87
+lda $0B2E : clc : adc #$001E : jsl S_83EF97
+  bcs ..AndNotEnoughInvSpace
+lda #$FFFF : sta $0B2E
+cop #$4B : db $08, $06, $87
+lda $0B30 : clc : adc #$001E : jsl S_83EF97
+  bcs ..AndNotEnoughInvSpace
+lda #$FFFF : sta $0B30
+cop #$4B : db $09, $06, $87
+lda $0B32 : clc : adc #$001E : jsl S_83EF97
+  bcs ..AndNotEnoughInvSpace
+lda #$FFFF : sta $0B32
+cop #$4B : db $0A, $06, $87
+lda #$EFF0 : trb $065A
+jmp .AwaitAllTilesPlaced
+..AndNotEnoughInvSpace:    ; org $88ccb7
+cop #$BF : dw $CD37
+lda #$EFF0 : trb $065A
+jmp .AwaitAllTilesPlaced
 
-org $88CCC4
+;org $88CCC4
 db $D3,$4D,$8E,$A4,$87,$88,$8D,$86,$AC,$87,$80,$A0,$A0,$84,$8D,$84,$83,$2A,$2A,$2A,$CB,$D6,$30,$D7,$B0,$80,$A2,$A2,$80,$8D,$86,$84,$83,$CB,$A7,$A2,$8E,$8D,$86,$2A,$AC,$64,$A2,$A9,$AC,$88,$A4,$AC,$80,$86,$80,$88,$8D,$CB,$D6,$8E,$A4,$87,$84,$AC,$81,$84,$86,$88,$8D,$8D,$88,$8D,$86,$2A,$C0
 ;org $88CD0B
 db $D3,$C2,$00,$64,$87,$84,$A2,$84,$AC,$A7,$80,$A3,$AC,$80,$AC,$A3,$8E,$A5,$8D,$83,$AC,$85,$A2,$8E,$8C,$CB,$D6,$BE,$A4,$87,$84,$AC,$84,$8D,$A4,$A2,$80,$8D,$82,$84,$4F,$C3,$00,$C0
@@ -1205,21 +1351,41 @@ lda #$0004 : tsb $12
 org $88D7A8
 db $00,$00,$23
 EGaia:
-
-
-
-org $88d7dc
-cop #$D9
-  dw $0000,.DarkSpaceTypeBranch
+cop #$9C : dl EDarkSpaceBgSparkleFactory : dw $2800
+cop #$A0 : dl EDarkSpaceGaiaEyes : dw $0080, $0040, $1800    ; $89A090
+cop #$A0 : dl EDarkSpaceGaiaMouth : dw $0080, $0058, $1800    ; $89A096
+lda $0AAC : cmp #$0004 : bcc +
+  lda #$0000
++:
+sta $0AB2
+stz $0AAC
+sta $0000
+cop #$D9 : dw $0000, .DarkSpaceTypeBranch
 .DarkSpaceTypeBranch:    ; $d856, $d87c, $d9cc, $da7d
-  dw .DSType00,.DSType01,.DSType02,.DSType03
-
-;org $88d7ea
-.HandlePlayerExit:
-
-
-org $88d856
-.DSType00:
+  dw .DSType00, .DSType01, .DSType02, .DSType03
+.HandlePlayerExit:    ;org $88d7ea
+lda #$FFF0 : tsb $065A
+ldy $09AA
+lda $0010,y : ora #$2000 : sta $0010,y
+lda $0014,y : sta $14
+lda $0016,y : sta $16
+cop #$08 : db $0C, $0C
+lda #$2000 : trb $10
+cop #$88 : dl $8EE000
+cop #$80 : db $1C
+cop #$89
+cop #$DA : db $1D
+lda $0B12 : sta $0642
+lda $0B08 : asl : asl : asl : asl : sta $064C
+lda $0B0C : inc : inc : asl : asl : asl : asl : sta $064E
+lda #$0003 : sta $0650
+lda $0B10 : sta $0652
+stz $0AAC
+lda #$0101 : sta $064A
+lda #$0002 : sta $0648
+cop #$C1
+rtl
+.DSType00:    ;org $88d856
 cop #$C1
 cop #$45 : db $07,$08 : db $09,$09 : dw ..AwaitPlayerLeaveChatZone    ; $d862
 bra +
@@ -1845,9 +2011,19 @@ db $00,$00
 }
 
 ;org $88EB68    ; "$MoveName\ncan now be used!"
-db $D3,$D5,$09,$C5,$8F,$EB,$AC,$0A,$CB,$82,$80,$8D,$AC,$8D,$8E,$A7,$AC,$81,$84,$AC,$A5,$A3,$84,$83,$4F,$C9,$78,$CF,$CA
+db $D3
+db $D5,$09
+db $C5,$8F,$EB,$AC,$0A
+db $CB
+db $82,$80,$8D,$AC,$8D,$8E,$A7,$AC,$81,$84,$AC,$A5,$A3,$84,$83,$4F,$C9,$78
+db $CF
+db $CA
 ;org $88EB85
-db $D3,$CE,$D5,$02,$C5,$D3,$EB,$AC,$0A,$C0
+db $D3
+db $CE
+db $D5,$02
+db $C5,$D3,$EB,$AC,$0A
+db $C0
 
 ;org $88EB8F
 Lut_MoveNames:
@@ -2161,7 +2337,28 @@ rtl
 warnpc $88f67f
 
 
-org $88f6d3
+org $88f687
+EDarkSpaceBgSparkleFactory:
+cop #$C2
+cop #$23 : and #$000F : asl : asl : asl : sta $08
+cop #$9C : dl EDarkSpaceBgSparkle : dw $1B02
+bra EDarkSpaceBgSparkleFactory
+EDarkSpaceBgSparkle:    ; org $88f69c
+lda #$1000 : tsb $12
+cop #$88 : dl $8EE000
+cop #$8D : db $02
+lda #$0000 : sta $16
+cop #$23 : asl : sta $14
+  and #$0003 : asl : clc : adc #$0004 : sta $7F0018,x
+  dec : sta $7F001A,x
+.KeepGoing:    ; org $88f6c4
+cop #$B1
+cop #$C1
+cop #$89
+lda $16 : cmp #$00FF : bcc .KeepGoing
+cop #$E0
+
+;org $88f6d3
 SR_RestoreTransformedPlayerControls:
 phx
 ldx $09AA

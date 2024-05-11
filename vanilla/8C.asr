@@ -1631,7 +1631,7 @@ db $07,$1E,$30 : dl EViperFallingPlatform-3 : db $00    ; $8acfe5
 db $07,$1F,$30 : dl EViperFallingPlatform-3 : db $00    ; $8acfe5
 db $07,$20,$30 : dl EViperFallingPlatform-3 : db $00    ; $8acfe5
 db $10,$05,$30 : dl EViper-3 : db $27,$00,$00    ; $8ad16f
-db $00,$01,$00 : dl $8ACE34 : db $00 
+db $00,$01,$00 : dl EViperStatueAwardListener-3 : db $00    ; $8ACE34
 db $00,$01,$01 : dl EBossClearRewarder-3 : db $00    ; $80C2BB
 db $FF,$CA
 ;org $8CA4F5
@@ -2221,7 +2221,7 @@ db $00,$01,$00 : dl EWorldMapTransitionListener-3 : db $00     ; $80CA42
 db $00,$01,$00 : dl EFlagZeroSetter-3 : db $00     ; $80C667
 db $00,$01,$00 : dl $878000 : db $00 
 db $00,$01,$00 : dl $8781BE : db $00 
-db $4C,$2E,$00 : dl $879F9E : db $00 
+db $4C,$2E,$00 : dl EWatermiaRussianGlassLeaf-3 : db $00    ; $879F9E
 db $2D,$2C,$00 : dl $879B7C : db $00 
 db $1B,$1D,$00 : dl $879B7C : db $00 
 db $3E,$0E,$00 : dl $879B7C : db $00 
@@ -2563,9 +2563,9 @@ db $11,$11,$00 : dl EParallax_ScaleEffectY-3 : db $00    ; $80EAA7
 db $04,$1A,$00 : dl EGWLance-3 : db $00    ; $87b773
 db $FF,$CA
 ;org $8CBD5F
-ActorList_Map8C:    ; Attract map 1, ships/Babel on Mode 7 ocean
-db $00,$01,$00 : dl $8BCA02 : db $00 
-db $00,$01,$00 : dl $8BCE79 : db $00 
+ActorList_Map8C:    ; Attract map 1/5, ships/Babel on Mode 7 ocean
+db $00,$01,$00 : dl EAttractMapOneDriver-3 : db $00    ; $8BCA02
+db $00,$01,$00 : dl EAttractMapFiveDriver-3 : db $00    ; $8bce79
 db $00,$01,$00 : dl EAttractMapsStartButtonListener-3 : db $00    ; $8BC9BD
 db $FF,$CA
 ;org $8CBD76
@@ -2578,12 +2578,12 @@ ActorList_Map8E:    ; Attract map 3, golden temple
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $00,$12,$00 : dl EParallax_ScaleEffect-3 : db $00    ; $80EA96
-db $00,$01,$00 : dl $8BCD4B : db $00 
+db $00,$01,$00 : dl EAttractMapThreeDriver-3 : db $00    ; $8bcd4b
 db $00,$01,$00 : dl EAttractMapsStartButtonListener-3 : db $00    ; $8BC9BD
 db $FF,$CA
 ;org $8CBDAB
 ActorList_Map8F:    ; Attract map 4, skeleton and text
-db $00,$01,$00 : dl $8BCE33 : db $00 
+db $00,$01,$00 : dl EAttractMapFourDriver-3 : db $00    ; $8bce33
 db $00,$01,$00 : dl EAttractMapsStartButtonListener-3 : db $00    ; $8BC9BD
 db $FF,$CA
 ;org $8CBDBB
@@ -3143,7 +3143,7 @@ db $FF,$60,$80,$A3,$A3,$80,$86,$84,$AC,$6D,$AC,$4E,$A5,$A4,$A3,$88,$83,$84,$CA,$
 ActorList_MapB2:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
-db $07,$27,$00 : dl $8898C8 : db $00 
+db $07,$27,$00 : dl $8898C8 : db $00    ; $8898C8
 db $07,$1E,$13 : dl ESliderHoleToSouth-3 : db $00     ; $80D1B5
 db $0B,$6D,$00 : dl EAWFlyingSkull-3 : db $42,$30,$00    ; $8bbd8d
 db $08,$0C,$00 : dl EAWFlyingSkull-3 : db $42,$31,$00    ; $8bbd8d
@@ -3162,7 +3162,7 @@ ActorList_MapB3:
 db $05,$0A,$00 : dl EPlayer-3 : db $00     ; $82C38C
 db $00,$00,$00 : dl ECameraEtc-3 : db $00     ; $80EAED
 db $66,$07,$03 : dl ERampLauncherToEast-3 : db $00    ; $80d348 
-db $00,$01,$00 : dl $8898DA : db $00 
+db $00,$01,$00 : dl EAWOuterDropFloorOpener-3 : db $00    ; $8898DA
 db $18,$13,$00 : dl EAWFlyingSkull-3 : db $42,$40,$00    ; $8bbd8d
 db $71,$05,$06 : dl EAWWallSkull-3 : db $43,$41,$00    ; $8bbfd0
 db $71,$10,$02 : dl EAWWallSkull-3 : db $43,$42,$00    ; $8bbfd0

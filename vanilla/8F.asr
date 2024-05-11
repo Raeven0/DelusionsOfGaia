@@ -2,3 +2,76 @@ arch 65816
 hirom
 fillbyte $FF
 
+org $8f8000
+
+; AnimList for body $04 (Will abilities etc.)
+dw $804E   ; Anim00
+dw $8058   ; Anim01 ; Used in credits
+dw $8062   ; Anim02
+dw $806C   ; Anim03
+dw $8076   ; Anim04 ; Psycho Dash S
+dw $80A0   ; Anim05 ; Psycho Dash N
+dw $80CA   ; Anim06 ; Psycho Dash W
+dw $80F4   ; Anim07 ; Psycho Dash E
+dw $811E   ; Anim08
+dw $8128   ; Anim09
+dw $8132   ; Anim0A
+dw $813C   ; Anim0B
+dw $8146   ; Anim0C ; Slider S start
+dw $8154   ; Anim0D ; Slider S slide
+dw $8166   ; Anim0E ; Slider S end
+dw $8170   ; Anim0F ; Slider N start
+dw $817E   ; Anim10 ; Slider N slide
+dw $8190   ; Anim11 ; Slider N end
+dw $819A   ; Anim12 ; Slider W start
+dw $81A8   ; Anim13 ; Slider W slide
+dw $81BA   ; Anim14 ; Slider W end
+dw $81C4   ; Anim15 ; Slider E start
+dw $81D2   ; Anim16 ; Slider E slide
+dw $81E4   ; Anim17 ; Slider E end
+dw $81EE   ; Anim18
+dw $81F8   ; Anim19
+dw $8202   ; Anim1A ; Used in credits
+dw $820C   ; Anim1B
+dw $8216   ; Anim1C ; Spin Dash, become tornado
+dw $8248   ; Anim1D ; Spin Dash, as tornado
+dw $826A   ; Anim1E
+dw $82BC   ; Anim1F ; Playing flute
+dw $82C6   ; Anim20
+dw $82D8   ; Anim21
+dw $8302   ; Anim22 ; Spin Dash, spin start
+dw $8314   ; Anim23 ; Used in credits
+dw $831A   ; Anim24 ; Used in credits
+dw $8320   ; Anim25 ; Used in credits
+dw $8326   ; Anim26 ; Used in credits
+
+
+
+
+
+org $8FC000
+; AnimList for body $05 (transformations)
+dw $C026   ; Anim00 ; W->S #1
+dw $C160   ; Anim01 ; W->F #1
+dw $C1CA   ; Anim02 ; W->F/S #2 ; W<-F/S #5
+dw $C2FC   ; Anim03 ; W->F/S #3 ; W<-F/S #4
+dw $C37E   ; Anim04 ; Slow emergence of Will from light orb
+dw $C4D4   ; Anim05 ; W<-F/S #6
+dw $C53E   ; Anim06 ; F->W #1
+dw $C5E4   ; Anim07 ; F->S #1
+dw $C636   ; Anim08 ; F->W/S #3 ; F<-W/S #4
+dw $C6B8   ; Anim09 ; F->W/S #2 ; F<-W/S #5
+dw $C6EA   ; Anim0A ; Slow emergence of Freedan from dark orb
+dw $C77C   ; Anim0B ; F<-W/S #6
+dw $C7D6   ; Anim0C ; Slow from-Shadow #1
+dw $C8A8   ; Anim0D ; S->W/F #1
+dw $C8FA   ; Anim0E ; Mid-txform sparkles (near W/F)
+dw $C91C   ; Anim0F ; Mid-txform sparkles (near S)
+dw $C9DE   ; Anim10 ; S->W/F #2 ; S<-W/F #4
+dw $CA0C   ; Anim11 ; Slow emergence of Shadow from astral orb
+dw $CADE   ; Anim12 ; S<-W/F #5
+
+
+
+
+

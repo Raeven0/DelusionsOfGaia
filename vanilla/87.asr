@@ -181,9 +181,12 @@ db $CE,$4E,$4A,$2A,$AC,$69,$8E,$A5,$0E,$83,$AC,$D6,$91,$86,$A5,$88,$8B,$A4,$A9,$
 ;org $879C81
 db $CE,$C2,$01,$68,$AC,$4C,$8E,$8D,$A4,$87,$AC,$68,$AC,$43,$80,$A9,$CB,$40,$85,$A4,$84,$A2,$AC,$80,$AC,$D6,$A6,$89,$8E,$A5,$A2,$8D,$84,$A9,$AC,$A7,$84,$CB,$80,$A2,$A2,$88,$A6,$84,$AC,$88,$8D,$AC,$A4,$87,$84,$AC,$45,$8B,$8E,$80,$A4,$88,$8D,$86,$CB,$42,$88,$A4,$A9,$2B,$AC,$67,$80,$A4,$84,$A2,$8C,$88,$80,$2A,$CF,$48,$AC,$A7,$80,$A3,$AC,$A0,$80,$A2,$82,$87,$84,$83,$AC,$80,$85,$A4,$84,$A2,$AC,$A4,$87,$84,$CB,$89,$8E,$A5,$A2,$8D,$84,$A9,$2A,$AC,$41,$8B,$88,$A3,$A4,$84,$A2,$A3,$AC,$8E,$8D,$CB,$8C,$A9,$AC,$85,$84,$84,$A4,$2B,$AC,$81,$A5,$A4,$AC,$48,$AC,$A7,$A2,$80,$A0,$A0,$84,$83,$CB,$D6,$E6,$88,$8D,$AC,$8C,$A9,$AC,$87,$80,$8D,$83,$8A,$84,$A2,$82,$87,$88,$84,$85,$2A,$CF,$41,$84,$85,$8E,$A2,$84,$2B,$AC,$48,$AC,$D6,$F3,$87,$80,$A6,$84,$CB,$82,$8E,$8C,$A0,$8B,$80,$88,$8D,$84,$83,$2B,$AC,$81,$A5,$A4,$AC,$48,$AC,$83,$88,$83,$8D,$0E,$A4,$CB,$A3,$80,$A9,$AC,$D7,$49,$48,$AC,$A4,$87,$88,$8D,$8A,$CB,$D6,$20,$D6,$7F,$80,$AC,$8B,$88,$A4,$A4,$8B,$84,$2A,$CF,$48,$0E,$8C,$AC,$A0,$8B,$84,$80,$A3,$84,$83,$AC,$D6,$D7,$48,$AC,$82,$80,$8D,$CB,$81,$84,$AC,$A3,$8E,$AC,$82,$8E,$8D,$82,$84,$A2,$8D,$84,$83,$AC,$A7,$88,$A4,$87,$CB,$D6,$CF,$84,$8B,$A3,$84,$2A,$CF,$D6,$20,$D6,$99,$D6,$D6,$A3,$80,$A9,$88,$8D,$86,$CB,$D6,$8E,$80,$AC,$A6,$88,$8B,$8B,$80,$86,$84,$A2,$2A,$CF,$2D,$48,$85,$AC,$A9,$8E,$A5,$AC,$A7,$88,$A3,$87,$AC,$D6,$BE,$80,$AC,$CB,$8B,$8E,$A4,$A5,$A3,$AC,$8B,$84,$80,$85,$AC,$8E,$8D,$AC,$80,$AC,$85,$A5,$8B,$8B,$AC,$CB,$8C,$8E,$8E,$8D,$AC,$8D,$88,$86,$87,$A4,$2B,$AC,$D6,$FE,$8B,$8E,$A6,$84,$AC,$CB,$D6,$EF,$8D,$8E,$A4,$88,$82,$84,$AC,$A9,$8E,$A5,$2A,$2E,$AC,$CF,$40,$AC,$D6,$94,$A3,$80,$A9,$88,$8D,$86,$2A,$CB,$D6,$30,$D6,$1F,$A4,$A2,$A9,$AC,$88,$A4,$2A,$2A,$2A,$C3,$00,$C0
 
-;org $879E22
-C_879E22:
-stz $18 : stz $1A : stz $1C : stz $1E
+;org $879e22
+EWatermiaLeafPlayerPositionListener:
+stz $18
+stz $1A
+stz $1C
+stz $1E
 phx
 phb
 sep #$20
@@ -195,58 +198,58 @@ sep #$20
   eor #$FF : inc a : sta $1C
 xba
   eor #$FF : inc a : sta $1E
-lda $0004,x : eor #$FF : inc a : sta $18
-lda $0006,x : eor #$FF : inc a : sta $1A
+lda $0004,x : eor #$FF : inc : sta $18
+lda $0006,x : eor #$FF : inc : sta $1A
 rep #$20
 plb
 plx
-J_879E5F:    ; org $879e5f
+.MainLoop:    ; org $879e5f
 cop #$C1
-lda $26 : beq B_879E68
-jmp J_879F0D
-B_879E68:    ; org $879e68
+lda $26 : beq .PlayerStartedAtBoundary
+  jmp .PlayerStartedOnOrOffLeaf
+.PlayerStartedAtBoundary:    ; org $879e68
 ldy $24
 lda $0014,y : sec : sbc $1C : sta $0018
 lda $0014,y : clc : adc $1C : sta $001A
 lda $0016,y : sec : sbc $1E : sta $001C
 lda $0016,y : clc : adc $1E : sta $001E
 ldy $09AA
-lda $0014,y : clc : adc #$0008 : cmp $0018 : bcc B_879F04
-lda $0014,y : sec : sbc #$0008 : cmp $001A : bcs B_879F04
-lda $0016,y : cmp $001C : bcc B_879F04
-lda $0016,y : sec : sbc #$0010 : cmp $001E : bcs B_879F04
+lda $0014,y : clc : adc #$0008 : cmp $0018 : bcc ..PlayerFarFromLeaf
+lda $0014,y : sec : sbc #$0008 : cmp $001A : bcs ..PlayerFarFromLeaf
+lda $0016,y : cmp $001C : bcc ..PlayerFarFromLeaf
+lda $0016,y : sec : sbc #$0010 : cmp $001E : bcs ..PlayerFarFromLeaf
 ldy $24
 lda #$0000 : sta $0026,y
 jsr S_879F77
 ldy $09AA
-lda $0014,y : sec : sbc #$0008 : cmp $0018 : bcs B_879ED8
-rtl
-B_879ED8:    ; org $879ed8
-lda $0014,y : clc : adc #$0008 : cmp $001A : bcc B_879EE5
-rtl
-B_879EE5:    ; org $879ee5
-lda $0016,y : sec : sbc #$0010 : cmp $001C : bcs B_879EF2
-rtl
-B_879EF2:    ; org $879ef2
-lda $0016,y : cmp $001E : bcc B_879EFB
-rtl
-B_879EFB:    ; org $879efb
+lda $0014,y : sec : sbc #$0008 : cmp $0018 : bcs +
+  rtl
++:
+lda $0014,y : clc : adc #$0008 : cmp $001A : bcc +
+  rtl
++:
+lda $0016,y : sec : sbc #$0010 : cmp $001C : bcs +
+  rtl
++:
+lda $0016,y : cmp $001E : bcc ..PlayerOnLeaf
+  rtl
+..PlayerOnLeaf:
 ldy $24
 lda #$0002 : sta $0026,y
 rtl
-B_879F04:    ; org $879f04
+..PlayerFarFromLeaf:    ; org $879f04
 ldy $24
 lda #$0001 : sta $0026,y
 rtl
-J_879F0D:    ; org $879f0d
+.PlayerStartedOnOrOffLeaf:    ; org $879f0d
 cop #$C1
-lda $26 : bne B_879F16
-jmp J_879E5F
-B_879F16:    ; org $879f16
+lda $26 : bne +
+  jmp .MainLoop
++:
 ldy $24
-lda $0026,y : dec a : bne B_879F1F
-rtl
-B_879F1F:    ; org $879f1f
+lda $0026,y : dec : bne +
+  rtl
++:
 jsr S_879F77
 ldy $09AA
 lda $0014,y : sec : sbc #$0008 : cmp $0018 : bcs B_879F3B
@@ -272,11 +275,11 @@ lda $0016,y : clc : adc $1A : sta $001E
 rts
 
 ;org $879f9e
-; Watermia east lily pad.
 db $1f : dw $0301
+EWatermiaRussianGlassLeaf:
 cop #$BC : db $08, $00
 cop #$D2 : db $8D, $01
-cop #$99 : dl C_879E22
+cop #$99 : dl EWatermiaLeafPlayerPositionListener
 cop #$C2
 stz $26
 cop #$11
@@ -293,7 +296,7 @@ cop #$8A
 cop #$86 : db $1F, $84, $02
 cop #$8A
 jsl S_87A041
-lda $26 : dec a : beq B_879FE6
+lda $26 : dec : beq B_879FE6
 cop #$C2
 cop #$A9
 B_879FE6:    ; org $879fe6
@@ -308,7 +311,7 @@ cop #$8A
 cop #$86 : db $1F, $84, $01
 cop #$8A
 jsl S_87A041
-lda $26 : dec a : beq J_879FB6
+lda $26 : dec : beq J_879FB6
 cop #$C2
 cop #$A9
 bra J_879FB6
@@ -319,7 +322,7 @@ pla
 pla
 rtl
 B_87A020:    ; org $87a020
-dec a : beq B_87A036
+dec : beq B_87A036
 cop #$9C : dl C_87A05F : dw $2000
 ldy $09AA
 lda $0010,y : and #$FFF7 : sta $0010,y
@@ -329,7 +332,7 @@ ldy $04
 lda #$0001 : sta $0026,y
 rtl
 S_87A041:    ; org $87a041
-lda $26 : dec a : beq B_87A052
+lda $26 : dec : beq B_87A052
 ldy $09AA
 lda $0010,y : ora #$0008 : sta $0010,y
 B_87A052:    ; org $87a052
@@ -342,17 +345,18 @@ C_87A05F:    ; org $87a05f
 ldy $24
 lda $0014,y : pha
   sec : sbc $14
-ldy $09AA
+  ldy $09AA
   clc : adc $0014,y : sta $0014,y
 pla : sta $14
 ldy $24
 lda $0016,y : pha
   sec : sbc $16
-ldy $09AA
+  ldy $09AA
   clc : adc $0016,y : sta $0016,y
 pla : sta $16
 rtl
 warnpc $87a08c
+
 
 
 org $87A0A7

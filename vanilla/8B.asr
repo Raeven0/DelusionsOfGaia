@@ -3996,7 +3996,7 @@ B_8BC182:    ; org $8bc182
 cop #$C5
 
 
-org $8BC184
+;org $8BC184
 db $0a : dw $0100
 EPymdWallMummy:
 
@@ -4149,10 +4149,90 @@ sep #$20
   lda #$00 : sta $2100
 rep #$20
 rtl
+
 ;org $8bca02
+db $00 : dw $3800
+EAttractMapOneDriver:
+lda #$0800 : sta $064A
+cop #$D0 : db $F4, $00 : dw .DieBecauseInMapFive
+cop #$A0 : dl EAttractMapOneShip : dw $016E, $03E8, $1800
+cop #$DA : db $00
+cop #$A0 : dl EAttractMapOneShip : dw $0166, $041A, $1800
+cop #$DA : db $02
+cop #$A0 : dl EAttractMapOneShip : dw $01A4, $03F0, $1800
+cop #$DA : db $00
+cop #$A0 : dl EAttractMapOneShip : dw $01A0, $040C, $1800
+cop #$DA : db $04
+cop #$A0 : dl EAttractMapOneShip : dw $01D2, $03FC, $1800
+sep #$20
+stz $211A
+rep #$20
+cop #$3C : dl TAttractMapRenderer    ; dl $83A985
+txa
+tyx
+tay
+lda #$0804 : sta $7F000E,x
+txa
+tyx
+tay
+cop #$9A : dl EAttractMapOneCameraController : dw $2800
+cop #$A0 : dl EAttractMapTextWriter : dw $0038, $0030, $2000    ; dl $8bcf8f
+lda #$D044 : sta $0026,y
+cop #$3C : dl TAttractMapFadeTextToVisible
+cop #$DB : dw $01DF
+cop #$3C : dl TAttractMapFadeTextToInvisible
+cop #$DA : db $77
+cop #$A0 : dl EAttractMapTextWriter : dw $003C, $0020, $2000
+lda #$D06D : sta $0026,y
+cop #$3C : dl TAttractMapFadeTextToVisible
+cop #$C1
+rtl
+.DieBecauseInMapFive:    ; org $8bcaaf
+cop #$E0
+EAttractMapOneShip:    ; org $8bcab1
+cop #$81 : db $8B, $11
+cop #$89
+cop #$D0 : db $01, $00 : dw EAttractMapOneShip
+cop #$E0
+EAttractMapOneCameraController:    ; org $8bcabf
+lda #$03FC : sta $24
+lda #$0000 : sta $06BE
+lda #$0360 : sta $06C2
+lda #$0080 : sta $00CA
+lda #$03E0 : sta $00CC
+lda #$0280 : sta $00B6
+lda #$0020 : sta $00B8
+stz $00BC
+cop #$C1
+lda $06BE : inc : and #$03FF : sta $06BE
+  clc : adc #$0080 : sta $00CA
+dec $24 : bmi B_8BCB03
+rtl
+B_8BCB03:    ; org $8bcb03
+cop #$CC : db $01
+cop #$C1
+inc $00BC
+dec $00B6
+lda $00B6 : cmp #$0180 : beq B_8BCB1C
+  cmp #$00D0 : beq B_8BCB22
+rtl
+B_8BCB1C:    ; org $8bcb1c
+cop #$3C : dl TAttractMapFadeTextToInvisible
+rtl
+B_8BCB22:    ; org $8bcb22
+cop #$CE : db $F4
+lda #$0808 : sta $064A
+cop #$CF : dw $017C
+cop #$CF : dw $017D
+cop #$CF : dw $017E
+cop #$CF : dw $017F
+cop #$26 : db $8D, $00, $00, $00, $00, $00, $00, $44
+cop #$C1
+dec $00B6
+inc $00BC
+rtl
 
-
-org $8bcb4e
+;org $8bcb4e
 db $00 : dw $3800
 EAttractMapTwoDriver:
 sep #$20
@@ -4165,7 +4245,7 @@ cop #$CD : dw $017C
 cop #$9A : dl C_8BCC2B : dw $2800
 cop #$A0 : dl EAttractMapTextWriter : dw $0020, $0050, $2000
 lda #$D0B2 : sta $0026,y
-cop #$3C : dl $8BD031
+cop #$3C : dl TAttractMapFadeTextToVisible
 cop #$E0
 .PhaseTwo:    ; org $8bcb8a
 cop #$D1 : dw $017D : db $01 : dw .PhaseThree
@@ -4173,7 +4253,7 @@ cop #$CD : dw $017D
 cop #$9A : dl C_8BCC5B : dw $2800
 cop #$A0 : dl EAttractMapTextWriter : dw $0064, $0058, $2000
 lda #$D0E3 : sta $0026,y
-cop #$3C : dl $8BD031
+cop #$3C : dl TAttractMapFadeTextToVisible
 cop #$E0
 .PhaseThree:    ; org $8bcbb4
 cop #$D1 : dw $017E : db $01 : dw .PhaseFour
@@ -4181,7 +4261,7 @@ cop #$CD : dw $017E
 cop #$9A : dl C_8BCC85 : dw $2800
 cop #$A0 : dl EAttractMapTextWriter : dw $0038, $007C, $2000
 lda #$D11C : sta $0026,y
-cop #$3C : dl $8BD031
+cop #$3C : dl TAttractMapFadeTextToVisible
 cop #$E0
 .PhaseFour:    ; org $8bcbde
 cop #$D1 : dw $017F : db $01 : dw .PhaseFive
@@ -4189,14 +4269,14 @@ cop #$CD : dw $017F
 cop #$9A : dl C_8BCCAE : dw $2800
 cop #$A0 : dl EAttractMapTextWriter : dw $0040, $0020, $2000
 lda #$D144 : sta $0026,y
-cop #$3C : dl $8BD031
+cop #$3C : dl TAttractMapFadeTextToVisible
 cop #$E0
 .PhaseFive:    ; org $8bcc08
 cop #$9A : dl C_8BCCD7 : dw $2800
 cop #$CF : dw $017C
 cop #$A0 : dl EAttractMapTextWriter : dw $0038, $0050, $2000
 lda #$D189 : sta $0026,y
-cop #$3C : dl $8BD031
+cop #$3C : dl TAttractMapFadeTextToVisible
 cop #$E0
 C_8BCC2B:    ; org $8bcc2b
 jsr S_8BCD26
@@ -4213,7 +4293,7 @@ rtl
 B_8BCC52:    ; org $8bcc52
 jmp J_8BCCF5
 B_8BCC55:    ; org $8bcc55
-cop #$3C : dl $8BD039
+cop #$3C : dl TAttractMapFadeTextToInvisible
 rtl
 C_8BCC5B:    ; org $8bcc5b
 jsr S_8BCD26
@@ -4286,11 +4366,149 @@ lda #$0200 : sta $00CC
 lda #$0180 : sta $06BE
 lda #$0180 : sta $06C2
 rts
-warnpc $8bcd4b
 
+;org $8bcd4b
+db $00 : dw $3800
+EAttractMapThreeDriver:
+lda #$4001 : tsb $09EC
+cop #$50 : dl $DE1A35 : db $00, $00, $20
+lda #$0A00 : sta $064A
+lda #$0220 : sta $06DC
+sep #$20
+  lda #$81 : sta $2131
+  lda #$EF : sta $2132
+rep #$20
+ldy $09AA
+lda $0010,y : ora #$2000 : and #$FFF7 : sta $0010,y
+cop #$9C : dl J_8BCE05 : dw $2800
+cop #$C1
+ldy $09AA
+lda $0016,y : inc : sta $0016,y
+cmp #$01A0 : beq B_8BCD9E
+rtl
+B_8BCD9E:    ; org $8bcd9e
+lda #$000F : sta $24
+J_8BCDA3:    ; org $8bcda3
+cop #$DA : db $09
+sep #$20
+  lda $24 : ora #$E0 : sta $2132
+rep #$20
+lda $24 : beq B_8BCDBA
+  dec : sta $24
+bra J_8BCDA3
+B_8BCDBA:    ; org $8bcdba
+sep #$20
+  lda #$82 : sta $2130
+  lda #$10 : sta $2131
+  lda #$E0 : sta $2132
+rep #$20
+cop #$A0 : dl EAttractMapTextWriter : dw $003C, $0048, $2000
+lda #$D1CA : sta $0026,y
+cop #$3C : dl TAttractMapFadeTextToVisible
+cop #$DB : dw $010D
+cop #$3C : dl TAttractMapFadeTextToInvisible
+cop #$DA : db $59
+lda #$0404 : sta $064A
+cop #$26 : db $8F, $00, $00, $00, $00, $00, $00, $11
+cop #$C1
+rtl
 
-org $8bcf52
-#C_8BCF52:
+;org $8bce02
+cop #$C1
+rtl
+
+;org $8bce05
+J_8BCE05:
+cop #$23 : and #$0007 : asl : asl : asl : sta $08
+cop #$C2
+cop #$9C : dl C_8BCE1A : dw $1800
+bra J_8BCE05
+C_8BCE1A:    ; org $8bce1a
+lda #$0100 : sta $14
+cop #$23 : and #$003F : clc : adc #$0138 : sta $16
+cop #$85 : db $0C, $08, $02
+cop #$8A
+cop #$E0
+
+;org $8bce33
+db $00 : dw $3000
+EAttractMapFourDriver:
+lda #$4001 : tsb $09EC
+cop #$50 : dl $DE1B35 : db $00, $00, $20
+cop #$A0 : dl EAttractMapTextWriter : dw $0020, $0020, $2000    ; dl $8bcf8f
+lda #$D222 : sta $0026,y
+cop #$3C : dl TAttractMapFadeTextToVisible
+cop #$DB : dw $010D
+cop #$3C : dl TAttractMapFadeTextToInvisible
+cop #$DA : db $59
+lda #$0804 : sta $064A
+cop #$26 : db $8C, $00, $00, $00, $00, $00, $00, $11
+cop #$C1
+rtl
+
+;org $8bce79
+db $00 : dw $3800
+EAttractMapFiveDriver:
+cop #$D0 : db $F4, $01 : dw B_8BCEBB
+cop #$A0 : dl EAttractMapTextWriter : dw $0038, $0038, $2000
+lda #$D272 : sta $0026,y
+cop #$3C : dl TAttractMapFadeTextToVisible
+sep #$20
+  stz $211A
+rep #$20
+cop #$3C : dl TAttractMapRenderer
+txa
+tyx
+tay
+lda #$0804 : sta $7F000E,x
+txa
+tyx
+tay
+cop #$9A : dl C_8BCEBD : dw $2800
+cop #$C1
+rtl
+B_8BCEBB:    ; org $8bcebb
+cop #$E0
+C_8BCEBD:    ; org $8bcebd
+lda #$0200 : sta $00B6
+lda #$0020 : sta $00B8
+stz $00BC
+lda #$0280 : sta $06BE
+lda #$0300 : sta $06C2
+lda #$0300 : sta $00CA
+lda #$0380 : sta $00CC
+cop #$C1
+lda $06C2 : cmp #$0040 : beq B_8BCF00
+  sec : sbc #$0002 : sta $06C2
+  and #$03FF : clc : adc #$0080 : sta $00CC
+  rtl
+B_8BCF00:    ; org $8bcf00
+cop #$C1
+lda $06C2 : cmp #$FFD8 : beq B_8BCF1F
+  sec : sbc #$0001 : sta $06C2
+  and #$03FF : clc : adc #$0080 : sta $00CC
+  dec $00B6
+  rtl
+B_8BCF1F:    ; org $8bcf1f
+cop #$DA : db $3B
+cop #$CA : db $82
+  dec $00B6
+cop #$CB
+cop #$3C : dl TAttractMapFadeTextToInvisible
+cop #$CA : db $64
+  dec $00B6
+cop #$CB
+lda #$0008 : sta $064A
+cop #$26 : db $FC, $00, $00, $00, $00, $00, $00, $11
+cop #$C1
+dec $00B6 : beq B_8BCF4F
+  rtl
+B_8BCF4F:    ; org $8bcf4f
+cop #$C1
+rtl
+
+;org $8bcf52
+EWorldMapTextWriter:
 phb
 phx
 sep #$20
@@ -4299,11 +4517,11 @@ lda $0002,y : pha : plb
 ldx #$0000
 ldy $26
 #J_8BCF62:
-lda $0000,y : cmp #$CA : beq B_8BCF6D
+lda $0000,y : cmp #$CA : beq +
   inx
   iny
   bra J_8BCF62
-#B_8BCF6D:
++:
 rep #$20
 txa
   and #$FFFE
@@ -4313,7 +4531,7 @@ txa
 plx
   sta $14
 lda #$0038 : sta $16
-lda #$2300 : sta $0E : bra J_8BCFB3
+lda #$2300 : sta $0E : bra EMode7TextWriterCommon
 
 ;org $8bcf8f
 EAttractMapTextWriter:
@@ -4328,7 +4546,7 @@ sep #$20
   lda $0002,y
   pha : plb
 rep #$20
-J_8BCFB3:
+EMode7TextWriterCommon:
 ldy $26
 stz $00DA
 lda $14 : sta $18
@@ -4374,12 +4592,12 @@ plb
 asl $00DA
 asl $00DA
 cop #$E0
-C_8BD031:    ; org $8bd031
+TAttractMapFadeTextToVisible:    ; org $8bd031
 cop #$37 : db $75
 cop #$39
 cop #$3D
 rtl
-C_8BD039:    ; org $8bd039
+TAttractMapFadeTextToInvisible:    ; org $8bd039
 cop #$37 : db $76
 cop #$39
 cop #$CC : db $0F
@@ -4578,34 +4796,73 @@ lda $0D98 : and #$0003 : sta $0000
 lda #$FFFF : sta $0D98
 cop #$D9 : dw $0000, ...Choices    ; $E34C
 ...Choices:
-  dw EMenuNew, EMenuErase, EMenuCopy, EMenuOptions
+  dw EMainMenuNew, EMainMenuErase, EMainMenuCopy, EMainMenuOptions
   ; $e354, $ea55, $e8a8, $e6ba
 
-EMenuNew:    ; org $8be354
+EMainMenuNew:    ; org $8be354
 jsr S_8BEBF9
 cop #$6B : dw $F437
 cop #$C8 : dw B_8BEB8B
 cop #$BD : dl $81EADC
 lda $0D8C : and #$0003 : sta $0D92
-J_8BE36D:    ; org $8be36d
+.MainLoop:    ; org $8be36d
 cop #$C2
 lda #$000C : sta $7F101C,x
 cop #$C8 : dw B_8BE527
-cop #$E2 : dl J_8BE36D
-cop #$40 : dw $0800, $E398
-cop #$40 : dw $0400, $E3B1
-cop #$40 : dw $0080, $E3DF
-cop #$40 : dw $8000, $E3CD
+cop #$E2 : dl .MainLoop
+cop #$40 : dw $0800, .PressedUp      ; $E398
+cop #$40 : dw $0400, .PressedDown    ; $E3B1
+cop #$40 : dw $0080, .PressedConfirm ; $E3DF
+cop #$40 : dw $8000, .PressedCancel  ; $E3CD
 rtl
-
-;org $8be398
-
-
-org $8be3df    ; Select file
-
-
-org $8be462
-EMenuStartGame:
+.PressedUp:    ; org $8be398
+cop #$06 : db $10
+lda $0d92 : dec : bpl +
+  lda #$0002
++:
+sta $0d92
+lda $0656 : ora $0658 : sta $0658
+rtl
+.PressedDown:   ; org $8be3b1
+cop #$06 : db $10
+lda $0d92 : inc : cmp #$0003 : bcc +
+  lda #$0000
++:
+sta $0d92
+lda $0656 : ora $0658 : sta $0658
+rtl
+.PressedCancel:   ; org $8be3cd
+cop #$06 : db $0d
+lda $0656 : ora $0658 : sta $0658
+jsr S_8BEBF9
+jmp J_8BE2CC
+.PressedConfirm:   ; org $8be3df
+cop #$06 : db $11
+lda $0656 : ora $0658 : sta $0658
+lda $0D92 : sta $0D8C
+lda #$FFFF : sta $0D92
+lda $0D8C : sta $306000
+jsl S_83D954 : bcs B_8BE433
+jsr S_8BE673
+lda $0AB2 : sta $0AAC
+lda #$00E6 : sta $0642
+lda #$0078 : sta $064C
+lda #$0090 : sta $064E
+lda #$0003 : sta $0650
+lda #$1100 : sta $0652
+lda #$2800 : trb $09AE
+cop #$E0
+B_8BE433:    ; org $8be433
+lda $0D92 : sta $0D94
+lda #$FFFF : sta $0D92
+lda #$0000 : sta $0D8E : sta $0D90
+jsr S_8BEBF9
+cop #$6B : db $AD, $F5
+cop #$6B : db $25, $F6
+cop #$6B : db $30, $F6
+cop #$BD : dl $81EADC
+lda #$0000 : sta $0D98
+EMainMenuStartGame:   ; org $8be462
 cop #$C2
 cop #$40 : dw $0380, .ChangeOrConfirm
 cop #$40 : dw $0800, LR_OptionsOrNewGamePressedUp
@@ -4617,7 +4874,7 @@ cop #$06 : db $0D
 lda $0656 : ora $0658 : sta $0658
 lda #$FFFF : sta $0D98
 lda $0D94 : sta $0D92
-jmp EMenuNew
+jmp EMainMenuNew
 .ChangeOrConfirm:    ; org $8be498
 lda #$0380 : tsb $0658
 lda $0D98 : beq .TryConfirmGameStart
@@ -4628,15 +4885,15 @@ lda $0D90 : inc : and #$0001 : sta $0D90
 cop #$6B : db $f625
 cop #$BD : dl $81EADC
 lda #$0380 : tsb $0658
-jmp EMenuStartGame
+jmp EMainMenuStartGame
 .ChangeControlType:    ; org $8be4c5
 dec : bne .TryConfirmGameStart
 cop #$06 : db $0D
 lda $0D8E : inc : and #$0001 : sta $0D8E
-cop #$6B : db $f630
+cop #$6B : dw $f630
 cop #$BD : dl $81EADC
 lda #$0380 : tsb $0658
-jmp EMenuStartGame
+jmp EMainMenuStartGame
 .TryConfirmGameStart:    ; org $8be4e7
 cop #$40 : dw $0080, .DoGameStart
 rtl
@@ -4745,22 +5002,63 @@ sep #$20
 rep #$20
 .CheckControl:    ; org $8be695
 lda $0B26 : bne .Style2
-.Style1:
-  lda #$8000 : sta $0DAC    ; Controller button masks.
-  lda #$4000 : sta $0DAA    ; Controller button masks.
-  lda #$0000 : sta $0DB0    ; Controller button masks.
-  lda #$0040 : sta $0DAE    ; Controller button masks.
+.Style1:   ; The game uses e.g. $0daa as the internal mask for the B button, etc.
+  lda #$8000 : sta $0DAC    ; Remap A ($0dac) to action of #$8000 = Attack
+  lda #$4000 : sta $0DAA    ; Remap B ($0daa) to action of #$4000 = Cancel
+  lda #$0000 : sta $0DB0    ; X does nothing
+  lda #$0040 : sta $0DAE    ; Remap Y ($0dae) to action of #$0040 = nothing
 rts
 ; org $8be6b3
 .Style2:
 lda #$0000 : sta $0DB0
 rts
 
-EMenuOptions:    ; org $8be6ba
+EMainMenuOptions:    ; org $8be6ba
+jsr S_8BEBF9
+cop #$6B : db $76, $F4
+cop #$C8 : dw B_8BEB8B
+cop #$BD : dl $81EADC
+lda #$0000 : sta $0D92
+J_8BE6D0:    ; org $8be6d0 
+cop #$C2
+cop #$40 : dw $0800, LR_EditFileSelectPressedUp
+cop #$40 : dw $0400, LR_EditFileSelectPressedDown
+cop #$40 : dw $0080, B_8BE6FD
+cop #$40 : dw $8000, B_8BE6EB
+rtl
 
+B_8BE6EB:    ; org $8be6eb 
+cop #$06 : db $0D
+lda $0656 : ora $0658 : sta $0658
+jsr S_8BEBF9
+jmp J_8BE2CC
 
-org $8be75b
-LR_OptionsOrNewGamePressedUp:
+B_8BE6FD:    ; org $8be6fd 
+cop #$06 : db $12
+lda $0656 : ora $0658 : sta $0658
+lda $0D92 : asl : tay
+lda $0D74,y : bne B_8BE714
+rtl
+B_8BE714:    ; org $8be714 
+cop #$06 : db $11
+lda $0D92 : sta $0D94
+jsr S_8BE840
+lda #$FFFF : sta $0D92
+jsr S_8BEBF9
+cop #$6B : db $38, $F5
+cop #$6B : db $25, $F6
+cop #$6B : db $30, $F6
+cop #$BD : dl $81EADC
+lda #$0000 : sta $0D98
+J_8BE740:    ; org $8be740 
+cop #$C2
+cop #$40 : dw $0380, B_8BE7A5
+cop #$40 : dw $0800, LR_OptionsOrNewGamePressedUp
+cop #$40 : dw $0400, LR_OptionsOrNewGamePressedDown
+cop #$40 : dw $8000, B_8BE790
+rtl
+
+LR_OptionsOrNewGamePressedUp:    ; org $8be75b
 cop #$06 : db $10
 lda $0656 : ora $0658 : sta $0658
 lda $0D98 : dec : bpl B_8BE770
@@ -4768,8 +5066,8 @@ lda #$0002
 B_8BE770:    ; org $8be770
 sta $0D98
 rtl
-; org $8be774
-LR_OptionsOrNewGamePressedDown:
+
+LR_OptionsOrNewGamePressedDown:    ; org $8be774
 cop #$06 : db $10
 lda $0656 : ora $0658 : sta $0658
 lda $0D98 : inc a : cmp #$0003 : bcc B_8BE78C
@@ -4777,24 +5075,328 @@ lda #$0000
 B_8BE78C:    ; org $8be78c
 sta $0D98
 rtl
-warnpc $8be790
 
+B_8BE790:    ; org $8be790 
+cop #$06 : db $0D
+lda $0656 : ora $0658 : sta $0658
+lda #$FFFF : sta $0D98
+jmp J_8BE6BA
 
-EMenuCopy:    ; org $8be8a8
+B_8BE7A5:    ; org $8be7a5 
+lda $0D98 : beq B_8BE7EE
+dec a : bne B_8BE7CC
+cop #$06 : db $10
+lda $0D90 : inc a : and #$0001 : sta $0D90
+cop #$6B : db $25, $F6
+cop #$BD : dl $81EADC
+lda #$0380 : tsb $0658
+jmp J_8BE740
 
+B_8BE7CC:    ; org $8be7cc 
+dec a : bne B_8BE7EE
+cop #$06 : db $10
+lda $0D8E : inc a : and #$0001 : sta $0D8E
+cop #$6B : db $30, $F6
+cop #$BD : dl $81EADC
+lda #$0380 : tsb $0658
+jmp J_8BE740
 
-EMenuErase:    ; org $8bea55
+B_8BE7EE:    ; org $8be7ee 
+cop #$40 : dw $0080, $E7F5
+rtl
 
+B_8BE7F5:    ; org $8be7f5 
+cop #$06 : db $11
+lda $0656 : ora $0658 : sta $0658
+lda #$FFFF : sta $0D98
+lda $0D94
+jsr S_8BE87C
+phx
+lda $0D94
+xba : asl : tax
+jsl LR_CalculateSramChecksum
+lda $0018 : sta $3063FC,x
+lda $001C : sta $3063FE,x
+plx
+jsr S_8BEBF9
+cop #$6B : db $76, $F4
+cop #$C8 : dw B_8BEB8B
+cop #$BD : dl $81EADC
+lda $0D94 : sta $0D92
+jmp J_8BE6D0
 
-org $8beb8b    ; Fill in save file stats
-B_8BEB8B:
+S_8BE840:    ; org $8be840 
+phx
+xba : asl : tax
+phx
+lda $01,s : clc : adc #$0B24 : sec : sbc #$0A00 : tax
+lda $306200,x : cmp #$0002 : bcc B_8BE85C
+lda #$0000
+B_8BE85C:    ; org $8be85c
+sta $0D90
+lda $01,s : clc : adc #$0B26 : sec : sbc #$0A00 : tax
+lda $306200,x : cmp #$0002 : bcc B_8BE876
+lda #$0000
+B_8BE876:    ; org $8be876
+sta $0D8E
+plx
+plx
+rts
+
+S_8BE87C:    ; org $8be87c 
+phx
+xba : asl : tax
+phx
+lda $01,s
+clc : adc #$0B24 : sec : sbc #$0A00 : tax
+lda $0D90 : sta $306200,x
+lda $01,s
+clc : adc #$0B26 : sec : sbc #$0A00 : tax
+lda $0D8E : sta $306200,x
+plx
+plx
+rts
+
+EMainMenuCopy:    ; org $8be8a8
+lda $0D74 : beq B_8BE8D4
+lda $0D76 : beq B_8BE8D4
+lda $0D78 : beq B_8BE8D4
+lda #$0002 : sta $0D98
+stz $00EE
+cop #$6B : db $79, $F6
+lda #$0001 : sta $00EE
+jsr S_8BEBF9
+cop #$6B : db $F4, $F3
+jmp J_8BE2DC
+B_8BE8D4:    ; org $8be8d4 
+jsr S_8BEBF9
+lda #$0000 : sta $0D92
+J_8BE8DD:    ; org $8be8dd 
+cop #$6B : db $8C, $F4
+cop #$C8 : dw B_8BEB8B
+cop #$BD : dl $81EADC
+cop #$C2
+cop #$40 : dw $0800, EMainMenuCopy_PressedUp
+cop #$40 : dw $0400, EMainMenuCopy_PressedDown
+cop #$40 : dw $0080, B_8BE949
+cop #$40 : dw $8000, B_8BE93A
+rtl
+
+EMainMenuCopy_PressedUp:    ; org $8be905 
+cop #$06 : db $10
+lda $0D92 : dec : bpl +
+  lda #$0002
++:    ; org $8be911
+sta $0D92
+lda $0656 : ora $0658 : sta $0658
+rtl
+
+EMainMenuCopy_PressedDown:    ; org $8be91e 
+cop #$06 : db $10
+lda $0D92 : inc : cmp #$0003 : bcc +
+  lda #$0000
++:    ; org $8be92d
+sta $0D92
+lda $0656 : ora $0658 : sta $0658
+rtl
+
+EMainMenuCopy_PressedCancel:   ; org $8be93a
+cop #$06 : db $0D
+lda #$8000 : tsb $0658
+jsr S_8BEBF9
+jmp J_8BE2CC
+
+EMainMenuCopy_PressedConfirm:   ; org $8be949
+cop #$06 : db $11
+lda $0656 : ora $0658 : sta $0658
+lda $0D92 : asl : tay
+lda $0D74,y : bne +
+  rtl
++:    ; org $8be960 
+ldy #$0000
+B_8BE963:    ; org $8be963 
+lda $0D74,y : beq B_8BE972
+iny : iny
+cpy #$0006 : bcc B_8BE963
+  bne B_8BE972
+rtl
+B_8BE972:    ; org $8be972
+tya : lsr : sta $0D96
+cop #$C2
+cop #$40 : dw $0800, B_8BE992
+cop #$40 : dw $0400, B_8BE9B7
+cop #$40 : dw $0080, B_8BE9F7
+cop #$40 : dw $8000, B_8BE9DF
+rtl
+
+B_8BE992:    ; org $8be992 
+cop #$06 : db $10
+lda $0D96
+B_8BE998:    ; org $8be998 
+dec a : bpl B_8BE99E
+lda #$0002
+B_8BE99E:    ; org $8be99e
+sta $0D96
+cmp $0D92 : beq B_8BE998 : asl : tay
+lda $0D74,y : bne B_8BE992
+lda $0656 : ora $0658 : sta $0658
+rtl
+
+B_8BE9B7:    ; org $8be9b7 
+cop #$06 : db $10
+lda $0D96
+B_8BE9BD:    ; org $8be9bd
+inc a
+cmp #$0003 : bcc B_8BE9C6
+lda #$0000
+B_8BE9C6:    ; org $8be9c6
+sta $0D96
+cmp $0D92 : beq B_8BE9BD : asl : tay
+lda $0D74,y : bne B_8BE9B7
+lda $0656 : ora $0658 : sta $0658
+rtl
+B_8BE9DF:    ; org $8be9df 
+cop #$06 : db $0D
+lda $0656 : ora $0658 : sta $0658
+jsr S_8BEBF9
+lda #$FFFF : sta $0D96
+jmp J_8BE8DD
+
+B_8BE9F7:    ; org $8be9f7 
+lda $0D96 : asl : tay
+lda $0D74,y : beq B_8BEA04
+jmp J_8BE949
+
+B_8BEA04:    ; org $8bea04 
+cop #$06 : db $29
+lda $0656 : ora $0658 : sta $0658
+phx
+lda $0D92 : and #$0003
+xba : asl
+clc : adc #$6200 : tax
+lda $0D96 : and #$0003
+xba : asl
+clc : adc #$6200 : tay : sep #$20
+lda #$30 : sta $0405
+lda #$30 : sta $0404
+rep #$20
+lda #$01FF
+jsr $0402
+plx
+lda $0D96 : sta $0D92
+lda #$FFFF : sta $0D96
+jsr S_8BED64
+jsr S_8BEBF9
+jmp J_8BE8DD
+
+;org $8bea55
+EMainMenuErase:    ; org $8bea55
+jsr S_8BEBF9
+J_8BEA58:    ; org $8bea58
+cop #$6B : db $A7, $F4
+cop #$C8 : dw B_8BEB8B
+cop #$BD : dl $81EADC
+lda #$0000
+sta $0D92
+J_8BEA6B:    ; org $8bea6b
+cop #$C2
+cop #$40 : dw $0800, LR_EditFileSelectPressedUp
+cop #$40 : dw $0400, LR_EditFileSelectPressedDown
+cop #$40 : dw $0080, EMainMenuErase_PressedConfirm
+cop #$40 : dw $8000, EMainMenuErase_PressedCancel
+rtl
+
+LR_EditFileSelectPressedUp:   ; org $8bea86
+cop #$06 : db $10
+lda $0D92 : dec : bpl +
+  lda #$0002
++:    ; org $8bea92
+sta $0D92
+lda $0656 : ora $0658 : sta $0658
+rtl
+
+LR_EditFileSelectPressedDown:   ; org $8bea9f
+cop #$06 : db $10
+lda $0D92 : inc : cmp #$0003 : bcc +
+  lda #$0000
++:    ; org $8beaae
+sta $0D92
+lda $0656 : ora $0658 : sta $0658
+rtl
+
+EMainMenuErase_PressedCancel:   ; org $8beabb
+cop #$06 : db $0D
+lda $0656 : ora $0658 : sta $0658
+jsr S_8BEBF9
+jmp J_8BE2CC
+
+EMainMenuErase_PressedConfirm   ; org $8beacd
+cop #$06 : db $11
+lda $0656 : ora $0658 : sta $0658
+lda $0D92 : asl : tay
+lda $0D74,y : bne B_8BEAF0
+cop #$06 : db $12
+lda $0D92 : jsl LR_ClearSaveFileA
+jmp J_8BEA6B
+B_8BEAF0:    ; org $8beaf0
+lda $0D92 : sta $0D94
+lda #$FFFF : sta $0D92
+jsr S_8BEBF9
+cop #$6B : db $B3, $F6
+cop #$BD : dl $81EADC
+lda $0D94 : asl : tay
+lda $0D7A,y
+phy
+  jsr S_8BF1DB
+ply
+  sta $0D9A
+lda $0D80,y
+phy
+  jsr S_8BF1DB
+ply
+  sta $0D9E
+lda $0D86,y
+phy
+  jsr S_8BF1DB
+ply
+  sta $0D9C
+cop #$6B : db $A4, $F6
+cop #$BD : dl $81EADC
+lda #$4000 : sta $0DAA
+stz $0DAE
+cop #$BE : db $02,$03 : dw $eb46
+  dw B_8BEB4C
+  dw B_8BEB4C, B_8BEB61
+
+B_8BEB4C:    ; org $8beb4c 
+lda #$8000 : tsb $0658
+lda #$8000 : sta $0DAA
+lda #$4000 : sta $0DAE
+jmp B_8BEA55
+
+B_8BEB61:    ; org $8beb61 
+lda #$8000 : sta $0DAA
+lda #$4000 : sta $0DAE
+cop #$06 : db $13
+cop #$C1
+lda $0D94 : jsl LR_ClearSaveFileA
+cop #$DA : db $1D
+lda $1C : sta $1A
+stz $1C
+jsr S_8BEBF9
+jsr S_8BED64
+jmp J_8BEA58
+
+; Fill in save file stats
+B_8BEB8B:    ; org $8beb8b
 lda $0D74 : beq B_8BEBAF
 lda $0D7A
 jsr SR_Bin2DecForMenu : sta $0D9A
 lda $0D80
 jsr SR_Bin2DecForMenu : sta $0D9E
 lda $0D86
-jsr SR_Bin2DecForMenu : sta $0D9C : cop #$6B : db $C3, $F4
+jsr SR_Bin2DecForMenu : sta $0D9C
+cop #$6B : db $C3, $F4
 B_8BEBAF:    ; org $8bebaf
 lda $0D76 : beq B_8BEBD3
 lda $0D7C
@@ -4802,7 +5404,8 @@ jsr SR_Bin2DecForMenu : sta $0D9A
 lda $0D82
 jsr SR_Bin2DecForMenu : sta $0D9E
 lda $0D88
-jsr SR_Bin2DecForMenu : sta $0D9C : cop #$6B : db $EA, $F4
+jsr SR_Bin2DecForMenu : sta $0D9C
+cop #$6B : db $EA, $F4
 B_8BEBD3:    ; org $8bebd3
 lda $0D78 : beq B_8BEBF7
 lda $0D7E
@@ -4810,7 +5413,8 @@ jsr SR_Bin2DecForMenu : sta $0D9A
 lda $0D84
 jsr SR_Bin2DecForMenu : sta $0D9E
 lda $0D8A
-jsr SR_Bin2DecForMenu : sta $0D9C : cop #$6B : db $11, $F5
+jsr SR_Bin2DecForMenu : sta $0D9C
+cop #$6B : db $11, $F5
 B_8BEBF7:    ; org $8bebf7
 cop #$C5
 
@@ -4820,7 +5424,7 @@ php
 phx
 phd
 sep #$20
-jsl S_82F076
+jsl LR_ClearBg3All
 plx
 pld
 plp
@@ -4828,7 +5432,57 @@ rts
 warnpc $8bec06
 
 
-org $8BEE20
+org $8bed64 
+S_8BED64:    ; org $8bed64 
+phx
+lda #$0000 : sta $0D74
+  sta $0D76
+  sta $0D78
+  sta $0D7A
+  sta $0D7C
+  sta $0D7E
+  sta $0D80
+  sta $0D82
+  sta $0D84
+  sta $0D80
+  sta $0D82
+  sta $0D84
+lda #$0002 : sta $24
+stz $26
+lda $306000 : cmp #$0003 : bcc B_8BEDA3
+  lda #$0000 : sta $306000
+B_8BEDA3:    ; org $8beda3
+sta $0D8C
+J_8BEDA6:    ; org $8beda6 
+lda $24 : xba : asl : tax : jsl LR_CalculateSramChecksum
+lda $0018 : cmp $3063FC,x : bne B_8BEE11
+lda $001C : cmp $3063FE,x : bne B_8BEE11
+phx
+lda $24 : asl : tay
+txa : clc : adc #$0B12 : sec : sbc #$0A00 : tax
+lda $306200,x : sta $0D74,y
+lda $01,s : clc : adc #$0ACA : sec : sbc #$0A00 : tax
+lda $306200,x : sta $0D7A,y
+lda $01,s : clc : adc #$0ADC : sec : sbc #$0A00 : tax
+lda $306200,x : sta $0D80,y
+lda $01,s : clc : adc #$0ADE : sec : sbc #$0A00 : tax
+lda $306200,x : sta $0D86,y
+pla
+sec
+bra J_8BEE12
+B_8BEE11:    ; org $8bee11 
+clc
+J_8BEE12:    ; org $8bee12 
+rol $26
+lda $24
+dec a : sta $24 : bmi B_8BEE1E
+jmp J_8BEDA6
+B_8BEE1E:    ; org $8bee1e 
+plx
+rts
+
+
+;org $8BEE20
 db $02,$00,$10
 EDebugMan:
 {
@@ -5066,15 +5720,28 @@ rts
 }
 warnpc $8bf24b
 
-org $8bf437
-Bg3_DiaryListNew:
+org $8bf3f4
+Bg3_MainMenu:
+db $C1,$06,$0A
+db $C7,$0A,$04
+db $63,$A4,$80,$A2,$A4,$AC,$49,$8E,$A5,$A2,$8D,$84,$A9,$CB
+db $44,$A2,$80,$A3,$84,$AC,$64,$A2,$88,$A0,$AC,$43,$88,$80,$A2,$A9,$CB
+db $42,$8E,$A0,$A9,$AC,$64,$A2,$88,$A0,$AC,$43,$88,$80,$A2,$A9,$CB
+db $D6,$0B,$63,$8D,$83,$6B,$41,$A5,$A4,$A4,$8E,$8D,$A3
+db $CA
+Bg3_DiaryListNew:    ; org $8bf437
 db $C1,$02,$08
 db $C7,$0E,$07
-db $67,$87,$88,$82,$87,$AC,$43,$88,$80,$A2,$A9,$0D,$CB
+db $67,$87,$88,$82,$87,$AC,$43,$88,$80,$A2,$A9,$0D,$CB   ; "Which Diary?"
 Bg3_DiaryList:
-db $AC,$43,$88,$80,$A2,$A9,$21,$AC,$C5,$06,$F7,$74,$0D,$CB,$CB
-db $AC,$43,$88,$80,$A2,$A9,$22,$AC,$C5,$06,$F7,$76,$0D,$CB,$CB
-db $AC,$43,$88,$80,$A2,$A9,$23,$AC,$C5,$06,$F7,$78,$0D
+db $AC,$43,$88,$80,$A2,$A9,$21,$AC
+db $C5,$06,$F7,$74,$0D
+db $CB,$CB
+db $AC,$43,$88,$80,$A2,$A9,$22,$AC
+db $C5,$06,$F7,$76,$0D
+db $CB,$CB
+db $AC,$43,$88,$80,$A2,$A9,$23,$AC
+db $C5,$06,$F7,$78,$0D
 db $CA
 Bg3_DiaryListChangeSnd:
 db $C1,$02,$08
@@ -5138,8 +5805,145 @@ db $C6,$02,$00,$9E,$0D
 db $CA
 
 ;org $8bf538
+Bg3_MenuChangeDiarySettings:
+db $C1,$06,$08
+db $C7,$0A,$08
+db $CC,$02
+db $D6,$0B,$63,$8D,$83,$6B,$41,$A5,$A4,$A4,$8E,$8D,$A3,$CB   ; "Change Snd/Buttons"
+db $44,$8D,$83,$AC,$42,$87,$80,$8D,$86,$84,$A3,$CB   ; "End Changes"
+db $63,$8E,$A5,$8D,$83,$CB   ; "Sound"
+db $D7,$02,$64,$A9,$A0,$84,$CB    ; "Button Type"
+db $CC,$05
+db $AC,$AC,$AC,$2F,$40,$A4,$A4,$80,$82,$8A,$6B,$64,$80,$8B,$8A,$CB   ; "   :Attack/Talk"
+db $CC,$05
+db $AC,$AC,$AC,$2F,$48,$A4,$84,$8C,$6B,$42,$80,$8D,$82,$84,$8B,$CB   ; "   :Item/Cancel"
+db $CC,$05
+db $AC,$AC,$AC,$2F,$48,$A4,$84,$8C,$AC,$A0,$80,$8B,$84,$A4,$A4,$84,$CB   ; "   :Item palette"
+db $CC,$05
+db $AC,$AC,$AC,$2F,$4D,$8E,$A4,$AC,$A5,$A3,$84,$83   ; "   :Not used"
+db $CA
 
-org $8bf706
+;org $8bf5ad
+Bg3_MenuNewDiarySettings:
+db $C1,$06,$08
+db $C7,$0A,$08
+db $40,$A2,$A2,$80,$8D,$86,$84,$8C,$84,$8D,$A4,$AC,$AC,$4E,$4A,$0D,$CB   ; "Arrangement  OK?"
+db $63,$A4,$80,$A2,$A4,$AC,$49,$8E,$A5,$A2,$8D,$84,$A9,$CB   ; "Start Journey"
+db $63,$8E,$A5,$8D,$83,$CB   ; "Sound"
+db $D7,$02,$64,$A9,$A0,$84,$CB    ; "Button Type"
+db $CC,$05
+db $AC,$AC,$AC,$2F,$40,$A4,$A4,$80,$82,$8A,$6B,$64,$80,$8B,$8A,$CB   ; "   :Attack/Talk"
+db $CC,$05
+db $AC,$AC,$AC,$2F,$48,$A4,$84,$8C,$6B,$42,$80,$8D,$82,$84,$8B,$CB   ; "   :Item/Cancel"
+db $CC,$05
+db $AC,$AC,$AC,$2F,$48,$A4,$84,$8C,$AC,$A0,$80,$8B,$84,$A4,$A4,$84,$CB   ; "   :Item palette"
+db $CC,$05
+db $AC,$AC,$AC,$2F,$4D,$8E,$A4,$AC,$A5,$A3,$84,$83   ; "   :Not used"
+db $CA
+
+;org $8bf625
+Bg3_MenuBranchSoundOptions:
+db $C1,$0D,$0C
+db $D2,$00 
+db $c5 : dw $f667, $0d90
+db $ca
+
+;org $8bf630
+Bg3_MenuBranchControlOptions:
+db $c1,$11,$0e
+db $d2,$00
+db $c5 : dw $f63b, $0d8e
+db $ca
+
+;org $8bf63b
+Bg3_MenuControlOptionsIncl:
+.Pointers:
+dw $f63f
+dw $f653
+.Option0:
+db $21   ; The "1" seen in "Button Type1"
+db $c1,$08,$10
+db $40   ; "A"
+db $c1,$08,$12
+db $41   ; "B"
+db $c1,$08,$14
+db $63,$44,$4b   ; "SEL"
+db $c1,$08,$16
+db $69   ; "Y"
+db $ca
+.Option1:
+db $22   ; The "2" seen in "Button Type2"
+db $c1,$08,$10
+db $41   ; "B"
+db $c1,$08,$12
+db $69   ; "Y"
+db $c1,$08,$14
+db $63,$44,$4b   ; "SEL"
+db $c1,$08,$16
+db $40   ; "A"
+db $CA
+
+;org $8bf667
+Bg3_MenuSoundOptionsIncl:
+.Pointers:
+dw $f66b
+dw $f672
+.Option0:
+db $63,$a4,$84,$a2,$84,$8e,$ca   ; "Stereo"
+.Option1:
+db $4c,$8e,$8d,$8e,$ac,$ac,$ca   ; "Mono  "
+
+;org $8bf679
+Bg3_MenuNoEmptySlotsToCopyInto:
+db $C1,$04,$15
+db $C7,$0C,$02
+db $D5,$FF
+db $43,$88,$80,$A2,$A9,$AC,$8D,$8E,$A4,$AC,$84,$8C,$A0,$A4,$A9,$CB   ; "Diary not empty"
+db $44,$A2,$80,$A3,$84,$AC,$80,$8D,$83,$AC,$A3,$84,$8B,$84,$82,$A4   ; "Erase and select"
+db $CF
+db $C8
+db $CA
+
+;org $8bf6a4
+Bg3_MenuBranchEraseWhichDiary:
+db $c1,$04,$0a
+db $c5 : dw $f6ad, $0d94
+db $ca
+
+;org $8bf6ad
+dw $f4c6
+dw $f4ed
+dw $f514
+
+;org $8bf6b3
+Bg3_MenuOfferEraseDiary:
+db $C1,$04,$08
+db $C7,$0D,$05
+db $C5 : dw $f6d9, $0d94
+db $CB
+db $CB
+db $44,$A2,$80,$A3,$84,$AC,$83,$88,$80,$A2,$A9,$0D,$AC,$CB   ; "Erase diary? "
+db $AC,$4D,$8E,$AC,$CB   ; " No "
+db $AC,$69,$84,$A3,$AC   ; " Yes "
+db $CA
+..WhichDiaryPointers:   ; org $8bf6d9
+dw $f6df
+dw $f6ec
+dw $f6f9
+..Diary1:
+db $43,$88,$80,$a2,$a9, $21, $ac   ; "Diary1 "
+db $c5 : dw $f706, $0d74
+db $ca
+..Diary2:
+db $43,$88,$80,$a2,$a9, $22, $ac   ; "Diary2 "
+db $c5 : dw $f706, $0d76
+db $ca
+..Diary3:
+db $43,$88,$80,$a2,$a9, $23, $ac   ; "Diary3 "
+db $c5 : dw $f706, $0d78
+db $ca
+
+;org $8bf706
 Table_SaveFileLocationText:
 .Pointers:
 {

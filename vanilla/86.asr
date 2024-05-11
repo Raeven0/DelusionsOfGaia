@@ -150,7 +150,25 @@ db $C2,$0A,$C2,$06,$D6,$36,$CB,$65,$87,$87,$87,$8D,$2A,$AC,$65,$87,$87,$87,$8D,$
 org $868A1B
 db $C2,$0A,$C2,$00,$67,$88,$8B,$8B,$2F,$AC,$64,$87,$80,$A4,$0E,$A3,$AC,$8E,$83,$83,$2A,$AC,$CB,$D6,$12,$88,$85,$AC,$48,$AC,$A4,$8E,$A5,$82,$87,$AC,$88,$A4,$AC,$CB,$8D,$8E,$AC,$83,$80,$8C,$80,$86,$84,$AC,$8E,$82,$82,$A5,$A2,$A3,$2A,$2A,$2A,$C3,$00,$C0
 
-;org $868A59
+org $868A59
+db $02 : dw $1000
+ESeaPalaceNpc:
+cop #$D0 : db $70,$00 : dw .Die
+lda #$0008 : tsb $09ae
+lda $0e : and #$0030 : lsr : clc : adc #$0002 : sta $7f0026,x
+jsl LR_WanderingNpcSavePos       ; = jsl $80C718
+jsl LR_PrepGenericNpcFromParam   ; = jsl $86B9F2
+cop #$C0 : dw .OnInteract
+.DoWanderCycle:
+jsl LR_WanderingNpcDoWander      ; = jsl $80C725
+cop #$C2
+cop #$C1
+cop #$89
+bra .DoWanderCycle
+.Die:
+cop #$E0
+.OnInteract:    ; org $868a90
+
 
 org $868B22
 db $D3,$63,$80,$A6,$84,$83,$4F,$4F,$CB,$64,$87,$80,$8D,$8A,$AC,$A9,$8E,$A5,$4F,$4F,$CF,$48,$AC,$A7,$80,$A3,$AC,$D6,$75,$A4,$8E,$AC,$D6,$D6,$CB,$D7,$93,$D6,$8E,$45,$A2,$84,$84,$89,$88,$80,$AC,$80,$8D,$83,$AC,$CB,$D6,$7F,$A4,$8E,$AC,$80,$AC,$83,$84,$8C,$8E,$8D,$2A,$2A,$2A,$AC,$CF,$C2,$02,$D6,$2C,$A3,$A0,$84,$80,$8A,$A3,$AC,$85,$A2,$8E,$8C,$CB,$87,$88,$A3,$AC,$A0,$8E,$82,$8A,$84,$A4,$2A,$CF,$67,$87,$80,$A4,$0D,$4F,$AC,$40,$8B,$8B,$AC,$A4,$87,$84,$AC,$83,$84,$8C,$8E,$8D,$A3,$CB,$A7,$84,$AC,$A3,$80,$A7,$AC,$D6,$74,$A7,$84,$A2,$84,$CB,$D6,$9A,$81,$84,$88,$8D,$86,$A3,$2A,$2A,$2A,$0D,$C3,$00,$C0
@@ -187,8 +205,56 @@ db $D3,$D6,$62,$D6,$EF,$A7,$84,$AC,$83,$8E,$AC,$8D,$8E,$A7,$2B,$CB,$83,$84,$A3,$
 db $D3,$D6,$30,$A7,$84,$AC,$D6,$7A,$A3,$84,$88,$AA,$84,$CB,$A4,$87,$84,$AC,$D7,$93,$80,$8D,$83,$AC,$8B,$88,$A6,$84,$CB,$D6,$D9,$A4,$8E,$86,$84,$A4,$87,$84,$A2,$2A,$2A,$2A,$C0
 
 ;org $868FEB
+db $00 : dw $3002
+ESeaPLillyAtRightCoffin:
+cop #$D1 : dw $013A : db $01 : dw .Die
+cop #$BC : db $08, $00
+cop #$C0 : dw $9094
+cop #$D2 : db $01, $01
+lda #$CFF0 : tsb $065A
+lda #$2000 : trb $10
+cop #$88 : dl $8EE000
+ldy $09AA
+lda $0014,y : sta $14
+lda $0016,y : sec : sbc #$0010 : sta $16
+cop #$85 : db $33, $04, $14
+cop #$8A
+cop #$84 : db $33, $04
+cop #$8A
+lda #$0300 : sta $7F0018,x
+lda #$009C : sta $7F001A,x
+cop #$22 : db $33, $01
+lda #$2000 : tsb $10
+cop #$DA : db $3B
+cop #$32 : db $3A
+cop #$33
+cop #$CD : dw $013A
+cop #$DA : db $3B
+lda #$0300 : sta $14
+lda #$00A0 : sta $16
+lda #$2000 : trb $10
+cop #$BF : dw $9167
+cop #$84 : db $33, $04
+cop #$8A
+ldy $09AA
+lda $0014,y : sta $7F0018,x
+lda $0016,y : sec : sbc #$0010 : sta $7F001A,x
+cop #$22 : db $33, $01
+lda #$2000 : tsb $10
+lda #$CFF0 : trb $065A
+.Die:
+cop #$E0
+.OnInteract:    ; org $869094
+cop #$D0 : db $6f,$01 : dw ..WithLilly
+..NoLilly:
+cop #$BF : dw $90a7
+rtl
+..WithLilly:
+cop #$BF : dw $90cf
+cop #$CC : db $01
+rtl
 
-org $8690A7
+;org $8690A7
 db $D3,$C2,$00,$67,$88,$8B,$8B,$2F,$AC,$64,$87,$84,$AC,$82,$8E,$85,$85,$88,$8D,$A3,$AC,$80,$A2,$84,$AC,$CB,$8B,$88,$8D,$84,$83,$AC,$A5,$A0,$2A,$2A,$2A,$C3,$00,$C0
 ;org $8690CF
 db $D3,$C2,$00,$67,$88,$8B,$8B,$2F,$AC,$CB,$48,$AC,$D6,$78,$D7,$9E,$A4,$8E,$AC,$8E,$A0,$84,$8D,$AC,$CB,$A4,$87,$84,$AC,$8B,$88,$83,$2A,$2A,$2A,$AC,$CF,$C2,$02,$D6,$2C,$A3,$A0,$84,$80,$8A,$A3,$AC,$85,$A2,$8E,$8C,$CB,$87,$88,$A3,$AC,$A0,$8E,$82,$8A,$84,$A4,$2A,$CF,$C2,$02,$D6,$2A,$D7,$42,$80,$AC,$8C,$88,$8D,$A5,$A4,$84,$2A,$CB,$48,$A3,$8D,$0E,$A4,$AC,$D6,$D9,$80,$AC,$87,$8E,$8B,$84,$AC,$88,$8D,$CB,$A4,$87,$84,$AC,$82,$8E,$85,$85,$88,$8D,$0D,$CF,$48,$AC,$D6,$7A,$86,$84,$A4,$AC,$88,$8D,$AC,$D6,$DC,$CB,$A4,$87,$84,$AC,$87,$8E,$8B,$84,$2A,$AC,$48,$AC,$D7,$50,$CB,$D6,$98,$80,$AC,$8B,$8E,$8E,$8A,$2A,$C3,$00,$C0
@@ -197,7 +263,7 @@ db $D3,$C2,$02,$D6,$2A,$63,$A4,$A2,$80,$8D,$86,$84,$2A,$2A,$2A,$CB,$64,$87,$84,$
 
 ;org $8691AC
 db $00 : dw $3002
-ESeaPLillyAtCoffin:
+ESeaPLillyAtLeftCoffin:
 cop #$D1 : dw $013B : db $01 : dw .CoffinOpenDoDie
 cop #$BC : db $08, $00
 cop #$C0 : dw .OnInteract
@@ -753,7 +819,7 @@ db $C2,$0A,$C2,$00,$D6,$5E,$D7,$83,$86,$A2,$8E,$A7,$AC,$80,$8B,$8B,$CB,$D6,$BE,$
 ;org $86B937
 
 org $86b9f2
-LR_PrepAnglNpcFromParam:
+LR_PrepGenericNpcFromParam:
 lda $0e : and #$000f : sta $24
 lda #$2000 : sta $0e
 lda #$2000 : trb $10
@@ -848,7 +914,7 @@ db $C2,$0A,$C2,$03,$44,$A2,$88,$8A,$2F,$AC,$48,$AC,$D6,$DA,$48,$AC,$A3,$80,$A7,$
 ;org $86C6DA
 db $02 : dw $1000
 EAVNpcHeartache:
-jsl LR_PrepAnglNpcFromParam     ; $86B9F2
+jsl LR_PrepGenericNpcFromParam     ; $86B9F2
 cop #$C0 : dw $C6FC
 lda #$0002
 sta $7F0026,x
@@ -878,7 +944,7 @@ lda $0e : and #$0070 : lsr : lsr : lsr : lsr : clc : adc $28 : sta $28
 stz $2a
 cop #$C1
 cop #$8B
-jsl LR_PrepAnglNpcFromParam     ; $86B9F2
+jsl LR_PrepGenericNpcFromParam     ; $86B9F2
 cop #$C0 : dw $c77d
 cop #$0B
 cop #$C1
@@ -948,7 +1014,7 @@ db $C2,$0B,$64,$87,$88,$A3,$AC,$88,$A3,$AC,$A4,$87,$84,$AC,$40,$8D,$86,$84,$8B,$
 ;org $86CA10
 db $02 : dw $1000
 EAVNpcDancerGreen:
-jsl LR_PrepAnglNpcFromParam     ; $86B9F2
+jsl LR_PrepGenericNpcFromParam     ; $86B9F2
 cop #$C0 : dw $ca43
 lda #$0200 : tsb $12
 -:    ; org $86ca20
@@ -982,7 +1048,7 @@ db $C2,$0A,$64,$87,$84,$AC,$A0,$88,$82,$A4,$A5,$A2,$84,$AC,$8E,$8D,$AC,$D6,$D7,$
 ;org $86CACA
 db $0a : dw $1000
 EAVNpcWanderingBlue:
-jsl LR_PrepAnglNpcFromParam     ; $86B9F2
+jsl LR_PrepGenericNpcFromParam     ; $86B9F2
 cop #$C0 : dw $caec
 lda #$000a : sta $7f0026,x
 jsl LR_WanderingNpcSavePos     ; $80C718
@@ -1018,7 +1084,7 @@ db $C2,$0B,$D6,$1F,$A3,$87,$8E,$A7,$AC,$A9,$8E,$A5,$AC,$A4,$87,$84,$AC,$A7,$80,$
 ;org $86CD47
 db $0a : dw $1000
 EAVNpcDancerBlue:
-jsl LR_PrepAnglNpcFromParam     ; $86B9F2
+jsl LR_PrepGenericNpcFromParam     ; $86B9F2
 cop #$C0 : dw $CD7A
 lda #$0200 : tsb $12
 -:    ; org $86cd57
@@ -1434,18 +1500,35 @@ bra J_86DC15
 
 ;org $86dc50
 db $04 : dw $1000
-EAVIshtarsApprentice:
-
-
-org $86DC97
+EAVIshtarsApprentice:    ; Also handles creating wind for Will's hair.
+cop #$45 : db $70, $00, $80, $10 : dw .EnableWind
+bra .CheckIfFirstPhase
+.EnableWind:    ; org $86dc5d
+cop #$CC : db $00
+lda #$FFFF : sta $09B4
+.CheckIfFirstPhase:    ; org $86dc66
+lda $0AA6 : lsr : cmp #$0001 : bne .CheckIfSecondPhase
+cop #$25 : db $3A, $1D
+bra .AwaitInteraction
+.CheckIfSecondPhase:    ; org $86dc75
+cmp #$0002 : bne .CheckIfThirdPhase
+cop #$25 : db $57, $1D
+bra .AwaitInteraction
+.CheckIfThirdPhase:    ; org $86dc80
+cmp #$0003 : bne .AwaitInteraction
+cop #$25 : db $00, $71
+.AwaitInteraction:    ; org $86dc89
+cop #$0B
+cop #$C0 : dw $DC92
+cop #$C1
+rtl
+.OnInteract:    ; org $86dc92
+cop #$BF : dw $dc97
+rtl
+;org $86DC97
 db $C2,$0B,$D7,$17,$80,$A0,$A0,$A2,$84,$8D,$A4,$88,$82,$84,$2F,$CB,$D6,$61,$A9,$8E,$A5,$AC,$A3,$8E,$8B,$A6,$84,$AC,$A4,$87,$84,$CB,$A0,$A5,$AA,$AA,$8B,$84,$AC,$8E,$85,$AC,$A4,$87,$84,$AC,$A2,$8E,$8E,$8C,$CB,$A9,$8E,$A5,$AC,$8C,$80,$A9,$AC,$A0,$80,$A3,$A3,$2A,$C0
 
+
 ;org $86DCD8
-
-
-
-
-
-org $86DCD8
 Bank86Free:
 pad $870000

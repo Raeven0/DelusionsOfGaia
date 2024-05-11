@@ -433,7 +433,7 @@ dw SR_HandleMapCardCondBranch    ; Card $13 @ $8446
 dw SR_HandleMapCardBranchLabel    ; Card $14 @ $845b [INY; RTS]
 dw SR_HandleMapCardBranch    ; Card $15 @ $8d3d
 dw SR_HandleMapCardFiller    ; $845c [RTS]
-dw SR_HandleMapCard17    ; Card $17 @ $8c03
+dw SR_HandleMapCard17    ; Card $17 @ $8c30
 }
 ;org $828446
 SR_HandleMapCardCondBranch:    ; Card $13
@@ -460,8 +460,233 @@ rts
 ;org $82845d
 SR_HandleMapCardVram:
 {
-
+php
+rep #$20
+jsr SR_GetMapHeaderByte : xba : asl : sta $0664   ; $0664 = SrcOffset
+jsr SR_GetMapHeaderByte : xba : asl : sta $0666   ; $0666 = SizeW
+jsr SR_GetMapHeaderByte : sta $0668               ; $0668 = DestOffset
+ldx #$003E
+jsr SR_GetAssetAddressAsHirom
+jsr SR_GetMapHeaderByte : cmp #$0000 : beq .SubtypeBg
+  dec : beq .SubtypeSprites
+  dec : beq .Subtype02
+  dec : beq .Subtype03
+.SubtypeBg:    ; org $82848d
+lda $0668 : bit #$0010 : bne ..ForSecondPage
+  clc : adc #$0020 : sta $0668
+ldx #$066C
+lda $0666 : sec : sbc $0664 : cmp #$2001 : bmi .DoneSetup
+stz $0670
+bra .DoneSetup
+..ForSecondPage:    ; org $8284b0
+clc : adc #$0020 : sta $0668
+ldx #$066F
+bra .DoneSetup
+.SubtypeSprites:    ; org $8284bc
+lda $0668 : bit #$0010 : bne ..ForSecondPage
+  clc : adc #$0040 : sta $0668
+  bit #$0028 : beq +
+    stz $0676    ; Unknown purpose.
++:    ; org $8284d3
+stz $0673
+ldx #$0672
+bra .DoneSetup
+..ForSecondPage:    ; org $8284db
+clc : adc #$0040 : sta $0668
+ldx #$0675
+bra .DoneSetup
+.Subtype02:    ; org $8284e7
+lda $0668 : clc : adc #$0060 : sta $0668
+bra .DoProcessWrite
+.Subtype03:    ; org $8284f3
+lda $0668 : sta $0668
+jmp J_828592
+.DoneSetup:    ; org $8284fc
+jsr SR_ClcIfCachedOrUpdateCache : bcs .DoProcessWrite
+plp
+rts
+.DoProcessWrite:    ; org $828503
+lda [$3E]
+  inc $3E : inc $3E
+  sta $78
+  cmp #$0000 : beq ..AsUncomp
+  cpx #$066C : bne B_828520
+lda $06EE : bit #$0800 : beq B_828520
+jmp J_8285DB
+B_828520:    ; org $828520
+jsr S_828E6F : bcc B_82852A
+jsr S_828F53
+plp
+rts
+B_82852A:    ; org $82852a
+jsr S_828E94
+lda $78 : cmp #$2001 : bcc B_828537
+stz $067F
+B_828537:    ; org $828537
+ldx #$7000 : stx $7A
+jsl LR_QuintetDecomp
+ldx #$7000 : stx $3E
+lda #$007E : sta $40
+jsr S_828552
+jsr S_828EB8
+plp
+rts
+S_828552:    ; org $828552
+php
+bra J_828560
+..AsUncomp:    ; org $828555
+lda $06EE : bit #$0800 : beq J_828560
+jmp J_8285F3
+J_828560:    ; org $828560
+lda $0668 : xba : sta $2116
+lda $3E : clc : adc $0664 : sta $4302
+lda $0666 : sec : sbc $0664 : sta $4305
+sep #$20
+lda #$01 : sta $4300
+lda #$18 : sta $4301
+lda $40 : sta $4304
+lda #$01 : sta $420B
+plp
+rts
+J_828592:    ; org $828592
+lda [$3E] : sta $78
+  inc $3E : inc $3E
+  cmp #$0000 : beq B_8285B2
+ldx #$7000 : stx $7A
+jsl LR_QuintetDecomp
+ldx #$7000 : stx $3E
+lda #$007E : sta $40
+B_8285B2:    ; org $8285b2
+sep #$20
+ldx #$2000 : stx $2116
+lda #$00 : sta $4300
+lda #$19 : sta $4301
+ldx $3E : stx $4302
+lda $40 : sta $4304
+ldx #$4000 : stx $4305
+lda #$01 : sta $420B
+plp
+rts
+J_8285DB:    ; org $8285db
+stz $0670
+stz $067F
+stz $0682
+stz $0679
+stz $067C
+ldx #$7000 : stx $7A
+jsl LR_QuintetDecomp
+J_8285F3:    ; org $8285f3
+phy
+phb
+sep #$20
+lda #$7E : pha : plb
+ldx #$0000
+stz $0E
+ldy #$A000 : sty $5E
+jsr S_82868C
+B_828608:    ; org $828608
+lda #$07 : sta $12
+lda ($3E) : sta $10
+inc $3E : bne B_828616
+inc $3F
+B_828616:    ; org $828616
+lda $7000,x : sta $00
+lda $7001,x : sta $02
+lda $7010,x : sta $04
+lda $7011,x : sta $06
+ldy #$0007
+B_82862D:    ; org $82862d
+lda #$00
+rol $06
+rol
+rol $04
+rol
+rol $02
+rol
+rol $00
+rol
+ora $10 : sta ($5E)
+inc $5E : bne B_828645
+inc $5F
+B_828645:    ; org $828645
+dey : bpl B_82862D
+inx : inx
+dec $12 : bpl B_828616
+rep #$20
+txa : clc : adc #$0010 : tax
+sep #$20
+cpx #$2000 : bcc B_828608
+plb
+ldx #$0000 : stx $2116
+lda #$80 : sta $2115
+lda #$00 : sta $4300
+lda #$19 : sta $4301
+ldx #$A000 : stx $4302
+lda #$7E : sta $4304
+ldx #$4000 : stx $4305
+lda #$01 : sta $420B
+ply
+plp
+rts
+S_82868C:    ; org $82868c
+php
+rep #$20
+lda #$0000 : tay
+B_828693:    ; org $828693
+sta $2800,y
+iny : iny : cpy #$0100 : bcc B_828693
+ldy #$2800 : sty $3E
+ldy #$0000 : sep #$20
+B_8286A7:    ; org $8286a7
+lda $2000,y : sta $3E
+lda $2001,y : asl : asl : and #$70 : sta ($3E)
+iny : iny : cpy #$0800 : bcc B_8286A7
+ldy #$2800 : sty $3E
+plp
+rts
 }
+warnpc $8286c3
+
+org $8287bc
+SR_HandleMapCard06:
+stz $0664
+stz $0665
+jsr SR_GetMapHeaderByte    ; $8ce7
+  sta $066a
+ldx #$003e : jsr SR_GetAssetAddressAsHirom    ; $8d8f
+lda $066a : and #$7f : beq B_82880D     ; $38
+lda #$01 : and $066a : beq B_8287F0     ; $14
+lda $06ef : bit #$08 : bne J_828818     ; $35
+ldx #$067e : jsr SR_ClcIfCachedOrUpdateCache : bcs B_8287F0
+  lda #$01 : trb $066a
+B_8287F0:   ; org $8287f0
+lda #$02 : and $066a : beq B_828804     ; $0D
+ldx #$0681 : jsr SR_ClcIfCachedOrUpdateCache : bcs B_828804
+  lda #$02 : trb $066a
+B_828804:
+lda $066a : and #$7f : beq B_82883C     ; $31
+bra J_828818     ; $0B
+B_82880D:
+lda $066a : bmi J_828818     ; $06
+  stz $067f
+  stz $0680
+J_828818:
+rep #$20
+lda [$3e]
+  inc $3e
+  and #$00ff : xba : sta $00
+lda [$3e]
+  inc $3e
+  and #$00ff : xba : sta $02
+sep #$20
+lda $066a : and #$7f : bne B_82883A     ; $03
+  jmp J_828926
+B_82883A:
+bra J_82883D     ; $01
+B_82883C:
+rts
+J_82883D:
+
 
 
 org $828a6d
@@ -566,7 +791,7 @@ lda #$FF : sta $2140
 lda #$02 : jsl LR_IdleAFrames    ; $8281c9
 ldx $3e : stx $46
 ldx $40 : stx $48
-jsl UpdateApu    ; $82909b
+jsl LR_UpdateApu    ; $82909b
 lda #$01 : sta $0d72
 lda #$03 : jsl LR_IdleAFrames    ; $8281c9
 lda $06f2 : beq +
@@ -605,8 +830,8 @@ jsr SR_PushMapData    ; $8dea
 plp
 rts
 }
-warnpc $828c30
-
+;org $828c30
+SR_HandleMapCard17:
 
 
 
@@ -811,6 +1036,99 @@ sec
 rts
 }
 ;org $828e94
+S_828E94:
+ldx $0094 : txa : inc a : and #$0003 : sta $0094 : txa
+pha : asl : clc : adc $01,s : tax
+pla
+lda $003E : sta $0084,x : sep #$20
+lda $0040 : sta $0086,x
+rep #$20
+rts
+
+; org $828eb8
+S_828EB8:
+phy
+lda $0668 : xba : sta $2116
+lda $0666 : cmp #$2001 : bmi B_828ED4
+  sec : sbc #$2000 : sta $0666
+lda #$2000
+bra J_828ED7
+B_828ED4:    ; org $828ed4
+stz $0666
+J_828ED7:    ; org $828ed7
+jsr S_828F18
+lda $0666 : beq B_828F16
+pha
+ldy $0094 : tya : inc : cmp #$0004 : bcc B_828EED
+  lda #$0000
+B_828EED:    ; org $828eed
+sta $0094
+tya
+pha
+  asl : clc : adc $01,s : tay
+pla
+lda #$FFFF : sta $0084,y
+sep #$20
+  lda #$FF : sta $0086,y
+rep #$20
+lda $0668 : xba : clc : adc #$1000 : sta $2116
+pla
+jsr S_828F18
+B_828F16:    ; org $828f16
+ply
+rts
+S_828F18:    ; org $828f18
+php
+sta $4305
+jsr S_828F43 : tay
+lda $2139
+sep #$20
+sty $4302
+lda #$7F : sta $4304
+lda #$81 : sta $4300
+lda #$39 : sta $4301
+lda #$01 : sta $420B
+lda #$01 : sta $4300
+plp
+rts
+S_828F43:    ; org $828f43
+lda $0094 : dec : ror : ror : ror : ror : and #$6000 : clc : adc #$4000
+rts
+S_828F53:    ; org $828f53
+phy
+lda $829F4E,x : and #$00FF
+pha
+ror : ror : ror : ror : and #$6000 : clc : adc #$4000 : tax
+lda $0666 : sec : sbc $0664 : cmp #$2001 : bcs B_828F7B
+tay
+jsr S_828FA7
+pla
+ply
+rts
+B_828F7B:    ; org $828f7b
+sec : sbc #$2000
+pha
+lda #$2000 : tay
+jsr S_828FA7
+lda $0668 : clc : adc #$0010 : sta $0668
+lda $03,s : inc : ror : ror : ror : ror : and #$6000 : clc : adc #$4000 : tax
+pla
+jsr S_828FA7
+pla
+ply
+rts
+S_828FA7:    ; org $828fa7
+lda $0668 : xba : sta $2116
+stx $4302
+sty $4305
+sep #$20
+lda #$01 : sta $4300
+lda #$18 : sta $4301
+lda #$7F : sta $4304
+lda #$01 : sta $420B
+rep #$20
+rts
+warnpc $828fcd
 
 
 org $829020
@@ -868,10 +1186,12 @@ InitApu:
 ldx.w #SpcInitData : stx $46    ; #$9210
 lda.b #$82 : sta $48           ; Bank of SpcProgram.
 jsr SR_WaitAndLoadApu    ; $919B
-UpdateApu:    ;org $82909b
+LR_UpdateApu:    ;org $82909b
 php
 phy
-jsr SR_WaitAndLoadApu    ; Assumes all music data starts with "end old music" program.
+jsr SR_WaitAndLoadApu    ; Loads all blocks at [$46] until a size of $0000 is hit.
+; After $0000 comes dw InstrumentTargetAddr : db NumInstruments : db InstrIdx1,InstrIdx2,...
+; which is parsed here, but .Y is currently at NumInstruments, so we need dey : dey.
 dey : dey
 sep #$20
 lda #$FF : sta $2140
@@ -880,40 +1200,40 @@ rep #$20
 lda #$BBAA
 -:
   cmp $2140 : bne -
-lda [$46],y    ; $2e = offset for new data in free ARAM
+lda [$46],y    ; $2e = next SPC addr for sample, conventionally immediately after music data
   iny : iny
   sta $2E
-lda [$46],y    ; $28 = number of additional data blocks to push
-  iny : sty $32
+lda [$46],y    ; $28 = number of samples to push
+  iny : sty $32   ; $32 = CPU offset of this InstrIdx
   and #$00FF : sta $28
-stz $2C
+stz $2C    ; $2c = size of previous sample
 .FindFreeMemory:    ; org $8290c9
 rep #$20
 ldx #$0000 : stx $4A
 sep #$20
-lda #$C5 : sta $4C
+lda #$C5 : sta $4C    ; Now [$4A] = base CPU addr of samples = $C50000
 ldy $32
 lda [$46],y
   iny : sty $32
-  sta $2A
+  sta $2A    ; $2A = this InstrIdx
 stz $2B
 bit #$80 : beq +
   jmp J_829153
 +:
 rep #$20
-lda $2E : clc : adc $2C : sta $2E
-.CheckNextSound:    ; org $8290f1
+lda $2E : clc : adc $2C : sta $2E    ; Move SPC target addr forward by size of previous sample
+.CheckNextSound:    ; org $8290f1   ; We traverse InstrIdx samples in ROM to get to the target one.
 lda [$4A] : sta $2C
   sta $34
 inc $4A : inc $4A
-lda $2A : beq B_829113
+lda $2A : beq .GotSampleAddr
   dec $2A
 lda $4A : clc : adc $2C : sta $4A
   bpl .CheckNextSound
 and #$7FFF : sta $4A
 inc $4C
 bra .CheckNextSound
-B_829113:    ; org $829113
+.GotSampleAddr:    ; org $829113
 ldy $4A : stz $4A
 sep #$20
 lda $30
@@ -921,7 +1241,7 @@ bra J_829160
 B_82911D:    ; org $82911d
 lda [$4A],y
   iny : bpl B_829127
-    ldy #$0000
+    ldy #$0000    ; Roll over to the next bank if addr & 0xFFFF > 0x8000.
     inc $4C
 B_829127:    ; org $829127
 xba
@@ -981,7 +1301,7 @@ plp
 rtl
 
 ;org $82919B
-SR_WaitAndLoadApu:  ; Pushes data blocks until an explicit terminator is read.
+SR_WaitAndLoadApu:  ; Pushes program or music data, all blocks, until $0000 is read.
 php
 rep #$20
 ldy #$0000
@@ -1340,10 +1660,40 @@ B_82A30D:    ; org $82a30d
 ply
 plp
 rtl
-warnpc $82a310
 
+;org $82a310
+S_82A310:
+tsx
+ldy $0800 : beq S_82A32F
+rep #$20
+lda #$07ff : tcs
+-:
+pla : beq +
+  sta $2116
+pla : sta $2118
+bra -
++:
+txs
+stz $0800
+sep #$20
+rtl
+S_82A32F:    ; org $82a32f
+txs
+lda #$80 : sta $2115    ; Inc $2116 after a write to $2189
+rep #$20
+lda $0902 : beq +
+  sta $2116    ; VRAM target word
+  lda $0904 : sta $2118    ; VRAM write
+  lda $0906 : sta $2118    ; VRAM write
+  lda $0908 : sta $2116    ; VRAM target word
+  lda $090a : sta $2118    ; VRAM write
+  lda $090c : sta $2118    ; VRAM write
++:
+stz $0902
+sep #$20
+rtl
 
-org $82a363
+;org $82a363
 LR_StageMapRearrange:
 asl : asl : asl : tay
   sta $00A8
@@ -2068,9 +2418,16 @@ PLX
 PLP
 RTL
 }
-warnpc $82b0cf
 
-org $82b0f6
+;org $82b0cf
+S_82B0CF:   ; $1A,$1E = PosX,PosY in px
+lda $1E : and #$00F8 : asl : asl : pha
+  lda $1A : and #$00F8 : lsr : lsr : lsr : clc : adc $01,s : sta $01,s
+  lda $1A : and #$0100 : asl : asl : clc : adc $01,s : sta $01,s
+pla : clc : adc #$1000
+rtl
+
+;org $82b0f6
 LR_IncTile02WithCarry:
 php
 sep #$20
@@ -2581,7 +2938,7 @@ rtl
 ..TryFriar:
 lda #$0001 : sta $00EA
 jsr .SR_QuitAbilityIfForbidden
-lda.w EPlayer_DoFriar : jsr .SR_SetPlayerPointerToA    ; i.e. lda #$bb3b
+lda.w #EPlayer_DoFriar : jsr .SR_SetPlayerPointerToA    ; i.e. lda #$bb3b
 bra .QuitCharge
 ..TryAuraBarrier:
 lda $09B2 : ora $09B4 : beq ...OkayNotRunning
@@ -2589,7 +2946,7 @@ lda $09B2 : ora $09B4 : beq ...OkayNotRunning
 ...OkayNotRunning:
 lda #$0002 : sta $00EA
 jsr .SR_QuitAbilityIfForbidden
-lda #$B97F : jsr .SR_SetPlayerPointerToA
+lda.w #EPlayer_DoAuraBarrier : jsr .SR_SetPlayerPointerToA   ; i.e. lda #b97f
 bra .QuitCharge
 }
 
@@ -3610,34 +3967,34 @@ dw EPlayer_ActFaceEastShield    ; $CA52
 dw EPlayer_ActFaceEastRelease   ; $C4AF
 ;org $82C47F
 EPlayer_ActFaceSouthRelease:
-cop #$D0 : db $00,$01 : dw .Variant    ; $C48A, probably "windy" or something.
+cop #$D0 : db $00,$01 : dw .WithWind
 cop #$8F : db $00
 bra EPlayer_Idle_RefreshAnim
-.Variant:
+.WithWind:
 cop #$8F : db $10
 bra EPlayer_Idle_RefreshAnim
 ;org $82C48F
 EPlayer_ActFaceNorthRelease:
-cop #$D0 : db $00,$01 : dw .Variant    ; $C49A, probably "windy" or something.
+cop #$D0 : db $00,$01 : dw .WithWind
 cop #$8F : db $01
 bra EPlayer_Idle_RefreshAnim
-.Variant:
+.WithWind:
 cop #$8F : db $11
 bra EPlayer_Idle_RefreshAnim
 ;org $82C49F
 EPlayer_ActFaceWestRelease:
-cop #$D0 : db $00,$01 : dw .Variant    ; $C4AA, probably "windy" or something.
+cop #$D0 : db $00,$01 : dw .WithWind
 cop #$8F : db $02
 bra EPlayer_Idle_RefreshAnim
-.Variant:
+.WithWind:
 cop #$8F : db $12
 bra EPlayer_Idle_RefreshAnim
 ;org $82C4AF
 EPlayer_ActFaceEastRelease:
-cop #$D0 : db $00,$01 : dw .Variant    ; $C4BA, probably "windy" or something.
+cop #$D0 : db $00,$01 : dw .WithWind
 cop #$8F : db $03
 bra EPlayer_Idle_RefreshAnim
-.Variant:
+.WithWind:
 cop #$8F : db $13
 ;org $82C4BD
 EPlayer_Idle_RefreshAnim:
@@ -3666,7 +4023,7 @@ cop #$C2
 cop #$C5
 B_82C4F9:    ; org $82c4f9
 cop #$8F : db $08
-jsr S_82C617
+jsr SR_InitRunCounter
 B_82C4FF:    ; org $82c4ff
 cop #$8B
 lda $08
@@ -3674,8 +4031,8 @@ lda $08
   inc a : sta $24
 cop #$C1
 lda $2A : beq B_82C4FF
-cop #$41 : dw $0400, B_82C615
-jsr S_82C5FF : bne B_82C51F
+cop #$41 : dw $0400, EPlayer_FromRunningReturnToAct
+jsr SR_RunningConsiderReturnToAct : bne B_82C51F
 cop #$40 : dw $0030, EPlayer_ActFaceSouthShield    ; $CA28
 B_82C51F:    ; org $82c51f
 dec $24 : bmi B_82C4FF
@@ -3688,14 +4045,47 @@ EPlayer_ActPressUp:
 
 org $82C56C
 EPlayer_ActPressLeft:
+lda $24 : dec : dec : bne B_82C58A
+lda $040c : bmi B_82C58A
+stz $040c
+lda #$fffd : sta $09b2
+stz $09b6
+stz $09b8
+cop #$C2
+cop #$C5
+B_82C58A:
+cop #$8F : db $0A
+jsr SR_InitRunCounter
+B_82C590:
+cop #$8B
+lda $08
+  stz $08
+  inc : sta $24
+cop #$C1
+lda $2A : beq B_82C590
+cop #$41 : dw $0200, EPlayer_FromRunningReturnToAct
+jsr SR_RunningConsiderReturnToAct : bne B_82C5B0
+cop #$40 : dw $0030, B_82CA44
+B_82C5B0:
+dec $24 : bmi B_82C590
+rtl
 
-
-
-org $82C5B5
+;org $82C5B5
 EPlayer_ActPressRight:
 
 
-org $82c617
+
+org $82c5ff
+SR_RunningConsiderReturnToAct:
+cop #$40 : dw $8000, .DoReturn
+lda $09b2 : ora $09b4 : bne .DoReturn
+lda $09ae : bit #$1000 : rts
+.DoReturn:    ; org $82c614
+pla
+EPlayer_FromRunningReturnToAct:    ; org $82c615
+cop #$C5
+
+;org $82c617
 SR_InitRunCounter:
 lda #$000D : sta $040C
 rts
@@ -5456,12 +5846,14 @@ lda $0AFA : cmp $18 : bne +
 +:
 sta $18
   sta $0000
-cop #$D9 : dw $0000, $E43D : dw B_82E7C7, B_82E7E6 : dw B_82E7F7, B_82E816
+cop #$D9 : dw $0000, $E43D    ; Called when hovering over Item/Order/Remove/Cond.
+  dw EInvScreenManager_HoverItemLine, EInvScreenManager_HoverOrderLine
+  dw EInvScreenManager_HoverRemoveLine, EInvScreenManager_HoverCondLine
 B_82E445:    ; org $82e445
 cop #$06 : db $0D
 lda $0AFA : sta $18
   sta $0000
-cop #$D9 : dw $0000, $E456
+cop #$D9 : dw $0000, $E456    ; Called when selecting Item/Order/Remove/Cond.
   dw EInvScreenManager_ItemMenu, EInvScreenManager_OrderMenu
   dw EInvScreenManager_RemoveMenu, EInvScreenManager_CondMenu
 
@@ -5578,11 +5970,11 @@ sta $0AB4,y
 rep #$20
 ldy $2E
 lda $0AB4,y : and #$00FF : pha
-  tya : jsr S_82E9ED
+  tya : jsr SR_RefreshItemSlotIndexA
 pla : sta $0028,y
 ldy $22
 lda $0AB4,y : and #$00FF : pha
-tya : jsr S_82E9ED
+tya : jsr SR_RefreshItemSlotIndexA
 pla : sta $0028,y
 tya : cmp $0AC4 : bne +
   lda $2E : sta $0AC4
@@ -5643,8 +6035,7 @@ B_82E6D6:    ; org $82e6d6
 lda $28 : beq B_82E702
 ldy $22
 lda $0AB4,y : and #$FF00 : sta $0AB4,y
-lda $22
-jsr S_82E9ED
+lda $22 : jsr SR_RefreshItemSlotIndexA
 lda $22 : cmp $0AC4 : bne B_82E6FC
 stz $0AC6
 lda #$FFFF : sta $0AC4 : sta $1A
@@ -5674,9 +6065,8 @@ jsr S_82E7A3
 cop #$BD : dl $81E912
 lda $0AD4 : sta $0004
 lda $22 : jsr SR_SecOnAbilityForBody : bcc B_82E753
-lda $22
-jsr S_82E972
-cop #$BD : dl $81EAB4
+  lda $22 : jsr S_82E972
+  cop #$BD : dl $81EAB4
 B_82E753:    ; org $82e753
 cop #$C2
 cop #$40 : dw $0800, B_82E768
@@ -5687,7 +6077,7 @@ B_82E768:    ; org $82e768
 lda #$0800 : tsb $0658
 cop #$06 : db $10
 lda $22 : dec : bpl B_82E779
-lda #$0002
+  lda #$0002
 B_82E779:    ; org $82e779
 sta $22
 bra J_82E734
@@ -5695,7 +6085,7 @@ B_82E77D:    ; org $82e77d
 lda #$0400 : tsb $0658
 cop #$06 : db $10
 lda $22 : inc : cmp #$0003 : bcc B_82E791
-lda #$0000
+  lda #$0000
 B_82E791:    ; org $82e791
 sta $22
 bra J_82E734
@@ -5718,70 +6108,66 @@ dw $0098, $0060
 dw $0098, $0078
 
 ;org $82e7c7
-B_82E7C7:
-jsr S_82EB1A
+EInvScreenManager_HoverItemLine:
+jsr SR_SetInvObjectVisibilityOutsideCondMenu
 jsr S_82EAF7
 jsr S_82EAC0
-cop #$BD : dl $81E8E2
-cop #$BD : dl $81E912
+cop #$BD : dl $81E8E2    ; Clear the upper screen in the case the Cond box is there
+cop #$BD : dl $81E912    ; Clear the lower-right box
 cop #$BD : dl $81E919
 lda #$0004 : sta $0AE6
 rtl
-B_82E7E6:    ; org $82e7e6
-jsr S_82EB1A
+EInvScreenManager_HoverOrderLine:    ; org $82e7e6
+jsr SR_SetInvObjectVisibilityOutsideCondMenu
 jsr S_82EAF7
-cop #$BD : dl $81E912
+cop #$BD : dl $81E912    ; Clear the lower-right box
 cop #$BD : dl $81E954
 rtl
 ; Text draw method when hovering over "Discard" option.
-B_82E7F7:    ; org $82e7f7
-jsr S_82EB1A
+EInvScreenManager_HoverRemoveLine:    ; org $82e7f7
+jsr SR_SetInvObjectVisibilityOutsideCondMenu
 jsr S_82EAF7
 jsr S_82EAC0
-cop #$BD : dl $81E912
-cop #$BD : dl $81E8E2
+cop #$BD : dl $81E912    ; Clear the lower-right box
+cop #$BD : dl $81E8E2    ; Clear the upper screen in the case the Cond box is there
 cop #$BD : dl $81E962
 lda #$0004 : sta $0AE6
 rtl
-B_82E816:    ; org $82e816
+EInvScreenManager_HoverCondLine:    ; org $82e816
 jsr S_82EB45
 jsr B_82EB0B
-cop #$BD : dl $81E912
+cop #$BD : dl $81E912    ; Clear the lower-right box
 cop #$BD : dl $81E870
 cop #$BD : dl $81EA70
 lda #$0000 : sta $0AE6
 lda $7F0018,x : tay
 lda $0AC4 : bmi B_82E84A
-lda $0AC6
-jsr S_82E9CF
-lda $0010,y : and #$DFFF : sta $0010,y
+  lda $0AC6 : jsr S_82E9CF
+  lda $0010,y : and #$DFFF : sta $0010,y
 B_82E84A:    ; org $82e84a
 lda $7F001A,x : sta $0002
 lda $0AD4 : sta $0004
 lda #$0000 : jsr SR_SecOnAbilityForBody : bcc B_82E876
-ldy $0002
-lda $0010,y : and #$DFFF : sta $0010,y
-lda #$0000
-jsr S_82E972
-cop #$BD : dl $81EA49
+  ldy $0002
+  lda $0010,y : and #$DFFF : sta $0010,y
+  lda #$0000 : jsr S_82E972
+  cop #$BD : dl $81EA49
 B_82E876:    ; org $82e876
 ldy $0002
 lda $0006,y : sta $0002
 lda #$0001 : jsr SR_SecOnAbilityForBody : bcc B_82E89E
-ldy $0002
-lda $0010,y : and #$DFFF : sta $0010,y
-lda #$0001
-jsr S_82E972
-cop #$BD : dl $81EA56
+  ldy $0002
+  lda $0010,y : and #$DFFF : sta $0010,y
+  lda #$0001 : jsr S_82E972
+  cop #$BD : dl $81EA56
 B_82E89E:    ; org $82e89e
 ldy $0002
 lda $0006,y : sta $0002
 lda #$0002 : jsr SR_SecOnAbilityForBody : bcc B_82E8C6
-ldy $0002
-lda $0010,y : and #$DFFF : sta $0010,y
-lda #$0002
-jsr S_82E972
-cop #$BD : dl $81EA63
+  ldy $0002
+  lda $0010,y : and #$DFFF : sta $0010,y
+  lda #$0002 : jsr S_82E972
+  cop #$BD : dl $81EA63
 B_82E8C6:    ; org $82e8c6
 rtl
 
@@ -5887,7 +6273,8 @@ pla
 jsl LR_SecOnFlag51A
 rts
 
-S_82E9ED:    ; org $82e9ed
+; Returns Y = slot ActorID; caller can set its sprite via $0028,y.
+SR_RefreshItemSlotIndexA:    ; org $82e9ed
 sta $000E
 lda $7F0010,x : tay
 J_82E9F5:    ; org $82e9f5
@@ -5977,7 +6364,7 @@ lda $7F0012,x : tay
 lda $0010,y : ora #$2000 : sta $0010,y
 rts
 
-S_82EB1A:    ; org $82eb1a
+SR_SetInvObjectVisibilityOutsideCondMenu:    ; org $82eb1a
 lda $10 : bit #$1000 : beq B_82EB22
 rts
 B_82EB22:    ; org $82eb22
@@ -6037,7 +6424,7 @@ lda $1C : inc $1C : bit #$000F : beq B_82EBE3
   clc
   rts
 B_82EBE3:    ; org $82ebe3
-bit #$0010 : bne B_82EBED
+  bit #$0010 : bne B_82EBED
 jsr S_82EC2D : clc
 rts
 B_82EBED:    ; org $82ebed
@@ -6074,6 +6461,7 @@ S_82EC46:    ; org $82ec46
 lda #$0001 : tsb $09EC
 lda #$2040 : sta $7F0896 : sta $7F0916
 rts
+
 S_82EC58:    ; org $82ec58
 cop #$40 : dw $8000, B_82ECC3
 cop #$40 : dw $0800, B_82EC8A

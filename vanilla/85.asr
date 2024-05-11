@@ -1217,7 +1217,8 @@ rtl
 ; The code internally uses $F4,$F8,$FC for the "previous line's" (i.e. current) x, y, and radius.
 ; I think this is an implementation of the midpoint circle algorithm,
 ; which builds the W1 HDMA table arithmetically.
-; Note that HDMA to register $26 uses an indirect table.
+; The HDMA to register $26 uses an indirect table at $7000 or $7100
+; with data at $7600 or $7a00 (based on frame parity).
 db $04,$08
 jsr SR_SpotlightClearLastFrameInputs
 cop #$C1

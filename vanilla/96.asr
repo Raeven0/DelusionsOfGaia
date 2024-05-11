@@ -10,136 +10,151 @@ org $968000
 PaletteBundles:
 .Pointers:
 {
-dw .Index00:    ; $8100
-dw .Index01:    ; $818D
-dw .Index02:    ; $8204 South Cape exterior night
-dw .Index03:    ; $82AB
-dw .Index04:    ; $82D2
-dw .Index05:    ; $8319
-dw .Index06:    ; $83F0
-dw .Index07:    ; $8467
-dw .Index08:    ; $849E
-dw .Index09:    ; $84D5
-dw .Index0A:    ; $85D2
-dw .Index0B:    ; $85F7 Will
-dw .Index0C:    ; $861C Freedan
-dw .Index0D:    ; $8641
-dw .Index0E:    ; $8666
-dw .Index0F:    ; $868B
-dw .Index10:    ; $8792 Player dying (any form)
-dw .Index11:    ; $8899
-dw .Index12:    ; $88E0
-dw .Index13:    ; $8927 Inca mud golem
-dw .Index14:    ; $89AE
-dw .Index15:    ; $8A3F
-dw .Index16:    ; $8B46
-dw .Index17:    ; $8B95
-dw .Index18:    ; $8BDC CMath Fade Normal to White
-dw .Index19:    ; $8C43 CMath Fade White to Normal
-dw .Index1A:    ; $8CAA
-dw .Index1B:    ; $8D21
-dw .Index1C:    ; $8D88
-dw .Index1D:    ; $8DEF
-dw .Index1E:    ; $8E0E
-dw .Index1F:    ; $8E55
-dw .Index20:    ; $8F5C
-dw .Index21:    ; $90B7
-dw .Index22:    ; $9190
-dw .Index23:    ; $91B7 Shadow, standing/walking
-dw .Index24:    ; $92D8 Shadow, running/flying
-dw .Index25:    ; $93F9
-dw .Index26:    ; $9470
-dw .Index27:    ; $9957
-dw .Index28:    ; $9A60
-dw .Index29:    ; $9A93
-dw .Index2A:    ; $9BEE Will charge, slow
-dw .Index2B:    ; $9D33 Will charge, fast
-dw .Index2C:    ; $9E78 Freedan charge, fast
-dw .Index2D:    ; $9FBD
-dw .Index2E:    ; $A0C4
-dw .Index2F:    ; $A19D
-dw .Index30:    ; $A204
-dw .Index31:    ; $A271
-dw .Index32:    ; $A2DE
-dw .Index33:    ; $A325
-dw .Index34:    ; $A39C
-dw .Index35:    ; $A3CB
-dw .Index36:    ; $A492
-dw .Index37:    ; $A4E1
-dw .Index38:    ; $A5F0
-dw .Index39:    ; $A669
-dw .Index3A:    ; $A75A
-dw .Index3B:    ; $A7D1
-dw .Index3C:    ; $A802
-dw .Index3D:    ; $A847
-dw .Index3E:    ; $A878
-dw .Index3F:    ; $A8BD
-dw .Index40:    ; $A8DA
-dw .Index41:    ; $A911
-dw .Index42:    ; $ADF8
-dw .Index43:    ; $AE6F
-dw .Index44:    ; $AF10
-dw .Index45:    ; $AF3F
-dw .Index46:    ; $AF8E
-dw .Index47:    ; $AFCF
-dw .Index48:    ; $AFF6
-dw .Index49:    ; $B06D
-dw .Index4A:    ; $B08A Freedan using Friar
-dw .Index4B:    ; $B1AB Freedan charge, slow
-dw .Index4C:    ; $B2F0 South Cape interior night (unused due to bug?)
-dw .Index4D:    ; $B305
-dw .Index4E:    ; $B3F2
-dw .Index4F:    ; $B4DF
-dw .Index50:    ; $B52E
-dw .Index51:    ; $B64F
-dw .Index52:    ; $B770
-dw .Index53:    ; $B891
-dw .Index54:    ; $B9B2
-dw .Index55:    ; $BAD3
-dw .Index56:    ; $BBF4
-dw .Index57:    ; $BD15
-dw .Index58:    ; $BE36
-dw .Index59:    ; $BF57
-dw .Index5A:    ; $C078
-dw .Index5B:    ; $C1BD Freedan using Aura Barrier (*Friar is raw at $998070)
-dw .Index5C:    ; $C26E Mummy Queen first color change
-dw .Index5D:    ; $C293 Mummy Queen second color change
-dw .Index5E:    ; $C2B8
-dw .Index5F:    ; $C2E7
-dw .Index60:    ; $C30E
-dw .Index61:    ; $C317
-dw .Index62:    ; $C34E CMath ApoGaia BG flash
-dw .Index63:    ; $C46F ApoGaia psycho bubbles
-dw .Index64:    ; $C4A4
-dw .Index65:    ; $C4DB
-dw .Index66:    ; $C588 CMath ApoGaia BG flash
-dw .Index67:    ; $C5BC
-dw .Index68:    ; $C5F0
-dw .Index69:    ; $C621 CMath A/DG fire/MouthLaser
-dw .Index6A:    ; $C65E CMath ApoGaia BG flash
-dw .Index6B:    ; $C78F
-dw .Index6C:    ; $C7A4 Shadow's transformations
-dw .Index6D:    ; $C7C9
-dw .Index6E:    ; $CAF8
-dw .Index6F:    ; $CDF7
-dw .Index70:    ; $CE6A
-dw .Index71:    ; $CE8F Firebird
-dw .Index72:    ; $CF40
-dw .Index73:    ; $CFCF
-dw .Index74:    ; $D046
-dw .Index75:    ; $D17B
-dw .Index76:    ; $D1C2
-dw .Index77:    ; $D209
-dw .Index78:    ; $D310
-dw .Index79:    ; $D417
-dw .Index7A:    ; $D466
-dw .Index7B:    ; $D48B
-dw .Index7C:    ; $D4B0
-dw .Index7D:    ; $D591
-dw .Index7E:    ; $D6C2
-dw .Index7F:    ; $D6FB
+dw .Index00    ; $8100
+dw .Index01    ; $818D
+dw .Index02    ; $8204 South Cape exterior night
+dw .Index03    ; $82AB
+dw .Index04    ; $82D2
+dw .Index05    ; $8319
+dw .Index06    ; $83F0
+dw .Index07    ; $8467
+dw .Index08    ; $849E
+dw .Index09    ; $84D5
+dw .Index0A    ; $85D2
+dw .Index0B    ; $85F7 Will
+dw .Index0C    ; $861C Freedan
+dw .Index0D    ; $8641
+dw .Index0E    ; $8666
+dw .Index0F    ; $868B
+dw .Index10    ; $8792 Player dying (any form)
+dw .Index11    ; $8899
+dw .Index12    ; $88E0
+dw .Index13    ; $8927 Inca mud golem
+dw .Index14    ; $89AE
+dw .Index15    ; $8A3F
+dw .Index16    ; $8B46
+dw .Index17    ; $8B95
+dw .Index18    ; $8BDC CMath Fade Normal to White
+dw .Index19    ; $8C43 CMath Fade White to Normal
+dw .Index1A    ; $8CAA
+dw .Index1B    ; $8D21 CMath
+dw .Index1C    ; $8D88 CMath
+dw .Index1D    ; $8DEF
+dw .Index1E    ; $8E0E
+dw .Index1F    ; $8E55
+dw .Index20    ; $8F5C
+dw .Index21    ; $90B7
+dw .Index22    ; $9190
+dw .Index23    ; $91B7 Shadow, standing/walking
+dw .Index24    ; $92D8 Shadow, running/flying
+dw .Index25    ; $93F9
+dw .Index26    ; $9470
+dw .Index27    ; $9957
+dw .Index28    ; $9A60 CMath
+dw .Index29    ; $9A93
+dw .Index2A    ; $9BEE Will charge, slow
+dw .Index2B    ; $9D33 Will charge, fast
+dw .Index2C    ; $9E78 Freedan charge, fast
+dw .Index2D    ; $9FBD
+dw .Index2E    ; $A0C4
+dw .Index2F    ; $A19D CMath
+dw .Index30    ; $A204
+dw .Index31    ; $A271
+dw .Index32    ; $A2DE
+dw .Index33    ; $A325
+dw .Index34    ; $A39C
+dw .Index35    ; $A3CB
+dw .Index36    ; $A492
+dw .Index37    ; $A4E1
+dw .Index38    ; $A5F0 CMath
+dw .Index39    ; $A669
+dw .Index3A    ; $A75A
+dw .Index3B    ; $A7D1
+dw .Index3C    ; $A802
+dw .Index3D    ; $A847
+dw .Index3E    ; $A878
+dw .Index3F    ; $A8BD
+dw .Index40    ; $A8DA CMath
+dw .Index41    ; $A911
+dw .Index42    ; $ADF8
+dw .Index43    ; $AE6F
+dw .Index44    ; $AF10
+dw .Index45    ; $AF3F
+dw .Index46    ; $AF8E
+dw .Index47    ; $AFCF
+dw .Index48    ; $AFF6
+dw .Index49    ; $B06D
+dw .Index4A    ; $B08A Freedan using Friar
+dw .Index4B    ; $B1AB Freedan charge, slow
+dw .Index4C    ; $B2F0 South Cape interior night (unused due to bug?)
+dw .Index4D    ; $B305
+dw .Index4E    ; $B3F2
+dw .Index4F    ; $B4DF
+dw .Index50    ; $B52E
+dw .Index51    ; $B64F
+dw .Index52    ; $B770
+dw .Index53    ; $B891
+dw .Index54    ; $B9B2
+dw .Index55    ; $BAD3
+dw .Index56    ; $BBF4
+dw .Index57    ; $BD15
+dw .Index58    ; $BE36
+dw .Index59    ; $BF57
+dw .Index5A    ; $C078
+dw .Index5B    ; $C1BD Freedan using Aura Barrier (*Friar is raw at $998070)
+dw .Index5C    ; $C26E Mummy Queen first color change
+dw .Index5D    ; $C293 Mummy Queen second color change
+dw .Index5E    ; $C2B8
+dw .Index5F    ; $C2E7
+dw .Index60    ; $C30E
+dw .Index61    ; $C317 CMath
+dw .Index62    ; $C34E ApoGaia BG flash
+dw .Index63    ; $C46F ApoGaia psycho bubbles
+dw .Index64    ; $C4A4
+dw .Index65    ; $C4DB
+dw .Index66    ; $C588 CMath ApoGaia BG flash
+dw .Index67    ; $C5BC CMath
+dw .Index68    ; $C5F0
+dw .Index69    ; $C621 CMath A/DG fire/MouthLaser
+dw .Index6A    ; $C65E CMath ApoGaia BG flash
+dw .Index6B    ; $C78F
+dw .Index6C    ; $C7A4 Shadow's transformations
+dw .Index6D    ; $C7C9
+dw .Index6E    ; $CAF8
+dw .Index6F    ; $CDF7
+dw .Index70    ; $CE6A CMath
+dw .Index71    ; $CE8F Firebird
+dw .Index72    ; $CF40
+dw .Index73    ; $CFCF
+dw .Index74    ; $D046
+dw .Index75    ; $D17B
+dw .Index76    ; $D1C2
+dw .Index77    ; $D209
+dw .Index78    ; $D310
+dw .Index79    ; $D417
+dw .Index7A    ; $D466
+dw .Index7B    ; $D48B
+dw .Index7C    ; $D4B0
+dw .Index7D    ; $D591
+dw .Index7E    ; $D6C2
+dw .Index7F    ; $D6FB
 }
 .Index00:    ; $8100
+db $01 : dw $812B : db $71,$0D,$01 
+db $01 : dw $8139 : db $71,$0D,$00 
+db $01 : dw $8147 : db $71,$0D,$00 
+db $01 : dw $8155 : db $71,$0D,$01 
+db $01 : dw $8163 : db $71,$0D,$00 
+db $01 : dw $8171 : db $71,$0D,$00 
+db $01 : dw $817F : db $71,$0D,$01 
+db $00 
+dw $4E14,$4E54,$46B9,$431C,$435C,$5B9E,$1DD7
+dw $5B9E,$4E14,$4E54,$46B9,$431C,$435C,$14CE
+dw $435C,$5B9E,$4E14,$4E54,$46B9,$431C,$361B
+dw $431C,$435C,$5B9E,$4E14,$4E54,$46B9,$3197
+dw $46B9,$431C,$435C,$5B9E,$4E14,$4E54,$3E5C
+dw $4E54,$46B9,$431C,$435C,$5B9E,$4E14,$2532
+dw $6D6D,$49D2,$2A57,$36DA,$475D,$5BBE,$363C
 
 
 
